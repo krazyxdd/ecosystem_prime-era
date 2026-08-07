@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Отработка возражений — Prime Era</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0A0A0B;
+    --ink-soft: #4A4A4E;
+    --ink-faint: #9A9A9E;
+    --bg: #FFFFFF;
+    --bg-off: #FAFAFA;
+    --line: #E4E4E6;
+    --line-soft: #EEEEEF;
+    --accent: #008CFF;
+    --accent-dim: #E8F4FF;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent-dim);color:var(--ink);}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  header.topbar{
+    background:var(--bg);
+    border-bottom:1px solid var(--line);
+    padding:22px 24px 24px;
+    position:sticky;
+    top:0;
+    z-index:40;
+  }
+  .topbar-inner{
+    max-width:920px;
+    margin:0 auto;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .brand-mark{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+  }
+  .brand-mark:hover{color:var(--accent);}
+  .brand-mark::before{content:"[ "; color:var(--ink-faint);}
+  .brand-mark::after{content:" ]"; color:var(--ink-faint);}
+  .brand-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    letter-spacing:0.01em;
+  }
+  h1.title{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:700;
+    font-size:36px;
+    line-height:1.14;
+    margin:0 0 20px;
+    letter-spacing:-0.02em;
+    color:var(--ink);
+  }
+  @media(max-width:620px){ h1.title{font-size:27px;} }
+  h1.title span{color:var(--accent);}
+
+  .search-wrap{ position:relative; }
+  .search-wrap input{
+    width:100%;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px 12px 42px;
+    color:var(--ink);
+    font-size:14.5px;
+    font-family:'IBM Plex Mono',monospace;
+    outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .search-wrap input::placeholder{color:var(--ink-faint);}
+  .search-wrap input:focus{background:#fff; border-color:var(--accent);}
+  .search-icon{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:var(--ink-faint); pointer-events:none;
+  }
+  .search-clear{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    background:none;border:none;color:var(--ink-faint); cursor:pointer;
+    padding:6px; display:none; line-height:0;
+  }
+  .search-clear.show{display:block;}
+  .search-clear:hover{color:var(--ink);}
+
+  .crumbs{
+    max-width:920px;
+    margin:16px auto 0;
+    padding:0 24px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    flex-wrap:wrap;
+  }
+  .crumbs button{
+    background:none;border:none;cursor:pointer;
+    color:var(--ink-faint);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    padding:2px 0;
+  }
+  .crumbs button:hover{color:var(--accent);}
+  .crumbs .current{color:var(--ink); font-weight:600;}
+  .crumbs .sep{color:var(--line-soft); }
+
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:28px 24px 90px;
+  }
+
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  @media(max-width:620px){ .cat-grid{grid-template-columns:1fr;} }
+
+  .cat-card{
+    background:var(--bg);
+    border:none;
+    padding:24px 22px 22px;
+    cursor:pointer;
+    text-align:left;
+    transition:background .15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    position:relative;
+  }
+  .cat-card:hover{ background:var(--bg-off); }
+  .cat-card:hover .cat-name{color:var(--accent);}
+  .cat-icon{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:var(--accent);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .cat-icon svg{width:17px;height:17px;}
+  .cat-name{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    line-height:1.3;
+    color:var(--ink);
+    transition:color .15s ease;
+  }
+  .cat-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-faint);
+    letter-spacing:0.02em;
+  }
+  .cat-count::before{content:"[ "; }
+  .cat-count::after{content:" ]"; }
+
+  .tip-banner{
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-left:2px solid var(--ink-faint);
+    border-radius:8px;
+    padding:14px 16px;
+    margin:24px 0 12px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .tip-banner:first-child{margin-top:0;}
+  .tip-banner .tip-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .obj-item{
+    background:var(--bg);
+    border:1.5px solid #D3D3D6;
+    border-left:3px solid var(--accent);
+    border-radius:var(--radius-sm);
+    margin-bottom:12px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(10,10,11,0.05);
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .obj-item:hover{
+    border-color:var(--accent);
+    box-shadow:0 2px 10px rgba(0,140,255,0.12);
+  }
+  .obj-header{
+    width:100%;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .obj-quote{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:20px;
+    color:var(--accent);
+    line-height:1;
+    flex-shrink:0;
+  }
+  .obj-question{
+    flex:1;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .obj-question .hl{background:var(--accent-dim); border-radius:3px; color:var(--ink);}
+  .obj-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-faint);
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .obj-chevron{
+    width:16px;height:16px;
+    color:var(--ink-faint);
+    flex-shrink:0;
+    transition:transform .2s ease;
+  }
+  .obj-item.open .obj-chevron{transform:rotate(180deg); color:var(--accent);}
+
+  .obj-answers{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .obj-item.open .obj-answers{ max-height:none; }
+  .obj-answers-inner{
+    padding:2px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .ans-card{
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:13px 14px;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    padding-right:38px;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .ans-card:hover{ background:var(--accent-dim); border-color:var(--accent); }
+  .ans-card.niche{
+    background:var(--accent-dim);
+    border:1.5px solid #A9D8FF;
+  }
+  .ans-card.niche:hover{ border-color:var(--accent); }
+  .ans-card.tpl{
+    background:#FFF6E5;
+    border:1.5px solid #F5CD7E;
+  }
+  .ans-card.tpl:hover{ border-color:#D99A1B; }
+  .ans-card .hl{background:#FCEFC5; border-radius:3px;}
+  .ans-copy-icon{
+    position:absolute;
+    right:12px;
+    top:13px;
+    width:15px;
+    height:15px;
+    color:var(--ink-faint);
+  }
+  .ans-card:hover .ans-copy-icon{color:var(--accent);}
+  .ans-card.copied{ background:#0A0A0B; border-color:#0A0A0B; color:#fff; }
+  .ans-card.copied .ans-copy-icon{color:#7FD98A;}
+  .ans-card.copied .ans-tag{color:rgba(255,255,255,0.5);}
+
+  .ans-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:7px;
+  }
+  .ans-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:500;
+    letter-spacing:0.01em;
+    color:var(--ink-faint);
+  }
+  .ans-tag::before{content:"["; }
+  .ans-tag::after{content:"]"; }
+  .ans-tag.accent{color:var(--accent);}
+  .ans-tag.niche{
+    color:#fff;
+    background:var(--accent);
+    padding:2px 6px;
+    border-radius:4px;
+    font-weight:600;
+  }
+  .ans-tag.niche::before, .ans-tag.niche::after{ content:""; }
+  .ans-tag.template{
+    color:#7A4B00;
+    background:#FFD98A;
+    padding:2px 7px;
+    border-radius:4px;
+    font-weight:700;
+  }
+  .ans-tag.template::before, .ans-tag.template::after{ content:""; }
+
+  .search-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    margin-bottom:18px;
+  }
+  .search-group-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--accent);
+    margin:28px 0 10px;
+  }
+  .search-group-title:first-child{margin-top:0;}
+  .empty-state{
+    text-align:center;
+    padding:70px 20px;
+    color:var(--ink-faint);
+  }
+  .empty-state svg{width:36px;height:36px; color:var(--line); margin-bottom:14px;}
+  .empty-state p{font-size:14px; font-family:'IBM Plex Mono',monospace;}
+
+  #toast{
+    position:fixed;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%) translateY(12px);
+    background:var(--ink);
+    color:#fff;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:13.5px;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:100;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  #toast svg{width:15px;height:15px;color:#7FD98A;flex-shrink:0;}
+
+  /* ---- raw data page (test branch, all 3 tables) ---- */
+  .raw-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:22px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:0;
+  }
+  .raw-tab{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    background:none;
+    border:none;
+    color:var(--ink-faint);
+    cursor:pointer;
+    padding:10px 4px 12px;
+    margin-right:14px;
+    border-bottom:2px solid transparent;
+  }
+  .raw-tab:hover{color:var(--ink);}
+  .raw-tab.active{color:var(--accent); border-bottom-color:var(--accent);}
+  .raw-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-bottom:18px;
+  }
+  .raw-card{
+    background:var(--bg);
+    border:1px solid #D3D3D6;
+    border-radius:var(--radius-sm);
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .raw-question{
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.4;
+    margin-bottom:10px;
+  }
+  .raw-message{
+    background:var(--accent-dim);
+    border:1.5px solid #A9D8FF;
+    border-radius:8px;
+    padding:12px 14px;
+    padding-right:36px;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    margin-bottom:10px;
+    transition:border-color .12s ease;
+  }
+  .raw-message:hover{ border-color:var(--accent); }
+  .raw-message .ans-copy-icon{ top:12px; }
+  .raw-message.copied{ background:#0A0A0B; border-color:#0A0A0B; color:#fff; }
+  .raw-message.copied .ans-copy-icon{ color:#7FD98A; }
+  .raw-explain{
+    font-size:13px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .raw-explain-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:4px;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <button class="brand-mark" id="brandMark" type="button">PRIME ERA</button>
+      <span class="brand-sub">/ отдел продаж</span>
+    </div>
+    <h1 class="title">Что <span>отвечать</span>, когда клиент возражает</h1>
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="найти возражение или фразу для ответа..." autocomplete="off">
+      <button class="search-clear" id="searchClear" aria-label="Очистить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="crumbs" id="crumbs"></nav>
+
+<main id="main"></main>
+
+<div id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastText">Скопировано</span>
+</div>
+
+<script id="objections-data" type="application/json">[{"name": "Топ 5", "subgroups": [{"title": "__niche__", "tip": "Фразы для предвосхищения возражения — используйте на старте разговора / в первом сообщении, до того как клиент успеет возразить.", "objections": [{"question": "Мне не актуально / ничего не нужно", "answers": [{"text": "Скорее всего, вы сейчас не искали подрядчика по сайтам — я пишу первым, и это ок. Именно поэтому не предлагаю ничего заказывать: за 10 минут на созвоне покажу, за счёт чего продающая структура даёт заявки, а вы сами решите, актуально это вам или нет. Идёт?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche-preempt", "tactic": "На опережение"}]}, {"question": "У вас нет кейсов в моей нише", "answers": [{"text": "Сразу честно: мы работаем с разными сферами, и кейса именно из вашей может пока не быть — сейчас как раз заходим в узкое нишевание. Именно поэтому предлагаю смотреть не на отрасль в портфолио, а на подход: продающая структура работает по единым принципам. На созвоне покажу, как соберу её под вашу задачу.", "tag": "Через пример", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche-preempt", "tactic": "На опережение"}]}, {"question": "Я передам руководителю / будем иметь в виду", "answers": [{"text": "Понимаю, решение не всегда за одним человеком, и это нормально. Именно поэтому, чтобы передать не „сайт за 80к“, а конкретную выгоду, давайте я за 10 минут на созвоне подготовлю короткое понимание под ваш бизнес — так руководителю будет что оценить по делу. Когда удобно?", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche-preempt", "tactic": "На опережение"}]}]}]}, {"name": "Возражения по цене", "subgroups": [{"title": "Скриншот 1 (Стр. 02–03)", "tip": "Возражение «Дорого» намного проще предотвратить (принцип «Пятна на рубашке» из «Школы личных продаж: система КЛОУЗЕР»), чем потом пытаться переубедить клиента. Часто я рекомендую не ждать, пока клиент озвучит возражение, а действовать на опережение — Вы можете сами озвучить наиболее вероятное будущее возражение клиента и сразу дать аргументированный ответ. Если не получилось предотвратить, используйте предложенные варианты ответов.", "objections": [{"question": "У Вас дорого!", "answers": [{"text": "Мы не просто дизайн — это полный цикл: структура, копирайтинг, сборка, запуск. Поэтому чек включает результат, а не только картинку. Давайте на созвоне покажу, из чего складывается цена и что именно вы получаете.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Цена = полный цикл"}, {"text": "Понимаю, цена важна. Давайте прикинем: если сайт приносит хотя бы 2–3 заявки в месяц в вашей нише, за какой срок он окупает вложение? Продающий лендинг обычно отбивается быстрее, чем кажется.", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche", "tactic": "Окупаемость"}, {"text": "Цену стоит смотреть не отдельно, а против результата: сайт, который не продаёт, — вот это дорого при любой сумме. Что для вас важнее — цена или заявки с сайта?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Цена vs. ценность"}, {"text": "[Имя Отчество], я назвал примерную цену. А вообще по цене могут быть варианты разные, в зависимости от наполнения / комплектации. Например, есть такой вариант (презентуем альтернативы)", "tag": "Через пример", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "[Имя Отчество], \"дорого\" по сравнению с другими аналогичными предложениями или вообще за эту услугу?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Цена — вопрос важный. При этом не самый главный, т. к. по цене мы с клиентами почти всегда договариваемся. Скажите, в целом Вам продукт / решение подходит?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Цену устанавливает производитель / разработчик. Поэтому она не будет существенно отличаться у других продавцов. Или для Вас такая цена в принципе высокая и нужно рассмотреть другие варианты?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], конечно, такая услуга в такой комплектации стоит денег. При этом, чтобы Вы понимали, за что именно Вы платите, смотрите (кратко презентуем наполнение и результаты). Как видите, то, что Вы получите в итоге, перекрывает инвестиции", "tag": "Альтернатива", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Сейчас, возможно, есть единоразовая трата. Но давайте посчитаем, сколько получится сэкономить за год? А за три? Если сотрудники будут работать без чёткой системы, сколько можете потерять?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], в нашей ситуации, наверное, главный вопрос не \"Сколько стоит?\", а \"Стоит ли это того?\". Давайте ещё раз посмотрим, как быстро это должно окупиться", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 2 (Стр. 04)", "tip": "Я отношусь к возражениям как к «звоночку» — скорее всего, на предыдущих этапах взаимодействия с клиентом менеджер сделал что-то не так. Не прояснил до конца ситуацию клиента, не установил с ним контакт, не смог убедительно выступить в роли эксперта, да и презентация его была не на высоте. Хорошая новость в том, что критических возражений, способных на корню срубить сделку, не больше десятка. И если вы научитесь грамотно с ними работать, то сможете в большинстве случаев выходить на закрытие сделки.", "objections": [{"question": "Это высокая цена. В рекламе была меньше!", "answers": [{"text": "Действительно, цена в рекламе является базовой, и некоторые клиенты приобретают наш продукт именно за такую цену. Тут важно определиться по функционалу, что Вам действительно нужно. И насколько базовый комплект Вам подходит. Скажите, как...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Да, такой вариант тоже есть / возможен. Как правило, мы с клиентами обсуждаем различные варианты и выбираем уже тот, который клиенту удобнее и (в итоге) выгоднее", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "Нет денег", "answers": [{"text": "Ок, тема в планах — это уже хорошо. „В будущем“ — это ближе к какому-то событию (сезон, запуск, рост), или просто пока не заложен бюджет?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Фиксация горизонта"}, {"text": "Раз в планах есть, предлагаю не терять время: на бесплатном созвоне накидаю, каким должен быть ваш сайт под задачу. К моменту бюджета у вас уже будет готовое ТЗ и понимание.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Полезный старт"}, {"text": "Нет денег в этом месяце или вообще пока не видите смысла покупать этот продукт?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Вопрос с оплатой мы с клиентами обычно решаем, договариваемся. Сейчас важно понять, нужна ли Вам вообще эта услуга или пока нет?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Да, сейчас такое время)) Давайте определимся, а нужен ли Вам этот продукт вообще", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], а вообще деньги в этом направлении периодически выделяете (на рекламу, на обучение сотрудников и т. д.)? В таком случае мы можем так поступить: сделать пилотный проект и оценить, насколько работа с нами будет выгодна, сколько Вы сможете заработать, сэкономить? А потом будем принимать решение", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 3 (Стр. 05)", "tip": "Смотрели фильм «Волк с Уолл-Стрит» с Леонардо Ди Каприо? В основе этого фильма лежит история Джордана Белфорта, который заработал состояние на продаже по телефону акций дешёвых компаний. Мне очень запомнилась фраза с тренинга Джордана Белфорта: «Продажи — это процесс передачи Вашей веры в продукт Вашему клиенту». А Вы верите в свой продукт? Сможете передать веру клиенту? Если да, Вы легко будете справляться с любыми возражениями и отговорками.", "objections": [{"question": "У Вас подозрительно дёшево", "answers": [{"text": "[Имя Отчество], после первых сделок наши клиенты обычно говорят: \"Спасибо! А мы думали, такой продукт стоит гораздо дороже!\". Мы знаем, как выстроить процесс, чтобы избавить Вас от ненужных переплат. При этом у нас есть гарантия, и Вы можете быть уверены в...", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Вы правильно заметили, что наши цены ниже среднерыночных, и вот почему: (большие корпоративные скидки, прямые поставки, надёжные партнёры и т. д.)", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "А какая цена была бы для Вас оптимальной? Уверен, тут я смогу договориться со своим руководством))", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "У Вас нет отсрочки платежа", "answers": [{"text": "Действительно, базовые условия её не предполагают. Скажите, насколько для Вас это принципиальный момент?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Чем именно Вам это неудобно? Какую отсрочку Вы бы сами хотели?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Мы готовы сделать Вам отсрочку, при условии (большого заказа, либо своевременной оплаты 3 заказов и т. д.), готовы так работать?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 4 (Стр. 06)", "tip": "Я всегда стараюсь передавать менеджерам такую мысль — при работе с ценой помните, что большинство клиентов не хотят самых дешёвых вещей. Они хотят получить максимально выгодную сделку с учётом всех параметров, а не только цены. Вот Вы хотите «самое дешёвое»? Телефон и часы подешёвле? Автомобиль подешёвле или туфли? Разве Вы выбираете по принципу самое дешёвое? Уверен, что нет. Так и клиенты. Не спешите сразу предлагать самое дешёвое, давать скидки и т. д. Продавать можно и без скидок.", "objections": [{"question": "Я не готов платить до оказания услуги / поставки продукта", "answers": [{"text": "Вы рассматриваете оплату после поставки, потому что сейчас нет возможности сделать предоплату или потому что хотите сначала убедиться, что товар качественный, и сразу после этого оплатить?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю, что важно подобрать комфортную форму расчёта. Почему для Вас именно постоплата важна?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Мы знаем, что постоплата удобна многим нашим клиентам, поэтому работаем в таком формате после первых 3-х заказов. Это предусмотрено у нас программой лояльности. Давайте сделаем расчёт...", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Дайте мне скидку 20%", "answers": [{"text": "Мы можем обсуждать индивидуальные условия в каждом проекте. Давайте посмотрим, за счёт чего можно снизить стоимость в нашей ситуации (смотрим наполнение, показываем ценность и обоснованность цены. Часто клиенты передумывают просить скидку и покупают по полной цене)", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Почему именно 20%? У Вас есть жёсткий бюджет или Вы ориентируетесь на какой-то вариант конкурентов?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "У Вас есть жёсткое ограничение по бюджету? Давайте посмотрим другие тарифы, чтобы выбрать лучший вариант в рамках существующего бюджета, хорошо?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 5 (Стр. 07)", "tip": "Когда клиент спрашивает: \"Сколько стоит?\", недостаточно просто назвать цену. Цену нужно не называть, а презентовать. Презентовать — это прежде всего донести ценность предложения, показать окупаемость Вашего решения и дать клиенту чёткую причину, почему именно у Вас ему выгоднее покупать. Если Вы будете презентовать цену — Вы легко предвосхитите возражения по цене.", "objections": [{"question": "Я буду искать более низкую цену на рынке", "answers": [{"text": "Понимаю. По цене на рынке есть много предложений. А что для Вас важно при выборе этого продукта помимо цены?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "У Вас есть какой-то строгий бюджет или Вы планируете в целом оценить рынок и найти более выгодный вариант?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Если составить список из 3-х важнейших для Вас критериев при покупке этого продукта, в эту тройку точно войдёт цена, правильно понимаю? И что ещё, кроме цены?", "tag": "С цифрами", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Сориентируйте, а в какие сроки Вам важно, чтобы всё было готово (установлено, настроено, работало на Вас)? Уже смотрели какие-то варианты по цене? Какие там плюсы / минусы?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Подожду, пока у Вас будет акция", "answers": [{"text": "То есть Вы уже точно понимаете, что именно этот вариант подходит лучше всего, и хочется дождаться более выгодных условий? Сейчас я расскажу, как можно получить бонусы / подарки сегодня...", "tag": "Альтернатива", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Акции у нас бывают, при этом довольно редко. А почему для Вас важно акции дождаться? Часто бывает, что клиентам выгоднее уже сейчас купить и начать пользоваться, чем ждать акций и терять время. Вы когда планируете начать использовать?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Иногда у нас бывают акции, которые позволяют получить дополнительные бонусы, подарки или небольшие скидки. Вы хотели бы скидку или бонус получить?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 6 (Стр. 08)", "tip": "Главное правило при работе со скидками звучит очень просто — не давайте скидок просто так. Да, клиенты могут спрашивать \"А есть ли у Вас скидки?\", но это не означает, что такие скидки нужно сразу давать. Это не означает, что клиент не готов купить по полной цене. Можно ли давать клиентам скидки? Можно, но не просто так. Понимаете? Как только клиент поймёт, что любая скидка должна быть обоснованной, Ваше предложение в его глазах будет выглядеть ещё сильнее.", "objections": [{"question": "Я рассчитывал на более низкую цену", "answers": [{"text": "У Вас есть жёсткий бюджет, в который нужно уложиться, или просто рассчитывали, что такие услуги должны стоить дешевле?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Вы уже смотрели аналогичные варианты по ценам, функционалу? Какие преимущества видите в нашем предложении?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "По цене у нас есть несколько вариантов. Давайте обсудим их через пару минут. А сейчас по функционалу / наполнению — скажите, это то, что Вам нужно?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "А скидки есть какие-нибудь?", "answers": [{"text": "У нас есть система лояльности, которая предусматривает бонусы, подарки и скидки при определённых условиях. Например, на каждый второй заказ мы предоставляем...", "tag": "Через пример", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Да, у нас есть скидки при определённых условиях: например, полная предоплата в течение 2 дней или заказ 3-х и более услуг. Скажите, пожалуйста, у Вас бывают в бизнесе... (перечисляем ситуации, в которых могут быть нужны наши доп. услуги. Повышаем средний чек)", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Данный продукт является премиальным, поэтому скидок на него не предоставляем. Наоборот — цены периодически повышаются. Давайте оценим, насколько это окупается и выгодно для Вас на текущих условиях?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}]}, {"name": "Возражения по продукту", "subgroups": [{"title": "Скриншот 7 (Стр. 09)", "tip": "Задавайте вовлекающий вопрос после озвучивания цены. Например, Вы озвучили клиенту, что кондиционер, который ему понравился, стоит 100 000 рублей, тут же продолжите: «Сейчас в наличии на складе 5 штук. Вы сейчас просто присматриваетесь или уже хотели бы установить в ближайшее время?». Такой подход позволяет не оставить продажу после озвучивания цены, а продолжить диалог и с большей вероятностью закрыть сделку.", "objections": [{"question": "У Вас очень неудобные сроки поставки (функционал и т.д.)", "answers": [{"text": "Расскажите, какие сроки были бы для Вас приемлемы? Подумаем, что можно сделать", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Скажите, в чём именно для Вас неудобство наших сроков? Давайте попробуем построить работу так, чтобы решить этот вопрос", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Вашу программу / услугу слишком долго настраивать", "answers": [{"text": "Настройка и интеграция действительно очень важны. Поэтому мы продумали её до мельчайших шагов. Скажите, в какие сроки хотели бы уложиться? Подумаем, что можно сделать", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Скажите, если обучение и интеграцию мы полностью возьмём на себя, от Вас только принципиальное согласие, так подойдёт?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Другими словами, Вас смущает технический момент, связанный с интеграцией. Это единственное, что останавливает?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, Вас тут что больше смущает: собственные усилия или время на интеграцию? Тут фактически всё зависит от нас с Вами, насколько мы точно оценим ресурсы на старте и договоримся. И хорошо, что мы это сейчас можем с Вами открыто обсуждать. Давайте посмотрим наше предложение по настройке", "tag": "Альтернатива", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 8 (Стр. 10)", "tip": "Что значит работать с возражениями? Если вы хотите продавать больше, Вам нужно освоить две вещи. Первое — предвосхищать возражения. То есть выстраивать продажу так, чтобы возражения вообще не появлялись. И второй момент — использовать проверенные стратегии и речевые приёмы для эффективной обработки возражений, которые всё же возникли во время разговора с клиентом.", "objections": [{"question": "Ваш продукт нам не подходит (нужен другой формат, функционал)", "answers": [{"text": "Понял, а какой для Вас идеальный вариант? У нас есть разные варианты комплектации / наполнения, поэтому мы можем подобрать тот вариант, который подойдёт именно Вам", "tag": "Альтернатива", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Расскажите, пожалуйста, какой формат или функционал Вам нужен? Возможно, у нас получится максимально адаптировать под Вас этот продукт или подобрать альтернативу", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Вы имеете в виду, что функционал избыточный для Вашей ситуации, или наоборот, чего-то не хватает?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Ваш продукт быстро устаревает, мне нужно всё новое!", "answers": [{"text": "Сейчас рынок меняется очень быстро, согласен с Вами. Именно поэтому у нас есть регулярные обновления продукта. Смотрите, как это выглядит...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Согласен, что в этой сфере всё очень быстро меняется. Поэтому наш продукт создан так, чтобы долгое время выполнять главные задачи и давать вам результат. Я же правильно понимаю, что текущая версия продукта решает Ваши задачи?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо, что Вы следите за новинками. Наш продукт действительно может не быть последней моделью через год, но мы гарантируем его актуальность и эффективность на протяжении всего срока службы. У нас предусмотрены регулярные обновления, вот пример...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 9 (Стр. 11)", "tip": "Используйте технику «АнтиСПАМ». Забудьте о банальных и набивших всем оскомину формулировках. Услышав такие сочетания, как «хорошее предложение», «взаимовыгодное сотрудничество» или «стратегическое партнёрство», секретарь или ЛПР отмахнётся от вас, как от назойливой мухи: «Спасибо, я подумаю, вышлите коммерческое предложение...». Исключите из своей речи банальные СПАМ-слова, и клиенты чаще будут говорить вам \"Да!\"", "objections": [{"question": "Ваше оборудование очень дорогое в обслуживании", "answers": [{"text": "Я понимаю, насколько важно, чтобы оборудование работало бесперебойно, без простоев. Именно поэтому мы особое внимание уделяем обслуживанию, регулярным проверкам и быстрому устранению любых проблем. Именно такое обслуживание даёт максимальную окупаемость в короткие сроки. Давайте посчитаем...", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Вы сравниваете с каким-то конкретным оборудованием или в целом рассчитывали на меньшую стоимость обслуживания?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Да, обслуживание стоит денег, при этом стоимость обслуживания составляет всего несколько процентов от стоимости самого оборудования, и самое главное — за счёт грамотного обслуживания оборудование окупается за счёт долговечности и стабильной работы. В итоге это приносит гораздо больше денег", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "Я не чувствую, что Ваше предложение — лучшее для меня", "answers": [{"text": "Понятно, что хочется выбрать самое выгодное. А что именно вызывает сомнения? Давайте посмотрим, что можно сделать лучше", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Если по 10-балльной шкале оценить наше предложение, сколько бы Вы поставили? Почему именно такой балл? Что больше всего нравится и что хотели бы улучшить?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 1 (Стр. 18 из 62)", "tip": "Используйте позитивные формулировки во время презентации. Я часто вижу, как продавцы сами притягивают возражения, когда рассказывают о продукте. Например, «доставка этого товара возможна, но будет через 3 логистических центра и может занять 2 недели...». Даже эта вырванная из контекста фраза заставляет клиента напрячься и провоцирует на возражения. А ведь продавец мог использовать позитивную формулировку: «Доставка этого товара возможна, уже через 2 недели будет у Вас. Это самый быстрый способ на сегодняшний день».", "objections": [{"question": "Ваш продукт не учитывает нашу специфику", "answers": [{"text": "Согласен, что в каждом проекте есть специфика. Поэтому у нас есть опыт адаптации нашего продукта под разные задачи. Расскажите, какая у Вас специфика, и мы найдём решение", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Вы имеете в виду региональную специфику, отраслевую или ...? Расскажите, пожалуйста, это важный момент — мы всегда учитываем специфику каждого проекта, так как это прямо влияет на результат", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Мы знаем, насколько важно учитывать специфику в каждом проекте. Поэтому наша работа начинается с анализа Вашей ситуации. У нас есть отраслевой опросник для выявления всех нюансов, который помогает грамотно выстроить работу. Кстати, из Вашей отрасли у нас также есть кейсы. Хотите посмотреть?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Мне не нравится Ваш функционал / дизайн / материалы / состав", "answers": [{"text": "Да, понял, дизайн / доп. функционал можем обсудить отдельно, это решаемый вопрос. Главное понять, а в целом этот продукт решает Ваши главные задачи?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а что бы Вы хотели увидеть в идеале? Есть примеры, как это может выглядеть?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "__niche__", "tip": "", "objections": [{"question": "Сайт за 2 часа конвертит, а дорогой — нет", "answers": [{"text": "Так бывает — и это как раз показывает, что дело не в бюджете, а в структуре и трафике. Дорогой сайт без продающей логики тоже не выстрелит. Давайте на созвоне разберём, почему один конвертит, а другой нет — покажу, что реально влияет на заявки.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Разбор причины"}]}, {"question": "Мне нужна другая CMS, не Tilda", "answers": [{"text": "Понял. А почему принципиально не Tilda — есть конкретные требования (интеграции, нагрузка, каталог)? Иногда за этим стоит миф, а иногда реальная задача. Расскажите — подскажу, подойдём мы вам или честно скажу, что нет.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Уточнение задачи"}]}, {"question": "Я не гоню рекламу, сайт бесполезен / вы не делаете рекламу", "answers": [{"text": "Справедливо — без трафика любой сайт молчит. Именно поэтому продающий сайт и запуск трафика работают в связке. Давайте разберём, как выстроить это вместе, чтобы вложение в сайт не простаивало. С какого канала планируете вести людей?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Логика связки"}, {"text": "Верно, рекламу мы не ведём — наша зона это продающий сайт, который превращает трафик в заявки. Если сайт не продаёт, реклама сливает бюджет. Давайте сделаем так, чтобы посадочная работала, а по трафику подскажу проверенных подрядчиков.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Честность о зоне ответственности"}]}]}]}, {"name": "Возражения при отсутствии потребности", "subgroups": [{"title": "Скриншот 2 (Стр. 20 из 62)", "tip": "На мой взгляд, для преодоления такого возражения важно понять, что за ним стоит: клиент работает с другими и не хочет ничего менять, его всё устраивает, и он не планирует пользоваться таким продуктом; для него это не актуально именно в данный момент, а в будущем потребность может появиться и т. д. Именно поэтому я предлагаю варианты ответов, направленные на прояснение ситуации. Как только Вы поймёте, по какой причине предложение неактуально, Вы сможете преодолеть это возражение.", "objections": [{"question": "Нам неинтересно, не актуально", "answers": [{"text": "Понял, не буду отнимать время. Один вопрос напоследок: тема сайтов вообще не в фокусе, или просто сейчас неудачный момент? Пойму любой ответ.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Уважительный выход"}, {"text": "Понял. Не актуально, потому что сайт уже есть и всё устраивает, или потому что это направление сейчас вообще не в приоритете?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Уточнение сути"}, {"text": "Согласен, навязывать сайт смысла нет. Именно поэтому вопрос проще: заявки сейчас идут стабильно, или основной поток из других каналов?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "niche", "tactic": "Вход через задачу"}, {"text": "Вам это не нужно сейчас, или Вы вообще не пользуетесь такими услугами?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Вы уже всё купили, или у Вас израсходован бюджет? Вы имеете в виду, что работаете уже с другими или сейчас у Вас несезон?..", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Возможно, Вам ничего не нужно сейчас, при этом, учитывая, что Ваша компания постоянно развивается и растёт, наше предложение может быть очень актуально уже в ближайшее время. Скажите, у Вас бывает такое (вопрос по ситуации клиента с целью вовлечения)?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Нам ничего не нужно", "answers": [{"text": "Не нужно, потому что уже работаете с другими или потому что вообще не пользуетесь такими услугами?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Не нужно именно сейчас или вообще не планируете развивать это направление?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а у Вас бывают такие ситуации, когда [проблема]?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Я согласен, что если нет выгоды, то нет и смысла пользоваться сервисом / продуктом. [Имя Отчество], я же правильно понимаю, что у Вас есть менеджеры в отделе продаж? По нашему опыту, менеджеры начинают продавать больше при использовании скриптов продаж. Я хотел показать Вам варианты скриптов для Вашей ситуации. Когда будет удобно обсудить?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 3 (Стр. 21 из 62)", "tip": "Как думаете, что может означать фраза «Замолчи! И начни, наконец, продавать!»? Многие думают, что хорошие продавцы много и красиво говорят. Это не совсем так. Да, в некоторые моменты действительно нужно красиво говорить. Но лишь в некоторые моменты. А в остальное время нужно слушать. Задавать вопросы и снова слушать. Если клиент озвучивает негатив, делится прошлым опытом, не спешите говорить: «А у нас по-другому!». Просто послушайте клиента и покажите, что услышали его.", "objections": [{"question": "Я не пользуюсь этим принципиально", "answers": [{"text": "Вы имеете в виду нашу компанию, или Вы вообще не пользуетесь такими услугами?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], скажите, пожалуйста, не нужно, потому что Вы этим вообще не пользуетесь или потому что работаете с другими поставщиками?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], а Вы пробовали раньше пользоваться этим? Как результаты?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Мы уже пробовали. Не понравилось", "answers": [{"text": "Не понравилась работа поставщика или сам продукт не дал нужного эффекта?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "О! А что случилось? Можете рассказать подробности? А если бы не этот момент, в остальном Вам как?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а как давно это было? Для чего покупали, какие задачи были?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Знаете, по опыту, внедрение чего-то нового редко на старте делает всех довольными и счастливыми. Понятно, что это проект, с планируемыми преимуществами и выгодой, но, как правило, через какое-то время. Давайте попробуем прояснить, где в прошлый раз возникли сложности и как заранее обойти этот момент", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 4 (Стр. 22 из 62)", "tip": "Однажды мой сотрудник делал звонок в компанию, чтобы пригласить менеджеров на обучение в школу продаж. Ответ руководителя был очень суровым и категоричным: «Зачем их обучать? Они сами кого хочешь могут обучить! До свидания!». И клиентов с таким мышлением немало. Мы всё знаем. Мы всё умеем. Мы всё сделаем сами. В большинстве случаев, как Вы понимаете, это просто слова человека, не погружённого в детали, которому кажется, что всё просто и легко. Погружайте клиента в детали проекта, показывайте экспертность и сложность, чтобы они поняли: без Вас — никак!", "objections": [{"question": "Мне уже предлагали это. Я отказался (по телефону)", "answers": [{"text": "А для чего рассматривали покупку? Почему решили отказаться? Смотрите, время идёт, ситуация меняется, продукт сам по себе тоже реагирует на рынок. Я предлагаю обсудить детали и оценить, насколько в текущей ситуации это может Вам подойти", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], понимаю, что Вы уже рассматривали ранее такую услугу. При этом многое уже поменялось. Причём в лучшую сторону. Смотрите, какие появились возможности", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "Я лучше сделаю это своими силами (сайт, обучение сотрудников, настройка CRM и т.д.)", "answers": [{"text": "Здорово, что есть кому заниматься. Дизайнер делает красиво — а мы делаем так, чтобы сайт продавал: структура, офферы, копирайтинг под заявку. Это разные задачи. Сколько заявок сейчас даёт сайт?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Дизайн ≠ продажи"}, {"text": "Нейросеть реально помогает — мы сами ими пользуемся в работе. Но ИИ выдаёт шаблон, а не продающую структуру под ваш бизнес, офферы и путь клиента. Именно поэтому сайты „из ИИ“ красивы, но часто не конвертят. Вам важна картинка или заявки?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Инструмент ≠ результат"}, {"text": "[Имя Отчество], понятно, что многое можно сделать самому, погрузившись в тему, изучив и разобравшись, как это делается. Попробовав раз-два, с третьего-то что-то выйдет. Вопрос в другом: сколько времени это займёт, и какие есть риски?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо, [Имя Отчество], когда планируете этим заняться? Спрашиваю, потому что, как говорится, время — деньги. Может быть, с нами Вы сделаете быстрее и уже через месяц получите первые результаты. Давайте посчитаем?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], кстати, Ваш вклад здесь в любом случае нужен, даже если Вы закажете услугу у нас. Смотрите, как выглядит процесс и какие моменты важно учесть", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "\"Лучше своими силами?\" А почему лучше? Это качественнее, быстрее? Или вопрос в цене?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 5 (Стр. 23 из 62)", "tip": "По моему опыту, слово «кризис» часто используется менеджерами и руководителями, чтобы оправдать падение продаж, невыполнение планов, и, самое главное, отсутствие чёткой стратегии развития компании в период спада экономики страны / мира. Да, в кризис рынок сужается во многих отраслях, но значит ли это, что клиенты вообще перестают покупать? Конечно, нет. Клиентам нужен товар, который Вы реализуете. Вопрос лишь в том, купят ли они у Вас или у тех, кто лучше подготовился к кризису и разработал «антикризисные предложения», от которых глупо отказываться.", "objections": [{"question": "Сейчас кризис, надо экономить и затянуть пояса, не покупать лишнего", "answers": [{"text": "Согласен, [Имя Отчество], что кризис лучше переждать. Особенно если знать, когда и чем он закончится 🙃. А учитывая, что мы этого не знаем, давайте посмотрим, как в условиях кризиса можно улучшить процессы благодаря нашему продукту...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], есть мнение, что кризис лучше переждать не высовываясь, в режиме максимального сохранения энергии. Если бы только знать точно, когда он закончится. А поскольку мы с Вами не знаем, когда он закончится и чем закончится, важно принимать взвешенные решения", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Насчёт экономии согласен с Вами. Именно это я и хотел обсудить, так как по нашему опыту внедрив продукт / сервис, Вы будете экономить 20% расходов на рекламу. Какой у Вас примерный бюджет на рекламу?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Когда будет нужно — сам обращусь к Вам", "answers": [{"text": "[Имя Отчество], скажите, а сейчас как решаете эту [проблему]?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], хорошо, отметил себе. Кстати, чтобы у Вас было представление, что это даст в Вашей ситуации и сколько может стоить, давайте сделаем [бесплатный первый шаг]", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "А вообще у Вас бывают сейчас такие ситуации, когда [ситуация, в которой возникает потребность в Вашем продукте]...?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 6 (Стр. 24 из 62)", "tip": "Я помню, как читал отчёт тайного покупателя и прослушивал записи переговоров, и в строке «Как менеджер ответил на возражения» было написано следующее: никак. Менеджер проигнорировал возражения клиента, оставил без ответа. Такое бывает, когда у сотрудника нет аргументов для ответа. Это говорит о слабой подготовке эксперта. Ни одно из возражений клиента не должно остаться незамеченным. Это правило.", "objections": [{"question": "Мы решим эту задачу другим способом, без Вашего продукта", "answers": [{"text": "Вы имеете в виду \"своими силами\" или \"с другой компанией\"? Да, есть разные способы решения, давайте оценим плюсы и минусы каждого...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Понимаю. Клиенты часто рассматривают минимум 3 варианта решения, поэтому я подготовил сравнительную таблицу с нюансами. Давайте посмотрим...", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "А почему решили рассматривать альтернативы? Как Вам наш продукт по функционалу? По цене?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "В моей ситуации это не сработает!", "answers": [{"text": "Я понимаю, что есть сомнения. А какие нюансы видите именно в Вашей ситуации? Что важно учесть, чтобы всё сработало, на Ваш взгляд?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "А какое идеальное решение видите с учётом Вашего опыта и специфики ситуации?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "У нас были случаи, когда люди думали так же при обсуждении условий проекта. При этом, когда мы разработали детальный план проекта, мы согласовали все детали и успешно реализовали проект", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Чтобы всё прошло успешно, очень важен Ваш настрой. Я дам Вам контакты наших клиентов из такой же сферы — обсудите с ними, как это сработало. И если Ваш настрой изменится — согласуем детали проекта. Как считаете?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 7 (Стр. 25 из 62)", "tip": "Большая ошибка — обесценить позицию клиента фразами «Вы не правы, я лучше знаю, Вы просто не разбираетесь...». Даже если менеджер найдёт сильный аргумент в свою пользу и приведёт его клиенту, как думаете, как отреагирует последний? Скажет ли он: «Ну точно, так и есть, согласен с Вами!»? Это большая редкость. Никто не любит быть побеждённым в споре. Поэтому, скорее всего, покупатель скажет: «Ну не знаю. Ладно, спасибо, всего доброго».", "objections": [{"question": "Спасибо, я просто смотрю! Покупать пока не планирую", "answers": [{"text": "Да, пожалуйста. У нас есть бесплатный каталог с обзором всей продукции / услуг для разных ситуаций, выслать Вам в мессенджер или на e-mail?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю, поэтому буду рад ответить на вопросы, если они появятся, и рассказать про актуальные акции, хорошо?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо! Пока Вы смотрите основное, я сейчас покажу Вам некоторые новинки и предложение месяца, чтобы у Вас было полное представление...", "tag": "Альтернатива", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "__niche__", "tip": "", "objections": [{"question": "Мы только что обновили сайт", "answers": [{"text": "Отлично, что занимались этим. Уточню один момент: после обновления заявок стало ощутимо больше? Иногда обновляют визуал, а продающая логика остаётся прежней — и заявки не растут.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Проверка через результат"}]}]}]}, {"name": "Возражения из-за сомнений, недоверия", "subgroups": [{"title": "Скриншот 8 (Стр. 26 из 62)", "tip": "Представьте ситуацию: клиент выдаёт какое-то возражение, менеджер как настоящий профи легко на него отвечает, а потом замолкает и просто смотрит на покупателя. Менеджеры думают, что клиенту ничего не остаётся, как ответить: «Да, я покупаю». Но этого не происходит. Цель продавца — не просто ответить, а добиться прогресса в сделке. Поэтому спросите клиента, остались ли ещё какие-то вопросы, и предложите ему следующий шаг. Не допускайте выхода клиента из разговора, когда он скажет, что всё понял и будет думать.", "objections": [{"question": "Я хотел бы работать с более надёжной компанией", "answers": [{"text": "[Имя Отчество], понимаю, надёжность сейчас для многих компаний важнее, чем цена. Скажите, какие гарантии мы можем дать дополнительно, чтобы работать с Вами?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "А Вы рассматриваете рекомендации (наших клиентов, или компаний из той же отрасли)?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], по опыту, когда клиенты говорят о надёжности, очень часто имеют в виду наш опыт, реализованные проекты и отзывы от клиентов. А что для вас было бы важно, чтобы убедиться, что наша компания — это серьёзный партнёр, с которым можно и нужно работать?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "[Имя Отчество], надёжность контрагентов очень важна, мы это понимаем, поэтому со своей стороны готовы предоставить все необходимые материалы. Что могло бы Вам помочь в принятии решения?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "У Вас много негативных отзывов", "answers": [{"text": "А какие именно отзывы Вы имеете в виду? [Имя Отчество], мы же с Вами понимаем, кто и зачем может быть заинтересован в такой информации о крупной и давно работающей компании (на высококонкурентном рынке)", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Да, я тоже сталкивался с негативными оценками. И, к сожалению, люди пишут негативные отзывы гораздо легче, чем положительные. Тут важно понимать, что у компании много клиентов и много отзывов. И отзывов разных. Готов Вас познакомить с благодарственными письмами и рекомендациями от клиентов", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "[Имя Отчество], репутация в наше время — это всё. Поэтому мы особое внимание уделяем тому, чтобы клиенты получали то, что хотели. Какие отзывы Вы имеете в виду? Давайте разберёмся", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 9 (Стр. 27 из 62)", "tip": "Можно ли научиться продавать или это врождённый навык: кому-то дано, кому-то — нет? Я искренне считаю, что продажи — это навык, который развивается. Когда-то я сам думал, что в силу своего характера я никогда не смогу продавать, а тем более продавать на «холодных звонках». А сегодня мои видео с холодными звонками являются наиболее просматриваемыми на Youtube. Более того, я считаю навык продаж важнейшим в повседневной жизни: ведь мы продаём наши навыки и опыт работодателям, продаём идеи друзьям, коллегам и руководству, продаём товары, услуги, бизнес. Этот навык напрямую влияет на наш доход! Развитые навыки продаж помогают нам убеждать людей и добиваться гораздо большего практически в любых проектах. Прокачивайте свои навыки продаж!", "objections": [{"question": "Никогда раньше о Вас не слышал", "answers": [{"text": "С большинством наших клиентов мы начинали сотрудничать ровно с этой же фразы, давайте смотреть друг на друга в деле", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Да, есть компании, которые у многих на слуху, рекламируются по ТВ и радио. Мы из другой ниши, долгое время специализировались на услугах для государственных корпораций и крупных компаний и хорошо себя в этом зарекомендовали, на текущий момент прорабатываем новые ниши, в связи с чем активно работаем с предпринимателями и готовы давать более выгодные условия", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Скорее всего, Вы слышали о наших проектах (перечисляем). Ранее работали только с крупными заказчиками и застройщиками (например, ___), с этого года развиваем новое / розничное направление", "tag": "Через пример", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}, {"question": "У Вас мало опыта! Вы молодая компания!", "answers": [{"text": "Если смотреть на саму компанию, то да — нам всего 1–2 года. При этом если посмотреть на опыт и реализованные проекты наших сотрудников, видно, что команда готова справиться с большинством задач. Давайте посмотрим по Вашей ситуации", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "[Имя Отчество], мы молодая компания, это так. При этом наши специалисты имеют суммарный опыт в сфере более 20 лет. И что ещё важно — мы понимаем, что нам для развития нужны Ваши положительные отзывы и результаты. Мы сделаем всё, чтобы Вы получили результат. Попробуем?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 10 (Стр. 28 из 62)", "tip": "Как создать банк возражений? Для начала выпишите все возражения, с которыми Вы чаще всего сталкиваетесь при общении с клиентами, с учётом вашей специфики, опыта, продукта, региона и так далее. Рядом с каждым возражением запишите не конкретный ответ, а стратегию работы с ним. То есть, Ваша цель — в первую очередь проработать логику общения с клиентом в целом, а после этого — подобрать конкретные формулировки для ответов на возражения.", "objections": [{"question": "У Вас нет кейсов с моей спецификой / Вы не разбираетесь в моём бизнесе", "answers": [{"text": "Как раз наоборот — мы специализируемся на сайтах для [ЖК/автосалонов]. Мы знаем, что в вашей сфере покупатель смотрит [конкретика ниши], и строим сайт под это. Покажу кейсы именно из вашей отрасли на созвоне.", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche-template", "tactic": "Нишевая специализация"}, {"text": "Спасибо за честность. А что именно смущает — визуал, отсутствие кейса из вашей сферы или что-то ещё?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "niche", "tactic": "Уточнение"}, {"text": "Наш сайт мы сейчас как раз переделываем — новый уже с сильным продающим копирайтингом. Именно поэтому предлагаю оценивать не старые скрины, а логику: на созвоне покажу, как построю структуру под вашу задачу.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Подход важнее картинок"}, {"text": "Действительно, именно с таким бизнесом мы не работали. При этом мы работали уже со 100+ разными бизнесами, в каждом есть своя специфика, и мы понимаем, насколько важно это учитывать для эффективной работы. Вы продаёте услуги / товары, а мы работали с десятками компаний, которые тоже продают услуги / товары. Давайте рассмотрим специфику Вашего проекта и согласуем план работы с учётом всех нюансов", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Конечно, мы не разбираемся в Вашем продукте так глубоко, как Вы. При этом мы разбираемся в своей области. И когда мы запускаем проект, мы всегда проводим встречи с Вами, чтобы разобраться в специфике и учесть все нюансы. Например, у нас есть похожие кейсы из других сфер, смотрите...", "tag": "Через пример", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Слишком хорошо, чтобы быть правдой. В чём подвох?", "answers": [{"text": "Предложение действительно выгодное. Мы даже проводили опросы покупателей, чтобы разработать именно такой продукт. Кстати, Вы уже видели кейсы наших клиентов?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Спасибо, что так оценили. Мы изучили рынок, конкурентов, спрос покупателей, что позволило нам организовать работу ещё лучше и сделать такое предложение. Давайте обсудим план проекта в деталях?", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 1 (Стр. 29 из 62 / Нумерация книги: 22)", "tip": "Никогда не притворяйтесь, что что-то знаете, если Вы этого не знаете. Это особенно касается новичков, которые хотят впечатлить клиента своей «экспертностью». Если не знаете ответ на сложный вопрос, лучше сказать честно: «Пока затрудняюсь ответить, но я уточню информацию по этому вопросу и обязательно свяжусь с Вами». Ничего в этом страшного нет. ### Полезные ссылки Смотрите разбор для собственников бизнеса: КАК ПРОДАВАТЬ ДОРОГО, когда все требуют скидку и рынок поделен? [Смотреть видео]", "objections": [{"question": "Я покупал такое раньше — это не работает! Пустая трата денег!", "answers": [{"text": "Понимаю, если прошлый опыт разочаровал — доверия к сайтам мало. Скорее всего, делали красиво, но без продающей логики или без трафика. Давайте разберём, что тогда пошло не так, — покажу, чем наш подход отличается.", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche", "tactic": "Разбор негативного опыта"}, {"text": "Жаль слышать, что так вышло. Что именно Вы покупали? Это вообще не сработало или какой-то эффект все-таки был?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Понял Вас. Я знаю нескольких клиентов, которые раньше уже пробовали это у других поставщиков, но эффекта не было. Когда мы с ними погружались в детали — сразу понимали причину. Давайте разберем Вашу ситуацию?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Я знаю, насколько важно, чтобы Ваши инвестиции окупились. Поэтому у нас есть таблица для расчета окупаемости и детальная схема работы с учетом Вашей специфики. Давайте посмотрим, чтобы избежать ошибок и получить нужный результат", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "У Вас нет гарантии результатов!", "answers": [{"text": "Справедливо — гарантировать конкретные цифры до анализа было бы нечестно, они зависят и от трафика. Что мы даём точно — продающую структуру по принципам, которые работают. На созвоне покажу на вашем текущем сайте, где теряются заявки и что изменится.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Честность + логика"}, {"text": "Да, гарантии важны, и хочется быть уверенным, что результат точно будет. При этом мы всегда говорим клиентам, что на конечный результат влияет не только наш продукт, но и то, как сам клиент это внедряет, использует, соблюдает инструкции и так далее. Мы гарантируем качество продукта и не даем ложных обещаний по результатам клиента", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "У нас есть гарантии качества продукта (услуги) и репутация на рынке — за 10 лет мы реализовали сотни проектов. Такая репутация формируется годами, поэтому мы не даем тех гарантий, которые звучат красиво, но юридически нереализуемы. Вы же согласны, что для результата Вам самостоятельно нужно грамотно использовать продукт и выполнять конкретные задачи?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 2 (Стр. 30 из 62 / Нумерация книги: 23)", "tip": "Не искажайте факты и не преувеличивайте. Если продукт не обладает каким-то свойством или на его доставку требуется больше времени, так и скажите. Вводить клиента в заблуждение — это краткосрочная выгода, которая в конечном итоге только навредит Вашей репутации. Предупреждайте о возможных рисках. Это показывает не только Вашу осведомленность в теме и экспертность, но и демонстрирует искреннее желание провести сделку максимально открыто и честно. ### Полезные ссылки Посмотрите видео \"18 ДЫР В ПРОДАЖАХ. Хватит продавать ТАК в 2026!\" и проверьте вашу систему. [Смотреть видео]", "objections": [{"question": "Я сейчас оплачу, а вдруг потом результата не будет / не буду это использовать в работе", "answers": [{"text": "Вы же все равно планируете в этом направлении развиваться? И наш продукт поможет Вам быстрее получить результат. Это подтверждают многие кейсы. Давайте согласуем план проекта, чтобы понять, что Вам точно это будет полезно, хорошо?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Если Вы не будете это использовать, то, конечно, это отразится на результатах. Поэтому перед покупкой важно определиться, точно ли это нужно именно сейчас и закрывает ли это Ваши задачи. Давайте сверимся...", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Давайте просчитаем потенциальный эффект от внедрения для Вашей ситуации? Если увидим, что есть смысл — то Вы запланируете оплату, как считаете?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "О Вас нет отрицательных отзывов! Это подозрительно — Вы их удаляете!", "answers": [{"text": "Мы не удаляем отзывы, просто стараемся работать так, чтобы клиенты оставались довольны. Показать Вам примеры сложных ситуаций, которые мы успешно решили?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "У нас действительно положительная репутация, потому что мы на каждом этапе работы собираем обратную связь клиентов. И если видим, что что-то может пойти не так — оперативно реагируем. Это позволяет нам не получать негативных отзывов", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Понимаю, почему это может казаться странным. Негативных отзывов нет, потому что мы работаем над тем, чтобы каждый клиент был счастлив. Это главное для нас", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 3 (Стр. 31 из 62 / Нумерация книги: 24)", "tip": "Обещайте меньше, делайте больше. Не наоборот. Это формирует долгосрочное доверие и лояльность, делая Вас надежным партнёром в глазах клиента. Многие продавцы в погоне за разовыми сделками склонны обещать слишком много, лишь бы закрыть сделку. Такой подход дает лишь временный эффект и быстро портит Вашу репутацию на рынке. Вы перечеркиваете свои отношения с клиентами. Репутация сегодня — это все! ### Полезные ссылки 12 причин, почему не удается выйти на доход от 200 тыс. руб. в мес. в продажах [Читать пост]", "objections": [{"question": "Это Китай! Не доверяю этой продукции!", "answers": [{"text": "К производству в Китае действительно раньше было много вопросов. При этом сейчас даже многие известные бренды производят свои товары там и контролируют качество на каждом этапе. У нас тоже есть несколько этапов контроля качества, благодаря чему вопросов по качеству не возникает. Видели отзывы наших клиентов?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Для нас качество сборки очень важно, так как это напрямую влияет на нашу репутацию. Именно поэтому мы регулярно выезжаем на производство в Китай, обсуждаем стандарты качества. Плюс у нас есть свой отдел контроля на территории производителя — это позволяет каждый день держать руку на пульсе, оценивать качество и внедрять пожелания наших клиентов", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Не доверяете из-за страны производства или из-за конкретного бренда / производителя данной продукции?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "__niche__", "tip": "", "objections": [{"question": "Вы делаете сайты всем подряд", "answers": [{"text": "Нет, мы сознательно работаем только с [нишей]. Именно поэтому не набиваем шишки на вашем проекте, а сразу используем то, что уже сработало у похожих компаний в вашей сфере.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche-template", "tactic": "Фокус = экспертность"}]}]}]}, {"name": "Возражения по конкурентам", "subgroups": [{"title": "Скриншот 4 (Стр. 33 из 62 / Нумерация книги: 25)", "tip": "У клиента уже есть поставщик — это хорошо или плохо для Вас? В начале своей карьеры менеджера я думал, что это очень плохо. Ведь клиент сразу говорит, что его все устраивает, и менять он ничего не будет. Практически безвыходная ситуация. На самом деле нет. Выход есть. Более того, когда клиент уже покупает аналогичный товар у конкурента, с ним еще легче вести переговоры. У него уже сформирована потребность, ему нужен Ваш товар. Убедите клиента работать с Вами с помощью приема «Вы все равно это делаете» из курса «Клоузер». ### Экскурсия в ПРОКАЧКУ с ИИ За ~60 минут я покажу, как сотни компаний прямо сейчас закрывают больше сделок — и что конкретно нужно изменить в вашей системе продаж. [Смотреть экскурсию]", "objections": [{"question": "Мы уже работаем с другими (уже есть поставщик)", "answers": [{"text": "Понимаю, менять подрядчика на ходу незачем. Именно поэтому не предлагаю ничего рушить — давайте я сделаю бесплатный разбор текущего сайта: покажу 2–3 точки роста. Будет с чем сравнить, а решение за вами.", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche", "tactic": "Без слома текущего"}, {"text": "Отлично. Именно поэтому я Вам и позвонил. Мы как раз в приоритете начинаем работать с теми компаниями, которые уже имеют опыт подобного сотрудничества. Скажите, Вы принципиально работаете только с этим поставщиком, или готовы рассматривать другие варианты?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "ИО, скажите, Вы только с этим поставщиком планируете работать, или можете рассмотреть и другие предложения, если они будут более интересные?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "ИО, как Вы смотрите на то, чтобы просто сравнить условия Вашего поставщика с нашими? Ведь для бизнеса такое сравнение может быть полезно, так ведь?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "ИО, когда я первый раз общаюсь с руководителем компании, я часто слышу, что поставщики есть, и схема работы отлажена. При этом, когда мы делаем сравнение, часто видим, что есть моменты, которые можно улучшить. Именно поэтому я не предлагаю сразу ничего менять, я предлагаю сравнить то, что у Вас есть, с нашими условиями. Если увидим зоны роста, будем двигаться дальше. Что скажете?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Все устраивает. Менять ничего не буду", "answers": [{"text": "Здорово, если работает. Уточню: сколько заявок в месяц даёт сайт сейчас? Иногда „устраивает“ — это привычка, а не потолок, и там есть что усилить.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Проверка через результат"}, {"text": "Именно поэтому предлагаю быстрый бесплатный разбор: покажу 2–3 точки, где теряются заявки. Ничего не найдём — честно скажу, что менять не нужно.", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Бесплатный аудит"}, {"text": "Конечно, какой смысл менять что-то, если не видна выгода. Я просто хотел понять, если мы сейчас увидим, что у нас будет ощутимо выгоднее для Вас, можем обсуждать дальше?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а Вы у этого поставщика заказываете и ТОВАР А, и ТОВАР Б и С? Бывает такое, что у нас намного выгоднее заказывать, к примеру, ТОВАР Б. Вы его используете?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 5 (Стр. 34 из 62 / Нумерация книги: 26)", "tip": "Представьте, что Вы продаете огнетушитель. Как думаете, какой клиент купит быстрее всего и даже не будет сравнивать Вас с конкурентами? Правильно! Быстрее купит клиент, у которого шляпа горит! Ему нужно настолько быстро избавиться от проблемы, что времени на сравнение практически нет. Он купит сразу же! А какие клиенты готовы максимально быстро купить Ваш продукт? Вы знаете где их искать или продаете всем подряд? Продумайте стратегию продаж и Вы удивитесь, как снизится количество возражений. ### Полезные ссылки Лекция \"Лучшие фишки продаж\" с Олегом Шевелевым. Топ-3 инструмента для быстрого роста [Зарегистрироваться]", "objections": [{"question": "У конкурентов дешевле", "answers": [{"text": "В вашей сфере важна не просто цена, а то, что подрядчик понимает [специфику ниши] и не переделывает сайт трижды. Мы это уже прошли на похожих проектах. Что для вас критично, кроме цены?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche-template", "tactic": "Понимание специфики"}, {"text": "Понимаю, на рынке разброс большой. А вы сравниваете по одинаковому объёму — продающая структура, копирайтинг, полный цикл под ключ? Часто за низкой ценой скрыт шаблон без проработки. Что для вас в приоритете, кроме цены?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "niche", "tactic": "Сравнение по сути"}, {"text": "Бывает такое, что цена на некоторые услуги отличается. Давайте сравним стоимость и функционал. Скажите, а у них данная опция есть? Это сильно влияет на цену. Без этого у нас не 90, а 85", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "А комплектация такая же? А сроки? А сервис какой предлагают? Гарантия тоже 1 год? Производитель? Очень подозрительно, ведь цена ниже рынка. У меня был клиент, который... (история)", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Вы знаете, как это бывает, каждая компания делает на чем-то акцент и может предложить по определенной категории цену ниже, а по другим — наоборот все будет дороже. Давайте сравним в целом стоимость проекта", "tag": "Альтернатива", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Я знаю, что некоторые конкуренты заявляют более низкую цену, и вот почему: 1) ___, 2) ___", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}, {"question": "У конкурентов условия лучше (поставки, сроки)", "answers": [{"text": "Скажите, пожалуйста, на какие варианты ориентируетесь?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "ИО, учитывая, что условий в целом много, скажите, какие из них для Вас самые важные: сроки, цена, поддержка, гарантия?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "ИО, я понимаю, что сроки очень важны, иногда даже важнее, чем остальные условия по продукту... Именно поэтому я со своей стороны сделаю все возможное, чтобы сократить сроки и, кроме этого, я буду держать Вас в курсе работы над Вашей заявкой. Я знаю, что это для Вас важно, и мы это учтем в работе", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 6 (Стр. 35 из 62 / Нумерация книги: 27)", "tip": "«Я работаю со СБЕРом и буду век ему верна» — дословный ответ потенциального клиента на мое предложение работать с другим банком. Такие преданные клиенты не редкость на рынке B2B и B2C услуг. Как быть? Прежде всего отметьте такую преданность. Говорите не о продукте, не переубеждайте клиента. Для начала просто скажите о человеческих качествах. Ведь такая преданность — это очень ценно. ### Полезные ссылки Что контролировать предпринимателю в отделе продаж, если погружаться во все детали нет ни времени, ни сил, ни желания? [Смотреть видео]", "objections": [{"question": "Мы работаем с постоянным поставщиком уже 10 лет!", "answers": [{"text": "Я знаю, что Вы давно на рынке. За это время Вы же хотя бы одного поставщика или партнера поменяли? Потому что Вам это было выгоднее. Сейчас я не предлагаю менять, я предлагаю сравнить и сделать выводы", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, именно поэтому я сразу ничего не стал предлагать. Я понимаю, что в такой ситуации должна быть существенная выгода, чтобы Вы решили сменить поставщика. Давайте обсудим", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Очень Вас понимаю, сами ценим постоянных партнеров, с которыми нас уже многое связывает. При этом рынок меняется и сейчас такое время, когда полезно иметь несколько вариантов: можно не только сэкономить, но и подстраховаться", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Понимаю, поэтому не предлагаю отказываться от проверенного временем поставщика. Мы можем просто сравнить тарифы поставщика с нашими. И если увидим существенную экономию, Вы можете либо получить скидку у существующего поставщика, либо начать работать с нами по некоторым направлениям", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Другие компании работают быстрее Вас!", "answers": [{"text": "Скажите пожалуйста, а с какими компаниями Вы сравниваете? Какие именно работы обещают сделать в такие сроки?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а на какие сроки ориентируетесь?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Да, мы знаем, что есть компании, которые делают это быстрее, при этом мы до сих пор говорим клиентам, что сделаем это за неделю. А знаете почему? (рассказываем подробно о плане работы по продукту)", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 7 (Стр. 36 из 62 / Нумерация книги: 28)", "tip": "Клиенты скептически относятся к продуктам, в которых «все гладко и сладко». Сразу хочется найти какой-то подвох, согласны? Чтобы показать, что Ваше предложение реальное, а не из рубрики «фантастика», разбавьте плюсы продукта парой несущественных недостатков, которые не умаляют основных преимуществ. Такие мини-недостатки демонстрируют вашу честность, снимают напряжение у клиента, который пытается найти минусы в Вашем предложении. ### Полезные ссылки Простой способ создать МОЩНЫЙ СКРИПТ ПРОДАЖ с помощью ChatGPT [Смотреть видео]", "objections": [{"question": "У конкурентов доставка / поддержка бесплатно, а у вас нет!", "answers": [{"text": "Поддержка и доставка, конечно, влияют на Ваши расходы. Поэтому давайте комплексно оценим все плюсы и минусы. Многие клиенты после сравнения видят, что несмотря на то, что у нас доставка и поддержка не бесплатные — с нами в итоге получается выгоднее. Посчитаем?", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "У нас есть разные варианты сотрудничества, в том числе и с бесплатной доставкой / поддержкой. Давайте выберем лучший тариф для Вас...", "tag": "Альтернатива", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Да, я знаю, что некоторые компании закладывают стоимость \"доставки и поддержки\" в стоимость продукта, и говорят, что они \"бесплатные\". Мы так не делаем и сообщаем клиенту только стоимость продукта. Остальное Вы можете докупить самостоятельно: например, воспользоваться своей службой доставки. Давайте в целом оценим, насколько наше предложение выгодное...", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 8 (Стр. 37 из 62 / Нумерация книги: 29)", "tip": "Как стать для клиента своим? Ваша задача как человека, который продает, найти хоть что-то, что вас может связать с клиентом. Даже если на первый взгляд кажется, что между вашими интересами пропасть. Это может быть общий знакомый, чья-то рекомендация или какой-то другой фактор, создающий связь между вами. Искать общее — тоже навык. Не всегда точки соприкосновения лежат на поверхности, но если вы их найдете, расположите этим к себе потенциального покупателя еще больше. ### Полезные ссылки Посмотрите видео о том, как правильно собирать продающие отзывы, которые действительно будут помогать больше продавать в будущем [Смотреть видео]", "objections": [{"question": "У конкурентов дороже, но у них больше кейсов!", "answers": [{"text": "Понятно, что кейсы важны. При этом важно, чтобы кейсы были достоверными и подтверждали ту экспертность, которая нужна именно в Вашей ситуации. Давайте я покажу конкретные кейсы, и Вы увидите, как качественно мы прорабатываем все ситуации. Кстати, так как у нас все кейсы подтвержденные, я смогу по согласованию с клиентом дать Вам его контакт, чтобы Вы напрямую уточнили все вопросы, как Вам?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Мы моложе, чем конкуренты, при этом сейчас хорошо растем и особое внимание уделяем кейсам. У нас есть подборка кейсов с таким запросом, как у Вас — давайте посмотрим их. Если у Вас останутся вопросы по нашей экспертности, я с удовольствием дам Вам дополнительную информацию", "tag": "Через пример", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Я понимаю, что Вы сравниваете разные варианты. Не могу ничего сказать про кейсы конкурентов. Я готов показать Вам наши кейсы в аналогичных проектах, и Вы увидите, насколько качественно мы прорабатываем все ситуации. Также давайте составим конкретный план действий по Вашему проекту, и, если Вас все устроит, начнем работу", "tag": "Через пример", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 9 (Стр. 38 из 62 / Нумерация книги: 30)", "tip": "При звонке в стоматологическую клинику можно сказать: «Звоню Вам, так как у нас есть успешный опыт работы с клиниками Вашего профиля, включая проекты, реализованные в нашем и соседних регионах». Получается интересный заход, когда контакт вроде холодный, но Вы создаете впечатление, что не только знакомы со спецификой клиента, но и имеете конкретные достижения в его сфере. И с Вами уже интереснее разговаривать. Естественно, всё вышеперечисленное работает, когда это действительно так. ### Полезные ссылки Клиент просит счет и пропадает. Что делать? Смотрите видео, как работать с такими кейсами [Смотреть видео]", "objections": [{"question": "Мои знакомые покупали у Ваших конкурентов и рекомендуют их", "answers": [{"text": "Понятно, что мнения друзей важны. А Вы уже смотрели предложения конкурентов? Как Вы лично оцениваете их?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю Вас. А что для них было самое ценное? Почему рекомендуют их? А что им не понравилось?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Я сам часто прислушиваюсь к рекомендациям. При этом бывают ситуации, когда важно непредвзято оценить все предложения. Ведь, если мы еще не работали с Вашим знакомым, это не значит, что у нас предложение и продукт хуже. Давайте взвесим все \"за и против\"...", "tag": "Альтернатива", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Я сначала соберу все варианты от конкурентов, а потом решу. Вы не одни!", "answers": [{"text": "Хорошо, мне приятно, что мое предложение тоже будете рассматривать. Скажите, пожалуйста, а какие у Вас основные параметры при выборе, чтобы я сделал на этом акцент в предложении?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю, а что для Вас ключевое при выборе? А что помимо цены?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "При сборе предложений в нашей сфере можно столкнуться с тем, что довольно сложно объективно их сравнить. Не все поставщики раскрывают в предложении все условия. Давайте я сразу выделю то, что для Вас наиболее важно. Расскажите, на что будете в первую очередь смотреть (помимо цены)?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 10 (Стр. 39 из 62 / Нумерация книги: 31)", "tip": "Продавать — это не про подвешенный язык, как многие считают, и не про впаривание, а про умение слушать других и понимать, что они хотят. С самого начала работы в продажах я внимательно относился к клиентам и вел учет отношений с каждым из них в CRM-системе (специальной программе, в которой менеджер может посмотреть всю историю взаимодействия с клиентом). Эта программа была моим главным активом. В карточках клиентов я указывал телефоны, адреса электронной почты, историю и анализ проведенных сделок. Даже дни рождения клиентов записывал. ### Полезные ссылки Смотрите короткое видео \"Клиенты уходят в ИГНОР. Что делать?\" [Смотреть видео]", "objections": [{"question": "Я покупаю только у компаний из ТОП-3 — Вы не подходите!", "answers": [{"text": "Да, ТОП-3 — это компании лидеры рынка. А по каким рейтингам или критериям будет ТОП-3?", "tag": "С цифрами", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо. А какие еще параметры, кроме \"ТОП-3\", для Вас важны? Сроки? Гарантия? Цена? Мы подготовим бесплатно продуманный вариант реализации Вашего проекта с учетом специфики. В любом случае наше предложение усилит Ваши позиции в переговорах с ТОП-3...", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Вы имеете в виду работу по всем проектам или есть какие-то направления, где \"ТОП-3\" не является категоричным параметром, и Вы можете рассматривать более выгодные варианты?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Уже выбрали другого поставщика, спасибо!", "answers": [{"text": "Хорошо, спасибо за честность. Дайте, пожалуйста, обратную связь, как наше предложение смотрелось на фоне другого? Чего не хватило? Будем учитывать это в будущем!", "tag": "Альтернатива", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Ок, понял! То есть уже подписали договор и сделали оплату, или только планируете это делать?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "То есть Вы определились с услугами по настройке CRM у этого поставщика? А по подбору команды менеджеров ОП что думаете? У нас сейчас есть в базе несколько кандидатов с опытом в Вашей сфере, посмотрим их?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Понял вас. Спасибо, что рассматривали нас. Давайте будем на связи — я Вам вышлю подарок по теме...", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "__niche__", "tip": "", "objections": [{"question": "Закажу у фрилансера за 10к вместо 80к", "answers": [{"text": "Фрилансер за 10к реально дешевле — тут не поспоришь. Именно поэтому вопрос в другом: кто отвечает за результат, сроки и правки, если человек пропадёт? У нас команда из 4 человек на полный цикл, проект не встанет. Насколько для вас критично, чтобы сайт довели до конца и он продавал?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Риск против экономии"}]}, {"question": "Чем вы лучше студии, которая тоже делает сайты для вашей ниши?", "answers": [{"text": "Хороший вопрос. Наше отличие — [конкретный элемент: скорость, копирайтинг, кейс с цифрами по нише]. Давайте на созвоне сравним по делу, а вы выберете, что ближе.", "tag": "Через пример", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche-template", "tactic": "Конкретное отличие"}]}]}]}, {"name": "Возражения по полномочиям решения", "subgroups": [{"title": "Скриншот 1 (Стр. 41 из 62 / Нумерация книги: 32)", "tip": "Если окончательное решение принимает руководитель / Москва / комитет, это не значит, что тот сотрудник, который нам озвучивает это возражение, не может влиять на решение руководства. Не спешите брать контакты руководства (хотя, конечно, это нужно сделать) и завершать разговор. Попробуйте узнать подробности у этого сотрудника, поинтересуйтесь его мнением и в идеале, добейтесь того, чтобы этот сотрудник стал Вашим сторонником. Это не просто, но возможно! ### Полезные ссылки 3 мощных коротких видео для собственников бизнеса, которые хотят усилить свой отдел продаж: [Пошаговый план прокачки системы продаж] [Два усилителя для отдела продаж] [Как находить лучших сотрудников. 2 критерия.]", "objections": [{"question": "Я не решаю (решает руководство, головной офис)", "answers": [{"text": "А лично Вам как? Какой вариант / формат работы больше подходит?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Скажите, а на Ваш взгляд, это вообще может быть интересно Вашему руководству? Такая проблема бывает? Если мы сейчас обсудим и увидим, что это Вам в целом полезно, Вы сможете дать обратную связь руководству?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Конечно, в любом случае принимает решение руководитель. При этом, очень часто он обращается к своим сотрудникам при принятии решения. Как Вам наше предложение? Что можно улучшить, чтобы Вы могли нас порекомендовать?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}]}, {"question": "Нужно посоветоваться", "answers": [{"text": "Конечно, советуйтесь. А Вас лично продукт сейчас полностью устраивает или что-то не подходит?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Я понимаю, что в компании, скорее всего, решение по таким вопросам принимает несколько человек. Но я слышал (мне сказали), что для начала важно с Вами определиться, подходит это Вам или нет (повышаем статус клиента)", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Опыт показывает, что 70 % продуманных предложений профессиональное руководство одобряет. Давайте вместе встретимся с Вашим директором, чтобы обсудить детали", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 2 (Стр. 42 из 62 / Нумерация книги: 33)", "tip": "Работая руководителем блока продаж, я пытался договориться о сотрудничестве с руководителем крупного автосалона в течение 5-ти месяцев! Я постоянно напоминал о себе, и почти каждую неделю слышал «Думаю», «Рассматриваю», «Советуемся». Если бы я продолжал использовать банальные подходы («Посмотрели?», «Надумали?»), это бы вряд ли привело к успеху. Действуйте нестандартно: используйте разные каналы связи и разные предлоги к возобновлению диалога (новости из сферы клиента, полезные материалы, приглашения на мероприятия и т.д.) ### Полезные ссылки Как найти СИЛЬНЫХ продавцов? Смотрите короткое видео: [Смотреть видео]", "objections": [{"question": "Поговорите для начала с...", "answers": [{"text": "А они сами эти вопросы решают, или все же вместе с Вами?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Я понимаю, что Вы цените свое время. Именно поэтому я хотел у Вас, как у руководителя, сразу уточнить, что для Вас является наиболее важным при выборе компании?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "ИО, конечно, давайте запишу контакт. Скажите, а для Вас, как для руководителя, что наиболее важно при работе с такими компаниями?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Мне нужно получить одобрение специалиста (подчиненного), чтобы перейти к договору и оплате", "answers": [{"text": "Понимаю, что детали нужно согласовать с ответственным специалистом, но сама идея этого продукта / проекта – как Вам, как руководителю?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Да, сейчас у нас стратегическая встреча, чтобы понять, насколько это вписывается в развитие Вашей компании. Если да, то детали мы можем обсудить и согласовать со специалистом и потом вернуться к Вам для финального утверждения, хорошо?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 3 (Стр. 43 из 62 / Нумерация книги: 34)", "tip": "До любой презентации узнавайте ситуацию клиента. Говорите меньше, больше слушайте. В ответах покупателя будет все то, на чем вы позже построите грамотное предложение. Первое, о чем вы должны поинтересоваться: зачем вообще человеку этот продукт? Какие потребности он хочет закрыть этой покупкой? Ваша задача не просто продать, а стать стратегом, вникающим в самую суть потребностей клиента — вот главный навык любого продавца. ### Полезные ссылки Смотрите короткое видео и прокачивайтесь в работе с возражениями. Простейший способ обойти любое возражение. [Смотреть видео]", "objections": [{"question": "Мы должны провести совещание с командой и обсудить Ваше предложение", "answers": [{"text": "Понимаю, совещание с командой позволяет всесторонне обсудить предложение. Обычно мы тоже к таким встречам подключаемся и сразу даем необходимую информацию всем участникам (по ИТ, безопасности, юристам и т.д.). Когда планируете такую встречу провести?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Это отлично. Давайте, чтобы сэкономить время команды, я отправлю Вам тезисы для обсуждения и сам презентую эту программу – у нас есть буквально 3 слайда как раз для командных встреч. После этого смогу ответить на вопросы команды. Что думаете?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Я просто собираю предложения от разных компаний, чтобы передать руководителю", "answers": [{"text": "Понимаю, решает руководитель. Именно поэтому, чтобы он увидел не „сайт за 80к“, а выгоду для бизнеса, давайте на коротком созвоне соберём понимание под вашу задачу — так предложение дойдёт по сути, а не потеряется в почте. Когда удобно?", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche", "tactic": "Помощь с передачей"}, {"text": "Хорошо. А я могу у Вас предварительно несколько вопросов уточнить по ситуации, чтобы подготовить для Вашего руководства конкретное предложение? Можем с Вами обсудить или напрямую связаться с руководителем?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "О, понимаю. Раз Вы занимаетесь этим вопросом, скорее всего, знаете, какие критерии наиболее важны для руководителя, помимо цены?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Да, сейчас Вы просто собираете предложения, но потом руководитель может столкнуться с проблемой – довольно сложно будет объективно сравнить предложения разных поставщиков, так как многие не прописывают нюансы в предложении. Давайте подготовим максимально конкретный расчет, хорошо? Есть несколько вопросов...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 4 (Стр. 44 из 62 / Нумерация книги: 35)", "tip": "Многие менеджеры не задают вопросы клиенту, потому что думают, что и так знают, что ему нужно. А потом в компанию приходит новичок и «уделывает» более опытных коллег по количеству закрытых сделок. «Новичкам везет!» — оправдывают свои промахи продавцы-неудачники. Но дело не в везении, а в том, что многие новички стараются соблюдать стандарты продаж и поэтому задают больше вопросов клиентам. Больше вопросов – лучше понимание ситуации клиента. А значит более сильная презентация и рост закрытых сделок. ### Полезные ссылки Тысячи учеников обучаются в \"Школе личных продаж\", развивают навыки и ставят личные рекорды в продажах и в доходе. Мы собрали несколько историй, они могут стать сильной мотивацией к изменениям: [Смотреть видео]", "objections": [{"question": "Как скажет мой специалист (ИТ, бухгалтер, юрист и тд) – так я и сделаю. Не хочу погружаться в детали Вашего предложения", "answers": [{"text": "Согласен, что это зона ответственности специалиста. При этом, так как это влияет на деньги компании, я хотел в первую очередь уточнить у Вас, готовы Вы ли стратегически этот вопрос обсуждать? Если да, то детали обсужу со специалистом, и мы вернемся к Вам за финальным подтверждением...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Давайте я Вам вышлю тезисы – это информация именно для руководителя. А детали обсужу с Вашим специалистом, хорошо?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Я передал счет в бухгалтерию на оплату. Скоро должны оплатить", "answers": [{"text": "Рад, что процесс запущен. Как мне связаться с бухгалтерией для подтверждения платежа и подготовки документооборота?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо. А для Вас важно в какие даты стартовать проект? Я свяжусь с бухгалтером, чтобы держать вопрос на контроле", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "А все остальные этапы согласования пройдены? Юристы и другие специалисты? Отлично! Буду на связи с бухгалтерией", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}]}, {"name": "Возражения по времени, готовности", "subgroups": [{"title": "Скриншот 5 (Стр. 45 из 62 / Нумерация книги: 36)", "tip": "Часто возражение «Я подумаю» – это лишь повод побыстрее закончить разговор с продавцом. Именно поэтому важно понять истинную причину возражения. Данные ответы помогут Вам определить реальную готовность клиента работать с Вами, будут способствовать продвижению на следующий этап сделки. ### Полезные ссылки Посмотрите короткое видео о том, как работать с возражением \"Я подумаю\" [Смотреть видео]", "objections": [{"question": "Я подумаю", "answers": [{"text": "Понимаю, хочется взвесить. Именно поэтому давайте сразу разберём главные вопросы, из-за которых обычно берут паузу. Что для вас сейчас основной — цена, сроки или результат?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "niche", "tactic": "Разбор до раздумий"}, {"text": "ИО, в целом для Вас это актуальный вопрос? Тогда давайте попробуем [альтернатива] (продвижение вперед)", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, Вы же все равно планируете в ближайшее время покупать / устанавливать, давайте я Вас запишу (сделаю, установлю, проведем и т.д.)", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, а в целом подходит / нравится предложение, или есть моменты, которые смущают?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Конечно, надо все взвесить. Только у меня такое чувство (ощущение), что Вас что-то смущает. Что мы можем изменить, улучшить?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Кстати, если Вы будете сравнивать (для полноты картины), еще такой момент надо учесть... (говорим о рисках для клиента, повышаем экспертность)", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Конечно, подумайте. Единственный нюанс – возможно, при обдумывании встанет вопрос по датам / окончательным ценам...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "А другие варианты уже смотрели? (ответ) Кстати, есть нюанс, иначе – риск (негатив)", "tag": "Альтернатива", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Кстати, ИО, многие компании, которым нужно (для которых важно) [задача], уделяют особое внимание [детали], потому что [влияние на окупаемость]", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Можно и позже начать, но, если честно, здесь есть некоторые риски. Смотрите...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Хорошо, смотрите, ИО, мы с Вами это обсуждаем 2 месяца, фактически, если бы сразу приняли решение, уже сейчас бы у Вас были (первые клиенты, обратная связь, возможность управления и т.д.)", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 6 (Стр. 46 из 62 / Нумерация книги: 37)", "tip": "Вы можете воспользоваться в своей презентации таким интересным ходом, как монетизация выгоды. Покажите, как именно вложения в Ваш товар или услугу окупятся – клиенты это оценят. Потому что для них важно не что покупать, а как эта покупка экономически отразится на их ситуации. Особенно рекомендую этот прием тем, кто продает по цене выше рынка. ### Полезные ссылки Возражения про кризис: \"СЕЙЧАС КРИЗИС! Не до Вас!\" Как продавать? Продажи в кризис. [Смотреть видео]", "objections": [{"question": "Оплачу позже!", "answers": [{"text": "Ок, можно и потом оплатить. Важно уже сейчас определиться, что Вам действительно нужно и подходит", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Можно и позже, единственный нюанс – сами видите, доллар пошел вверх, цена может измениться, поэтому предлагаю сейчас зафиксировать цену предоплатой / заявкой", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Впереди праздники, сложности, кризис. Не до Вас!", "answers": [{"text": "ИО, в нашей стране праздники почти каждый день)) Сейчас важно понять, подходит ли Вам в целом такой вариант работы, а детали можно обсуждать потом. Скажите, как у Вас...", "tag": "Альтернатива", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Хорошо. У меня есть к Вам просьба. Для обратной связи можете оценить по 10-балльной шкале мое предложение? (Если клиент ответил, то спрашиваем, почему не 10 и работаем с истинным возражением)", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Понимаю, что сейчас много забот, поэтому предлагаю даже не обсуждать детали, а определиться в целом, насколько это Вам подходит. И если принципиальное \"да\", то всю остальную рутину мы берем на себя", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, возможно, выглядит так, что процесс займет много времени и лучше его отложить. При этом именно сейчас в праздники / кризис выгоднее всего это сделать. Вот почему...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 7 (Стр. 47 из 62 / Нумерация книги: 38)", "tip": "Вы не задумывались, почему клиенты часто тянут время, откладывают принятие решения о работе с Вами? Я это прочувствовал на собственном опыте, когда стал предпринимателем и занимался несколькими бизнесами. Если я понимал, что вопрос не срочный, что выгода от решения этого вопроса сейчас сомнительна, я его откладывал до лучших времен и концентрировался на более приоритетных вопросах. Так действуют большинство предпринимателей. Ваша задача – показать клиенту, почему Вашим решением надо воспользоваться именно сейчас. Иначе Вы регулярно будете слышать: «Давайте позже!». ### Полезные ссылки Смотрите видео про презентацию цены \"СКОЛЬКО СТОИТ? Мощные ответы для продаж.\" [Смотреть видео]", "objections": [{"question": "Давайте обсудим позже", "answers": [{"text": "Ок, тема на потом — это нормально. „Позже“ — это примерно через месяц-два или ближе к событию (сезон, запуск)?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "niche", "tactic": "Фиксация срока"}, {"text": "ИО, хорошо, а вообще этот вопрос для Вас актуален сейчас?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Можно и позже обсуждать, при этом здесь есть некоторые риски и нюансы. Смотрите...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Хорошо. Сам [основной проект] можем обсудить позже, а пока можем записать Вас / запланировать пробную партию / тест на этой неделе. Это поможет принять решение", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Я занят, у меня мало времени (на встрече)", "answers": [{"text": "Понял, в таком случае можем поступить так: 1) Верхнеуровнево обсуждаем с Вами вопрос за 10 минут, а далее обсуждаю детали с Вашим заместителем или 2) переносим встречу, чтобы более предметно все обсудить. Как поступим?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, я подготовился к нашей встрече и рассчитываю, что 20 минут нам хватит, чтобы понять, сможем мы быть полезны друг другу или нет. 20 минут у Вас есть?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Я понимаю Вас, аврал и все такое. Предлагаю назначить другой день, когда у Вас получится в спокойной обстановке все обсудить", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 8 (Стр. 48 из 62 / Нумерация книги: 39)", "tip": "Люди покупают у тех, кому доверяют. Когда клиент доверяет Вам, он быстрее принимает решение о покупке, он задает вопросы, которые его действительно беспокоят, а не прикрывается ложными возражениями. А что Вы делаете, чтобы клиент начал Вам доверять? Я выделяю 4 компонента для установления доверия: Э – эмпатия. Э – экспертность. Ч – честность. О – общее (то, что Вас связывает с клиентом). ### Полезные ссылки Как лучше выявлять потребность, чтобы презентовать и продавать лучше. Простые вопросы помогают закрывать сделки. [Смотреть видео]", "objections": [{"question": "У меня нет времени это обсуждать (по телефону)", "answers": [{"text": "Я понимаю, что Вы не планировали со мной общаться и не ожидали моего звонка. Поэтому буду краток – всего 2 вопроса, чтобы понять, имеет ли смысл дальше общаться или нет. Скажите...", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Хорошо, ИО, я перезвоню Вам позже. Скажите, пожалуйста, сегодня после обеда будет 10 минут для разговора?", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, Вы извините за звонок без предупреждения. Я хотел уточнить всего 2 вопроса насчет работы сайта, это не больше 2-х минут. Хорошо?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "ИО, я буду краток и задам буквально 2 вопроса, чтобы понять, есть ли смысл общаться дальше и назначать встречу или нет. Скажите...", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Мне некогда заниматься оформлением, внедрением...", "answers": [{"text": "Понимаю, со многими работаем, знаем, насколько руководителям не хочется во все это вникать, поэтому уже подготовили подробную схему работы, чтобы с минимальным погружением установить, внедрить", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "ИО, что касается оформления – от Вас только принципиальное \"да\", а всю рутину мы берем на себя. Не первый год занимаемся, это уже отлажено", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 9 (Стр. 49 из 62 / Нумерация книги: 40)", "tip": "Умение находить в возражениях клиента то, с чем можно согласиться (без ущерба для своей позиции) – это залог успешной работы с возражениями. На обучении мы называем этот этап «Условное согласие», (или «Амортизация», «Присоединение»). Важно понимать, что соглашаться надо не во всем. Например, на возражение «Высокая цена» недопустимо отвечать «Да, у нас цена высокая, но...». Лучше «согласиться» так: «Понимаю, что цена важна и, по сравнению с товаром Б, она действительно выше. При этом обратите внимание, что...» ### Полезные ссылки Смотрите короткое видео, чтобы научиться лучше работать с презентацией цены. Лучший момент озвучивания цены – это 3-ее сообщение. [Смотреть видео]", "objections": [{"question": "Давайте встретимся еще раз...", "answers": [{"text": "Конечно, мы с удовольствием встретимся с Вами еще раз, при этом обратите внимание, что те условия, которые мы обсуждаем сейчас, могут поменяться. Поэтому лучше сегодня их забронировать / зарезервировать / подать предварительную заявку (т.е. зацепить клиента и сразу посмотреть его реальную готовность к сотрудничеству)", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Итак, ИО, мы же сегодня 10-ый раз встречаемся, и я чувствую, что мы уже близки к сотрудничеству, но что-то нам мешает окончательно договориться. Давайте сейчас обсудим, что это, чтобы мы могли скорректировать наше предложение и договориться с Вами уже завтра / послезавтра...", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Конечно. И чтобы следующая встреча была более предметной, давайте сейчас обсудим вопрос / заполним заявку и т.д.", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Пришлите коммерческое предложение, подробные материалы (на встрече)", "answers": [{"text": "Скину, конечно. Только портфолио без привязки к вашей задаче мало что скажет. Давайте я подберу 1–2 кейса именно под вашу ситуацию — так будет полезнее. Расскажите пару слов о бизнесе?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "niche", "tactic": "Мягкий возврат к диалогу"}, {"text": "Конечно, вышлю Вам предложение. Сориентируйте, что для Вас наиболее важно при работе с (Ваша сфера) компаниями?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо, я подготовлю предложение, а в целом как Вам такой формат работы?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо, подготовлю. Кстати, у нас есть 3 варианта реализации проекта. Вам какой больше подходит?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}]}, {"title": "Скриншот 10 (Стр. 50 из 62 / Нумерация книги: 41)", "tip": "Несмотря на то, что у меня есть отдельный курс по написанию эффективных коммерческих предложений, я скажу честно, что я - не сторонник использования КП. Да, иногда без КП не обойтись, ибо такова процедура согласования в некоторых компаниях. Но в большинстве случаев отправка КП – это малоэффективный и никому не нужный шаг. Именно поэтому, работая в разных компаниях и на разных должностях, я часто использовал варианты ответов, которое помогают получить \"Да\" даже без КП. ### Полезные ссылки Смотрите видео \"РЕАЛЬНЫЕ звонки и ПРОДАЖИ в переписке. Разборы сделок по методике Олега Шевелева.\" [Смотреть видео]", "objections": [{"question": "Пока решили не оплачивать счет", "answers": [{"text": "Хорошо. Скажите, а что изменилось? А в целом «проблема / задача» осталась? В таком случае, можно поступить так...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "ИО, Вы планируете его оплатить чуть позже или передумали оплачивать?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Пришлите коммерческое предложение, подробные материалы (по телефону)", "answers": [{"text": "Правильно понимаю, что принципиальный интерес к самой услуге есть? В таком случае скажите, пожалуйста... (задаем вопросы + призыв к целевому действию)", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "ИО, я ценю и Ваше, и свое время, поэтому прежде чем высылать предложение я хотел бы убедиться, что Вам оно будет действительно выгодно. Для этого мне надо понять пару моментов по бизнесу. Их можно обсудить на встрече минут за 20, и сразу все посчитаем. Что скажете? Завтра будет минут 20?", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "ИО, ну зачем Вам общее типовое предложение, где нет конкретики? Давайте предварительно обсудим Вашу ситуацию, я задам несколько вопросов по бизнесу и сделаю конкретный расчет, из которого мы увидим, выгодное это предложение для Вас или нет. Завтра могу подъехать?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Вы знаете, я даже не использую КП, т.к. в принципе программа достаточно прозрачная. Я позвонил Вам поинтересоваться – актуальный это для Вас вопрос или нет. Если да, то давайте обсудим его подробнее (можно, на встрече) и далее определимся, в каком формате работать", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 1 (Стр. 51 из 62 / Нумерация книги: 42)", "tip": "Для многих людей решиться на сделку, особенно, если это крупный заказ или дорогостоящая покупка, — большой стресс. Клиент может переживать, что вложенные деньги не окупятся. Правда ли, все то, что вы ему сказали о товаре или услуге? Действительно ли они помогут закрыть потребности клиента? Ваша цель — дать почувствовать покупателю, что он в безопасности, нет никакого риска, и он спокойно может соглашаться на Ваше предложение. ### Полезные ссылки Смотрите короткое видео, чтобы научиться заключать больше сделок. 3 конкретных действия. [Смотреть видео]", "objections": [{"question": "Куплю в следующий раз (следующий месяц, поток, набор, группу)", "answers": [{"text": "В следующий раз, потому что сейчас нет времени на это или по другим причинам?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "То есть вопрос с покупкой все еще актуален, просто сейчас по каким-то причинам не получается? Расскажите, пожалуйста, почему думаете отложить?", "tag": "С цифрами", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Хорошо, что в целом рассматриваете покупку. При этом, сами видите, ситуация быстро меняется, и это влияет на стоимость, наличие. Если Вы понимаете, что Вам все равно это понадобится через пару месяцев, то есть ли смысл откладывать это? Давайте еще раз оценим окупаемость...", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Хорошо, а сколько раз Вы уже переносили покупку? Уже полгода? Представляете, если бы полгода назад приобрели, уже бы сегодня Вы чувствовали эффект. Вы же все равно планируете развивать бизнес? Давайте взвесим все \"за и против\": возможно, именно сейчас лучшее время для покупки...", "tag": "С цифрами", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 2 (Стр. 52 из 62 / Нумерация книги: 43)", "tip": "Знаменитый баскетболист Майкл Джордан как-то сказал: «Я могу принять неудачу, у всех они бывают. Но я не могу понять, когда кто-то даже не пытается». Так и Вы не ждите, когда клиент попросит Вас перейти к заключению сделки, берите инициативу в свои руки. Если все предыдущие шаги проведены грамотно, для клиента нет смысла отказываться от сделки. Просто спросите: — Оформляем? Берете? Забронировать для вас? Планируем старт проекта? ### Полезные ссылки \"Эти 5 фраз срывают сделки. Не используйте их...\" Смотрите короткое видео и избегайте этих ошибок. [Смотреть видео]", "objections": [{"question": "Сейчас сезон, не будем покупать", "answers": [{"text": "Да, в сезон нагрузка очень высокая, и часто нет времени на другие задачи. Именно поэтому я совсем коротко хотел уточнить – для Вас же эта покупка будет актуальна позже, как считаете? У нас есть программа бронирования, чтобы Вы избежали будущего повышения цен (в сезон цены повышаются). Смотрите, сколько можно сэкономить...", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Я понимаю, что сейчас у Вас сезон. Именно поэтому связался с Вами. Если запустить этот проект сейчас, можно получить максимальный эффект как раз за счет высокого сезона. Для запуска нужно минимум времени – я все подготовил и рассчитал, смотрите...", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "Сейчас несезон, не будем покупать", "answers": [{"text": "Да, я посчитал, что до начала сезона осталось пару месяцев. И подготовил для Вас предложение с выгодными условиями – как раз к началу сезона все успеем сделать, чтобы эффект был у Вас максимальный и быстрый...", "tag": "С цифрами", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Именно поэтому и позвонил Вам. Есть несколько идей для \"несезона\", которые помогают получить эффект очень быстро. Смотрите...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 3 (Стр. 53 из 62 / Нумерация книги: 44)", "tip": "Вспомните пословицу — лучше один раз увидеть, чем сто раз услышать. Дайте клиенту возможность лучше почувствовать Ваш продукт, и он не сможет от него отказаться. В продажах есть техника «Щенок напрокат». Суть ее в том, чтобы вызвать у покупателя чувство привязанности к продукту. Такое же чувство вы испытываете, когда Вам дают подержать на руках милого щенка. Эта концепция широко применяется в продажах: чтобы усилить желание клиента приобрести товар, ему дают возможность «протестировать» продукт перед покупкой. ### Полезные ссылки Изучите короткое видео, чтобы закрывать сделки быстрее. Две неочевидные ошибки. [Смотреть видео]", "objections": [{"question": "Я хочу подождать и посмотреть, как изменится рынок, и потом принимать решение", "answers": [{"text": "Да, я тоже думал об этом. У меня есть 2 сценария о том, что может происходить на рынке в ближайшее время. Давайте обсудим, чтобы понять, как лучше действовать сейчас...", "tag": "С цифрами", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Согласен, что сейчас высокая неопределенность. Именно поэтому я подготовил проект / расчет / схему реализации проекта, чтобы Вы могли принять взвешенное решение с учетом рисков в этой отрасли...", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Хорошо, а какие риски Вы видите? Какие изменения для Вас были бы позитивными и негативными?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Я сейчас сосредоточен на другом проекте. Завершим его – и вернемся к обсуждению с Вами", "answers": [{"text": "Хорошо, в детали сможем погрузиться позже. А сейчас хотя бы предварительно скажите, как Вам идея нашего продукта? Как это может отразиться на бизнесе?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Я понимаю, насколько важно руководителю сфокусироваться на ключевых проектах. Поэтому сейчас не предлагаю Вам переключаться на наш проект. Хочу понять в целом, насколько это стратегически Вам подходит. И если да, то детали я могу обсудить с Вашим специалистами...", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}]}]}, {"title": "Скриншот 4 (Стр. 54 из 62 / Нумерация книги: 45)", "tip": "Не бойтесь возражений, не боритесь с ними, а пытайтесь предвосхитить. Если не получилось, попытайтесь не просто обработать реакции клиента, а копнуть чуть глубже — понять, что стоит за ними? Слушайте покупателя внимательно, выясняйте, что именно ему не подходит и имейте в арсенале много разных стратегий по работе с возражениями. Когда Вы с блеском справитесь с этим шагом, останется только одно — закрыть сделку. ### Полезные ссылки Посмотрите короткое видео, чтобы научиться формировать доверительные отношения с клиентами. Как не быть навязчивым и продавать много? Главное правило экспертных продаж [Смотреть видео]", "objections": [{"question": "У нас сейчас конец фин. года, поэтому покупок не планируем", "answers": [{"text": "Конец года – это всегда напряженка. Многие клиенты именно сейчас планируют бюджет на следующий год и закрывают бюджет текущего года. Если работа с нами Вам в целом выгодна, давайте подумаем, как можно поступить с точки зрения планирования финансов", "tag": "Прямой ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "А вообще это направление развивать планируете? Насколько это актуально? Если да, то можно уже сейчас предварительно обсудить детали, чтобы запланировать сроки реализации и согласовать бюджет проекта...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}]}, {"name": "Возражения секретаря", "subgroups": [{"title": "Скриншот 5 (Стр. 56 из 62 / Нумерация книги: 46)", "tip": "Одна из задач секретарей в компаниях – фильтровать звонки, т.е. определять, насколько важен звонок для руководителя, и принимать решение – переключить или нет. Кого пропускают секретари к своему руководителю? 1) Знакомых и 2) Важных. Создайте образ знакомого и / или важного человека в общении с секретарем, и Вы легко выйдете на ЛПР (лицо, принимающее решение в компании). ### Полезные ссылки Смотрите реальные примеры, как я прохожу секретарей при холодных звонках [Смотреть видео]", "objections": [{"question": "Высылайте на e-mail", "answers": [{"text": "Да, это и собираюсь сделать, нужно у руководителя прояснить два вопроса по [формату...]. Он на месте сейчас?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю, ИО человек занятой. Смотрите, я готовлю расчет по Вашей компании, фактически нужно получить информацию по двум принципиальным вопросам. Это пара минут, соедините", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "У меня нет предложения, которое я мог бы выслать, поскольку сам продукт достаточно сложный, с несколькими параметрами. Как я могу обсудить эти вопросы с руководителем, по телефону или при помощи Вас встречу назначить?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Хорошо. Подскажите, у кого уточнить 2 вопроса касательно поставок древесины, чтобы подготовить предложение? Кто этим занимается?", "tag": "С цифрами", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Нам не интересно это", "answers": [{"text": "Мария, скажите, пожалуйста, \"не интересно\", потому что Вы этим вообще не пользуетесь или потому, что Ваш руководитель уже работает с другими?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Понимаю, вероятно, это позиция руководства, так отвечать. Мария, подскажите, как поступить: с кем можно было бы предварительно обсудить схему работы, чтобы потом выслать детальную информацию. Возможно, не обязательно сразу с руководителем", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 6 (Стр. 57 из 62 / Нумерация книги: 47)", "tip": "Во время диагностики работы отделов продаж перед проведением тренингов я часто вижу, как менеджеры совершают одну и ту же ошибку при холодном обзвоне. Они начинают продавать секретарям, доказывают, что наши условия лучше, и даже предлагают сделать скидку. Конечно, это не помогает убедить секретаря и выйти на ЛПР. Помните, что Вы не продаете секретарю продукт. Ваша задача добиться того, чтобы секретарь соединил с руководителем. ### Полезные ссылки Смотрите короткое видео и научитесь работать со страхами и сомнениями клиента: [Смотреть видео]", "objections": [{"question": "Мы уже работаем с другим поставщиком", "answers": [{"text": "Да, я знаю, поэтому и звоню. Соедините с руководителем", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Да, мне уже передали. Есть один принципиальный момент, хотел его обсудить с руководителем. Лично", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Я поэтому и звоню. Есть важная информация для руководителя по стоимости работ", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Я знаю, что Вы работаете по товару А. А у меня вопрос, который актуален для руководства по товару Б. Соедините, пожалуйста", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "Руководитель сам Вам перезвонит", "answers": [{"text": "У нас многоканальный телефон, поэтому вряд ли руководитель позвонится мне напрямую, я сам перезвоню. Когда он будет на месте?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Понимаю, человек занятой. Смотрите, я готовлю схему работы / поставок для Вашей компании, фактически нужно получить информацию по двум принципиальным вопросам. В какое время сегодня перезвонить?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Хорошо, вот мой номер. Единственный момент, могу быть на встрече. Удобно, если перезвоню сам ближе к пяти?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}, {"text": "Мария, еще подскажите, кроме руководителя, с кем еще я могу обсудить этот вопрос?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Поэтому и перезваниваю, что-то на линии, оборвалось", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 7 (Стр. 58 из 62 / Нумерация книги: 48)", "tip": "Один из моих любимых способов прохождения секретарей – это способ «Передайте что...». Он крайне прост. Просто настолько, что менеджеры во время тренинга (когда я им рассказываю о таком приеме), искренне удивляются: «Как же этот прием срабатывает!?». Суть приема: на любой вопрос секретаря «Кто Вы?», «По какому вопросу?», «Как Вас представить?» Вы отвечаете дословно такой фразой: «Передайте, пожалуйста, что это ВАШЕ ИМЯ ФАМИЛИЯ». Вы даете секретарю вежливое мини-поручение. И это работает. Попробуйте, и конверсия выхода на ЛПР Вас удивит. ### Полезные ссылки Смотрите видео, в котором я разбираю реальные сделки и звонки на миллионы рублей по формуле 100% закрытия сделки [Смотреть видео]", "objections": [{"question": "Руководителя нет на месте", "answers": [{"text": "Мария, вопрос довольно срочный, определяемся с генеральным партнером. Сориентируйте, когда будет на месте? Как с ним связаться сейчас?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Как еще можно с ним связаться сейчас? Вопрос срочный по расчету / проекту...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "С кем еще, кроме ИО могу этот вопрос обсудить сейчас?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}]}, {"question": "Запрещено соединять с руководителем", "answers": [{"text": "Понимаю, а с кем могу обсудить вопрос [проекта]? Заместитель на месте?", "tag": "Вопрос в ответ", "tone": "Мягко", "goal": "Уточняет", "source": "book"}, {"text": "Да, я понимаю, поэтому и хотел сразу договориться о встрече", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Ведёт дальше", "source": "book"}, {"text": "Хорошо, сориентируйте, как могу своего руководителя записать на прием к Вашему директору?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Ведёт дальше", "source": "book"}]}, {"question": "Как Вас представить?", "answers": [{"text": "Передайте, что это ВАШЕ ИМЯ ФАМИЛИЯ", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Скажите, пожалуйста, что это ВАШЕ ИМЯ насчет поставок черепицы в сентябре", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Скажите просто, что это ВАШЕ ИМЯ ОТЧЕСТВО, из банка / агентства / компании", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 8 (Стр. 59 из 62 / Нумерация книги: 49)", "tip": "Старайтесь в процессе презентации и уже при закрытии сделки спросить мнение клиента в целом, как ему тот вариант, который Вы предлагаете? Даже если человек, с которым Вы общаетесь, не принимает окончательного решения и говорит, что будет советоваться с генеральным директором, Ваш интерес к его мнению создаёт атмосферу доверия. Кроме того, это даст Вам бесценную обратную связь, которую можно использовать для доработки предложения, если оно потребуется. ### Полезные ссылки Обход секретаря. 4 техники для скрипта продаж. Реальные примеры преодоления и выхода на ЛПР [Смотреть видео]", "objections": [{"question": "Вы уже общались ранее?", "answers": [{"text": "В прошлом месяце планировали обсудить проект по поставкам, но сроки сдвинулись. Хотелось бы вернуться к этому вопросу. Соедините, пожалуйста", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Да, заочно уже знакомы", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}, {"text": "Вот держу его визитку, похоже где-то пересекались. На выставке, наверное. Он сейчас на месте?", "tag": "Вопрос в ответ", "tone": "По делу", "goal": "Уточняет", "source": "book"}, {"text": "Да, звоню по рекомендации от коллег из торгово-промышленной палаты.", "tag": "Согласие + переход", "tone": "Мягко", "goal": "Снимает возражение", "source": "book"}]}, {"question": "По какому вопросу?", "answers": [{"text": "Возникли вопросы по договору №17025513/2, соедините", "tag": "С цифрами", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Возникли вопросы по программе развития продаж, хотел это обсудить с руководителем. Соедините", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "Просто передайте, что это ВАШЕ ИМЯ ФАМИЛИЯ", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "По процедуре согласования подрядных организаций по [проекту]. Соедините...", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "У меня личное приглашение на тематическое мероприятие, нужно обсудить детали", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}, {"text": "По вопросу финансовой санации, лидогенерации, PR-кампании (сложная терминология)", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "book"}]}]}, {"title": "Скриншот 9 (Стр. 60 из 62 / Нумерация книги: 50)", "tip": "", "objections": []}, {"title": "Скриншот 10 (Стр. 61 из 62 / Нумерация книги: 50)", "tip": "", "objections": []}]}, {"name": "Возвращение к диалогу", "subgroups": [{"title": "__niche__", "tip": "Это не отработка возражения, а повторные касания — когда клиент замолчал. Тон здесь мягче: без давления, с лёгким выходом, чтобы не растерять контакт.", "objections": [{"question": "Клиент не ответил на первое холодное сообщение", "answers": [{"text": "ИО, добрый день! Возможно, сообщение потерялось. Пишу коротко: помогаем бизнесам делать продающие сайты на Tilda. Если тема неактуальна — просто скажите, не буду беспокоить.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Мягкий повторный заход"}]}, {"question": "Клиент пропал в середине диалога", "answers": [{"text": "ИО, вижу, диалог подвис — понимаю, дел хватает. Подскажите одним словом: вопрос ещё актуален или сейчас не время? Пойму любой ответ.", "tag": "Прямой ответ", "tone": "Мягко", "goal": "Снимает возражение", "source": "niche", "tactic": "Возвращение без упрёка"}]}, {"question": "Клиент не отвечает после КП", "answers": [{"text": "ИО, отправлял КП по сайту. Не тороплю с решением — подскажите, вопросы по нему появились или что-то смутило? Разберу любой момент.", "tag": "Прямой ответ", "tone": "По делу", "goal": "Снимает возражение", "source": "niche", "tactic": "Ценностный дожим-мягко"}]}]}]}]</script>
+<script id="raw-tables-data" type="application/json">{"top5": [{"question": "Мне не актуально / ничего не нужно", "message": "Скорее всего, вы сейчас не искали подрядчика по сайтам — я пишу первым, и это ок. Именно поэтому не предлагаю ничего заказывать: за 10 минут на созвоне покажу, за счёт чего продающая структура даёт заявки, а вы сами решите, актуально это вам или нет. Идёт?"}, {"question": "У вас нет кейсов в моей нише", "message": "Сразу честно: мы работаем с разными сферами, и кейса именно из вашей может пока не быть — сейчас как раз заходим в узкое нишевание. Именно поэтому предлагаю смотреть не на отрасль в портфолио, а на подход: продающая структура работает по единым принципам. На созвоне покажу, как соберу её под вашу задачу."}, {"question": "Я передам руководителю / будем иметь в виду", "message": "Понимаю, решение не всегда за одним человеком, и это нормально. Именно поэтому, чтобы передать не „сайт за 80к“, а конкретную выгоду, давайте я за 10 минут на созвоне подготовлю короткое понимание под ваш бизнес — так руководителю будет что оценить по делу. Когда удобно?"}], "standard": [{"question": "Мне не актуально", "tactic": "Уточнение сути", "message": "Понял. Не актуально, потому что сайт уже есть и всё устраивает, или потому что это направление сейчас вообще не в приоритете?", "explanation": "Не спорим — выясняем, за отказом реальная закрытость или холодность контакта."}, {"question": "Мне не актуально", "tactic": "Вход через задачу", "message": "Согласен, навязывать сайт смысла нет. Именно поэтому вопрос проще: заявки сейчас идут стабильно, или основной поток из других каналов?", "explanation": "Смещаем фокус с продукта на бизнес-задачу — так проще вовлечь."}, {"question": "Дорого", "tactic": "Окупаемость", "message": "Понимаю, цена важна. Давайте прикинем: если сайт приносит хотя бы 2–3 заявки в месяц в вашей нише, за какой срок он окупает вложение? Продающий лендинг обычно отбивается быстрее, чем кажется.", "explanation": "Переводим с «дорого/дёшево» на окупаемость — сайт как инструмент заработка."}, {"question": "Дорого", "tactic": "Цена vs. ценность", "message": "Цену стоит смотреть не отдельно, а против результата: сайт, который не продаёт, — вот это дорого при любой сумме. Что для вас важнее — цена или заявки с сайта?", "explanation": "Сдвигаем критерий выбора с суммы на результат."}, {"question": "Нет денег, но в будущем планируем", "tactic": "Фиксация горизонта", "message": "Ок, тема в планах — это уже хорошо. „В будущем“ — это ближе к какому-то событию (сезон, запуск, рост), или просто пока не заложен бюджет?", "explanation": "Превращаем размытое «потом» в конкретный горизонт для касания."}, {"question": "Нет денег, но планируем", "tactic": "Полезный старт", "message": "Раз в планах есть, предлагаю не терять время: на бесплатном созвоне накидаю, каким должен быть ваш сайт под задачу. К моменту бюджета у вас уже будет готовое ТЗ и понимание. Когда удобно?", "explanation": "Даём ценность заранее — к моменту денег клиент идёт к нам."}, {"question": "У конкурентов дешевле / большая цена", "tactic": "Сравнение по сути", "message": "Понимаю, на рынке разброс большой. А вы сравниваете по одинаковому объёму — продающая структура, копирайтинг, полный цикл под ключ? Часто за низкой ценой скрыт шаблон без проработки. Что для вас в приоритете, кроме цены?", "explanation": "Уводим от сравнения «цифра с цифрой» к сравнению наполнения."}, {"question": "Закажу у фрилансера за 10к вместо 80к", "tactic": "Риск против экономии", "message": "Фрилансер за 10к реально дешевле — тут не поспоришь. Именно поэтому вопрос в другом: кто отвечает за результат, сроки и правки, если человек пропадёт? У нас команда из 4 человек на полный цикл, проект не встанет. Насколько для вас критично, чтобы сайт довели до конца и он продавал?", "explanation": "Не обесцениваем фрилансера, а подсвечиваем реальный риск — надёжность и результат."}, {"question": "Сайт за 2 часа конвертит, а дорогой — нет", "tactic": "Разбор причины", "message": "Так бывает — и это как раз показывает, что дело не в бюджете, а в структуре и трафике. Дорогой сайт без продающей логики тоже не выстрелит. Давайте на созвоне разберём, почему один конвертит, а другой нет — покажу, что реально влияет на заявки.", "explanation": "Соглашаемся с фактом и переводим в экспертный разбор — растим доверие."}, {"question": "Мы только что обновили сайт", "tactic": "Проверка через результат", "message": "Отлично, что занимались этим. Уточню один момент: после обновления заявок стало ощутимо больше? Иногда обновляют визуал, а продающая логика остаётся прежней — и заявки не растут.", "explanation": "Мягко подсвечиваем, что «обновили» ≠ «продаёт»."}, {"question": "Мне не нравится ваше портфолио", "tactic": "Уточнение", "message": "Спасибо за честность. А что именно смущает — визуал, отсутствие кейса из вашей сферы или что-то ещё?", "explanation": "Часто дело не в «нравится», а в отсутствии кейса в нише — важно понять точно."}, {"question": "Мне не нравится портфолио", "tactic": "Подход важнее картинок", "message": "Наш сайт мы сейчас как раз переделываем — новый уже с сильным продающим копирайтингом. Именно поэтому предлагаю оценивать не старые скрины, а логику: на созвоне покажу, как построю структуру под вашу задачу.", "explanation": "Честно закрываем слабое место, переводим фокус на методологию."}, {"question": "У меня есть дизайнер / сам делаю / делают друзья", "tactic": "Дизайн ≠ продажи", "message": "Здорово, что есть кому заниматься. Дизайнер делает красиво — а мы делаем так, чтобы сайт продавал: структура, офферы, копирайтинг под заявку. Это разные задачи. Сколько заявок сейчас даёт сайт?", "explanation": "Разделяем «красивый» и «продающий» — показываем свою зону ценности."}, {"question": "Работаю с другой студией постоянно", "tactic": "Без слома текущего", "message": "Понимаю, менять подрядчика на ходу незачем. Именно поэтому не предлагаю ничего рушить — давайте я сделаю бесплатный разбор текущего сайта: покажу 2–3 точки роста. Будет с чем сравнить, а решение за вами.", "explanation": "Не воюем с текущим подрядчиком — даём безрисковую пользу."}, {"question": "Сейчас все делают сайты в ИИ / сделаю сам нейросеткой", "tactic": "Инструмент ≠ результат", "message": "Нейросеть реально помогает — мы сами ими пользуемся в работе. Но ИИ выдаёт шаблон, а не продающую структуру под ваш бизнес, офферы и путь клиента. Именно поэтому сайты „из ИИ“ красивы, но часто не конвертят. Вам важна картинка или заявки?", "explanation": "Не спорим с трендом — показываем разницу между генерацией и продающей проработкой."}, {"question": "Мне нужна другая CMS, не Tilda", "tactic": "Уточнение задачи", "message": "Понял. А почему принципиально не Tilda — есть конкретные требования (интеграции, нагрузка, каталог)? Иногда за этим стоит миф, а иногда реальная задача. Расскажите — подскажу, подойдём мы вам или честно скажу, что нет.", "explanation": "Выясняем реальную причину; заодно демонстрируем экспертность и честность."}, {"question": "Вы веб-дизайн студия? Высокий чек", "tactic": "Цена = полный цикл", "message": "Мы не просто дизайн — это полный цикл: структура, копирайтинг, сборка, запуск. Поэтому чек включает результат, а не только картинку. Давайте на созвоне покажу, из чего складывается цена и что именно вы получаете.", "explanation": "Объясняем, что чек — за результат под ключ, а не за «дизайн»."}, {"question": "У вас нет доказательств, что это повысит конверсию", "tactic": "Честность + логика", "message": "Справедливо — гарантировать конкретные цифры до анализа было бы нечестно, они зависят и от трафика. Что мы даём точно — продающую структуру по принципам, которые работают. На созвоне покажу на вашем текущем сайте, где теряются заявки и что изменится.", "explanation": "Не обещаем невозможного — предлагаем предметный разбор вместо пустых гарантий."}, {"question": "Я подумаю", "tactic": "Разбор до раздумий", "message": "Понимаю, хочется взвесить. Именно поэтому давайте сразу разберём главные вопросы, из-за которых обычно берут паузу. Что для вас сейчас основной — цена, сроки или результат?", "explanation": "Вытаскиваем настоящую причину вместо пустого «подумаю»."}, {"question": "Мне надо позже / не сейчас", "tactic": "Фиксация срока", "message": "Ок, тема на потом — это нормально. „Позже“ — это примерно через месяц-два или ближе к событию (сезон, запуск)?", "explanation": "Уточняем горизонт вместо давления — получаем план касания."}, {"question": "Передам руководителю / свяжитесь по почте", "tactic": "Помощь с передачей", "message": "Понимаю, решает руководитель. Именно поэтому, чтобы он увидел не „сайт за 80к“, а выгоду для бизнеса, давайте на коротком созвоне соберём понимание под вашу задачу — так предложение дойдёт по сути, а не потеряется в почте. Когда удобно?", "explanation": "Не отдаём инициативу «в почту» — усиливаем ценность передачи через созвон."}, {"question": "Скиньте портфолио на будущее", "tactic": "Мягкий возврат к диалогу", "message": "Скину, конечно. Только портфолио без привязки к вашей задаче мало что скажет. Давайте я подберу 1–2 кейса именно под вашу ситуацию — так будет полезнее. Расскажите пару слов о бизнесе?", "explanation": "Превращаем «отписку» в диалог и персонализацию."}, {"question": "Меня всё устраивает / нравится мой сайт", "tactic": "Проверка через результат", "message": "Здорово, если работает. Уточню: сколько заявок в месяц даёт сайт сейчас? Иногда „устраивает“ — это привычка, а не потолок, и там есть что усилить.", "explanation": "Мягко подсвечиваем зону роста без обесценивания."}, {"question": "Меня всё устраивает", "tactic": "Бесплатный аудит", "message": "Именно поэтому предлагаю быстрый бесплатный разбор: покажу 2–3 точки, где теряются заявки. Ничего не найдём — честно скажу, что менять не нужно.", "explanation": "Безрисковая польза — клиент видит потенциал сам."}, {"question": "Мне не интересно / не спамьте / если что обращусь", "tactic": "Уважительный выход", "message": "Понял, не буду отнимать время. Один вопрос напоследок: тема сайтов вообще не в фокусе, или просто сейчас неудачный момент? Пойму любой ответ.", "explanation": "Не давим, но оставляем шанс на будущее и уточняем причину."}, {"question": "Клиент не ответил на первое холодное сообщение", "tactic": "Мягкий повторный заход", "message": "ИО, добрый день! Возможно, сообщение потерялось. Пишу коротко: помогаем бизнесам делать продающие сайты на Tilda. Если тема неактуальна — просто скажите, не буду беспокоить.", "explanation": "Второе касание без напора + лёгкий выход снижает раздражение."}, {"question": "Клиент пропал в середине диалога", "tactic": "Возвращение без упрёка", "message": "ИО, вижу, диалог подвис — понимаю, дел хватает. Подскажите одним словом: вопрос ещё актуален или сейчас не время? Пойму любой ответ.", "explanation": "Возвращаем без давления, даём лёгкий выход — снижаем неловкость."}, {"question": "Клиент не отвечает после КП", "tactic": "Ценностный дожим-мягко", "message": "ИО, отправлял КП по сайту. Не тороплю с решением — подскажите, вопросы по нему появились или что-то смутило? Разберу любой момент.", "explanation": "Показываем, что ждём не «да», а обратную связь — проще ответить."}, {"question": "Я не гоню рекламу, сайт бесполезен", "tactic": "Логика связки", "message": "Справедливо — без трафика любой сайт молчит. Именно поэтому продающий сайт и запуск трафика работают в связке. Давайте разберём, как выстроить это вместе, чтобы вложение в сайт не простаивало. С какого канала планируете вести людей?", "explanation": "Соглашаемся, переводим в разговор о системе «сайт + трафик»."}, {"question": "Сайт — бесполезная трата, уже работал с дизайнерами", "tactic": "Разбор негативного опыта", "message": "Понимаю, если прошлый опыт разочаровал — доверия к сайтам мало. Скорее всего, делали красиво, но без продающей логики или без трафика. Давайте разберём, что тогда пошло не так, — покажу, чем наш подход отличается.", "explanation": "Не спорим с болью, а работаем с причиной прошлого провала."}, {"question": "Сайт не привлекает клиентов / вы не делаете рекламу", "tactic": "Честность о зоне ответственности", "message": "Верно, рекламу мы не ведём — наша зона это продающий сайт, который превращает трафик в заявки. Если сайт не продаёт, реклама сливает бюджет. Давайте сделаем так, чтобы посадочная работала, а по трафику подскажу проверенных подрядчиков.", "explanation": "Честно очерчиваем зону, показываем себя как звено системы, а не «всё сразу»."}], "niche": [{"question": "У вас нет кейсов в моей нише", "tactic": "Нишевая специализация", "message": "Как раз наоборот — мы специализируемся на сайтах для [ЖК/автосалонов]. Мы знаем, что в вашей сфере покупатель смотрит [конкретика ниши], и строим сайт под это. Покажу кейсы именно из вашей отрасли на созвоне.", "explanation": "Главный сдвиг: раньше это было слабое место, теперь — ваше УТП."}, {"question": "Вы делаете сайты всем подряд", "tactic": "Фокус = экспертность", "message": "Нет, мы сознательно работаем только с [нишей]. Именно поэтому не набиваем шишки на вашем проекте, а сразу используем то, что уже сработало у похожих компаний в вашей сфере.", "explanation": "Узкий фокус читается как глубина экспертизы, а не ограниченность."}, {"question": "Чем вы лучше студии, которая тоже делает сайты для [ниши]?", "tactic": "Конкретное отличие", "message": "Хороший вопрос. Наше отличие — [конкретный элемент: скорость, копирайтинг, кейс с цифрами по нише]. Давайте на созвоне сравним по делу, а вы выберете, что ближе.", "explanation": "При нишевании появляется прямая конкуренция — нужен чёткий дифференциатор."}, {"question": "У конкурентов в нише дешевле", "tactic": "Понимание специфики", "message": "В вашей сфере важна не просто цена, а то, что подрядчик понимает [специфику ниши] и не переделывает сайт трижды. Мы это уже прошли на похожих проектах. Что для вас критично, кроме цены?", "explanation": "Экономия на понимании ниши оборачивается переделками — подсвечиваем это."}]}</script>
+<script>
+(function(){
+  "use strict";
+
+  var DATA = JSON.parse(document.getElementById('objections-data').textContent);
+  var RAW = JSON.parse(document.getElementById('raw-tables-data').textContent);
+  var RAW_TABS = [
+    {key:'top5', label:'Топ 5'},
+    {key:'standard', label:'Стандарт'},
+    {key:'niche', label:'Ниша (табл. 3)'}
+  ];
+
+  var ICONS = {
+    'top5': '<path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/>',
+    0: '<path d="M12 2v20M17 6.5c0-1.93-2.24-3.5-5-3.5S7 4.57 7 6.5 9.24 10 12 10s5 1.57 5 3.5-2.24 3.5-5 3.5-5-1.57-5-3.5"/>',
+    1: '<rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M3 11h18M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+    2: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 4.9.8c0 1.7-2.4 2-2.4 3.7" /><circle cx="12" cy="16.3" r="0.6" fill="currentColor" stroke="none"/>',
+    3: '<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/>',
+    4: '<path d="M4 3v18M4 4h11l-2 3.5L15 11H4"/>',
+    5: '<rect x="4" y="11" width="16" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    6: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    7: '<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 7h6M9 11h6M9 15h3"/>',
+    'return': '<path d="M9 10l-5 5 5 5"/><path d="M4 15h11a5 5 0 0 0 5-5V4"/>'
+  };
+
+  function iconFor(cat, i){
+    if(cat.name === 'Топ 5') return ICONS['top5'];
+    if(cat.name === 'Возвращение к диалогу') return ICONS['return'];
+    return ICONS[i] || '';
+  }
+
+  var state = {
+    view: 'categories',
+    catIndex: null,
+    openObj: null,
+    query: '',
+    rawTab: 'top5'
+  };
+
+  var mainEl = document.getElementById('main');
+  var crumbsEl = document.getElementById('crumbs');
+  var searchInput = document.getElementById('searchInput');
+  var searchClear = document.getElementById('searchClear');
+  var toastEl = document.getElementById('toast');
+  var toastText = document.getElementById('toastText');
+  var toastTimer = null;
+
+  function esc(s){
+    return (s||'').replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+
+  function highlight(text, q){
+    var e = esc(text);
+    if(!q) return e;
+    var eq = esc(q);
+    try{
+      var re = new RegExp('(' + eq.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'ig');
+      return e.replace(re, '<span class="hl">$1</span>');
+    }catch(err){ return e; }
+  }
+
+  function countObjections(cat){
+    var n = 0;
+    cat.subgroups.forEach(function(s){ n += s.objections.length; });
+    return n;
+  }
+
+  function hasPlaceholder(text){
+    return /[\(\[][^\)\]]{2,60}[\)\]]/.test(text);
+  }
+
+  function tagRow(a){
+    var parts = [];
+    if(a.source === 'niche' || a.source === 'niche-preempt'){
+      parts.push('<span class="ans-tag niche">ниша' + (a.tactic ? ': '+esc(a.tactic) : '') + '</span>');
+    }
+    if(a.source === 'niche-template'){
+      parts.push('<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>');
+    }
+    parts.push('<span class="ans-tag accent">' + esc(a.tag) + '</span>');
+    parts.push('<span class="ans-tag">' + esc(a.tone) + '</span>');
+    parts.push('<span class="ans-tag">' + esc(a.goal) + '</span>');
+    if(hasPlaceholder(a.text) && a.source !== 'niche-template'){
+      parts.push('<span class="ans-tag">правка перед отправкой</span>');
+    }
+    return '<div class="ans-tags">' + parts.join('') + '</div>';
+  }
+
+  function cardClass(a){
+    if(a.source === 'niche-template') return ' tpl';
+    if(a.source === 'niche' || a.source === 'niche-preempt') return ' niche';
+    return '';
+  }
+
+  function render(){
+    if(state.view === 'raw'){
+      renderRaw();
+      renderCrumbs();
+      return;
+    }
+    if(state.query.trim().length > 0){
+      renderSearch();
+    } else if(state.view === 'category' && state.catIndex !== null){
+      renderCategory();
+    } else {
+      renderCategories();
+    }
+    renderCrumbs();
+  }
+
+  function renderCrumbs(){
+    var html = '';
+    if(state.view === 'raw'){
+      html += '<button data-nav="home">тренажёр</button><span class="sep">/</span><span class="current">тестовые данные — все таблицы</span>';
+    } else if(state.query.trim().length > 0){
+      html += '<button data-nav="home">все категории</button><span class="sep">/</span><span class="current">результаты поиска</span>';
+    } else if(state.view === 'category' && state.catIndex !== null){
+      html += '<button data-nav="home">все категории</button><span class="sep">/</span><span class="current">' + esc(DATA[state.catIndex].name) + '</span>';
+    } else {
+      html += '<span class="current">все категории</span>';
+    }
+    crumbsEl.innerHTML = html;
+  }
+
+  function renderCategories(){
+    var html = '<div class="cat-grid">';
+    DATA.forEach(function(cat, i){
+      var n = countObjections(cat);
+      html += '' +
+        '<button class="cat-card" data-cat="'+i+'">' +
+          '<div class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + iconFor(cat, i) + '</svg></div>' +
+          '<div>' +
+            '<div class="cat-name">' + esc(cat.name) + '</div>' +
+            '<div class="cat-count">' + n + ' возражени' + pluralObj(n) + '</div>' +
+          '</div>' +
+        '</button>';
+    });
+    html += '</div>';
+    mainEl.innerHTML = html;
+  }
+
+  function renderRaw(){
+    var items = RAW[state.rawTab] || [];
+    var html = '<div class="raw-tabs">';
+    RAW_TABS.forEach(function(t){
+      html += '<button class="raw-tab'+(state.rawTab===t.key?' active':'')+'" data-rawtab="'+t.key+'">'+esc(t.label)+' ['+RAW[t.key].length+']</button>';
+    });
+    html += '</div>';
+    html += '<div class="raw-count">карточек: ' + items.length + '</div>';
+    items.forEach(function(item, idx){
+      html += '<div class="raw-card">';
+      html += '<div class="raw-question">' + esc(item.question) + '</div>';
+      if(item.tactic){
+        var isTpl = state.rawTab === 'niche';
+        html += '<div class="ans-tags">';
+        html += '<span class="ans-tag niche">' + esc(item.tactic) + '</span>';
+        if(isTpl){ html += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
+        html += '</div>';
+      }
+      html += '<div class="raw-message" data-rawcopy="'+idx+'">' + esc(item.message) +
+        '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+      '</div>';
+      if(item.explanation){
+        html += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + esc(item.explanation) + '</div>';
+      }
+      html += '</div>';
+    });
+    mainEl.innerHTML = html;
+  }
+
+  function pluralObj(n){
+    var mod10 = n%10, mod100 = n%100;
+    if(mod10===1 && mod100!==11) return 'е';
+    if([2,3,4].indexOf(mod10)!==-1 && [12,13,14].indexOf(mod100)===-1) return 'я';
+    return 'й';
+  }
+
+  function renderCategory(){
+    var cat = DATA[state.catIndex];
+    var html = '';
+    cat.subgroups.forEach(function(sub, si){
+      if(sub.tip){
+        html += '<div class="tip-banner"><span class="tip-label">от автора</span>' + esc(sub.tip) + '</div>';
+      }
+      sub.objections.forEach(function(obj, oi){
+        var key = si + '-' + oi;
+        var isOpen = state.openObj === key;
+        html += '' +
+          '<div class="obj-item'+(isOpen?' open':'')+'" data-key="'+key+'">' +
+            '<button class="obj-header" data-toggle="'+key+'">' +
+              '<span class="obj-quote">&#8220;</span>' +
+              '<span class="obj-question">' + esc(obj.question) + '</span>' +
+              '<span class="obj-meta">' + obj.answers.length + ' отв.</span>' +
+              '<svg class="obj-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="obj-answers"><div class="obj-answers-inner">' +
+              obj.answers.map(function(a, ai){
+                return '<div class="ans-card'+cardClass(a)+'" data-copy="'+si+'-'+oi+'-'+ai+'">' +
+                  tagRow(a) + esc(a.text) +
+                  '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+                '</div>';
+              }).join('') +
+            '</div></div>' +
+          '</div>';
+      });
+    });
+    mainEl.innerHTML = html;
+  }
+
+  function renderSearch(){
+    var q = state.query.trim().toLowerCase();
+    var results = [];
+    DATA.forEach(function(cat, ci){
+      cat.subgroups.forEach(function(sub, si){
+        sub.objections.forEach(function(obj, oi){
+          var qMatch = obj.question.toLowerCase().indexOf(q) !== -1;
+          var matchedAnswers = [];
+          obj.answers.forEach(function(a, ai){
+            if(qMatch || a.text.toLowerCase().indexOf(q) !== -1){
+              matchedAnswers.push({text:a.text, tag:a.tag, tone:a.tone, goal:a.goal, source:a.source, tactic:a.tactic, idx:ai});
+            }
+          });
+          if(matchedAnswers.length){
+            results.push({catName:cat.name, ci:ci, si:si, oi:oi, question:obj.question, answers:matchedAnswers});
+          }
+        });
+      });
+    });
+
+    var html = '';
+    if(!results.length){
+      html += '<div class="empty-state">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
+        '<p>ничего не найдено по запросу «' + esc(state.query) + '»</p>' +
+        '</div>';
+    } else {
+      html += '<div class="search-meta">найдено: ' + results.length + '</div>';
+      var lastCat = null;
+      results.forEach(function(r){
+        if(r.catName !== lastCat){
+          html += '<div class="search-group-title">' + esc(r.catName) + '</div>';
+          lastCat = r.catName;
+        }
+        html += '' +
+          '<div class="obj-item open">' +
+            '<div class="obj-header" style="cursor:default;">' +
+              '<span class="obj-quote">&#8220;</span>' +
+              '<span class="obj-question">' + highlight(r.question, state.query) + '</span>' +
+            '</div>' +
+            '<div class="obj-answers"><div class="obj-answers-inner">' +
+              r.answers.map(function(a){
+                return '<div class="ans-card'+cardClass(a)+'" data-copy="'+r.si+'-'+r.oi+'-'+a.idx+'" data-cat="'+r.ci+'">' +
+                  tagRow(a) + highlight(a.text, state.query) +
+                  '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+                '</div>';
+              }).join('') +
+            '</div></div>' +
+          '</div>';
+      });
+    }
+    mainEl.innerHTML = html;
+  }
+
+  function copyText(text, el){
+    var done = function(ok){
+      if(ok){
+        el.classList.add('copied');
+        setTimeout(function(){ el.classList.remove('copied'); }, 1400);
+        showToast('ответ скопирован — вставляйте в чат');
+      } else {
+        showToast('не удалось скопировать, выделите текст вручную');
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){done(true);}).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, cb){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      cb(ok);
+    }catch(e){
+      cb(false);
+    }
+  }
+
+  function showToast(msg){
+    toastText.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2000);
+  }
+
+  mainEl.addEventListener('click', function(e){
+    var catBtn = e.target.closest('[data-cat]');
+    var toggleBtn = e.target.closest('[data-toggle]');
+    var copyEl = e.target.closest('[data-copy]');
+    var rawTabBtn = e.target.closest('[data-rawtab]');
+    var rawCopyEl = e.target.closest('[data-rawcopy]');
+
+    if(rawTabBtn){
+      state.rawTab = rawTabBtn.getAttribute('data-rawtab');
+      window.scrollTo({top:0, behavior:'smooth'});
+      renderRaw();
+      return;
+    }
+    if(rawCopyEl){
+      var idx = parseInt(rawCopyEl.getAttribute('data-rawcopy'),10);
+      var text = RAW[state.rawTab][idx].message;
+      copyText(text, rawCopyEl);
+      return;
+    }
+    if(copyEl){
+      var parts = copyEl.getAttribute('data-copy').split('-');
+      var ci = copyEl.hasAttribute('data-cat') ? parseInt(copyEl.getAttribute('data-cat'),10) : state.catIndex;
+      var si = parseInt(parts[0],10), oi = parseInt(parts[1],10), ai = parseInt(parts[2],10);
+      var text = DATA[ci].subgroups[si].objections[oi].answers[ai].text;
+      copyText(text, copyEl);
+      return;
+    }
+    if(toggleBtn){
+      var key = toggleBtn.getAttribute('data-toggle');
+      state.openObj = (state.openObj === key) ? null : key;
+      renderCategory();
+      return;
+    }
+    if(catBtn){
+      state.catIndex = parseInt(catBtn.getAttribute('data-cat'),10);
+      state.view = 'category';
+      state.openObj = null;
+      window.scrollTo({top:0, behavior:'smooth'});
+      render();
+      return;
+    }
+  });
+
+  var brandMark = document.getElementById('brandMark');
+  brandMark.addEventListener('click', function(){
+    state.view = 'raw';
+    state.rawTab = state.rawTab || 'top5';
+    window.scrollTo({top:0, behavior:'smooth'});
+    render();
+  });
+
+  crumbsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-nav]');
+    if(btn && btn.getAttribute('data-nav')==='home'){
+      state.view = 'categories';
+      state.catIndex = null;
+      state.query = '';
+      searchInput.value = '';
+      searchClear.classList.remove('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+      render();
+    }
+  });
+
+  var searchDebounce = null;
+  searchInput.addEventListener('input', function(){
+    clearTimeout(searchDebounce);
+    var val = searchInput.value;
+    searchClear.classList.toggle('show', val.length > 0);
+    searchDebounce = setTimeout(function(){
+      state.query = val;
+      render();
+    }, 120);
+  });
+
+  searchClear.addEventListener('click', function(){
+    searchInput.value = '';
+    state.query = '';
+    searchClear.classList.remove('show');
+    searchInput.focus();
+    render();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && state.query){
+      searchInput.value = '';
+      state.query = '';
+      searchClear.classList.remove('show');
+      render();
+    }
+  });
+
+  render();
+})();
+
+</script>
+</body>
+</html>
