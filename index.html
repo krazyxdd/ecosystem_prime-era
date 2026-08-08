@@ -35,8 +35,14 @@
     margin-bottom:18px;
     text-align:center;
     line-height:1.3;
+    cursor:pointer;
   }
   .eco-nav-logo span{ color:#9A9A9E; display:block; font-weight:500; }
+  #logoCanvas{
+    display:block;
+    cursor:pointer;
+    margin:0 auto 18px;
+  }
   .eco-nav-item{
     display:flex;
     flex-direction:column;
@@ -54,10 +60,15 @@
     color:#9A9A9E;
     text-align:center;
     line-height:1.25;
-    transition:color .15s ease;
+    transition:color .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1);
   }
-  .eco-nav-item:hover{ color:#0A0A0B; }
-  .eco-nav-item:hover .eco-nav-icon-wrap{ background:#F0F0F0; }
+  .eco-nav-item:hover{ color:#0A0A0B; transform:translateY(-2px); }
+  .eco-nav-item:active{ transform:translateY(0) scale(0.96); }
+  .eco-nav-item:hover .eco-nav-icon-wrap{
+    background:#F0F0F0;
+    box-shadow:0 4px 14px rgba(0,140,255,0.18);
+    transform:scale(1.08) rotate(-3deg);
+  }
   .eco-nav-item.active{ color:#008CFF; }
   .eco-nav-item.active .eco-nav-icon-wrap{ background:#E8F4FF; color:#008CFF; }
   .eco-nav-icon-wrap{
@@ -66,10 +77,23 @@
     background:#F5F5F5;
     color:#0A0A0B;
     display:flex; align-items:center; justify-content:center;
-    transition:background .15s ease;
+    position:relative;
+    overflow:hidden;
+    transition:background .2s ease, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
   }
-  .eco-nav-icon-wrap svg{ width:20px; height:20px; }
+  .eco-nav-icon-wrap::before{
+    content:"";
+    position:absolute;
+    top:0; left:-120%;
+    width:60%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.35), transparent);
+    transform:skewX(-20deg);
+    transition:left .5s ease;
+  }
+  .eco-nav-item:hover .eco-nav-icon-wrap::before{ left:140%; }
+  .eco-nav-icon-wrap svg{ width:20px; height:20px; position:relative; z-index:1; transition:transform .25s ease; }
   .eco-nav-item.active .eco-nav-icon-wrap svg{ color:#008CFF; }
+  .eco-nav-item:hover .eco-nav-icon-wrap svg{ transform:scale(1.1); }
 
   #eco-pages{ margin-left:84px; min-height:100vh; }
   .eco-page{ display:none; }
@@ -179,10 +203,11 @@
   }
   .brand{
     display:flex;
-    align-items:baseline;
+    align-items:center;
     gap:10px;
     margin-bottom:18px;
   }
+  .brand-mark canvas{ display:inline-block; vertical-align:middle; cursor:default; }
   .brand-mark{
     font-family:'IBM Plex Mono',monospace;
     font-weight:600;
@@ -191,7 +216,8 @@
     color:var(--ink);
     background:none;
     border:none;
-    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
     padding:0;
   }
   .brand-mark:hover{color:var(--accent);}
@@ -288,14 +314,35 @@
     padding:24px 22px 22px;
     cursor:pointer;
     text-align:left;
-    transition:background .15s ease;
+    transition:background .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
     display:flex;
     flex-direction:column;
     gap:16px;
     position:relative;
+    overflow:hidden;
+    z-index:0;
   }
-  .cat-card:hover{ background:var(--bg-off); }
+  .cat-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:-140%;
+    width:60%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.16), transparent);
+    transform:skewX(-20deg);
+    transition:left .55s ease;
+    z-index:0;
+    pointer-events:none;
+  }
+  .cat-card:hover::before{ left:140%; }
+  .cat-card:hover{
+    background:var(--bg-off);
+    transform:translateY(-3px);
+    box-shadow:0 10px 26px rgba(10,10,11,0.08);
+    z-index:1;
+  }
+  .cat-card:active{ transform:translateY(-1px) scale(0.98); }
   .cat-card:hover .cat-name{color:var(--accent);}
+  .cat-card:hover .cat-icon{ transform:scale(1.1) rotate(-4deg); box-shadow:0 6px 16px rgba(0,140,255,0.25); }
   .cat-icon{
     width:34px;height:34px;
     border-radius:8px;
@@ -303,6 +350,7 @@
     color:#fff;
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
   }
   .cat-icon svg{width:17px;height:17px;}
   .cat-name{
@@ -353,11 +401,12 @@
     margin-bottom:12px;
     overflow:hidden;
     box-shadow:0 1px 4px rgba(10,10,11,0.05);
-    transition:border-color .15s ease, box-shadow .15s ease;
+    transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
   }
   .obj-item:hover{
     border-color:var(--accent);
-    box-shadow:0 2px 10px rgba(0,140,255,0.12);
+    box-shadow:0 6px 18px rgba(0,140,255,0.14);
+    transform:translateX(2px);
   }
   .obj-header{
     width:100%;
@@ -426,9 +475,9 @@
     cursor:pointer;
     position:relative;
     padding-right:38px;
-    transition:background .12s ease, border-color .12s ease;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .ans-card:hover{ background:var(--accent-dim); border-color:var(--accent); }
+  .ans-card:hover{ background:var(--accent-dim); border-color:var(--accent); transform:translateX(3px); box-shadow:-3px 0 0 var(--accent); }
   .ans-card.niche{
     background:var(--accent-dim);
     border:1.5px solid #A9D8FF;
@@ -1096,7 +1145,7 @@
 <div id="eco-shell">
 
   <nav class="eco-nav" id="ecoNav">
-    <div class="eco-nav-logo">PRIME<span>ERA</span></div>
+    <canvas id="logoCanvas" width="64" height="30"></canvas>
     <button class="eco-nav-item" data-page="glossary" type="button">
       <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg></span>
       <span class="eco-label">Глоссарий</span>
@@ -3536,6 +3585,7 @@
     glossary: document.getElementById('page-glossary')
   };
   var navItems = document.querySelectorAll('.eco-nav-item');
+  var currentPage = 'objections';
 
   function showPage(name){
     if(PAGES.indexOf(name) === -1) name = 'objections';
@@ -3545,22 +3595,173 @@
     navItems.forEach(function(btn){
       btn.classList.toggle('active', btn.getAttribute('data-page') === name);
     });
+    currentPage = name;
     window.scrollTo(0,0);
   }
+
+  function nextFrame(){
+    return new Promise(function(resolve){ requestAnimationFrame(function(){ requestAnimationFrame(resolve); }); });
+  }
+
+  function animatePhase(duration, drawFn){
+    return new Promise(function(resolve){
+      var start = performance.now();
+      function tick(now){
+        var t = Math.min(1, (now - start) / duration);
+        drawFn(t);
+        if(t < 1) requestAnimationFrame(tick);
+        else resolve();
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ================= PARTICLE LOGO (letters made of pixels, explode on hover) ================= */
+  function createParticleLogo(canvas, lines, boxW, boxH){
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = boxW * dpr;
+    canvas.height = boxH * dpr;
+    canvas.style.width = boxW + 'px';
+    canvas.style.height = boxH + 'px';
+
+    var buffer = document.createElement('canvas');
+    buffer.width = canvas.width;
+    buffer.height = canvas.height;
+    var bctx = buffer.getContext('2d');
+    bctx.scale(dpr, dpr);
+    bctx.textAlign = 'center';
+    bctx.textBaseline = 'middle';
+    lines.forEach(function(line){
+      bctx.font = line.font;
+      bctx.fillStyle = line.color;
+      bctx.fillText(line.text, boxW/2, boxH/2 + line.dy);
+    });
+
+    var imgData = bctx.getImageData(0, 0, buffer.width, buffer.height).data;
+    var particles = [];
+    var step = 2;
+    for(var y=0; y<buffer.height; y+=step){
+      for(var x=0; x<buffer.width; x+=step){
+        var idx = (y*buffer.width + x) * 4;
+        var a = imgData[idx+3];
+        if(a > 80){
+          particles.push({ hx:x, hy:y, r:imgData[idx], g:imgData[idx+1], b:imgData[idx+2], a:a/255 });
+        }
+      }
+    }
+    if(!particles.length) return;
+
+    var cx=0, cy=0;
+    particles.forEach(function(p){ cx+=p.hx; cy+=p.hy; });
+    cx/=particles.length; cy/=particles.length;
+    particles.forEach(function(p){
+      var dx = p.hx-cx, dy = p.hy-cy;
+      var len = Math.sqrt(dx*dx+dy*dy) || 1;
+      var jitter = (Math.random()-0.5)*0.7;
+      var cj = Math.cos(jitter), sj = Math.sin(jitter);
+      var ndx = dx/len, ndy = dy/len;
+      p.dirx = ndx*cj - ndy*sj;
+      p.diry = ndx*sj + ndy*cj;
+      p.dist = (16 + Math.random()*30) * dpr;
+      p.speed = 0.65 + Math.random()*0.7;
+    });
+
+    function draw(progress){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      var s = step*0.95;
+      for(var i=0;i<particles.length;i++){
+        var p = particles[i];
+        var pe = Math.min(1, progress*p.speed);
+        var x = p.hx + p.dirx*p.dist*pe;
+        var y = p.hy + p.diry*p.dist*pe;
+        var alpha = p.a * (1 - pe*0.4);
+        ctx.fillStyle = 'rgba('+p.r+','+p.g+','+p.b+','+alpha+')';
+        ctx.fillRect(x-s/2, y-s/2, s, s);
+      }
+    }
+    draw(0);
+
+    var state = 'idle';
+    var progress = 0;
+    var animId = null;
+    var EXPLODE_MS = 1500, RETURN_MS = 1500;
+
+    function loop(now){
+      if(state === 'exploding'){
+        var t = (now - loop.start) / EXPLODE_MS;
+        progress = Math.min(1, t);
+        draw(progress);
+        if(t < 1) animId = requestAnimationFrame(loop);
+        else state = 'exploded';
+      } else if(state === 'returning'){
+        var t2 = (now - loop.start) / RETURN_MS;
+        progress = 1 - Math.min(1, t2);
+        draw(progress);
+        if(t2 < 1) animId = requestAnimationFrame(loop);
+        else { state = 'idle'; draw(0); }
+      }
+    }
+
+    canvas.addEventListener('mouseenter', function(){
+      if(state === 'idle' || state === 'returning'){
+        cancelAnimationFrame(animId);
+        state = 'exploding';
+        loop.start = performance.now() - progress*EXPLODE_MS;
+        animId = requestAnimationFrame(loop);
+      }
+    });
+    canvas.addEventListener('mouseleave', function(){
+      if(state === 'exploding' || state === 'exploded'){
+        cancelAnimationFrame(animId);
+        state = 'returning';
+        loop.start = performance.now() - (1-progress)*RETURN_MS;
+        animId = requestAnimationFrame(loop);
+      }
+    });
+  }
+
+  // sidebar logo
+  (function(){
+    var canvas = document.getElementById('logoCanvas');
+    if(!canvas) return;
+    createParticleLogo(canvas, [
+      { text:'PRIME', font:"700 11px 'IBM Plex Mono', monospace", color:'#0A0A0B', dy:-7 },
+      { text:'ERA', font:"500 11px 'IBM Plex Mono', monospace", color:'#9A9A9E', dy:7 }
+    ], 64, 30);
+  })();
+
+  // brand-mark headers ("[ PRIME ERA ]") on every page
+  document.querySelectorAll('.brand-mark').forEach(function(span){
+    var probe = document.createElement('canvas').getContext('2d');
+    var font = "700 18px 'IBM Plex Mono', monospace";
+    probe.font = font;
+    var textW = probe.measureText('PRIME ERA').width;
+    var boxW = Math.ceil(textW) + 6;
+    var boxH = 26;
+    span.textContent = '';
+    var canvas = document.createElement('canvas');
+    span.appendChild(canvas);
+    createParticleLogo(canvas, [
+      { text:'PRIME ERA', font:font, color:'#0A0A0B', dy:0 }
+    ], boxW, boxH);
+  });
 
   navItems.forEach(function(btn){
     btn.addEventListener('click', function(){
       var name = btn.getAttribute('data-page');
       if(location.hash !== '#' + name){
-        location.hash = name;
-      } else {
-        showPage(name);
+        history.replaceState(null, '', '#' + name);
       }
+      showPage(name);
     });
   });
 
   window.addEventListener('hashchange', function(){
-    showPage(location.hash.replace('#',''));
+    var name = location.hash.replace('#','');
+    if(PAGES.indexOf(name) !== -1 && name !== currentPage){
+      showPage(name);
+    }
   });
 
   var initial = location.hash.replace('#','');
