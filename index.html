@@ -32,7 +32,7 @@
     font-weight:700;
     letter-spacing:0.03em;
     color:#0A0A0B;
-    margin-bottom:18px;
+    margin-bottom:14px;
     text-align:center;
     line-height:1.3;
     cursor:pointer;
@@ -41,7 +41,80 @@
   #logoCanvas{
     display:block;
     cursor:pointer;
-    margin:0 auto 18px;
+    margin:0 auto 12px;
+  }
+  .gender-toggle{
+    display:flex;
+    gap:3px;
+    background:#F5F5F5;
+    border-radius:8px;
+    padding:3px;
+    margin-bottom:18px;
+  }
+  .gender-toggle button{
+    border:none;
+    background:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:700;
+    color:#9A9A9E;
+    padding:5px 8px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .gender-toggle button.active{ background:#008CFF; color:#fff; }
+  .gender-toggle button:hover:not(.active){ color:#0A0A0B; }
+
+  #genderModal{
+    position:fixed; inset:0; z-index:999999;
+    background:rgba(10,10,11,0.55);
+    display:none;
+    align-items:center; justify-content:center;
+    padding:20px;
+  }
+  #genderModal.show{ display:flex; }
+  .gender-modal-box{
+    background:#fff;
+    border-radius:16px;
+    padding:32px 30px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .gender-modal-box h2{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:19px;
+    font-weight:700;
+    margin:0 0 8px;
+    color:#0A0A0B;
+  }
+  .gender-modal-box p{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:#9A9A9E;
+    margin:0 0 22px;
+    line-height:1.6;
+  }
+  .gender-modal-buttons{ display:flex; gap:10px; }
+  .gender-modal-buttons button{
+    flex:1;
+    border:1.5px solid #E4E4E6;
+    background:#FAFAFA;
+    border-radius:10px;
+    padding:14px 10px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:#0A0A0B;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .gender-modal-buttons button:hover{
+    border-color:#008CFF;
+    background:#E8F4FF;
+    transform:translateY(-2px);
   }
   .eco-nav-item{
     display:flex;
@@ -307,6 +380,17 @@
     overflow:hidden;
   }
   @media(max-width:620px){ .cat-grid{grid-template-columns:1fr;} }
+  @media(max-width:820px){
+    .primera-layout{ grid-template-columns:1fr; }
+    .primera-filters{
+      position:static;
+      flex-direction:row;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .primera-filter-btn{ flex-shrink:0; white-space:nowrap; }
+  }
 
   .cat-card{
     background:var(--bg);
@@ -407,6 +491,13 @@
     border-color:var(--accent);
     box-shadow:0 6px 18px rgba(0,140,255,0.14);
     transform:translateX(2px);
+  }
+  .obj-item.jump-flash{
+    animation:jumpFlash .9s ease;
+  }
+  @keyframes jumpFlash{
+    0%{ box-shadow:0 0 0 4px rgba(0,140,255,0.35); border-color:var(--accent); }
+    100%{ box-shadow:0 1px 4px rgba(10,10,11,0.05); }
   }
   .obj-header{
     width:100%;
@@ -584,49 +675,78 @@
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   #toast svg{width:15px;height:15px;color:#7FD98A;flex-shrink:0;}
 
-  /* ---- raw data page (test branch, all 3 tables) ---- */
-  .raw-tabs{
+  /* ---- Prime Era raw page: merged list + category filter sidebar ---- */
+  .primera-layout{
+    display:grid;
+    grid-template-columns:200px 1fr;
+    gap:26px;
+    align-items:start;
+  }
+  .primera-filters{
+    position:sticky;
+    top:100px;
     display:flex;
+    flex-direction:column;
     gap:6px;
-    margin-bottom:22px;
-    border-bottom:1px solid var(--line);
-    padding-bottom:0;
   }
-  .raw-tab{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
+  .primera-filter-btn{
+    text-align:left;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:13px;
     font-weight:600;
-    letter-spacing:0.02em;
-    background:none;
-    border:none;
-    color:var(--ink-faint);
+    color:var(--ink-soft);
     cursor:pointer;
-    padding:10px 4px 12px;
-    margin-right:14px;
-    border-bottom:2px solid transparent;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+    display:flex;
+    justify-content:space-between;
+    gap:6px;
   }
-  .raw-tab:hover{color:var(--ink);}
-  .raw-tab.active{color:var(--accent); border-bottom-color:var(--accent);}
+  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; }
+  .primera-filter-btn:hover{ border-color:var(--accent); transform:translateX(2px); }
+  .primera-filter-btn.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .primera-filter-btn.active .n{ color:rgba(255,255,255,0.6); }
+
   .raw-count{
     font-family:'IBM Plex Mono',monospace;
     font-size:12px;
     color:var(--ink-faint);
     margin-bottom:18px;
   }
+
+  .primera-content{ min-width:0; }
+  .primera-anim{ animation:primeraFadeIn .32s cubic-bezier(.2,.8,.3,1); }
+  @keyframes primeraFadeIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
   .raw-card{
     background:var(--bg);
     border:1px solid #D3D3D6;
     border-radius:var(--radius-sm);
-    padding:16px 18px;
-    margin-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
   }
+  .raw-card-head{
+    background:var(--bg-off);
+    padding:13px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .raw-card-head .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
   .raw-question{
-    font-size:15px;
-    font-weight:600;
+    font-size:18px;
+    font-weight:700;
     color:var(--ink);
-    line-height:1.4;
-    margin-bottom:10px;
+    line-height:1.3;
   }
+  .raw-card-body{ padding:14px 16px 16px; }
   .raw-message{
     background:var(--accent-dim);
     border:1.5px solid #A9D8FF;
@@ -1143,10 +1263,26 @@
 </style>
 </head>
 <body>
+
+<div id="genderModal">
+  <div class="gender-modal-box">
+    <h2>Кто вы?</h2>
+    <p>Это нужно, чтобы копируемые ответы клиенту звучали грамматически верно (мужской/женский род). Можно поменять позже — кнопка вверху слева.</p>
+    <div class="gender-modal-buttons">
+      <button data-gender="male" type="button">Мужской</button>
+      <button data-gender="female" type="button">Женский</button>
+    </div>
+  </div>
+</div>
+
 <div id="eco-shell">
 
   <nav class="eco-nav" id="ecoNav">
     <canvas id="logoCanvas" width="64" height="30"></canvas>
+    <div class="gender-toggle">
+      <button data-gender="male" type="button">М</button>
+      <button data-gender="female" type="button">Ж</button>
+    </div>
     <button class="eco-nav-item" data-page="glossary" type="button">
       <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg></span>
       <span class="eco-label">Глоссарий</span>
@@ -1543,21 +1679,25 @@
 
   var DATA = JSON.parse(document.getElementById('objections-data').textContent);
   var RAW = JSON.parse(document.getElementById('raw-tables-data').textContent);
-  var RAW_TABS = [
-    {key:'top5', label:'Топ 5'},
-    {key:'standard', label:'Все'},
-    {key:'niche', label:'Нишевые'}
-  ];
 
-  // FLAT[tabKey] gives a flat, indexable list for every tab — 'standard' is
-  // stored as groups in RAW, but copy/search need one flat array with a
-  // stable index, so we build it once here and tag each item with its group.
-  var FLAT = { top5: RAW.top5.slice(), niche: RAW.niche.slice(), standard: [] };
-  (RAW.standard || []).forEach(function(g){
+  // Prime Era page is now one merged, filterable list instead of 3 tabs.
+  // ALL_GROUPS keeps the section structure (for the filter sidebar + headers),
+  // FLAT_ALL is the same data flattened with a stable global index (for
+  // copy-to-clipboard and search).
+  var ALL_GROUPS = [];
+  ALL_GROUPS.push({ key:'top5', title:'Топ 5', items: RAW.top5 });
+  (RAW.standard || []).forEach(function(g, i){
+    ALL_GROUPS.push({ key:'std'+i, title: g.groupTitle, items: g.items });
+  });
+  ALL_GROUPS.push({ key:'niche', title:'Нишевые', items: RAW.niche });
+
+  var FLAT_ALL = [];
+  ALL_GROUPS.forEach(function(g){
     g.items.forEach(function(it){
       var copy = {}; for(var k in it){ copy[k] = it[k]; }
-      copy.groupTitle = g.groupTitle;
-      FLAT.standard.push(copy);
+      copy.groupKey = g.key;
+      copy.groupTitle = g.title;
+      FLAT_ALL.push(copy);
     });
   });
 
@@ -1585,7 +1725,8 @@
     catIndex: null,
     openObj: null,
     query: '',
-    rawTab: 'top5'
+    rawQuery: '',
+    primeraFilter: null
   };
 
   var mainEl = document.getElementById('main');
@@ -1687,7 +1828,6 @@
 
   var rawMainEl = document.getElementById('rawMain');
   var rawSearchInput = document.getElementById('rawSearchInput');
-  if(!state.rawQuery) state.rawQuery = '';
 
   function rawHighlight(text, q){
     var e = esc(text);
@@ -1699,67 +1839,78 @@
     }catch(err){ return e; }
   }
 
+  function rawCardHtml(item, idx){
+    var h = '<div class="raw-card">';
+    h += '<div class="raw-card-head"><span class="dot"></span><span class="raw-question">' + esc(item.question) + '</span></div>';
+    h += '<div class="raw-card-body">';
+    if(item.tactic){
+      var isTpl = item.groupKey === 'niche';
+      h += '<div class="ans-tags">';
+      h += '<span class="ans-tag niche">' + esc(item.tactic) + '</span>';
+      if(isTpl){ h += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
+      h += '</div>';
+    }
+    h += '<div class="raw-message" data-rawcopy="'+idx+'">' + esc(item.message) +
+      '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+    '</div>';
+    if(item.explanation){
+      h += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + esc(item.explanation) + '</div>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+
   function renderRaw(){
     if(!rawMainEl) return;
     var q = state.rawQuery.trim().toLowerCase();
-    if(q){
-      renderRawSearch(q);
-      return;
-    }
-    var html = '<div class="raw-tabs">';
-    RAW_TABS.forEach(function(t){
-      html += '<button class="raw-tab'+(state.rawTab===t.key?' active':'')+'" data-rawtab="'+t.key+'">'+esc(t.label)+' ['+FLAT[t.key].length+']</button>';
+
+    var filterHtml = '<div class="primera-filters">';
+    filterHtml += '<button class="primera-filter-btn'+(state.primeraFilter===null?' active':'')+'" data-filter="">Все <span class="n">['+FLAT_ALL.length+']</span></button>';
+    ALL_GROUPS.forEach(function(g){
+      filterHtml += '<button class="primera-filter-btn'+(state.primeraFilter===g.key?' active':'')+'" data-filter="'+g.key+'">'+esc(g.title)+' <span class="n">['+g.items.length+']</span></button>';
     });
-    html += '</div>';
-    html += '<div class="raw-count">карточек: ' + FLAT[state.rawTab].length + '</div>';
+    filterHtml += '</div>';
 
-    function cardHtml(item, idx, tabKey){
-      var h = '<div class="raw-card">';
-      h += '<div class="raw-question">' + esc(item.question) + '</div>';
-      if(item.tactic){
-        var isTpl = tabKey === 'niche';
-        h += '<div class="ans-tags">';
-        h += '<span class="ans-tag niche">' + esc(item.tactic) + '</span>';
-        if(isTpl){ h += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
-        h += '</div>';
-      }
-      h += '<div class="raw-message" data-rawtab="'+tabKey+'" data-rawcopy="'+idx+'">' + esc(item.message) +
-        '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
-      '</div>';
-      if(item.explanation){
-        h += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + esc(item.explanation) + '</div>';
-      }
-      h += '</div>';
-      return h;
-    }
-
-    if(state.rawTab === 'standard'){
+    var contentHtml;
+    if(q){
+      contentHtml = rawSearchHtml(q);
+    } else {
+      contentHtml = '<div class="raw-count">карточек: ' + (state.primeraFilter===null ? FLAT_ALL.length : ALL_GROUPS.filter(function(g){return g.key===state.primeraFilter;})[0].items.length) + '</div>';
       var runningIdx = 0;
-      RAW.standard.forEach(function(g){
-        html += '<div class="search-group-title">' + esc(g.groupTitle) + ' <span class="raw-group-count">[' + g.items.length + ']</span></div>';
+      ALL_GROUPS.forEach(function(g){
+        if(state.primeraFilter !== null && state.primeraFilter !== g.key){
+          runningIdx += g.items.length;
+          return;
+        }
+        if(state.primeraFilter === null){
+          contentHtml += '<div class="search-group-title">' + esc(g.title) + ' <span class="raw-group-count">[' + g.items.length + ']</span></div>';
+        }
         g.items.forEach(function(item){
-          html += cardHtml(item, runningIdx, 'standard');
+          var flatItem = FLAT_ALL[runningIdx];
+          contentHtml += rawCardHtml(flatItem, runningIdx);
           runningIdx++;
         });
       });
-    } else {
-      FLAT[state.rawTab].forEach(function(item, idx){
-        html += cardHtml(item, idx, state.rawTab);
-      });
     }
-    rawMainEl.innerHTML = html;
+
+    rawMainEl.innerHTML = '<div class="primera-layout">' + filterHtml + '<div class="primera-content" id="primeraContent">' + contentHtml + '</div></div>';
+
+    var contentEl = document.getElementById('primeraContent');
+    if(contentEl){
+      contentEl.classList.remove('primera-anim');
+      void contentEl.offsetWidth;
+      contentEl.classList.add('primera-anim');
+    }
   }
 
-  function renderRawSearch(q){
+  function rawSearchHtml(q){
     var results = [];
-    RAW_TABS.forEach(function(t){
-      FLAT[t.key].forEach(function(item, idx){
-        var hit = (item.question && item.question.toLowerCase().indexOf(q) !== -1) ||
-                  (item.message && item.message.toLowerCase().indexOf(q) !== -1) ||
-                  (item.tactic && item.tactic.toLowerCase().indexOf(q) !== -1) ||
-                  (item.explanation && item.explanation.toLowerCase().indexOf(q) !== -1);
-        if(hit){ results.push({tabKey:t.key, tabLabel:t.label, item:item, idx:idx}); }
-      });
+    FLAT_ALL.forEach(function(item, idx){
+      var hit = (item.question && item.question.toLowerCase().indexOf(q) !== -1) ||
+                (item.message && item.message.toLowerCase().indexOf(q) !== -1) ||
+                (item.tactic && item.tactic.toLowerCase().indexOf(q) !== -1) ||
+                (item.explanation && item.explanation.toLowerCase().indexOf(q) !== -1);
+      if(hit){ results.push({item:item, idx:idx}); }
     });
 
     var html = '';
@@ -1768,51 +1919,50 @@
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
         '<p>ничего не найдено по запросу «' + esc(state.rawQuery) + '»</p>' +
       '</div>';
-    } else {
-      html += '<div class="search-meta">найдено: ' + results.length + '</div>';
-      var lastTab = null;
-      results.forEach(function(r){
-        if(r.tabLabel !== lastTab){
-          html += '<div class="search-group-title">' + esc(r.tabLabel) + '</div>';
-          lastTab = r.tabLabel;
-        }
-        var item = r.item;
-        html += '<div class="raw-card">';
-        html += '<div class="raw-question">' + rawHighlight(item.question, state.rawQuery) + '</div>';
-        if(item.tactic){
-          var isTpl = r.tabKey === 'niche';
-          html += '<div class="ans-tags">';
-          if(item.groupTitle){ html += '<span class="ans-tag">' + esc(item.groupTitle) + '</span>'; }
-          html += '<span class="ans-tag niche">' + rawHighlight(item.tactic, state.rawQuery) + '</span>';
-          if(isTpl){ html += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
-          html += '</div>';
-        }
-        html += '<div class="raw-message" data-rawtab="'+r.tabKey+'" data-rawcopy="'+r.idx+'">' + rawHighlight(item.message, state.rawQuery) +
-          '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
-        '</div>';
-        if(item.explanation){
-          html += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + rawHighlight(item.explanation, state.rawQuery) + '</div>';
-        }
-        html += '</div>';
-      });
+      return html;
     }
-    rawMainEl.innerHTML = html;
+    html += '<div class="search-meta">найдено: ' + results.length + '</div>';
+    var lastGroup = null;
+    results.forEach(function(r){
+      var item = r.item;
+      if(item.groupTitle !== lastGroup){
+        html += '<div class="search-group-title">' + esc(item.groupTitle) + '</div>';
+        lastGroup = item.groupTitle;
+      }
+      html += '<div class="raw-card">';
+      html += '<div class="raw-card-head"><span class="dot"></span><span class="raw-question">' + rawHighlight(item.question, state.rawQuery) + '</span></div>';
+      html += '<div class="raw-card-body">';
+      if(item.tactic){
+        var isTpl = item.groupKey === 'niche';
+        html += '<div class="ans-tags">';
+        html += '<span class="ans-tag niche">' + rawHighlight(item.tactic, state.rawQuery) + '</span>';
+        if(isTpl){ html += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
+        html += '</div>';
+      }
+      html += '<div class="raw-message" data-rawcopy="'+r.idx+'">' + rawHighlight(item.message, state.rawQuery) +
+        '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+      '</div>';
+      if(item.explanation){
+        html += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + rawHighlight(item.explanation, state.rawQuery) + '</div>';
+      }
+      html += '</div></div>';
+    });
+    return html;
   }
 
   if(rawMainEl){
     rawMainEl.addEventListener('click', function(e){
-      var rawTabBtn = e.target.closest('[data-rawtab].raw-tab');
+      var filterBtn = e.target.closest('[data-filter]');
       var rawCopyEl = e.target.closest('[data-rawcopy]');
-      if(rawTabBtn){
-        state.rawTab = rawTabBtn.getAttribute('data-rawtab');
-        rawMainEl.scrollIntoView({block:'start'});
+      if(filterBtn){
+        var key = filterBtn.getAttribute('data-filter');
+        state.primeraFilter = key === '' ? null : key;
         renderRaw();
         return;
       }
       if(rawCopyEl){
-        var tabKey = rawCopyEl.getAttribute('data-rawtab') || state.rawTab;
         var idx = parseInt(rawCopyEl.getAttribute('data-rawcopy'),10);
-        var text = FLAT[tabKey][idx].message;
+        var text = FLAT_ALL[idx].message;
         copyText(text, rawCopyEl);
         return;
       }
@@ -1840,15 +1990,25 @@
 
   function renderCategory(){
     var cat = DATA[state.catIndex];
-    var html = '';
+    var jumpHtml = '<div class="primera-filters">';
+    cat.subgroups.forEach(function(sub, si){
+      sub.objections.forEach(function(obj, oi){
+        var key = si + '-' + oi;
+        var label = obj.question.length > 36 ? obj.question.slice(0,36) + '…' : obj.question;
+        jumpHtml += '<button class="primera-filter-btn" data-jump="'+key+'">' + esc(label) + '</button>';
+      });
+    });
+    jumpHtml += '</div>';
+
+    var contentHtml = '';
     cat.subgroups.forEach(function(sub, si){
       if(sub.tip){
-        html += '<div class="tip-banner"><span class="tip-label">от автора</span>' + esc(sub.tip) + '</div>';
+        contentHtml += '<div class="tip-banner"><span class="tip-label">от автора</span>' + esc(sub.tip) + '</div>';
       }
       sub.objections.forEach(function(obj, oi){
         var key = si + '-' + oi;
         var isOpen = state.openObj === key;
-        html += '' +
+        contentHtml += '' +
           '<div class="obj-item'+(isOpen?' open':'')+'" data-key="'+key+'">' +
             '<button class="obj-header" data-toggle="'+key+'">' +
               '<span class="obj-quote">&#8220;</span>' +
@@ -1867,7 +2027,8 @@
           '</div>';
       });
     });
-    mainEl.innerHTML = html;
+
+    mainEl.innerHTML = '<div class="primera-layout">' + jumpHtml + '<div class="primera-content" id="catContent">' + contentHtml + '</div></div>';
   }
 
   function renderSearch(){
@@ -1925,6 +2086,7 @@
   }
 
   function copyText(text, el){
+    if(window.peGenderTransform){ text = window.peGenderTransform(text); }
     var done = function(ok){
       if(ok){
         el.classList.add('copied');
@@ -1968,7 +2130,20 @@
     var catBtn = e.target.closest('[data-cat]');
     var toggleBtn = e.target.closest('[data-toggle]');
     var copyEl = e.target.closest('[data-copy]');
+    var jumpBtn = e.target.closest('[data-jump]');
 
+    if(jumpBtn){
+      var jkey = jumpBtn.getAttribute('data-jump');
+      state.openObj = jkey;
+      renderCategory();
+      var target = mainEl.querySelector('.obj-item[data-key="'+jkey+'"]');
+      if(target){
+        target.scrollIntoView({block:'center', behavior:'smooth'});
+        target.classList.add('jump-flash');
+        setTimeout(function(){ target.classList.remove('jump-flash'); }, 900);
+      }
+      return;
+    }
     if(copyEl){
       var parts = copyEl.getAttribute('data-copy').split('-');
       var ci = copyEl.hasAttribute('data-cat') ? parseInt(copyEl.getAttribute('data-cat'),10) : state.catIndex;
@@ -3615,7 +3790,71 @@
     glossary: document.getElementById('page-glossary')
   };
   var navItems = document.querySelectorAll('.eco-nav-item');
-  var currentPage = 'objections';
+  var currentPage = 'primera';
+
+  /* ================= GENDER SWITCH ================= */
+  var GENDER_KEY = 'pe_manager_gender';
+  // words confirmed by scanning the whole answer corpus to be genuinely
+  // self-referential (the salesperson talking about themselves), not the
+  // client/product/site — everything ambiguous was left untouched on purpose.
+  var GENDER_MAP = {
+    'понял':'поняла','назвал':'назвала','отметил':'отметила','подготовил':'подготовила',
+    'сталкивался':'сталкивалась','позвонил':'позвонила','сделал':'сделала','хотел':'хотела',
+    'слышал':'слышала','подготовился':'подготовилась','связался':'связалась','рассчитал':'рассчитала',
+    'посчитал':'посчитала','думал':'думала','отправлял':'отправляла','написал':'написала',
+    'пометил':'пометила','согласен':'согласна','рад':'рада'
+  };
+  window.peGenderTransform = function(text){
+    var gender = localStorage.getItem(GENDER_KEY);
+    if(gender !== 'female') return text;
+    var result = text;
+    Object.keys(GENDER_MAP).forEach(function(k){
+      var re = new RegExp('\\b'+k+'\\b','gi');
+      result = result.replace(re, function(match){
+        var repl = GENDER_MAP[k];
+        if(match.charAt(0) === match.charAt(0).toUpperCase()){
+          repl = repl.charAt(0).toUpperCase() + repl.slice(1);
+        }
+        return repl;
+      });
+    });
+    return result;
+  };
+
+  var genderModal = document.getElementById('genderModal');
+  var genderToggleButtons = document.querySelectorAll('.gender-toggle button');
+
+  function setGender(val){
+    localStorage.setItem(GENDER_KEY, val);
+    genderToggleButtons.forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-gender') === val);
+    });
+  }
+
+  function initGender(){
+    var saved = localStorage.getItem(GENDER_KEY);
+    if(saved){
+      setGender(saved);
+    } else {
+      if(genderModal) genderModal.classList.add('show');
+    }
+  }
+
+  if(genderModal){
+    genderModal.addEventListener('click', function(e){
+      var btn = e.target.closest('[data-gender]');
+      if(btn){
+        setGender(btn.getAttribute('data-gender'));
+        genderModal.classList.remove('show');
+      }
+    });
+  }
+  genderToggleButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setGender(btn.getAttribute('data-gender'));
+    });
+  });
+  initGender();
 
   function showPage(name){
     if(PAGES.indexOf(name) === -1) name = 'objections';
@@ -3795,7 +4034,7 @@
   });
 
   var initial = location.hash.replace('#','');
-  showPage(PAGES.indexOf(initial) !== -1 ? initial : 'objections');
+  showPage(PAGES.indexOf(initial) !== -1 ? initial : 'primera');
 })();
 
 </script>
