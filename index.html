@@ -9,23 +9,66 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ================= ECOSYSTEM NAV SHELL ================= */
+  :root{ --nav-h: 76px; }
   html, body { margin:0; padding:0; }
-  #eco-shell{ min-height:100vh; }
+  html{ background:#050506; }
+  body{ background:transparent; }
+  #eco-shell{ min-height:100vh; position:relative; z-index:2; }
+
+  /* ---- animated cosmic backdrop (shared with index_2 look) ---- */
+  #appWebglWrap{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:0; pointer-events:none; background:#050506;
+  }
+  #appWebgl{ position:absolute; top:0; left:0; width:100%; height:100%; display:block; }
+
+  .app-grid-lines{
+    position:fixed; top:0; left:24px; right:24px;
+    width:calc(100% - 48px); height:100vh;
+    display:flex; justify-content:space-between;
+    z-index:1; pointer-events:none;
+  }
+  .app-grid-line{ position:relative; width:1px; height:100%; background:rgba(255,255,255,0.09); }
+  .app-grid-line.accent{ background:rgba(0,140,255,0.16); }
+  .app-grid-dot{
+    position:absolute; left:50%; transform:translate(-50%,-50%);
+    width:5px; height:5px; border-radius:50%;
+    background:rgba(0,140,255,0.55);
+    box-shadow:0 0 8px rgba(0,140,255,0.5);
+  }
+  .app-grid-horizontal{
+    position:fixed; left:0; right:0; width:100%; height:1px;
+    background:rgba(255,255,255,0.08); z-index:1; pointer-events:none;
+  }
+  .app-grid-diag{
+    position:fixed; z-index:1; pointer-events:none;
+    background:rgba(255,255,255,0.05);
+    transform-origin:0 0;
+  }
+  @media(max-width:768px){
+    .app-grid-lines{ left:10px; right:10px; width:calc(100% - 20px); }
+    .app-grid-diag{ display:none; }
+  }
 
   .eco-nav{
     position:fixed;
-    left:0; top:0; bottom:0;
-    width:84px;
-    background:#FFFFFF;
-    border-right:1px solid #E4E4E6;
+    left:0; top:0; right:0;
+    height:var(--nav-h);
+    background:rgba(8,8,11,0.55);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    backdrop-filter:blur(18px) saturate(140%);
+    border-bottom:1px solid rgba(255,255,255,0.10);
     display:flex;
-    flex-direction:column;
+    flex-direction:row;
     align-items:center;
-    padding:22px 0 16px;
-    gap:4px;
+    justify-content:space-between;
+    padding:0 32px;
+    gap:24px;
     z-index:1000;
-    overflow-y:auto;
   }
+  .eco-nav-left{ display:flex; align-items:center; flex:0 0 auto; }
+  .eco-nav-links{ display:flex; align-items:center; gap:44px; flex:1 1 auto; justify-content:center; }
+  .eco-nav-right{ display:flex; align-items:center; flex:0 0 auto; }
   .eco-nav-logo{
     font-family:'IBM Plex Mono',monospace;
     font-size:9.5px;
@@ -41,117 +84,175 @@
   #logoCanvas{
     display:block;
     cursor:pointer;
-    margin:0 auto 12px;
+    margin:0;
   }
-  .gender-toggle{
-    display:flex;
-    gap:3px;
-    background:#F5F5F5;
-    border-radius:8px;
-    padding:3px;
-    margin-bottom:18px;
-  }
-  .gender-toggle button{
-    border:none;
-    background:none;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    font-weight:700;
-    color:#9A9A9E;
-    padding:5px 8px;
-    border-radius:6px;
-    cursor:pointer;
-    transition:background .15s ease, color .15s ease;
-  }
-  .gender-toggle button.active{ background:#008CFF; color:#fff; }
-  .gender-toggle button:hover:not(.active){ color:#0A0A0B; }
-
-  #genderModal{
-    position:fixed; inset:0; z-index:999999;
-    background:rgba(10,10,11,0.55);
-    display:none;
-    align-items:center; justify-content:center;
-    padding:20px;
-  }
-  #genderModal.show{ display:flex; }
-  .gender-modal-box{
-    background:#fff;
-    border-radius:16px;
-    padding:32px 30px;
-    max-width:380px;
-    width:100%;
-    text-align:center;
-    box-shadow:0 20px 60px rgba(0,0,0,0.3);
-  }
-  .gender-modal-box h2{
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:19px;
-    font-weight:700;
-    margin:0 0 8px;
-    color:#0A0A0B;
-  }
-  .gender-modal-box p{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    color:#9A9A9E;
-    margin:0 0 22px;
-    line-height:1.6;
-  }
-  .gender-modal-buttons{ display:flex; gap:10px; }
-  .gender-modal-buttons button{
-    flex:1;
-    border:1.5px solid #E4E4E6;
-    background:#FAFAFA;
-    border-radius:10px;
-    padding:14px 10px;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-weight:600;
-    font-size:14px;
-    color:#0A0A0B;
-    cursor:pointer;
-    transition:border-color .15s ease, background .15s ease, transform .15s ease;
-  }
-  .gender-modal-buttons button:hover{
-    border-color:#008CFF;
-    background:#E8F4FF;
-    transform:translateY(-2px);
-  }
-  .eco-nav-item{
+  .user-badge{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:7px;
+    gap:2px;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:10px;
+    padding:7px 14px;
+    margin-bottom:0;
+    cursor:pointer;
+    font-family:'IBM Plex Mono',monospace;
+    text-align:center;
+    transition:background .15s, border-color .15s;
+  }
+  .user-badge:hover{ background:rgba(255,255,255,0.13); border-color:rgba(255,255,255,0.22); }
+  .user-badge .ub-name{ font-size:11px; font-weight:700; color:#ffffff; }
+  .user-badge .ub-switch{ font-size:8.5px; color:rgba(255,255,255,0.5); }
+
+  #loginGate{
+    position:fixed; inset:0; z-index:999999;
+    background:none;
+    display:none;
+    align-items:center; justify-content:center;
+    padding:24px;
+  }
+  #loginGate.show{ display:flex; }
+  #loginGate.show ~ #eco-shell{ visibility:hidden; }
+  .login-box{
     width:100%;
-    padding:12px 4px;
+    max-width:1100px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    filter:drop-shadow(0 4px 24px rgba(0,0,0,0.55));
+  }
+  #loginLogoCanvas{ display:block; margin:0 auto 48px; cursor:default; max-width:100%; }
+  .login-subtitle{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;
+    font-weight:500;
+    letter-spacing:0.5em;
+    text-transform:lowercase;
+    color:rgba(255,255,255,0.45);
+    margin:10px 0 56px;
+  }
+  .login-users{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    width:100%;
+    max-width:380px;
+    margin:0 auto 16px;
+  }
+  .login-user-btn{
+    border:1.5px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.06);
+    border-radius:12px;
+    padding:16px 10px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    color:#ffffff;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .login-user-btn:hover{ border-color:#008CFF; background:rgba(0,140,255,0.16); transform:translateY(-2px); }
+  .login-user-btn.active{ border-color:#008CFF; background:#008CFF; color:#fff; }
+  .login-pass-wrap{
+    width:100%;
+    max-width:380px;
+    margin:0 auto 8px;
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    animation:loginFadeIn .2s ease;
+  }
+  .login-pass-wrap.show{ display:flex; }
+  @keyframes loginFadeIn{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:translateY(0); } }
+  .login-pass-wrap input{
+    width:100%;
+    box-sizing:border-box;
+    background:rgba(255,255,255,0.06);
+    border:1.5px solid rgba(255,255,255,0.16);
+    border-radius:10px;
+    padding:13px 14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14.5px;
+    color:#ffffff;
+    outline:none;
+    text-align:center;
+    transition:border-color .15s;
+  }
+  .login-pass-wrap input::placeholder{ color:rgba(255,255,255,0.35); }
+  .login-pass-wrap input:focus{ border-color:#008CFF; background:rgba(255,255,255,0.1); }
+  .login-pass-wrap button{
+    border:none;
+    background:#ffffff;
+    color:#0A0A0B;
+    border-radius:10px;
+    padding:13px 14px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .login-pass-wrap button:hover{ background:#008CFF; color:#fff; }
+  .login-error{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:#FF6B6B;
+    margin-bottom:10px;
+  }
+  .login-admin-btn{
+    margin-top:36px;
+    border:1px dashed rgba(255,255,255,0.18);
+    background:none;
+    color:rgba(255,255,255,0.35);
+    border-radius:10px;
+    padding:10px 18px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.03em;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .login-admin-btn:hover{ border-color:rgba(255,255,255,0.4); color:rgba(255,255,255,0.75); }
+  .eco-nav-item{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:9px;
+    padding:9px 14px;
     background:none;
     border:none;
     cursor:pointer;
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
     font-weight:600;
-    letter-spacing:0.01em;
-    color:#9A9A9E;
-    text-align:center;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.55);
+    text-align:left;
     line-height:1.25;
-    transition:color .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1);
+    border-radius:11px;
+    transition:color .18s ease, background .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1);
   }
-  .eco-nav-item:hover{ color:#0A0A0B; transform:translateY(-2px); }
-  .eco-nav-item:active{ transform:translateY(0) scale(0.96); }
+  .eco-nav-item:hover{ color:#ffffff; background:rgba(255,255,255,0.06); transform:translateY(-1px); }
+  .eco-nav-item:active{ transform:translateY(0) scale(0.97); }
   .eco-nav-item:hover .eco-nav-icon-wrap{
-    background:#F0F0F0;
-    box-shadow:0 4px 14px rgba(0,140,255,0.18);
+    background:rgba(255,255,255,0.12);
+    box-shadow:0 4px 14px rgba(0,140,255,0.28);
     transform:scale(1.08) rotate(-3deg);
   }
-  .eco-nav-item.active{ color:#008CFF; }
-  .eco-nav-item.active .eco-nav-icon-wrap{ background:#E8F4FF; color:#008CFF; }
+  .eco-nav-item.active{ color:#4DB2FF; }
+  .eco-nav-item.active .eco-nav-icon-wrap{ background:rgba(0,140,255,0.18); color:#4DB2FF; }
   .eco-nav-icon-wrap{
-    width:42px; height:42px;
-    border-radius:11px;
-    background:#F5F5F5;
-    color:#0A0A0B;
+    width:32px; height:32px;
+    border-radius:9px;
+    background:rgba(255,255,255,0.07);
+    color:#ffffff;
     display:flex; align-items:center; justify-content:center;
     position:relative;
     overflow:hidden;
+    flex:0 0 auto;
     transition:background .2s ease, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
   }
   .eco-nav-icon-wrap::before{
@@ -159,16 +260,21 @@
     position:absolute;
     top:0; left:-120%;
     width:60%; height:100%;
-    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.35), transparent);
+    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.45), transparent);
     transform:skewX(-20deg);
     transition:left .5s ease;
   }
   .eco-nav-item:hover .eco-nav-icon-wrap::before{ left:140%; }
-  .eco-nav-icon-wrap svg{ width:20px; height:20px; position:relative; z-index:1; transition:transform .25s ease; }
-  .eco-nav-item.active .eco-nav-icon-wrap svg{ color:#008CFF; }
+  .eco-nav-icon-wrap svg{ width:16px; height:16px; position:relative; z-index:1; transition:transform .25s ease; }
+  .eco-nav-item.active .eco-nav-icon-wrap svg{ color:#4DB2FF; }
   .eco-nav-item:hover .eco-nav-icon-wrap svg{ transform:scale(1.1); }
+  .eco-label{ white-space:nowrap; }
 
-  #eco-pages{ margin-left:84px; min-height:100vh; }
+  #eco-pages{
+    margin:calc(var(--nav-h) + 28px) 40px 40px;
+    position:relative;
+    z-index:2;
+  }
   .eco-page{ display:none; }
   .eco-page.active{ display:block; }
 
@@ -192,7 +298,7 @@
   .raw-search-wrap{ position:relative; margin-bottom:22px; }
   .raw-search-wrap input{
     width:100%;
-    background:#FAFAFA;
+    background:var(--bg-off);
     border:1px solid #E4E4E6;
     border-radius:10px;
     padding:12px 14px 12px 42px;
@@ -203,36 +309,35 @@
     transition:border-color .15s, background .15s;
   }
   .raw-search-wrap input::placeholder{ color:#9A9A9E; }
-  .raw-search-wrap input:focus{ background:#fff; border-color:#008CFF; }
+  .raw-search-wrap input:focus{ background:var(--bg); border-color:#008CFF; }
   .raw-search-icon{
     position:absolute; left:14px; top:50%; transform:translateY(-50%);
     width:16px; height:16px; color:#9A9A9E; pointer-events:none;
   }
 
+  @media(max-width:1100px) and (min-width:769px){
+    .eco-nav{ padding:0 20px; gap:14px; }
+    .eco-nav-links{ gap:2px; }
+    .eco-nav-item{ padding:8px 10px; gap:7px; font-size:9.5px; letter-spacing:0.05em; }
+  }
+
   @media(max-width:768px){
-    .eco-nav{
-      position:sticky;
-      left:auto; top:0; bottom:auto;
-      width:100%; height:auto;
-      flex-direction:row;
-      justify-content:space-around;
-      align-items:center;
-      padding:8px 6px;
-      border-right:none;
-      border-bottom:1px solid #E4E4E6;
-    }
-    .eco-nav-logo{ display:none; }
-    .eco-nav-item{
-      flex:1;
-      flex-direction:row;
-      justify-content:center;
-      gap:6px;
-      padding:8px 4px;
-    }
+    :root{ --nav-h: 60px; }
+    .eco-nav{ padding:0 10px; gap:8px; }
+    .eco-nav-left{ display:none; }
+    .eco-nav-links{ gap:2px; }
+    .eco-nav-item{ padding:6px 8px; gap:0; }
+    .eco-nav-item .eco-label{ display:none; }
     .eco-nav-icon-wrap{ width:30px; height:30px; border-radius:8px; }
     .eco-nav-icon-wrap svg{ width:16px; height:16px; }
-    .eco-nav-item span.eco-label{ font-size:10.5px; }
-    #eco-pages{ margin-left:0; }
+    #eco-pages{ margin:calc(var(--nav-h) + 14px) 10px 20px; border-radius:14px; }
+    .user-badge{ padding:5px 9px; }
+    .user-badge .ub-switch{ display:none; }
+  }
+
+  @media(max-width:480px){
+    .login-users{ grid-template-columns:1fr; }
+    .login-subtitle{ font-size:15px; letter-spacing:0.3em; margin:6px 0 40px; }
   }
 
 </style>
@@ -241,19 +346,19 @@
     --ink: #0A0A0B;
     --ink-soft: #4A4A4E;
     --ink-faint: #9A9A9E;
-    --bg: #FFFFFF;
-    --bg-off: #FAFAFA;
-    --line: #E4E4E6;
-    --line-soft: #EEEEEF;
+    --bg: rgba(255,255,255,0.8);
+    --bg-off: rgba(250,250,250,0.72);
+    --line: rgba(228,228,230,0.7);
+    --line-soft: rgba(238,238,239,0.6);
     --accent: #008CFF;
-    --accent-dim: #E8F4FF;
+    --accent-dim: rgba(232,244,255,0.85);
     --radius: 16px;
     --radius-sm: 10px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg);
+    background:transparent;
     color:var(--ink);
     font-family:'IBM Plex Sans',system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -264,10 +369,12 @@
 
   header.topbar{
     background:var(--bg);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    backdrop-filter:blur(18px) saturate(150%);
     border-bottom:1px solid var(--line);
     padding:22px 24px 24px;
     position:sticky;
-    top:0;
+    top:var(--nav-h);
     z-index:40;
   }
   .topbar-inner{
@@ -328,7 +435,7 @@
     transition:border-color .15s, background .15s;
   }
   .search-wrap input::placeholder{color:var(--ink-faint);}
-  .search-wrap input:focus{background:#fff; border-color:var(--accent);}
+  .search-wrap input:focus{background:var(--bg); border-color:var(--accent);}
   .search-icon{
     position:absolute; left:14px; top:50%; transform:translateY(-50%);
     width:16px; height:16px; color:var(--ink-faint); pointer-events:none;
@@ -684,7 +791,7 @@
   }
   .primera-filters{
     position:sticky;
-    top:100px;
+    top:calc(var(--nav-h) + 100px);
     display:flex;
     flex-direction:column;
     gap:6px;
@@ -780,6 +887,27 @@
     display:block;
     margin-bottom:4px;
   }
+
+  /* ---- light glass treatment for all translucent panels/plashки ---- */
+  .cat-card, .obj-item, .ans-card, .raw-card, .raw-card-head,
+  .primera-filter-btn, .tip-banner, .search-wrap input, .raw-search-wrap input,
+  .brand, .crumbs{
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+  }
+  .brand{
+    display:inline-flex;
+    background:var(--bg-off);
+    border-radius:12px;
+    padding:9px 16px;
+    margin-bottom:18px;
+  }
+  .crumbs{
+    background:var(--bg-off);
+    border-radius:10px;
+    padding:8px 14px;
+    display:inline-flex;
+  }
 </style>
 <style>
 :root {
@@ -787,8 +915,8 @@
         --green-dark: #000000;
         --gold: #008CFF;
         --gold-light: #E8F4FF;
-        --bg: #FFFFFF;
-        --card: #FFFFFF;
+        --bg: rgba(255,255,255,0.8);
+        --card: rgba(255,255,255,0.82);
         --text: #0A0A0B;
         --text2: #9A9A9E;
         --border: #E4E4E6;
@@ -801,6 +929,10 @@
         --info-bg: #E8F4FF;
     }#page-glossary * {
         box-sizing: border-box;
+    }#page-glossary, #page-glossary .card, #page-glossary .menu-tile,
+     #page-glossary .namechip, #page-glossary input, #page-glossary select, #page-glossary textarea{
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        backdrop-filter: blur(16px) saturate(160%);
     }#page-glossary {
         margin: 0;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
@@ -1264,37 +1396,74 @@
 </head>
 <body>
 
-<div id="genderModal">
-  <div class="gender-modal-box">
-    <h2>Кто вы?</h2>
-    <p>Это нужно, чтобы копируемые ответы клиенту звучали грамматически верно (мужской/женский род). Можно поменять позже — кнопка вверху слева.</p>
-    <div class="gender-modal-buttons">
-      <button data-gender="male" type="button">Мужской</button>
-      <button data-gender="female" type="button">Женский</button>
+<div id="appWebglWrap"><canvas id="appWebgl"></canvas></div>
+
+<div class="app-grid-horizontal" style="top:0;"></div>
+<div class="app-grid-horizontal" style="top:20%;"></div>
+<div class="app-grid-horizontal" style="top:38%;"></div>
+<div class="app-grid-horizontal" style="top:60%;"></div>
+<div class="app-grid-horizontal" style="top:82%;"></div>
+<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:14%; transform:rotate(11deg);"></div>
+<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:38%; transform:rotate(-8deg);"></div>
+<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:62%; transform:rotate(8deg);"></div>
+<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:86%; transform:rotate(-11deg);"></div>
+<div class="app-grid-lines">
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:8%;"></div><div class="app-grid-dot" style="top:52%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:12%;"></div><div class="app-grid-dot" style="top:64%;"></div></div>
+  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:30%;"></div><div class="app-grid-dot" style="top:92%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:18%;"></div><div class="app-grid-dot" style="top:78%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:22%;"></div><div class="app-grid-dot" style="top:58%;"></div></div>
+  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:6%;"></div><div class="app-grid-dot" style="top:70%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:34%;"></div><div class="app-grid-dot" style="top:46%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:14%;"></div><div class="app-grid-dot" style="top:88%;"></div></div>
+  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:42%;"></div><div class="app-grid-dot" style="top:96%;"></div></div>
+  <div class="app-grid-line"><div class="app-grid-dot" style="top:26%;"></div><div class="app-grid-dot" style="top:82%;"></div></div>
+</div>
+
+<div id="loginGate">
+  <div class="login-box">
+    <canvas id="loginLogoCanvas" width="380" height="150"></canvas>
+    <div class="login-users">
+      <button class="login-user-btn" data-user="Саша" type="button">Саша</button>
+      <button class="login-user-btn" data-user="Андрей" type="button">Андрей</button>
+      <button class="login-user-btn" data-user="Лина" type="button">Лина</button>
+      <button class="login-user-btn" data-user="Лиана" type="button">Лиана</button>
     </div>
+    <div class="login-pass-wrap" id="loginPassWrap">
+      <input type="password" id="loginPassInput" placeholder="пароль" autocomplete="off">
+      <button id="loginSubmitBtn" type="button">Войти</button>
+    </div>
+    <div class="login-error" id="loginError" style="display:none;">Неверный пароль</div>
+    <button class="login-admin-btn" id="adminFutureBtn" type="button">админ-панель (скоро)</button>
   </div>
 </div>
 
 <div id="eco-shell">
 
   <nav class="eco-nav" id="ecoNav">
-    <canvas id="logoCanvas" width="64" height="30"></canvas>
-    <div class="gender-toggle">
-      <button data-gender="male" type="button">М</button>
-      <button data-gender="female" type="button">Ж</button>
+    <div class="eco-nav-left">
+      <canvas id="logoCanvas" width="64" height="30"></canvas>
     </div>
-    <button class="eco-nav-item" data-page="glossary" type="button">
-      <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg></span>
-      <span class="eco-label">Глоссарий</span>
-    </button>
-    <button class="eco-nav-item" data-page="objections" type="button">
-      <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
-      <span class="eco-label">Возражения</span>
-    </button>
-    <button class="eco-nav-item" data-page="primera" type="button">
-      <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/></svg></span>
-      <span class="eco-label">Возражения Prime Era</span>
-    </button>
+    <div class="eco-nav-links">
+      <button class="eco-nav-item" data-page="glossary" type="button">
+        <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg></span>
+        <span class="eco-label">Глоссарий</span>
+      </button>
+      <button class="eco-nav-item" data-page="objections" type="button">
+        <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+        <span class="eco-label">Возражения</span>
+      </button>
+      <button class="eco-nav-item" data-page="primera" type="button">
+        <span class="eco-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/></svg></span>
+        <span class="eco-label">Возражения Prime Era</span>
+      </button>
+    </div>
+    <div class="eco-nav-right">
+      <div class="user-badge" id="userBadge" title="Сменить пользователя">
+        <span class="ub-name" id="ubName">—</span>
+        <span class="ub-switch">сменить</span>
+      </div>
+    </div>
   </nav>
 
   <div id="eco-pages">
@@ -1738,9 +1907,13 @@
   var toastTimer = null;
 
   function esc(s){
-    return (s||'').replace(/[&<>"]/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    return (s||'').replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
+  }
+
+  function gtext(s){
+    return window.peGenderTransform ? window.peGenderTransform(s||'') : (s||'');
   }
 
   function highlight(text, q){
@@ -1850,7 +2023,7 @@
       if(isTpl){ h += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
       h += '</div>';
     }
-    h += '<div class="raw-message" data-rawcopy="'+idx+'">' + esc(item.message) +
+    h += '<div class="raw-message" data-rawcopy="'+idx+'">' + esc(gtext(item.message)) +
       '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
     '</div>';
     if(item.explanation){
@@ -1939,7 +2112,7 @@
         if(isTpl){ html += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
         html += '</div>';
       }
-      html += '<div class="raw-message" data-rawcopy="'+r.idx+'">' + rawHighlight(item.message, state.rawQuery) +
+      html += '<div class="raw-message" data-rawcopy="'+r.idx+'">' + rawHighlight(gtext(item.message), state.rawQuery) +
         '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
       '</div>';
       if(item.explanation){
@@ -2019,7 +2192,7 @@
             '<div class="obj-answers"><div class="obj-answers-inner">' +
               obj.answers.map(function(a, ai){
                 return '<div class="ans-card'+cardClass(a)+'" data-copy="'+si+'-'+oi+'-'+ai+'">' +
-                  tagRow(a) + esc(a.text) +
+                  tagRow(a) + esc(gtext(a.text)) +
                   '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
                 '</div>';
               }).join('') +
@@ -2074,7 +2247,7 @@
             '<div class="obj-answers"><div class="obj-answers-inner">' +
               r.answers.map(function(a){
                 return '<div class="ans-card'+cardClass(a)+'" data-copy="'+r.si+'-'+r.oi+'-'+a.idx+'" data-cat="'+r.ci+'">' +
-                  tagRow(a) + highlight(a.text, state.query) +
+                  tagRow(a) + highlight(gtext(a.text), state.query) +
                   '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
                 '</div>';
               }).join('') +
@@ -2208,6 +2381,11 @@
       render();
     }
   });
+
+  window.peRerenderObjections = function(){
+    render();
+    renderRaw();
+  };
 
   render();
 })();
@@ -3219,31 +3397,28 @@
 
     function buildDistractors(item) {
         const term = item[0],
+            def = item[1],
             cat = item[2];
+        const seen = new Set([def]);
         const pool = [];
+        function addFrom(list) {
+            list.forEach(t => {
+                if (pool.length >= 6) return;
+                if (t[0] === term) return;
+                if (seen.has(t[1])) return;
+                seen.add(t[1]);
+                pool.push(t[1]);
+            });
+        }
         // 1) термины из кластера путаницы
-        const confusable = CONFUSION_MAP[term] || [];
-        confusable.forEach(t => {
-            const found = ALL_TERMS.find(x => x[0] === t);
-            if (found)
-                pool.push(found[1]);
-        });
+        const confusable = (CONFUSION_MAP[term] || []).map(t => ALL_TERMS.find(x => x[0] === t)).filter(Boolean);
+        addFrom(confusable);
         // 2) термины из той же категории
-        if (pool.length < 3) {
-            const sameCat = shuffle(ALL_TERMS.filter(t => t[2] === cat && t[0] !== term));
-            sameCat.forEach(t => {
-                if (pool.length < 6 && pool.indexOf(t[1]) === -1)
-                    pool.push(t[1]);
-            });
-        }
-        // 3) любые остальные термины — на случай нехватки
-        if (pool.length < 3) {
-            const rest = shuffle(ALL_TERMS.filter(t => t[0] !== term));
-            rest.forEach(t => {
-                if (pool.length < 6 && pool.indexOf(t[1]) === -1)
-                    pool.push(t[1]);
-            });
-        }
+        if (pool.length < 3)
+            addFrom(shuffle(ALL_TERMS.filter(t => t[2] === cat)));
+        // 3) любые остальные термины — гарантирует варианты даже для маленьких/кастомных категорий
+        if (pool.length < 3)
+            addFrom(shuffle(ALL_TERMS.filter(t => t[0] !== term)));
         return shuffle(pool).slice(0, 3);
     }
     function buildExamQuestions(cat, count) {
@@ -3385,27 +3560,29 @@
         const mine = answers.filter(a => a.user === currentUser);
         const stats = {};
         mine.forEach(a => {
-            if (!stats[a.term])
-                stats[a.term] = {
+            const key = a.term + "||" + a.cat;
+            if (!stats[key])
+                stats[key] = {
                     correct: 0,
                     wrong: 0,
+                    term: a.term,
                     cat: a.cat
                 };
             if (a.correct)
-                stats[a.term].correct++;
+                stats[key].correct++;
             else
-                stats[a.term].wrong++;
+                stats[key].wrong++;
         });
-        const weakTerms = Object.keys(stats).filter(t => stats[t].wrong > 0 && stats[t].wrong >= stats[t].correct);
+        const weakKeys = Object.keys(stats).filter(k => stats[k].wrong > 0 && stats[k].wrong >= stats[k].correct);
         showScreen("screen-weak");
-        if (weakTerms.length === 0) {
+        if (weakKeys.length === 0) {
             $("weakEmpty").style.display = "block";
             $("weakContent").style.display = "none";
             return;
         }
         $("weakEmpty").style.display = "none";
         $("weakContent").style.display = "block";
-        weakDeck = weakTerms.map(t => ALL_TERMS.find(x => x[0] === t)).filter(Boolean);
+        weakDeck = weakKeys.map(k => ALL_TERMS.find(x => x[0] === stats[k].term && x[2] === stats[k].cat)).filter(Boolean);
         weakDeck = shuffle(weakDeck);
         weakPos = 0;
         renderWeak();
@@ -3490,11 +3667,11 @@
             alert("История пуста");
             return;
         }
-        let csv = "Пользователь;Дата;Категория;Верно;Всего;Процент;Время (сек)\\n";
+        let csv = "Пользователь;Дата;Категория;Верно;Всего;Процент;Время (сек)\n";
         hist.forEach(r => {
-            csv += [r.user, r.date, r.category, r.score, r.total, r.percent, r.durationSec].join(";") + "\\n";
+            csv += [r.user, r.date, r.category, r.score, r.total, r.percent, r.durationSec].join(";") + "\n";
         });
-        const blob = new Blob(["\\uFEFF" + csv], {
+        const blob = new Blob(["\uFEFF" + csv], {
             type: "text/csv;charset=utf-8;"
         });
         const url = URL.createObjectURL(blob);
@@ -3809,7 +3986,7 @@
     if(gender !== 'female') return text;
     var result = text;
     Object.keys(GENDER_MAP).forEach(function(k){
-      var re = new RegExp('\\b'+k+'\\b','gi');
+      var re = new RegExp('(?<![а-яёА-ЯЁa-zA-Z0-9_])'+k+'(?![а-яёА-ЯЁa-zA-Z0-9_])','gi');
       result = result.replace(re, function(match){
         var repl = GENDER_MAP[k];
         if(match.charAt(0) === match.charAt(0).toUpperCase()){
@@ -3821,40 +3998,94 @@
     return result;
   };
 
-  var genderModal = document.getElementById('genderModal');
-  var genderToggleButtons = document.querySelectorAll('.gender-toggle button');
+  /* ================= LOGIN GATE (user picks name + password; gender is inferred from the user) ================= */
+  var LOGIN_KEY = 'pe_logged_user';
+  var USERS_AUTH = {
+    'Саша':   { pass: '1234', gender: 'male' },
+    'Андрей': { pass: '1234', gender: 'male' },
+    'Лина':   { pass: '1234', gender: 'female' },
+    'Лиана':  { pass: '1234', gender: 'female' }
+  };
 
-  function setGender(val){
-    localStorage.setItem(GENDER_KEY, val);
-    genderToggleButtons.forEach(function(btn){
-      btn.classList.toggle('active', btn.getAttribute('data-gender') === val);
-    });
+  var loginGate = document.getElementById('loginGate');
+  var loginUserBtns = document.querySelectorAll('.login-user-btn');
+  var loginPassWrap = document.getElementById('loginPassWrap');
+  var loginPassInput = document.getElementById('loginPassInput');
+  var loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  var loginError = document.getElementById('loginError');
+  var adminFutureBtn = document.getElementById('adminFutureBtn');
+  var userBadge = document.getElementById('userBadge');
+  var ubName = document.getElementById('ubName');
+  var loginSelectedUser = null;
+
+  function applyUser(name){
+    localStorage.setItem(LOGIN_KEY, name);
+    var info = USERS_AUTH[name];
+    if(info){ localStorage.setItem(GENDER_KEY, info.gender); }
+    if(ubName) ubName.textContent = name;
+    if(window.peRerenderObjections) window.peRerenderObjections();
   }
 
-  function initGender(){
-    var saved = localStorage.getItem(GENDER_KEY);
-    if(saved){
-      setGender(saved);
+  function openGate(){
+    loginSelectedUser = null;
+    loginUserBtns.forEach(function(b){ b.classList.remove('active'); });
+    if(loginPassWrap) loginPassWrap.classList.remove('show');
+    if(loginError) loginError.style.display = 'none';
+    if(loginPassInput) loginPassInput.value = '';
+    if(loginGate) loginGate.classList.add('show');
+  }
+
+  function closeGate(){
+    if(loginGate) loginGate.classList.remove('show');
+  }
+
+  function initLogin(){
+    var saved = localStorage.getItem(LOGIN_KEY);
+    if(saved && USERS_AUTH[saved]){
+      applyUser(saved);
+      closeGate();
     } else {
-      if(genderModal) genderModal.classList.add('show');
+      openGate();
     }
   }
 
-  if(genderModal){
-    genderModal.addEventListener('click', function(e){
-      var btn = e.target.closest('[data-gender]');
-      if(btn){
-        setGender(btn.getAttribute('data-gender'));
-        genderModal.classList.remove('show');
-      }
-    });
-  }
-  genderToggleButtons.forEach(function(btn){
+  loginUserBtns.forEach(function(btn){
     btn.addEventListener('click', function(){
-      setGender(btn.getAttribute('data-gender'));
+      loginUserBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      loginSelectedUser = btn.getAttribute('data-user');
+      if(loginError) loginError.style.display = 'none';
+      if(loginPassInput) loginPassInput.value = '';
+      if(loginPassWrap) loginPassWrap.classList.add('show');
+      if(loginPassInput) loginPassInput.focus();
     });
   });
-  initGender();
+
+  function submitLogin(){
+    if(!loginSelectedUser) return;
+    var info = USERS_AUTH[loginSelectedUser];
+    if(info && loginPassInput && loginPassInput.value === info.pass){
+      applyUser(loginSelectedUser);
+      closeGate();
+    } else if(loginError){
+      loginError.style.display = 'block';
+    }
+  }
+  if(loginSubmitBtn) loginSubmitBtn.addEventListener('click', submitLogin);
+  if(loginPassInput){
+    loginPassInput.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ submitLogin(); }
+    });
+  }
+  if(userBadge){
+    userBadge.addEventListener('click', function(){ openGate(); });
+  }
+  if(adminFutureBtn){
+    adminFutureBtn.addEventListener('click', function(){
+      alert('Админ-панель появится здесь позже.');
+    });
+  }
+  initLogin();
 
   function showPage(name){
     if(PAGES.indexOf(name) === -1) name = 'objections';
@@ -3995,9 +4226,27 @@
     var canvas = document.getElementById('logoCanvas');
     if(!canvas) return;
     createParticleLogo(canvas, [
-      { text:'PRIME', font:"700 11px 'IBM Plex Mono', monospace", color:'#0A0A0B', dy:-7 },
-      { text:'ERA', font:"500 11px 'IBM Plex Mono', monospace", color:'#9A9A9E', dy:7 }
+      { text:'PRIME', font:"700 11px 'IBM Plex Mono', monospace", color:'#FFFFFF', dy:-7 },
+      { text:'ERA', font:"500 11px 'IBM Plex Mono', monospace", color:'#4DB2FF', dy:7 }
     ], 64, 30);
+  })();
+
+  // big login-gate logo — single line, scaled to fill most of the viewport width
+  (function(){
+    var canvas = document.getElementById('loginLogoCanvas');
+    if(!canvas) return;
+    var vw = window.innerWidth;
+    var fontSize = Math.round(Math.min(vw * 0.16, 190));
+    fontSize = Math.max(fontSize, 44);
+    var font = "700 " + fontSize + "px 'IBM Plex Mono', monospace";
+    var probe = document.createElement('canvas').getContext('2d');
+    probe.font = font;
+    var textW = probe.measureText('PRIME ERA').width;
+    var w = Math.min(Math.ceil(textW) + 24, Math.round(vw * 0.94));
+    var h = Math.round(fontSize * 1.35);
+    createParticleLogo(canvas, [
+      { text:'PRIME ERA', font: font, color:'#FFFFFF', dy:0 }
+    ], w, h);
   })();
 
   // brand-mark headers ("[ PRIME ERA ]") on every page
@@ -4037,6 +4286,259 @@
   showPage(PAGES.indexOf(initial) !== -1 ? initial : 'primera');
 })();
 
+</script>
+
+<!-- ===================== ambient cosmic backdrop (shared look with index_2, horse removed) ===================== -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const canvas = document.querySelector('#appWebgl');
+if (canvas) {
+  let scene, camera, renderer;
+  const clock = new THREE.Clock();
+  let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+  let shaderUniforms;
+  let sparkParticles;
+  const sparkCount = 220;
+  const sparkData = [];
+  const sizes = { width: window.innerWidth, height: window.innerHeight };
+
+  function createBackgroundShader() {
+    const vertexShader = `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+    const fragmentShader = `
+      varying vec2 vUv;
+      uniform float uTime;
+      uniform vec2 uResolution;
+      uniform vec2 uMouse;
+
+      float hash(float n) { return fract(sin(n) * 43758.5453123); }
+      float noise(in vec3 x) {
+        vec3 p = floor(x);
+        vec3 f = fract(x);
+        f = f*f*(3.0-2.0*f);
+        float n = p.x + p.y*57.0 + 113.0*p.z;
+        return mix(mix(mix(hash(n+  0.0), hash(n+  1.0), f.x),
+                       mix(hash(n+ 57.0), hash(n+ 58.0), f.x), f.y),
+                   mix(mix(hash(n+113.0), hash(n+114.0), f.x),
+                       mix(hash(n+170.0), hash(n+171.0), f.x), f.y), f.z);
+      }
+
+      void main() {
+        vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution.xy) / uResolution.y;
+        float aspect = uResolution.x / uResolution.y;
+        float time = uTime * 0.06;
+
+        float angle1 = 0.6;
+        float angle2 = -0.7;
+        float angle3 = 1.2;
+        float freq1 = 2.2;
+        float freq2 = 3.0;
+        float freq3 = 3.8;
+
+        vec2 warpedUv = uv;
+        warpedUv.x += sin(uv.y * 2.5 + time * 0.2) * 0.30;
+        warpedUv.y += cos(uv.x * 2.5 - time * 0.15) * 0.30;
+        warpedUv.x += sin(uv.y * 1.2 - time * 0.1) * 0.22;
+        warpedUv.y += cos(uv.x * 1.2 + time * 0.18) * 0.22;
+
+        vec2 mouseShift = vec2(uMouse.x * aspect * 0.16, uMouse.y * 0.16);
+        warpedUv += mouseShift;
+
+        vec2 dir1 = vec2(cos(angle1), sin(angle1));
+        vec2 dir2 = vec2(cos(angle2), sin(angle2));
+        vec2 dir3 = vec2(cos(angle3), sin(angle3));
+
+        float w1 = sin(dot(warpedUv, dir1) * freq1 + time * 1.0);
+        float w2 = cos(dot(warpedUv, dir2) * freq2 - time * 1.4 + w1 * 0.4);
+        float w3 = sin(dot(warpedUv, dir3) * freq3 + time * 1.8 + w2 * 0.5);
+
+        float waveField = w1 * 0.50 + w2 * 0.35 + w3 * 0.15;
+
+        float wideSheen = pow(max(0.0, 1.0 - abs(waveField - 0.1)), 2.5);
+        float crispSpecular = pow(max(0.0, 1.0 - abs(waveField - 0.15)), 8.0);
+        float crest = wideSheen * 0.45 + crispSpecular * 0.8;
+
+        vec3 colShadow = vec3(0.0016, 0.0018, 0.0026);
+        vec3 colWave1  = vec3(0.010, 0.026, 0.052);
+        vec3 colWave2  = vec3(0.006, 0.015, 0.032);
+        vec3 colCrest  = vec3(0.10, 0.32, 0.62);
+
+        vec3 color = colShadow;
+        color = mix(color, colWave2, smoothstep(-0.6, 0.2, waveField));
+        color = mix(color, colWave1, smoothstep(0.0, 0.8, waveField));
+        color += colCrest * crest * 1.3;
+
+        float vignette = 1.0 - dot(uv, uv) * 0.14;
+        color *= vignette;
+
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+
+    shaderUniforms = {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(sizes.width, sizes.height) },
+      uMouse: { value: new THREE.Vector2(0, 0) }
+    };
+
+    const bgMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: shaderUniforms,
+      depthWrite: false,
+      depthTest: false
+    });
+
+    const bgGeometry = new THREE.PlaneGeometry(30, 30);
+    const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+    bgMesh.position.set(0.0, 0.0, -8.0);
+    bgMesh.renderOrder = -10;
+    camera.add(bgMesh);
+  }
+
+  function createSparkTexture() {
+    const c = document.createElement('canvas');
+    c.width = 16; c.height = 16;
+    const ctx = c.getContext('2d');
+    const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.25, 'rgba(180, 220, 255, 0.85)');
+    gradient.addColorStop(0.6, 'rgba(100, 170, 255, 0.25)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 16, 16);
+    return new THREE.CanvasTexture(c);
+  }
+
+  function createSparks() {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(sparkCount * 3);
+    const colors = new Float32Array(sparkCount * 3);
+
+    for (let i = 0; i < sparkCount; i++) {
+      const x = (Math.random() - 0.5) * 7.0;
+      const y = (Math.random() - 0.5) * 5.0 - 0.5;
+      const z = (Math.random() - 0.5) * 7.0;
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      colors[i * 3] = 0.35 + Math.random() * 0.15;
+      colors[i * 3 + 1] = 0.62 + Math.random() * 0.18;
+      colors[i * 3 + 2] = 1.0;
+
+      sparkData.push({
+        speedX: (Math.random() - 0.5) * 0.25,
+        speedY: 0.08 + Math.random() * 0.16,
+        speedZ: (Math.random() - 0.5) * 0.25,
+        swaySpeed: 0.4 + Math.random() * 1.2,
+        swayRadius: 0.04 + Math.random() * 0.12,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 0.02,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.7,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      map: createSparkTexture()
+    });
+
+    sparkParticles = new THREE.Points(geometry, material);
+    scene.add(sparkParticles);
+  }
+
+  function onResize() {
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    if (shaderUniforms) shaderUniforms.uResolution.value.set(sizes.width, sizes.height);
+  }
+
+  window.addEventListener('mousemove', (event) => {
+    targetMouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    targetMouseY = (event.clientY / window.innerHeight) * 2 - 1;
+  });
+  window.addEventListener('resize', onResize);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const deltaTime = Math.min(clock.getDelta(), 0.05);
+
+    mouseX += (targetMouseX - mouseX) * 0.04;
+    mouseY += (targetMouseY - mouseY) * 0.04;
+
+    if (sparkParticles) {
+      const positions = sparkParticles.geometry.attributes.position.array;
+      const time = clock.getElapsedTime();
+      for (let i = 0; i < sparkCount; i++) {
+        const idx = i * 3;
+        const data = sparkData[i];
+        positions[idx]     += data.speedX * deltaTime;
+        positions[idx + 1] += data.speedY * deltaTime;
+        positions[idx + 2] += data.speedZ * deltaTime;
+
+        positions[idx]     += Math.sin(time * data.swaySpeed + data.phase) * data.swayRadius * deltaTime;
+        positions[idx + 2] += Math.cos(time * data.swaySpeed + data.phase) * data.swayRadius * deltaTime;
+
+        if (positions[idx + 1] > 3.0 || Math.abs(positions[idx]) > 4.0 || Math.abs(positions[idx + 2]) > 4.0) {
+          positions[idx + 1] = -2.5;
+          positions[idx]     = (Math.random() - 0.5) * 3.5;
+          positions[idx + 2] = (Math.random() - 0.5) * 3.5;
+        }
+      }
+      sparkParticles.geometry.attributes.position.needsUpdate = true;
+    }
+
+    if (shaderUniforms) {
+      shaderUniforms.uTime.value = clock.getElapsedTime();
+      shaderUniforms.uMouse.value.set(mouseX, -mouseY);
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 100);
+    camera.position.set(0, 0.2, 3.0);
+    scene.add(camera);
+
+    createBackgroundShader();
+
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'low-power' });
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    createSparks();
+    onResize();
+    animate();
+  }
+
+  init();
+}
 </script>
 </body>
 </html>
