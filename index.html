@@ -109,21 +109,54 @@
     position:fixed; inset:0; z-index:999999;
     background:none;
     display:none;
-    align-items:center; justify-content:center;
+    align-items:flex-start; justify-content:center;
     padding:24px;
   }
   #loginGate.show{ display:flex; }
   #loginGate.show ~ #eco-shell{ visibility:hidden; }
+  #loginLogoCanvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:1;
+  }
+  #loginLogoInvert{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:1;
+    -webkit-backdrop-filter:invert(1) saturate(1.5);
+    backdrop-filter:invert(1) saturate(1.5);
+    -webkit-mask-repeat:no-repeat;
+    mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    mask-position:center;
+    -webkit-mask-size:100% 100%;
+    mask-size:100% 100%;
+    transition:opacity .5s ease;
+  }
+  #loginLogoHover{
+    position:absolute;
+    z-index:2;
+    pointer-events:auto;
+    cursor:default;
+  }
   .login-box{
+    position:relative;
+    z-index:2;
     width:100%;
     max-width:1100px;
     display:flex;
     flex-direction:column;
     align-items:center;
     text-align:center;
+    margin-top:42vh;
     filter:drop-shadow(0 4px 24px rgba(0,0,0,0.55));
   }
-  #loginLogoCanvas{ display:block; margin:0 auto 48px; cursor:default; max-width:100%; }
   .login-subtitle{
     font-family:'IBM Plex Mono',monospace;
     font-size:26px;
@@ -166,6 +199,8 @@
   }
   .login-pass-wrap.show{ display:flex; }
   @keyframes loginFadeIn{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes glossaryOrbFloat{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(18px,-14px) scale(1.15); } }
+  @keyframes glossaryShimmer{ 0%{ background-position:0% 50%; } 100%{ background-position:300% 50%; } }
   .login-pass-wrap input{
     width:100%;
     box-sizing:border-box;
@@ -308,7 +343,7 @@
     outline:none;
     transition:border-color .15s, background .15s;
   }
-  .raw-search-wrap input::placeholder{ color:#9A9A9E; }
+  .raw-search-wrap input::placeholder{ color:#6B6B70; }
   .raw-search-wrap input:focus{ background:var(--bg); border-color:#008CFF; }
   .raw-search-icon{
     position:absolute; left:14px; top:50%; transform:translateY(-50%);
@@ -344,10 +379,10 @@
 <style>
   :root{
     --ink: #0A0A0B;
-    --ink-soft: #4A4A4E;
-    --ink-faint: #9A9A9E;
+    --ink-soft: #3A3A3E;
+    --ink-faint: #6B6B70;
     --bg: rgba(255,255,255,0.8);
-    --bg-off: rgba(250,250,250,0.72);
+    --bg-off: rgba(250,250,250,0.9);
     --line: rgba(228,228,230,0.7);
     --line-soft: rgba(238,238,239,0.6);
     --accent: #008CFF;
@@ -368,14 +403,8 @@
   .mono{font-family:'IBM Plex Mono',monospace;}
 
   header.topbar{
-    background:var(--bg);
-    -webkit-backdrop-filter:blur(18px) saturate(150%);
-    backdrop-filter:blur(18px) saturate(150%);
-    border-bottom:1px solid var(--line);
+    background:none;
     padding:22px 24px 24px;
-    position:sticky;
-    top:var(--nav-h);
-    z-index:40;
   }
   .topbar-inner{
     max-width:920px;
@@ -417,9 +446,68 @@
     margin:0 0 20px;
     letter-spacing:-0.02em;
     color:var(--ink);
+    display:inline-block;
+    background:var(--bg-off);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+    padding:14px 20px;
+    border-radius:14px;
   }
   @media(max-width:620px){ h1.title{font-size:27px;} }
   h1.title span{color:var(--accent);}
+
+  /* ---- shared animated hero header (same treatment as the glossary page) ---- */
+  .eco-hero{
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:32px 22px 26px;
+    margin-bottom:22px;
+    isolation:isolate;
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+  }
+  .eco-hero-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(38px);
+    opacity:.38;
+    pointer-events:none;
+    z-index:0;
+  }
+  .eco-hero-orb.a{ width:190px;height:190px;background:var(--accent);top:-70px;left:-50px;animation:glossaryOrbFloat 9s ease-in-out infinite; }
+  .eco-hero-orb.b{ width:160px;height:160px;background:#7C5CFF;bottom:-60px;right:-40px;animation:glossaryOrbFloat 11s ease-in-out infinite reverse; }
+  .eco-hero-orb.c{ width:120px;height:120px;background:#00B8A9;top:10px;right:20%;opacity:.22;animation:glossaryOrbFloat 13s ease-in-out infinite; }
+  .eco-hero-title{
+    position:relative;
+    z-index:1;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:800;
+    font-size:clamp(26px, 5vw, 38px);
+    line-height:1.18;
+    letter-spacing:-0.02em;
+    margin:0 0 10px;
+    background:linear-gradient(100deg, var(--ink) 0%, var(--accent) 32%, #7C5CFF 55%, var(--ink) 82%);
+    background-size:300% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:glossaryShimmer 6s linear infinite;
+  }
+  @media(max-width:620px){ .eco-hero-title{ line-height:1.22; } }
+  .eco-hero-sub{
+    position:relative;
+    z-index:1;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
 
   .search-wrap{ position:relative; }
   .search-wrap input{
@@ -449,12 +537,15 @@
   .search-clear:hover{color:var(--ink);}
 
   .crumbs{
-    max-width:920px;
-    margin:16px auto 0;
-    padding:0 24px;
-    display:flex;
+    display:inline-flex;
     align-items:center;
     gap:8px;
+    margin:16px 0 0 max(24px, calc(50% - 460px + 24px));
+    padding:8px 14px;
+    background:var(--bg-off);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+    border-radius:10px;
     font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;
     color:var(--ink-faint);
@@ -462,6 +553,8 @@
   }
   .crumbs button{
     background:none;border:none;cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
     color:var(--ink-faint);
     font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;
@@ -748,7 +841,7 @@
     color:var(--accent);
     margin:28px 0 10px;
   }
-  .raw-group-count{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; }
+  .raw-group-count{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; white-space:nowrap; }
   .search-group-title:first-child{margin-top:0;}
   .empty-state{
     text-align:center;
@@ -795,6 +888,10 @@
     display:flex;
     flex-direction:column;
     gap:6px;
+    width:200px;
+    min-width:0;
+    max-height:calc(100vh - var(--nav-h) - 120px);
+    overflow-y:auto;
   }
   .primera-filter-btn{
     text-align:left;
@@ -807,13 +904,14 @@
     font-weight:600;
     color:var(--ink-soft);
     cursor:pointer;
-    transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
     display:flex;
     justify-content:space-between;
     gap:6px;
+    overflow-wrap:anywhere;
   }
-  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; }
-  .primera-filter-btn:hover{ border-color:var(--accent); transform:translateX(2px); }
+  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; white-space:nowrap; flex-shrink:0; }
+  .primera-filter-btn:hover{ border-color:var(--accent); }
   .primera-filter-btn.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
   .primera-filter-btn.active .n{ color:rgba(255,255,255,0.6); }
 
@@ -891,7 +989,7 @@
   /* ---- light glass treatment for all translucent panels/plashки ---- */
   .cat-card, .obj-item, .ans-card, .raw-card, .raw-card-head,
   .primera-filter-btn, .tip-banner, .search-wrap input, .raw-search-wrap input,
-  .brand, .crumbs{
+  .brand{
     -webkit-backdrop-filter:blur(16px) saturate(160%);
     backdrop-filter:blur(16px) saturate(160%);
   }
@@ -901,12 +999,6 @@
     border-radius:12px;
     padding:9px 16px;
     margin-bottom:18px;
-  }
-  .crumbs{
-    background:var(--bg-off);
-    border-radius:10px;
-    padding:8px 14px;
-    display:inline-flex;
   }
 </style>
 <style>
@@ -918,7 +1010,7 @@
         --bg: rgba(255,255,255,0.8);
         --card: rgba(255,255,255,0.82);
         --text: #0A0A0B;
-        --text2: #9A9A9E;
+        --text2: #6B6B70;
         --border: #E4E4E6;
         --danger: #B3413A;
         --danger-bg: #FBEAE8;
@@ -929,14 +1021,39 @@
         --info-bg: #E8F4FF;
     }#page-glossary * {
         box-sizing: border-box;
-    }#page-glossary, #page-glossary .card, #page-glossary .menu-tile,
-     #page-glossary .namechip, #page-glossary input, #page-glossary select, #page-glossary textarea{
+    }#page-glossary .card, #page-glossary .menu-tile,
+     #page-glossary .namechip, #page-glossary input, #page-glossary select, #page-glossary textarea,
+     #page-glossary .topbar, #page-glossary .screen > h1, #page-glossary .screen > h2,
+     #page-glossary .screen > h3, #page-glossary .screen > p.sub{
         -webkit-backdrop-filter: blur(16px) saturate(160%);
         backdrop-filter: blur(16px) saturate(160%);
+    }#page-glossary .screen > h1, #page-glossary .screen > h2, #page-glossary .screen > h3{
+        display:inline-block;
+        background: var(--card);
+        padding:12px 18px;
+        border-radius:12px;
+    }#page-glossary .screen > p.sub{
+        display:inline-block;
+        background: var(--card);
+        padding:9px 16px;
+        border-radius:10px;
+    }#page-glossary .screen-header{
+        background: var(--card);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 0 0 22px;
+    }#page-glossary .screen-header h1{
+        margin: 0 0 6px;
+    }#page-glossary .screen-header p.sub{
+        margin: 0;
+    }#page-glossary .topbar{
+        background: var(--card);
+        padding:14px 18px;
+        border-radius:14px;
     }#page-glossary {
         margin: 0;
         font-family: 'IBM Plex Sans', system-ui, sans-serif;
-        background: var(--bg);
+        background: transparent;
         color: var(--text);
     }#page-glossary .wrap {
         max-width: 820px;
@@ -1097,6 +1214,144 @@
     }#page-glossary .menu-tile .desc {
         font-size: 13px;
         color: var(--text2);
+    }#page-glossary .glossary-hero {
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 36px 20px 30px;
+        margin-bottom: 26px;
+        isolation: isolate;
+    }#page-glossary .glossary-hero-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(38px);
+        opacity: .38;
+        pointer-events: none;
+        z-index: 0;
+    }#page-glossary .glossary-hero-orb.a {
+        width: 190px; height: 190px;
+        background: var(--gold);
+        top: -70px; left: -50px;
+        animation: glossaryOrbFloat 9s ease-in-out infinite;
+    }#page-glossary .glossary-hero-orb.b {
+        width: 160px; height: 160px;
+        background: #7C5CFF;
+        bottom: -60px; right: -40px;
+        animation: glossaryOrbFloat 11s ease-in-out infinite reverse;
+    }#page-glossary .glossary-hero-orb.c {
+        width: 120px; height: 120px;
+        background: #00B8A9;
+        top: 10px; right: 20%;
+        opacity: .22;
+        animation: glossaryOrbFloat 13s ease-in-out infinite;
+    }#page-glossary .glossary-hero-title {
+        position: relative;
+        z-index: 1;
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-weight: 800;
+        font-size: clamp(34px, 9vw, 64px);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
+        background: linear-gradient(100deg, var(--green) 0%, var(--gold) 32%, #7C5CFF 55%, var(--green) 82%);
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: glossaryShimmer 6s linear infinite;
+    }#page-glossary .glossary-hero-dash {
+        color: var(--gold);
+        -webkit-text-fill-color: var(--gold);
+    }#page-glossary .glossary-hero-sub {
+        position: relative;
+        z-index: 1;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.22em;
+        color: var(--green);
+    }#page-glossary .word-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }#page-glossary .word-toolbar button {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }#page-glossary .word-toolbar input[type=text] {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+    }#page-glossary .word-count {
+        font-size: 12.5px;
+        color: var(--text2);
+        margin: 0 2px 12px;
+    }#page-glossary .word-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }#page-glossary .word-row {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: border-color .15s;
+    }#page-glossary .word-row:hover {
+        border-color: var(--gold);
+    }#page-glossary .word-row.open {
+        border-color: var(--gold);
+    }#page-glossary .word-row-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }#page-glossary .word-term {
+        font-weight: 700;
+        color: var(--green);
+        font-size: 15px;
+        flex: 1;
+    }#page-glossary .word-cat {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        color: var(--text2);
+        background: var(--gold-light);
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }#page-glossary .word-chevron {
+        color: var(--gold);
+        font-weight: 700;
+        font-size: 16px;
+        width: 16px;
+        text-align: center;
+    }#page-glossary .word-body {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+    }#page-glossary .word-def {
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.5;
+    }#page-glossary .word-examples {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--text2);
+        line-height: 1.6;
+    }#page-glossary .word-examples b {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text2);
+        margin-bottom: 4px;
+    }#page-glossary .word-empty {
+        text-align: center;
+        color: var(--text2);
+        padding: 30px 0;
+        font-size: 14px;
     }#page-glossary .row {
         display: flex;
         gap: 10px;
@@ -1421,8 +1676,11 @@
 </div>
 
 <div id="loginGate">
+  <canvas id="loginLogoCanvas" width="380" height="150"></canvas>
+  <div id="loginLogoInvert"></div>
+  <div id="loginLogoHover"></div>
   <div class="login-box">
-    <canvas id="loginLogoCanvas" width="380" height="150"></canvas>
+    <div class="login-subtitle">ecosystem</div>
     <div class="login-users">
       <button class="login-user-btn" data-user="Саша" type="button">Саша</button>
       <button class="login-user-btn" data-user="Андрей" type="button">Андрей</button>
@@ -1434,7 +1692,7 @@
       <button id="loginSubmitBtn" type="button">Войти</button>
     </div>
     <div class="login-error" id="loginError" style="display:none;">Неверный пароль</div>
-    <button class="login-admin-btn" id="adminFutureBtn" type="button">админ-панель (скоро)</button>
+    <button class="login-admin-btn" id="adminFutureBtn" type="button">панель администратора</button>
   </div>
 </div>
 
@@ -1471,11 +1729,13 @@
     <div id="page-objections" class="eco-page">
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="brand">
-      <span class="brand-mark">PRIME ERA</span>
-      <span class="brand-sub">/ Книга возражений</span>
+    <div class="eco-hero">
+      <span class="eco-hero-orb a"></span>
+      <span class="eco-hero-orb b"></span>
+      <span class="eco-hero-orb c"></span>
+      <h1 class="eco-hero-title">Что <span class="hl">отвечать</span>, когда клиент возражает</h1>
+      <div class="eco-hero-sub">PRIME ERA ECOSYSTEM</div>
     </div>
-    <h1 class="title">Что <span>отвечать</span>, когда клиент возражает</h1>
     <div class="search-wrap">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input id="searchInput" type="text" placeholder="найти возражение или фразу для ответа..." autocomplete="off">
@@ -1497,9 +1757,12 @@
     </div>
 
     <div id="page-primera-raw" class="eco-page">
-      <div class="brand">
-        <span class="brand-mark">PRIME ERA</span>
-        <span class="brand-sub">/ Возражения Prime Era</span>
+      <div class="eco-hero">
+        <span class="eco-hero-orb a"></span>
+        <span class="eco-hero-orb b"></span>
+        <span class="eco-hero-orb c"></span>
+        <h1 class="eco-hero-title">Возражения Prime Era</h1>
+        <div class="eco-hero-sub">PRIME ERA ECOSYSTEM</div>
       </div>
       <div class="raw-search-wrap">
         <svg class="raw-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -1510,23 +1773,16 @@
 
     <div id="page-glossary" class="eco-page">
     <div class="wrap">
-        <div class="topbar">
-            <div class="brand">
-                <span class="brand-mark">PRIME ERA</span>
-                <span class="brand-sub">/ словарь-тренажёр</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:14px;">
-                <div class="userbox" id="userboxTop" style="display:none;">
-
-                            пользователь: 
-                    <b id="curUserLabel"></b>
-                    <button class="linkbtn" onclick="goLogin()">сменить</button>
-                </div>
-            </div>
+        <div class="glossary-hero">
+            <span class="glossary-hero-orb a"></span>
+            <span class="glossary-hero-orb b"></span>
+            <span class="glossary-hero-orb c"></span>
+            <div class="glossary-hero-title">Глоссарий <span class="glossary-hero-dash">—</span> тренажёр</div>
+            <div class="glossary-hero-sub">PRIME ERA ECOSYSTEM</div>
         </div>
 
         <!-- LOGIN -->
-        <div class="screen active" id="screen-login">
+        <div class="screen" id="screen-login">
             <div class="banner info" id="storageModeNote" style="display:none;"></div>
             <div class="banner warn" id="storageWarn" style="display:none;">
                 <b>История результатов не сохранится в этом браузере</b>
@@ -1549,9 +1805,7 @@
         </div>
 
         <!-- DASHBOARD -->
-        <div class="screen" id="screen-dashboard">
-            <h1>Главное меню</h1>
-            <p class="sub">Выберите режим работы со словарём.</p>
+        <div class="screen active" id="screen-dashboard">
             <div class="menu-grid">
                 <div class="menu-tile" style="--tile-accent:#008CFF" onclick="goStudySetup()">
                     <div class="ttl">Изучение</div>
@@ -1569,16 +1823,29 @@
                     <div class="ttl">История результатов</div>
                     <div class="desc">Все попытки всех пользователей</div>
                 </div>
+                <div class="menu-tile" style="--tile-accent:#FF5C93; grid-column:1 / -1;" onclick="goAllWords()">
+                    <div class="ttl">Все слова</div>
+                    <div class="desc">Полный список терминов — списком. По клику показывается определение и примеры</div>
+                </div>
             </div>
-            <div style="margin-top:14px;">
-                <button class="secondary wide" onclick="goLogin()">Сменить пользователя</button>
+        </div>
+
+        <!-- ALL WORDS -->
+        <div class="screen" id="screen-all-words">
+            <div class="word-toolbar">
+                <button class="secondary" onclick="goDashboard()">← Меню</button>
+                <input type="text" id="allWordsSearch" placeholder="искать термин..." oninput="renderAllWords()">
             </div>
+            <div class="word-count" id="allWordsCount"></div>
+            <div class="word-list" id="allWordsList"></div>
         </div>
 
         <!-- STUDY SETUP -->
         <div class="screen" id="screen-study-setup">
-            <h1>Изучение</h1>
-            <p class="sub">Термин, картинка-схема и определение показываются сразу, примеры употребления — по клику.</p>
+            <div class="screen-header">
+                <h1>Изучение</h1>
+                <p class="sub">Выберите категорию для изучения.</p>
+            </div>
             <div class="card">
                 <label class="f">Категория</label>
                 <select id="studyCat"></select>
@@ -1625,8 +1892,10 @@
 
         <!-- EXAM SETUP -->
         <div class="screen" id="screen-exam-setup">
-            <h1>Экзамен</h1>
-            <p class="sub">Тест с четырьмя вариантами ответа. Неправильные варианты подобраны так, чтобы реально запутать — из той же темы или из пар терминов, которые часто путают.</p>
+            <div class="screen-header">
+                <h1>Экзамен</h1>
+                <p class="sub">Выберите категорию и пройдите тест.</p>
+            </div>
             <div class="card">
                 <label class="f">Категория</label>
                 <select id="examCat"></select>
@@ -1681,8 +1950,10 @@
 
         <!-- WEAK SPOTS -->
         <div class="screen" id="screen-weak">
-            <h1>Мои слабые места</h1>
-            <p class="sub">Термины, в которых вы чаще ошибались на экзаменах, чем отвечали верно.</p>
+            <div class="screen-header">
+                <h1>Мои слабые места</h1>
+                <p class="sub">Повторите термины, в которых чаще всего ошибались.</p>
+            </div>
             <div id="weakEmpty" class="card emptystate" style="display:none;">
                   Пока нет данных для анализа. Пройдите хотя бы один экзамен — и здесь появятся термины, которые стоит повторить.
                 </div>
@@ -1716,8 +1987,10 @@
 
         <!-- HISTORY -->
         <div class="screen" id="screen-history">
-            <h1>История результатов</h1>
-            <p class="sub">Экзамены всех пользователей.</p>
+            <div class="screen-header">
+                <h1>История результатов</h1>
+                <p class="sub">Посмотрите статистику всех попыток.</p>
+            </div>
             <div class="card">
                 <div class="row" style="margin-bottom:14px;">
                     <select id="historyFilter">
@@ -1743,7 +2016,7 @@
                 <input type="password" id="adminPass">
                 <div id="adminLoginError" style="color:var(--danger);font-size:13px;margin-top:10px;display:none;">Неверный логин или пароль</div>
                 <div style="margin-top:16px;" class="row">
-                    <button class="secondary" onclick="goLogin()">Назад</button>
+                    <button class="secondary" onclick="goDashboard()">Назад</button>
                     <button onclick="adminLogin()">Войти</button>
                 </div>
             </div>
@@ -1831,8 +2104,6 @@
                 <button class="secondary" onclick="adminLogout()">Выйти из панели администратора</button>
             </div>
         </div>
-
-        <footer>Prime Era · словарь-тренажёр</footer>
 
     </div>
     </div>
@@ -2335,8 +2606,8 @@
       state.catIndex = parseInt(catBtn.getAttribute('data-cat'),10);
       state.view = 'category';
       state.openObj = null;
-      window.scrollTo({top:0, behavior:'smooth'});
       render();
+      window.scrollTo(0,0);
       return;
     }
   });
@@ -2349,8 +2620,8 @@
       state.query = '';
       searchInput.value = '';
       searchClear.classList.remove('show');
-      window.scrollTo({top:0, behavior:'smooth'});
       render();
+      window.scrollTo(0,0);
     }
   });
 
@@ -3286,7 +3557,6 @@
     function goLogin() {
         currentUser = "";
         isAdmin = false;
-        $("userboxTop").style.display = "none";
         $("nameInput").value = "";
         renderPrevNames();
         showScreen("screen-login");
@@ -3303,13 +3573,21 @@
             users.push(name);
             await saveData(USERS_KEY, users);
         }
-        $("curUserLabel").textContent = currentUser;
-        $("userboxTop").style.display = "flex";
         goDashboard();
     }
     function goDashboard() {
         showScreen("screen-dashboard");
     }
+    window.peSetGlossaryUser = async function(name){
+        currentUser = name;
+        isAdmin = false;
+        const users = await loadData(USERS_KEY, []);
+        if (!users.includes(name)) {
+            users.push(name);
+            await saveData(USERS_KEY, users);
+        }
+        goDashboard();
+    };
 
     // ---------- STUDY ----------
     function goStudySetup() {
@@ -3623,6 +3901,71 @@
         renderWeak();
     }
 
+    // ---------- ALL WORDS ----------
+    let allWordsExpanded = new Set();
+    function goAllWords() {
+        if ($("allWordsSearch"))
+            $("allWordsSearch").value = "";
+        showScreen("screen-all-words");
+        renderAllWords();
+    }
+    function renderAllWords() {
+        const searchEl = $("allWordsSearch");
+        const q = (searchEl ? searchEl.value : "").trim().toLowerCase();
+        const indexed = ALL_TERMS.map((t, i) => ({
+            t: t,
+            i: i
+        }));
+        indexed.sort((a, b) => a.t[0].localeCompare(b.t[0], "ru"));
+        const filtered = q ? indexed.filter(o => o.t[0].toLowerCase().indexOf(q) !== -1 || o.t[1].toLowerCase().indexOf(q) !== -1) : indexed;
+        const list = $("allWordsList");
+        if ($("allWordsCount"))
+            $("allWordsCount").textContent = filtered.length + " из " + ALL_TERMS.length;
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="word-empty">Ничего не найдено</div>';
+            return;
+        }
+        let html = "";
+        filtered.forEach(o => {
+            const term = o.t[0],
+                def = o.t[1],
+                cat = o.t[2];
+            const isOpen = allWordsExpanded.has(o.i);
+            html += '<div class="word-row' + (isOpen ? ' open' : '') + '" data-idx="' + o.i + '">';
+            html += '<div class="word-row-head"><span class="word-term">' + escapeHtml(term) + '</span><span class="word-cat">' + escapeHtml(CAT_LABELS[cat] || cat) + '</span><span class="word-chevron">' + (isOpen ? '\u2212' : '+') + '</span></div>';
+            if (isOpen) {
+                const ex = getExamplesFor(term);
+                html += '<div class="word-body"><div class="word-def">' + escapeHtml(def) + '</div>';
+                if (ex.length) {
+                    html += '<div class="word-examples"><b>Примеры употребления</b>';
+                    ex.forEach(e => html += '<div>— ' + escapeHtml(e) + '</div>');
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+        });
+        list.innerHTML = html;
+    }
+    function toggleWord(idx) {
+        if (allWordsExpanded.has(idx))
+            allWordsExpanded.delete(idx);
+        else
+            allWordsExpanded.add(idx);
+        renderAllWords();
+    }
+    (function() {
+        const list = document.getElementById("allWordsList");
+        if (list) {
+            list.addEventListener("click", function(e) {
+                const row = e.target.closest(".word-row");
+                if (!row)
+                    return;
+                toggleWord(parseInt(row.getAttribute("data-idx"), 10));
+            });
+        }
+    })();
+
     // ---------- HISTORY ----------
     async function goHistory() {
         const hist = await loadData(HISTORY_KEY, []);
@@ -3701,7 +4044,7 @@
     }
     function adminLogout() {
         isAdmin = false;
-        goLogin();
+        goDashboard();
     }
     function goAdminDashboard() {
         showScreen("screen-admin");
@@ -4024,6 +4367,7 @@
     if(info){ localStorage.setItem(GENDER_KEY, info.gender); }
     if(ubName) ubName.textContent = name;
     if(window.peRerenderObjections) window.peRerenderObjections();
+    if(typeof window.peSetGlossaryUser === 'function') window.peSetGlossaryUser(name);
   }
 
   function openGate(){
@@ -4034,19 +4378,14 @@
     if(loginPassInput) loginPassInput.value = '';
     if(loginGate) loginGate.classList.add('show');
   }
+  window.peOpenGate = openGate;
 
   function closeGate(){
     if(loginGate) loginGate.classList.remove('show');
   }
 
   function initLogin(){
-    var saved = localStorage.getItem(LOGIN_KEY);
-    if(saved && USERS_AUTH[saved]){
-      applyUser(saved);
-      closeGate();
-    } else {
-      openGate();
-    }
+    openGate();
   }
 
   loginUserBtns.forEach(function(btn){
@@ -4082,7 +4421,9 @@
   }
   if(adminFutureBtn){
     adminFutureBtn.addEventListener('click', function(){
-      alert('Админ-панель появится здесь позже.');
+      closeGate();
+      showPage('glossary');
+      if(typeof goAdminLogin === 'function') goAdminLogin();
     });
   }
   initLogin();
@@ -4117,7 +4458,11 @@
   }
 
   /* ================= PARTICLE LOGO (letters made of pixels, explode on hover) ================= */
-  function createParticleLogo(canvas, lines, boxW, boxH){
+  function createParticleLogo(canvas, lines, boxW, boxH, opts){
+    opts = opts || {};
+    var hoverTarget = opts.hoverTarget || canvas;
+    var distMin = opts.distMin != null ? opts.distMin : 16;
+    var distRange = opts.distRange != null ? opts.distRange : 30;
     var ctx = canvas.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = boxW * dpr;
@@ -4139,6 +4484,7 @@
     });
 
     var imgData = bctx.getImageData(0, 0, buffer.width, buffer.height).data;
+    if(typeof opts.onBuffer === 'function') opts.onBuffer(buffer);
     var particles = [];
     var step = 2;
     for(var y=0; y<buffer.height; y+=step){
@@ -4163,7 +4509,7 @@
       var ndx = dx/len, ndy = dy/len;
       p.dirx = ndx*cj - ndy*sj;
       p.diry = ndx*sj + ndy*cj;
-      p.dist = (16 + Math.random()*30) * dpr;
+      p.dist = (distMin + Math.random()*distRange) * dpr;
       p.speed = 0.65 + Math.random()*0.7;
     });
 
@@ -4186,6 +4532,7 @@
     var progress = 0;
     var animId = null;
     var EXPLODE_MS = 1500, RETURN_MS = 1500;
+    var onState = opts.onStateChange || function(){};
 
     function loop(now){
       if(state === 'exploding'){
@@ -4193,28 +4540,30 @@
         progress = Math.min(1, t);
         draw(progress);
         if(t < 1) animId = requestAnimationFrame(loop);
-        else state = 'exploded';
+        else { state = 'exploded'; onState(state); }
       } else if(state === 'returning'){
         var t2 = (now - loop.start) / RETURN_MS;
         progress = 1 - Math.min(1, t2);
         draw(progress);
         if(t2 < 1) animId = requestAnimationFrame(loop);
-        else { state = 'idle'; draw(0); }
+        else { state = 'idle'; draw(0); onState(state); }
       }
     }
 
-    canvas.addEventListener('mouseenter', function(){
+    hoverTarget.addEventListener('mouseenter', function(){
       if(state === 'idle' || state === 'returning'){
         cancelAnimationFrame(animId);
         state = 'exploding';
+        onState(state);
         loop.start = performance.now() - progress*EXPLODE_MS;
         animId = requestAnimationFrame(loop);
       }
     });
-    canvas.addEventListener('mouseleave', function(){
+    hoverTarget.addEventListener('mouseleave', function(){
       if(state === 'exploding' || state === 'exploded'){
         cancelAnimationFrame(animId);
         state = 'returning';
+        onState(state);
         loop.start = performance.now() - (1-progress)*RETURN_MS;
         animId = requestAnimationFrame(loop);
       }
@@ -4231,22 +4580,62 @@
     ], 64, 30);
   })();
 
-  // big login-gate logo — single line, scaled to fill most of the viewport width
+  // big login-gate logo — single line "PRIME ERA", canvas spans the full gate frame
+  // so the particle explosion on hover can fly across the whole screen.
+  // At rest the heading is rendered as an inverted cut-out of whatever is behind it
+  // (backdrop-filter:invert, masked to the letter shapes) — on hover it crossfades
+  // into the normal white particle-explosion canvas.
   (function(){
     var canvas = document.getElementById('loginLogoCanvas');
     if(!canvas) return;
+    var invertEl = document.getElementById('loginLogoInvert');
     var vw = window.innerWidth;
+    var vh = window.innerHeight;
     var fontSize = Math.round(Math.min(vw * 0.16, 190));
     fontSize = Math.max(fontSize, 44);
-    var font = "700 " + fontSize + "px 'IBM Plex Mono', monospace";
+    var font = "700 " + fontSize + "px 'IBM Plex Sans', sans-serif";
     var probe = document.createElement('canvas').getContext('2d');
     probe.font = font;
     var textW = probe.measureText('PRIME ERA').width;
-    var w = Math.min(Math.ceil(textW) + 24, Math.round(vw * 0.94));
-    var h = Math.round(fontSize * 1.35);
+
+    var boxW = vw;
+    var boxH = vh;
+    var textCenterY = boxH * 0.36;
+    var dy = textCenterY - boxH/2;
+
     createParticleLogo(canvas, [
-      { text:'PRIME ERA', font: font, color:'#FFFFFF', dy:0 }
-    ], w, h);
+      { text:'PRIME ERA', font: font, color:'#FFFFFF', dy: dy }
+    ], boxW, boxH, {
+      distMin: Math.min(vw, vh) * 0.08,
+      distRange: Math.min(vw, vh) * 0.55,
+      hoverTarget: document.getElementById('loginLogoHover'),
+      onBuffer: function(buffer){
+        if(!invertEl) return;
+        try{
+          var url = 'url(' + buffer.toDataURL() + ')';
+          invertEl.style.webkitMaskImage = url;
+          invertEl.style.maskImage = url;
+        } catch(e){}
+      },
+      onStateChange: function(state){
+        var idle = state === 'idle';
+        canvas.style.opacity = idle ? '0' : '1';
+        if(invertEl) invertEl.style.opacity = idle ? '1' : '0';
+      }
+    });
+    canvas.style.transition = 'opacity .5s ease';
+    canvas.style.opacity = '0';
+    if(invertEl) invertEl.style.opacity = '1';
+
+    var hover = document.getElementById('loginLogoHover');
+    if(hover){
+      var hw = Math.ceil(textW) + 40;
+      var hh = Math.ceil(fontSize * 1.3);
+      hover.style.width = hw + 'px';
+      hover.style.height = hh + 'px';
+      hover.style.left = ((boxW - hw)/2) + 'px';
+      hover.style.top = (textCenterY - hh/2) + 'px';
+    }
   })();
 
   // brand-mark headers ("[ PRIME ERA ]") on every page
@@ -4272,6 +4661,9 @@
         history.replaceState(null, '', '#' + name);
       }
       showPage(name);
+      if(name === 'glossary' && typeof goDashboard === 'function' && typeof currentUser !== 'undefined' && currentUser){
+        goDashboard();
+      }
     });
   });
 
@@ -4306,7 +4698,7 @@ if (canvas) {
   let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
   let shaderUniforms;
   let sparkParticles;
-  const sparkCount = 220;
+  const sparkCount = 660;
   const sparkData = [];
   const sizes = { width: window.innerWidth, height: window.innerHeight };
 
@@ -4344,9 +4736,11 @@ if (canvas) {
         float angle1 = 0.6;
         float angle2 = -0.7;
         float angle3 = 1.2;
+        float angle4 = -0.25;
         float freq1 = 2.2;
         float freq2 = 3.0;
         float freq3 = 3.8;
+        float freq4 = 4.6;
 
         vec2 warpedUv = uv;
         warpedUv.x += sin(uv.y * 2.5 + time * 0.2) * 0.30;
@@ -4360,16 +4754,19 @@ if (canvas) {
         vec2 dir1 = vec2(cos(angle1), sin(angle1));
         vec2 dir2 = vec2(cos(angle2), sin(angle2));
         vec2 dir3 = vec2(cos(angle3), sin(angle3));
+        vec2 dir4 = vec2(cos(angle4), sin(angle4));
 
         float w1 = sin(dot(warpedUv, dir1) * freq1 + time * 1.0);
         float w2 = cos(dot(warpedUv, dir2) * freq2 - time * 1.4 + w1 * 0.4);
         float w3 = sin(dot(warpedUv, dir3) * freq3 + time * 1.8 + w2 * 0.5);
+        float w4 = sin(dot(warpedUv, dir4) * freq4 - time * 2.1 + w3 * 0.35);
 
-        float waveField = w1 * 0.50 + w2 * 0.35 + w3 * 0.15;
+        float waveField = w1 * 0.44 + w2 * 0.30 + w3 * 0.13 + w4 * 0.13;
 
         float wideSheen = pow(max(0.0, 1.0 - abs(waveField - 0.1)), 2.5);
         float crispSpecular = pow(max(0.0, 1.0 - abs(waveField - 0.15)), 8.0);
-        float crest = wideSheen * 0.45 + crispSpecular * 0.8;
+        float crispSpecular2 = pow(max(0.0, 1.0 - abs(w4 - 0.12)), 9.0);
+        float crest = wideSheen * 0.45 + crispSpecular * 0.8 + crispSpecular2 * 0.5;
 
         vec3 colShadow = vec3(0.0016, 0.0018, 0.0026);
         vec3 colWave1  = vec3(0.010, 0.026, 0.052);
