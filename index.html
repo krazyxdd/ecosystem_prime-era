@@ -54,7 +54,7 @@
     position:fixed;
     left:0; top:0; right:0;
     height:var(--nav-h);
-    background:rgba(8,8,11,0.55);
+    background:#08080B;
     -webkit-backdrop-filter:blur(18px) saturate(140%);
     backdrop-filter:blur(18px) saturate(140%);
     border-bottom:1px solid rgba(255,255,255,0.10);
@@ -330,7 +330,7 @@
     margin:0 0 20px;
     letter-spacing:-0.01em;
   }
-  .raw-search-wrap{ position:relative; margin-bottom:22px; }
+  .raw-search-wrap{ position:relative; margin-bottom:22px; overflow:hidden; isolation:isolate; border-radius:10px; }
   .raw-search-wrap input{
     width:100%;
     background:var(--bg-off);
@@ -381,8 +381,8 @@
     --ink: #0A0A0B;
     --ink-soft: #3A3A3E;
     --ink-faint: #6B6B70;
-    --bg: rgba(255,255,255,0.8);
-    --bg-off: rgba(250,250,250,0.9);
+    --bg: #FBFBFC;
+    --bg-off: #FAFAFA;
     --line: rgba(228,228,230,0.7);
     --line-soft: rgba(238,238,239,0.6);
     --accent: #008CFF;
@@ -404,11 +404,12 @@
 
   header.topbar{
     background:none;
-    padding:22px 24px 24px;
+    padding:22px 0 24px;
   }
   .topbar-inner{
     max-width:920px;
     margin:0 auto;
+    padding:0 24px;
   }
   .brand{
     display:flex;
@@ -509,7 +510,14 @@
     color:var(--ink);
   }
 
-  .search-wrap{ position:relative; }
+  /* search bar row: breadcrumb plate + search field share one line, same width as the category grid below */
+  .search-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .search-wrap{ position:relative; flex:1 1 240px; min-width:0; overflow:hidden; isolation:isolate; border-radius:10px; }
   .search-wrap input{
     width:100%;
     background:var(--bg-off);
@@ -537,20 +545,28 @@
   .search-clear:hover{color:var(--ink);}
 
   .crumbs{
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
     display:inline-flex;
     align-items:center;
     gap:8px;
-    margin:16px 0 0 max(24px, calc(50% - 460px + 24px));
-    padding:8px 14px;
+    flex-shrink:0;
+    max-width:100%;
+    margin:0;
+    padding:12px 14px;
     background:var(--bg-off);
     -webkit-backdrop-filter:blur(16px) saturate(160%);
     backdrop-filter:blur(16px) saturate(160%);
+    border:1px solid var(--line);
     border-radius:10px;
     font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;
     color:var(--ink-faint);
     flex-wrap:wrap;
+    transition:border-color .15s ease;
   }
+  .crumbs:empty{ display:none; }
   .crumbs button{
     background:none;border:none;cursor:pointer;
     -webkit-appearance:none;
@@ -559,10 +575,17 @@
     font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;
     padding:2px 0;
+    position:relative;
+    z-index:1;
   }
   .crumbs button:hover{color:var(--accent);}
-  .crumbs .current{color:var(--ink); font-weight:600;}
-  .crumbs .sep{color:var(--line-soft); }
+  .crumbs .current{color:var(--ink); font-weight:600; position:relative; z-index:1;}
+  .crumbs .sep{color:var(--line-soft); position:relative; z-index:1;}
+  @media(max-width:620px){
+    .search-row{ flex-direction:column; align-items:stretch; }
+    .crumbs{ order:1; }
+    .search-wrap{ order:0; flex-basis:auto; }
+  }
 
   main{
     max-width:920px;
@@ -606,18 +629,26 @@
     overflow:hidden;
     z-index:0;
   }
-  .cat-card::before{
+  .cat-card::before,
+  .crumbs::before,
+  .search-wrap::before,
+  .raw-search-wrap::before,
+  .primera-filter-btn::before{
     content:"";
     position:absolute;
     top:0; left:-140%;
-    width:60%; height:100%;
-    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.16), transparent);
+    width:70%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.30), rgba(124,92,255,0.22), transparent);
     transform:skewX(-20deg);
-    transition:left .55s ease;
+    transition:left .5s ease;
     z-index:0;
     pointer-events:none;
   }
-  .cat-card:hover::before{ left:140%; }
+  .cat-card:hover::before,
+  .crumbs:hover::before,
+  .search-wrap:hover::before,
+  .raw-search-wrap:hover::before,
+  .primera-filter-btn:hover::before{ left:140%; }
   .cat-card:hover{
     background:var(--bg-off);
     transform:translateY(-3px);
@@ -875,7 +906,8 @@
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   #toast svg{width:15px;height:15px;color:#7FD98A;flex-shrink:0;}
 
-  /* ---- Prime Era raw page: merged list + category filter sidebar ---- */
+  /* ---- Prime Era raw page + objections page: category sidebar (shared) ---- */
+  /* ---- shared: category "jump to question" sidebar on the objections page ---- */
   .primera-layout{
     display:grid;
     grid-template-columns:200px 1fr;
@@ -909,18 +941,14 @@
     justify-content:space-between;
     gap:6px;
     overflow-wrap:anywhere;
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
   }
-  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; white-space:nowrap; flex-shrink:0; }
+  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; white-space:nowrap; flex-shrink:0; position:relative; z-index:1; }
   .primera-filter-btn:hover{ border-color:var(--accent); }
-  .primera-filter-btn.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
-  .primera-filter-btn.active .n{ color:rgba(255,255,255,0.6); }
-
-  .raw-count{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    color:var(--ink-faint);
-    margin-bottom:18px;
-  }
+  .primera-filter-btn.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .primera-filter-btn.active .n{ color:rgba(255,255,255,0.75); }
 
   .primera-content{ min-width:0; }
   .primera-anim{ animation:primeraFadeIn .32s cubic-bezier(.2,.8,.3,1); }
@@ -1007,8 +1035,8 @@
         --green-dark: #000000;
         --gold: #008CFF;
         --gold-light: #E8F4FF;
-        --bg: rgba(255,255,255,0.8);
-        --card: rgba(255,255,255,0.82);
+        --bg: #FBFBFC;
+        --card: #FBFBFC;
         --text: #0A0A0B;
         --text2: #6B6B70;
         --border: #E4E4E6;
@@ -1278,13 +1306,33 @@
         align-items: center;
         gap: 10px;
         margin-bottom: 10px;
+        flex-wrap: wrap;
     }#page-glossary .word-toolbar button {
         flex-shrink: 0;
         white-space: nowrap;
-    }#page-glossary .word-toolbar input[type=text] {
-        flex: 1 1 auto;
-        min-width: 0;
+    }#page-glossary .word-toolbar select {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 180px;
         margin: 0;
+    }#page-glossary .word-search-wrap {
+        position: relative;
+        flex: 1 1 200px;
+        min-width: 0;
+    }#page-glossary .word-search-wrap input[type=text] {
+        width: 100%;
+        margin: 0;
+        padding-left: 38px;
+        box-sizing: border-box;
+    }#page-glossary .word-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        color: var(--text2);
+        pointer-events: none;
     }#page-glossary .word-count {
         font-size: 12.5px;
         color: var(--text2);
@@ -1653,26 +1701,13 @@
 
 <div id="appWebglWrap"><canvas id="appWebgl"></canvas></div>
 
-<div class="app-grid-horizontal" style="top:0;"></div>
-<div class="app-grid-horizontal" style="top:20%;"></div>
-<div class="app-grid-horizontal" style="top:38%;"></div>
-<div class="app-grid-horizontal" style="top:60%;"></div>
-<div class="app-grid-horizontal" style="top:82%;"></div>
-<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:14%; transform:rotate(11deg);"></div>
-<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:38%; transform:rotate(-8deg);"></div>
-<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:62%; transform:rotate(8deg);"></div>
-<div class="app-grid-diag" style="width:1px; height:160vh; top:-20vh; left:86%; transform:rotate(-11deg);"></div>
+<div class="app-grid-horizontal" style="top:30%;"></div>
+<div class="app-grid-horizontal" style="top:70%;"></div>
 <div class="app-grid-lines">
   <div class="app-grid-line"><div class="app-grid-dot" style="top:8%;"></div><div class="app-grid-dot" style="top:52%;"></div></div>
-  <div class="app-grid-line"><div class="app-grid-dot" style="top:12%;"></div><div class="app-grid-dot" style="top:64%;"></div></div>
-  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:30%;"></div><div class="app-grid-dot" style="top:92%;"></div></div>
+  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:12%;"></div><div class="app-grid-dot" style="top:64%;"></div></div>
   <div class="app-grid-line"><div class="app-grid-dot" style="top:18%;"></div><div class="app-grid-dot" style="top:78%;"></div></div>
-  <div class="app-grid-line"><div class="app-grid-dot" style="top:22%;"></div><div class="app-grid-dot" style="top:58%;"></div></div>
-  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:6%;"></div><div class="app-grid-dot" style="top:70%;"></div></div>
-  <div class="app-grid-line"><div class="app-grid-dot" style="top:34%;"></div><div class="app-grid-dot" style="top:46%;"></div></div>
-  <div class="app-grid-line"><div class="app-grid-dot" style="top:14%;"></div><div class="app-grid-dot" style="top:88%;"></div></div>
-  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:42%;"></div><div class="app-grid-dot" style="top:96%;"></div></div>
-  <div class="app-grid-line"><div class="app-grid-dot" style="top:26%;"></div><div class="app-grid-dot" style="top:82%;"></div></div>
+  <div class="app-grid-line accent"><div class="app-grid-dot" style="top:22%;"></div><div class="app-grid-dot" style="top:58%;"></div></div>
 </div>
 
 <div id="loginGate">
@@ -1736,17 +1771,18 @@
       <h1 class="eco-hero-title">Что <span class="hl">отвечать</span>, когда клиент возражает</h1>
       <div class="eco-hero-sub">PRIME ERA ECOSYSTEM</div>
     </div>
-    <div class="search-wrap">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="searchInput" type="text" placeholder="найти возражение или фразу для ответа..." autocomplete="off">
-      <button class="search-clear" id="searchClear" aria-label="Очистить">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+    <div class="search-row">
+      <nav class="crumbs" id="crumbs"></nav>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="найти возражение или фразу для ответа..." autocomplete="off">
+        <button class="search-clear" id="searchClear" aria-label="Очистить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </header>
-
-<nav class="crumbs" id="crumbs"></nav>
 
 <main id="main"></main>
 
@@ -1834,7 +1870,11 @@
         <div class="screen" id="screen-all-words">
             <div class="word-toolbar">
                 <button class="secondary" onclick="goDashboard()">← Меню</button>
-                <input type="text" id="allWordsSearch" placeholder="искать термин..." oninput="renderAllWords()">
+                <div class="word-search-wrap">
+                  <svg class="word-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                  <input type="text" id="allWordsSearch" placeholder="искать термин..." oninput="renderAllWords()">
+                </div>
+                <select id="allWordsCat" onchange="renderAllWords()"></select>
             </div>
             <div class="word-count" id="allWordsCount"></div>
             <div class="word-list" id="allWordsList"></div>
@@ -2319,7 +2359,7 @@
     if(q){
       contentHtml = rawSearchHtml(q);
     } else {
-      contentHtml = '<div class="raw-count">карточек: ' + (state.primeraFilter===null ? FLAT_ALL.length : ALL_GROUPS.filter(function(g){return g.key===state.primeraFilter;})[0].items.length) + '</div>';
+      contentHtml = '';
       var runningIdx = 0;
       ALL_GROUPS.forEach(function(g){
         if(state.primeraFilter !== null && state.primeraFilter !== g.key){
@@ -3906,18 +3946,25 @@
     function goAllWords() {
         if ($("allWordsSearch"))
             $("allWordsSearch").value = "";
+        if ($("allWordsCat"))
+            populateCatSelect($("allWordsCat"), true);
         showScreen("screen-all-words");
         renderAllWords();
     }
     function renderAllWords() {
         const searchEl = $("allWordsSearch");
         const q = (searchEl ? searchEl.value : "").trim().toLowerCase();
+        const catEl = $("allWordsCat");
+        const catFilter = catEl ? catEl.value : "all";
         const indexed = ALL_TERMS.map((t, i) => ({
             t: t,
             i: i
         }));
         indexed.sort((a, b) => a.t[0].localeCompare(b.t[0], "ru"));
-        const filtered = q ? indexed.filter(o => o.t[0].toLowerCase().indexOf(q) !== -1 || o.t[1].toLowerCase().indexOf(q) !== -1) : indexed;
+        let filtered = q ? indexed.filter(o => o.t[0].toLowerCase().indexOf(q) !== -1 || o.t[1].toLowerCase().indexOf(q) !== -1) : indexed;
+        if (catFilter && catFilter !== "all") {
+            filtered = filtered.filter(o => o.t[2] === catFilter);
+        }
         const list = $("allWordsList");
         if ($("allWordsCount"))
             $("allWordsCount").textContent = filtered.length + " из " + ALL_TERMS.length;
