@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Возражения Prime Era — Prime Era</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css">
+<style>
+  :root{
+    --ink: #0A0A0B;
+    --ink-soft: #3A3A3E;
+    --ink-faint: #6B6B70;
+    --bg: #FBFBFC;
+    --bg-off: #FAFAFA;
+    --line: rgba(228,228,230,0.7);
+    --line-soft: rgba(238,238,239,0.6);
+    --accent: #008CFF;
+    --accent-dim: rgba(232,244,255,0.85);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:transparent;
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent-dim);color:var(--ink);}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  header.topbar{
+    background:none;
+    padding:22px 0 24px;
+  }
+  .topbar-inner{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .brand-mark canvas{ display:inline-block; vertical-align:middle; cursor:default; }
+  .brand-mark{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:18px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    background:none;
+    border:none;
+    display:inline-flex;
+    align-items:center;
+    padding:0;
+  }
+  .brand-mark:hover{color:var(--accent);}
+  .brand-mark::before{content:"[ "; color:var(--ink-faint);}
+  .brand-mark::after{content:" ]"; color:var(--ink-faint);}
+  .brand-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:17px;
+    color:var(--ink-faint);
+    letter-spacing:0.01em;
+  }
+  h1.title{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:700;
+    font-size:36px;
+    line-height:1.14;
+    margin:0 0 20px;
+    letter-spacing:-0.02em;
+    color:var(--ink);
+    display:inline-block;
+    background:var(--bg-off);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+    padding:14px 20px;
+    border-radius:14px;
+  }
+  @media(max-width:620px){ h1.title{font-size:27px;} }
+  h1.title span{color:var(--accent);}
+
+  /* ---- shared animated hero header (same treatment as the glossary page) ---- */
+  .eco-hero{
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:32px 22px 26px;
+    margin-bottom:22px;
+    isolation:isolate;
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+  }
+  .eco-hero-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(38px);
+    opacity:.38;
+    pointer-events:none;
+    z-index:0;
+  }
+  .eco-hero-orb.a{ width:190px;height:190px;background:var(--accent);top:-70px;left:-50px;animation:glossaryOrbFloat 9s ease-in-out infinite; }
+  .eco-hero-orb.b{ width:160px;height:160px;background:#7C5CFF;bottom:-60px;right:-40px;animation:glossaryOrbFloat 11s ease-in-out infinite reverse; }
+  .eco-hero-orb.c{ width:120px;height:120px;background:#00B8A9;top:10px;right:20%;opacity:.22;animation:glossaryOrbFloat 13s ease-in-out infinite; }
+  .eco-hero-title{
+    position:relative;
+    z-index:1;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:800;
+    font-size:clamp(26px, 5vw, 38px);
+    line-height:1.18;
+    letter-spacing:-0.02em;
+    margin:0 0 10px;
+    background:linear-gradient(100deg, var(--ink) 0%, var(--accent) 32%, #7C5CFF 55%, var(--ink) 82%);
+    background-size:300% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:glossaryShimmer 6s linear infinite;
+  }
+  @media(max-width:620px){ .eco-hero-title{ line-height:1.22; } }
+  .eco-hero-sub{
+    position:relative;
+    z-index:1;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+
+  /* search bar row: breadcrumb plate + search field share one line, same width as the category grid below */
+  .search-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .search-wrap{ position:relative; flex:1 1 240px; min-width:0; overflow:hidden; isolation:isolate; border-radius:10px; }
+  .search-wrap input{
+    width:100%;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px 12px 42px;
+    color:var(--ink);
+    font-size:14.5px;
+    font-family:'IBM Plex Mono',monospace;
+    outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .search-wrap input::placeholder{color:var(--ink-faint);}
+  .search-wrap input:focus{background:var(--bg); border-color:var(--accent);}
+  .search-icon{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:var(--ink-faint); pointer-events:none;
+  }
+  .search-clear{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    background:none;border:none;color:var(--ink-faint); cursor:pointer;
+    padding:6px; display:none; line-height:0;
+  }
+  .search-clear.show{display:block;}
+  .search-clear:hover{color:var(--ink);}
+
+  .crumbs{
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+    max-width:100%;
+    margin:0;
+    padding:12px 14px;
+    background:var(--bg-off);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    flex-wrap:wrap;
+    transition:border-color .15s ease;
+  }
+  .crumbs:empty{ display:none; }
+  .crumbs button{
+    background:none;border:none;cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+    color:var(--ink-faint);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    padding:2px 0;
+    position:relative;
+    z-index:1;
+  }
+  .crumbs button:hover{color:var(--accent);}
+  .crumbs .current{color:var(--ink); font-weight:600; position:relative; z-index:1;}
+  .crumbs .sep{color:var(--line-soft); position:relative; z-index:1;}
+  @media(max-width:620px){
+    .search-row{ flex-direction:column; align-items:stretch; }
+    .crumbs{ order:1; }
+    .search-wrap{ order:0; flex-basis:auto; }
+  }
+
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:28px 24px 90px;
+  }
+
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  @media(max-width:620px){ .cat-grid{grid-template-columns:1fr;} }
+  @media(max-width:820px){
+    .primera-layout{ grid-template-columns:1fr; }
+    .primera-filters{
+      position:static;
+      flex-direction:row;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .primera-filter-btn{ flex-shrink:0; white-space:nowrap; }
+  }
+
+  .cat-card{
+    background:var(--bg);
+    border:none;
+    padding:24px 22px 22px;
+    cursor:pointer;
+    text-align:left;
+    transition:background .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    position:relative;
+    overflow:hidden;
+    z-index:0;
+  }
+  .cat-card::before,
+  .crumbs::before,
+  .search-wrap::before,
+  .raw-search-wrap::before,
+  .primera-filter-btn::before{
+    content:"";
+    position:absolute;
+    top:0; left:-140%;
+    width:70%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(0,140,255,0.30), rgba(124,92,255,0.22), transparent);
+    transform:skewX(-20deg);
+    transition:left .5s ease;
+    z-index:0;
+    pointer-events:none;
+  }
+  .cat-card:hover::before,
+  .crumbs:hover::before,
+  .search-wrap:hover::before,
+  .raw-search-wrap:hover::before,
+  .primera-filter-btn:hover::before{ left:140%; }
+  .cat-card:hover{
+    background:var(--bg-off);
+    transform:translateY(-3px);
+    box-shadow:0 10px 26px rgba(10,10,11,0.08);
+    z-index:1;
+  }
+  .cat-card:active{ transform:translateY(-1px) scale(0.98); }
+  .cat-card:hover .cat-name{color:var(--accent);}
+  .cat-card:hover .cat-icon{ transform:scale(1.1) rotate(-4deg); box-shadow:0 6px 16px rgba(0,140,255,0.25); }
+  .cat-icon{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:var(--accent);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
+  }
+  .cat-icon svg{width:17px;height:17px;}
+  .cat-name{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    line-height:1.3;
+    color:var(--ink);
+    transition:color .15s ease;
+  }
+  .cat-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-faint);
+    letter-spacing:0.02em;
+  }
+  .cat-count::before{content:"[ "; }
+  .cat-count::after{content:" ]"; }
+
+  .tip-banner{
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-left:2px solid var(--ink-faint);
+    border-radius:8px;
+    padding:14px 16px;
+    margin:24px 0 12px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .tip-banner:first-child{margin-top:0;}
+  .tip-banner .tip-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .obj-item{
+    background:var(--bg);
+    border:1.5px solid #D3D3D6;
+    border-left:3px solid var(--accent);
+    border-radius:var(--radius-sm);
+    margin-bottom:12px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(10,10,11,0.05);
+    transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+  .obj-item:hover{
+    border-color:var(--accent);
+    box-shadow:0 6px 18px rgba(0,140,255,0.14);
+    transform:translateX(2px);
+  }
+  .obj-item.jump-flash{
+    animation:jumpFlash .9s ease;
+  }
+  @keyframes jumpFlash{
+    0%{ box-shadow:0 0 0 4px rgba(0,140,255,0.35); border-color:var(--accent); }
+    100%{ box-shadow:0 1px 4px rgba(10,10,11,0.05); }
+  }
+  .obj-header{
+    width:100%;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .obj-quote{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:20px;
+    color:var(--accent);
+    line-height:1;
+    flex-shrink:0;
+  }
+  .obj-question{
+    flex:1;
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .obj-question .hl{background:var(--accent-dim); border-radius:3px; color:var(--ink);}
+  .obj-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-faint);
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .obj-chevron{
+    width:16px;height:16px;
+    color:var(--ink-faint);
+    flex-shrink:0;
+    transition:transform .2s ease;
+  }
+  .obj-item.open .obj-chevron{transform:rotate(180deg); color:var(--accent);}
+
+  .obj-answers{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .obj-item.open .obj-answers{ max-height:none; }
+  .obj-answers-inner{
+    padding:2px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .ans-card{
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:13px 14px;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    padding-right:38px;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .ans-card:hover{ background:var(--accent-dim); border-color:var(--accent); transform:translateX(3px); box-shadow:-3px 0 0 var(--accent); }
+  .ans-card.niche{
+    background:var(--accent-dim);
+    border:1.5px solid #A9D8FF;
+  }
+  .ans-card.niche:hover{ border-color:var(--accent); }
+  .ans-card.tpl{
+    background:#FFF6E5;
+    border:1.5px solid #F5CD7E;
+  }
+  .ans-card.tpl:hover{ border-color:#D99A1B; }
+  .ans-card .hl{background:#FCEFC5; border-radius:3px;}
+  .ans-copy-icon{
+    position:absolute;
+    right:12px;
+    top:13px;
+    width:15px;
+    height:15px;
+    color:var(--ink-faint);
+  }
+  .ans-card:hover .ans-copy-icon{color:var(--accent);}
+  .ans-card.copied{ background:#0A0A0B; border-color:#0A0A0B; color:#fff; }
+  .ans-card.copied .ans-copy-icon{color:#7FD98A;}
+  .ans-card.copied .ans-tag{color:rgba(255,255,255,0.5);}
+
+  .ans-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:7px;
+  }
+  .ans-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:500;
+    letter-spacing:0.01em;
+    color:var(--ink-faint);
+  }
+  .ans-tag::before{content:"["; }
+  .ans-tag::after{content:"]"; }
+  .ans-tag.accent{color:var(--accent);}
+  .ans-tag.niche{
+    color:#fff;
+    background:var(--accent);
+    padding:2px 6px;
+    border-radius:4px;
+    font-weight:600;
+  }
+  .ans-tag.niche::before, .ans-tag.niche::after{ content:""; }
+  .ans-tag.template{
+    color:#7A4B00;
+    background:#FFD98A;
+    padding:2px 7px;
+    border-radius:4px;
+    font-weight:700;
+  }
+  .ans-tag.template::before, .ans-tag.template::after{ content:""; }
+
+  .search-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    margin-bottom:18px;
+  }
+  .search-group-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--accent);
+    margin:28px 0 10px;
+  }
+  .raw-group-count{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; white-space:nowrap; }
+  .search-group-title:first-child{margin-top:0;}
+  .empty-state{
+    text-align:center;
+    padding:70px 20px;
+    color:var(--ink-faint);
+  }
+  .empty-state svg{width:36px;height:36px; color:var(--line); margin-bottom:14px;}
+  .empty-state p{font-size:14px; font-family:'IBM Plex Mono',monospace;}
+
+  #toast{
+    position:fixed;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%) translateY(12px);
+    background:var(--ink);
+    color:#fff;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:13.5px;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:100;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  #toast svg{width:15px;height:15px;color:#7FD98A;flex-shrink:0;}
+
+  /* ---- Prime Era raw page + objections page: category sidebar (shared) ---- */
+  /* ---- shared: category "jump to question" sidebar on the objections page ---- */
+  .primera-layout{
+    display:grid;
+    grid-template-columns:200px 1fr;
+    gap:26px;
+    align-items:start;
+  }
+  .primera-filters{
+    position:sticky;
+    top:calc(var(--nav-h) + 100px);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    width:200px;
+    min-width:0;
+    max-height:calc(100vh - var(--nav-h) - 120px);
+    overflow-y:auto;
+  }
+  .primera-filter-btn{
+    text-align:left;
+    background:var(--bg-off);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    display:flex;
+    justify-content:space-between;
+    gap:6px;
+    overflow-wrap:anywhere;
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  .primera-filter-btn .n{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink-faint); font-size:11px; white-space:nowrap; flex-shrink:0; position:relative; z-index:1; }
+  .primera-filter-btn:hover{ border-color:var(--accent); }
+  .primera-filter-btn.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .primera-filter-btn.active .n{ color:rgba(255,255,255,0.75); }
+
+  .primera-content{ min-width:0; }
+  .primera-anim{ animation:primeraFadeIn .32s cubic-bezier(.2,.8,.3,1); }
+  @keyframes primeraFadeIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .raw-card{
+    background:var(--bg);
+    border:1px solid #D3D3D6;
+    border-radius:var(--radius-sm);
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .raw-card-head{
+    background:var(--bg-off);
+    padding:13px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .raw-card-head .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+  .raw-question{
+    font-size:18px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.3;
+  }
+  .raw-card-body{ padding:14px 16px 16px; }
+  .raw-message{
+    background:var(--accent-dim);
+    border:1.5px solid #A9D8FF;
+    border-radius:8px;
+    padding:12px 14px;
+    padding-right:36px;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    margin-bottom:10px;
+    transition:border-color .12s ease;
+  }
+  .raw-message:hover{ border-color:var(--accent); }
+  .raw-message .ans-copy-icon{ top:12px; }
+  .raw-message.copied{ background:#0A0A0B; border-color:#0A0A0B; color:#fff; }
+  .raw-message.copied .ans-copy-icon{ color:#7FD98A; }
+  .raw-explain{
+    font-size:13px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .raw-explain-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:4px;
+  }
+
+  /* ---- light glass treatment for all translucent panels/plashки ---- */
+  .cat-card, .obj-item, .ans-card, .raw-card, .raw-card-head,
+  .primera-filter-btn, .tip-banner, .search-wrap input, .raw-search-wrap input,
+  .brand{
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+  }
+  .brand{
+    display:inline-flex;
+    background:var(--bg-off);
+    border-radius:12px;
+    padding:9px 16px;
+    margin-bottom:18px;
+  }
+</style>
+<style>
+  #page-primera-raw{ max-width:920px; margin:0 auto; padding:calc(var(--nav-h) + 28px) 24px 90px; }
+  .raw-search-wrap{ position:relative; margin-bottom:22px; overflow:hidden; isolation:isolate; border-radius:10px; }
+  .raw-search-wrap input{
+    width:100%;
+    background:var(--bg-off);
+    border:1px solid #E4E4E6;
+    border-radius:10px;
+    padding:12px 14px 12px 42px;
+    color:#0A0A0B;
+    font-size:14.5px;
+    font-family:'IBM Plex Mono',monospace;
+    outline:none;
+    transition:border-color .15s, background .15s;
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+  }
+  .raw-search-wrap input::placeholder{ color:#6B6B70; }
+  .raw-search-wrap input:focus{ background:var(--bg); border-color:#008CFF; }
+  .raw-search-icon{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:#9A9A9E; pointer-events:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="pe-grid-lines">
+  <div class="pe-grid-line"></div>
+  <div class="pe-grid-line accent"></div>
+  <div class="pe-grid-line"></div>
+  <div class="pe-grid-line accent"></div>
+</div>
+
+<header class="pe-nav">
+  <a class="pe-nav-logo" href="index.html"><img src="assets/logo-full-ondark.png" alt="Prime Era"></a>
+  <nav class="pe-nav-links">
+    <a href="index.html" class="pe-nav-item">Главная</a>
+    <a href="glossary.html" class="pe-nav-item">Глоссарий</a>
+    <a href="objections.html" class="pe-nav-item">Возражения</a>
+    <a href="objections-raw.html" class="pe-nav-item active">Возражения Prime Era</a>
+    <a href="site-time-tracker.html" class="pe-nav-item">Хронометраж</a>
+    <a href="planner.html" class="pe-nav-item">Планировщик</a>
+    <a href="prime-sales.html" class="pe-nav-item">База знаний</a>
+    <a href="org-board.html" class="pe-nav-item">Оргсхема</a>
+  </nav>
+</header>
+
+    <div id="page-primera-raw">
+      <div class="eco-hero">
+        <span class="eco-hero-orb a"></span>
+        <span class="eco-hero-orb b"></span>
+        <span class="eco-hero-orb c"></span>
+        <h1 class="eco-hero-title">Возражения Prime Era</h1>
+        <div class="eco-hero-sub">PRIME ERA ECOSYSTEM</div>
+      </div>
+      <div class="raw-search-wrap">
+        <svg class="raw-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="rawSearchInput" type="text" placeholder="найти по вопросу, тексту или тактике..." autocomplete="off">
+      </div>
+      <div id="rawMain"></div>
+    
+      <div id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        <span id="toastText">Скопировано</span>
+      </div>
+    </div>
+<script id="raw-tables-data" type="application/json">{"top5": [{"question": "Мне не актуально", "message": "Скажите первым: «Скорее всего, вы сейчас сайт не искали. Я пишу первым, это нормально. Именно поэтому ничего не продаю. Давайте на созвоне за 10 минут покажу, как сайт приносит заявки. А вы сами решите, нужно вам это или нет. Хорошо?"}, {"question": "Нет денег", "message": "Понимаю, бюджет на сайт вы вряд ли заранее закладывали. Именно поэтому начнём не с цены, а с задачи. Посмотрим, сколько заявок вы теряете. И под это подберём формат. Так будет видно — вложение это или трата."}, {"question": "Сейчас денег нет, но в будущем планируем", "message": "Здорово, что сайт в планах. Именно поэтому предлагаю не терять время. На бесплатном созвоне накидаю, каким должен быть ваш сайт. К моменту бюджета у вас уже будет готовый план. Когда удобно?"}, {"question": "У вас нет кейсов в моей нише", "message": "Сразу честно: работаем с разными сферами, кейса именно из вашей может пока не быть. Именно поэтому смотрите не на отрасль, а на подход. Продающий сайт строится по одним правилам. На созвоне покажу, как соберу его под вашу задачу."}, {"question": "Будем иметь вас в виду", "message": "Понимаю, сейчас, видимо, не время. Именно поэтому, чтобы „иметь в виду“ было предметно, давайте за 10 минут на созвоне покажу, что можем. Тогда будет что вспомнить, когда тема созреет. Ок?"}, {"question": "Передам руководителю", "message": "Понимаю, решает руководитель. Именно поэтому давайте на коротком созвоне соберём понимание под ваш бизнес. Тогда вы передадите не „сайт за 80к“, а конкретную выгоду. Когда удобно?"}], "standard": [{"groupTitle": "Цена и деньги", "items": [{"question": "Дорого", "tactic": "Покажи окупаемость", "message": "Понимаю, цена важна. Давайте посчитаем. Если сайт даст даже 2–3 заявки в месяц — за сколько он окупится? Обычно быстро.", "explanation": "Переводим разговор с цены на заработок."}, {"question": "Дорого", "tactic": "Цена или результат", "message": "Сайт, который не продаёт — вот это дорого. За любую цену. Что вам важнее — цена или заявки?", "explanation": "Сдвигаем выбор с суммы на результат."}, {"question": "Нет денег / у меня нет денег", "tactic": "Задай вопрос", "message": "Понял. Денег нет вообще сейчас? Или вопрос в том, стоит ли сайт этих денег?", "explanation": "Разделяем «нет денег» и «не вижу ценности»."}, {"question": "Сейчас денег нет, но в будущем планируем", "tactic": "Уточни срок", "message": "Отлично, что в планах. А „в будущем“ — это через месяц-два? Или ближе к событию: сезон, запуск?", "explanation": "Размытое «потом» превращаем в дату."}, {"question": "Напишите через месяц / полгода", "tactic": "Зафиксируй касание", "message": "Хорошо, напишу. Чтобы не с нуля: подскажите, к тому времени бюджет появится или сначала посмотреть варианты? Пометил себе, вернусь к вам.", "explanation": "Не просто «ок», а фиксируем повод и срок."}, {"question": "У конкурентов дешевле / большая цена", "tactic": "Сравни по составу", "message": "Понимаю, цены на рынке разные. А вы сравниваете одно и то же? У нас структура, тексты, сборка — всё под ключ. За низкой ценой часто пустой шаблон. Что для вас важно, кроме цены?", "explanation": "Сравниваем не цифры, а наполнение."}, {"question": "Закажу у фрилансера за 10к вместо 80к", "tactic": "Покажи риск", "message": "Фрилансер дешевле, это правда. Только кто доделает, если он пропадёт? У нас 4 человека в команде, проект не встанет. Вам важно довести сайт до конца?", "explanation": "Не ругаем фрилансера. Показываем риск и надёжность."}, {"question": "Нам сделали сайт за 10к, а у вас дорого", "tactic": "Разница в задаче", "message": "Понимаю сравнение. Сайт за 10к — это обычно шаблон, чтобы просто был. Мы делаем сайт, чтобы он продавал: структура, тексты, офферы. Скажите, тот сайт заявки приносит?", "explanation": "Показываем: дешёвый сайт и продающий — разные задачи."}, {"question": "Сайт за 2 часа конвертит, а дорогой нет", "tactic": "Разбери причину", "message": "Так бывает. Значит, дело не в цене, а в структуре и трафике. Дорогой сайт без продающей логики тоже не выстрелит. Давайте на созвоне разберём, почему так.", "explanation": "Соглашаемся, переводим в разбор."}, {"question": "Студия — дорого", "tactic": "Что входит в цену", "message": "Мы не большая студия с наценкой. Это 4 специалиста полного цикла под одним именем. Вы платите за работу, а не за офис. На созвоне покажу, из чего складывается цена.", "explanation": "Снимаем миф про «дорогую студию»."}]}, {"groupTitle": "Клиент не отвечает", "items": [{"question": "Не ответил на первое холодное сообщение", "tactic": "Мягкий повтор", "message": "ИО, добрый день! Возможно, сообщение потерялось. Коротко: делаем продающие сайты на Tilda. Если неактуально — просто скажите, не буду беспокоить.", "explanation": "Второе касание без напора + лёгкий выход."}, {"question": "Пропал в середине диалога", "tactic": "Вернись без упрёка", "message": "ИО, вижу, диалог подвис. Понимаю, дел хватает. Скажите одним словом: тема ещё актуальна? Или сейчас не время? Пойму любой ответ.", "explanation": "Возвращаем мягко, даём выход."}, {"question": "Не отвечает после КП", "tactic": "Спроси обратную связь", "message": "ИО, отправлял вам КП по сайту. Не тороплю с решением. Скажите — вопросы по нему появились? Или что-то смутило? Разберу любой момент.", "explanation": "Ждём не «да», а обратную связь."}]}, {"groupTitle": "Вопросы о стоимости", "items": [{"question": "Какая цена? / сколько стоит? / цена вопроса?", "tactic": "Честно про брифинг", "message": "С радостью посчитаю. Честную цену до брифа назвать невозможно — она зависит от задач, объёма, функционала. Разброс большой. Именно поэтому нужен короткий созвон и бриф. После него назову точную сумму. Когда удобно созвониться?", "explanation": "Не выдумываем цифру. Ведём на созвон+бриф."}, {"question": "Сколько стоит лендинг из 5 блоков?", "tactic": "Дело не в блоках", "message": "Понимаю, хочется цифру. Но цена не в количестве блоков, а в задаче и текстах внутри них. 5 блоков могут продавать, а могут молчать. Давайте на созвоне разберу вашу задачу и назову точную цену.", "explanation": "Показываем, что «блоки» — не мерило."}, {"question": "Сколько стоит разработка под ключ?", "tactic": "Уточни объём", "message": "„Под ключ“ у всех разное — лендинг, многостраничник, магазин. Цена сильно отличается. Именно поэтому нужен короткий бриф. За 10 минут пойму задачу и назову точную сумму. Когда удобно?", "explanation": "Разные форматы — разная цена. Ведём на бриф."}, {"question": "Пришлите КП / вашу стоимость", "tactic": "Персонализируй", "message": "КП пришлю. Только общее КП без вашей задачи — это шаблон, толку мало. Именно поэтому сначала короткий созвон. Соберу предложение под вас с точной ценой. Когда удобно?", "explanation": "Не даём «отписаться» шаблоном."}, {"question": "Отправьте / скиньте портфолио", "tactic": "Персонализируй", "message": "Скину, конечно. Только общее портфолио мало о чём скажет. Давайте подберу 1–2 кейса под вашу задачу — так полезнее. Расскажите пару слов о бизнесе?", "explanation": "Отписку превращаем в диалог."}, {"question": "Это всё общие слова. Покажите идею и цену", "tactic": "Дай пользу + условие", "message": "Согласен, конкретика важнее слов. Именно поэтому предлагаю созвон: за 10 минут покажу идею под ваш бизнес и назову точную цену. Без брифа это будут те же общие слова. Когда удобно?", "explanation": "Соглашаемся с претензией и ведём на конкретику."}, {"question": "Ознакомьте со стоимостью услуг", "tactic": "Честно про диапазон", "message": "Наши проекты в диапазоне 40–100 тысяч. Точная цифра зависит от задачи. Именно поэтому нужен короткий бриф. После него скажу точную сумму по вашему проекту. Когда удобно созвониться?", "explanation": "Даём честный ориентир-вилку, ведём на бриф."}]}, {"groupTitle": "Не актуально / уже есть сайт", "items": [{"question": "Не актуально", "tactic": "Задай вопрос", "message": "Понял. Не актуально, потому что сайт уже есть? Или потому что это не в приоритете сейчас?", "explanation": "Выясняем причину, не спорим."}, {"question": "У меня уже есть сайт на Tilda", "tactic": "Спроси про заявки", "message": "Отлично, значит платформа вам знакома. Скажите — сайт заявки приносит? Часто на Tilda делают красиво, но без продающей структуры.", "explanation": "Наличие сайта ≠ продающий сайт."}, {"question": "Мы только что обновили сайт", "tactic": "Спроси про результат", "message": "Отлично, что занимались. После обновления заявок стало больше? Часто меняют картинку, а заявки те же.", "explanation": "Обновили» не значит «продаёт»."}, {"question": "Сайт в доработке не нуждается, он не используется", "tactic": "Мягко подсвети", "message": "Понял. Получается, сайт есть, но не работает на вас. Это как раз то, что можно исправить — сделать так, чтобы он приносил заявки. Интересно посмотреть, как?", "explanation": "Показываем: неиспользуемый сайт = упущенные деньги."}, {"question": "Клиенты пока на сайт не жаловались", "tactic": "Смести фокус", "message": "Это хорошо. Только клиенты обычно не жалуются — они просто уходят к тем, у кого понятнее. Скажите, сколько заявок в месяц даёт сайт сейчас?", "explanation": "Не жалуются» ≠ «сайт продаёт»."}, {"question": "Меня всё устраивает / нравится мой сайт", "tactic": "Спроси про заявки", "message": "Здорово, если работает. Скажите — сколько заявок в месяц даёт сайт? Иногда „устраивает“ — это привычка, а не потолок.", "explanation": "Мягко показываем зону роста."}, {"question": "Всё устраивает", "tactic": "Предложи разбор", "message": "Именно поэтому предлагаю бесплатный разбор. Покажу пару мест, где теряются заявки. Ничего не найдём — честно скажу, что менять не надо.", "explanation": "Польза без риска."}]}, {"groupTitle": "Сам делаю / другой подрядчик", "items": [{"question": "У меня есть дизайнер / я сам делаю", "tactic": "Раздели роли", "message": "Здорово, что есть кому заниматься. Дизайнер делает красиво. Мы делаем так, чтобы сайт продавал: структура, офферы, тексты. Это разные задачи. Сколько заявок сейчас даёт сайт?", "explanation": "Красивый и продающий — разное."}, {"question": "Друзья / родственники делают", "tactic": "Мягко про ответственность", "message": "Понимаю, так спокойнее и дешевле. Только с близкими сложно спросить за сроки и результат. У нас всё по договору. Насколько важно, чтобы сайт реально продавал?", "explanation": "Без обесценивания, про ответственность."}, {"question": "Работаю с другой студией постоянно", "tactic": "Не ломай текущее", "message": "Понимаю, менять на ходу незачем. Именно поэтому ничего рушить не предлагаю. Давайте сделаю бесплатный разбор вашего сайта — покажу пару точек роста. Решать будете вы.", "explanation": "Не воюем с их подрядчиком."}, {"question": "Мне не нравится ваше портфолио", "tactic": "Уточни", "message": "Спасибо за честность. А что именно смущает — картинки, нет кейса из вашей сферы, или что-то ещё?", "explanation": "Часто дело не в дизайне, а в кейсе."}, {"question": "Не нравится портфолио", "tactic": "Покажи подход", "message": "Наш сайт мы как раз переделываем. Новый — с сильными продающими текстами. Именно поэтому смотрите не на старые скрины. На созвоне покажу, как соберу сайт под вашу задачу.", "explanation": "Честно закрываем слабое место."}]}, {"groupTitle": "ИИ и другие платформы", "items": [{"question": "Сейчас все делают сайты в ИИ, кому нужен сайт за 100к", "tactic": "Инструмент ≠ результат", "message": "Нейросети реально помогают, мы сами ими пользуемся. Только ИИ выдаёт шаблон, а не продающий сайт под ваш бизнес. Поэтому такие сайты красивые, но часто не продают. Вам важна картинка или заявки?", "explanation": "Не спорим с трендом, показываем разницу."}, {"question": "Я сделаю сам нейросеткой", "tactic": "Время и результат", "message": "Попробовать можно. Только уйдёт много времени, а продающей логики нейросеть не даст. Вы хотите разбираться сами? Или чтобы сайт просто работал и приносил заявки?", "explanation": "Показываем цену времени."}, {"question": "На Claude сам сделаю / на Claude уже надо делать", "tactic": "Инструмент ≠ система", "message": "Claude — мощная штука, мы тоже в работе используем ИИ. Только он поможет с кусками, а не соберёт продающую систему: структуру, офферы, путь клиента, сборку. Хотите разбираться в этом сами или получить готовый результат?", "explanation": "Признаём инструмент, показываем разницу «кусок vs система»."}, {"question": "Tilda не нужна никому / тормозная / мне не подходит", "tactic": "Уточни задачу", "message": "Понял. А что именно смущает в Tilda — скорость, ограничения, что-то конкретное? Часто это миф: Tilda тянет и лендинги, и магазины. Расскажите задачу — скажу честно, подходит она вам или нет.", "explanation": "Выясняем реальную причину, показываем экспертизу."}, {"question": "Мне нужно на Bitrix / WordPress / другая CMS", "tactic": "Уточни требования", "message": "Понял. А почему принципиально эта платформа — есть конкретные требования: каталог, интеграции, нагрузка? Иногда за этим реальная задача, иногда привычка. Расскажите — подскажу честно, подходим мы или нет.", "explanation": "Честность + экспертиза. Не спорим с выбором."}]}, {"groupTitle": "Доверие и фокус студии", "items": [{"question": "Вы студия веб-дизайна? Высокий чек", "tactic": "Объясни, за что платят", "message": "Мы не только дизайн. Это полный цикл: структура, тексты, сборка, запуск. Чек — за результат, а не за картинку. На созвоне покажу, из чего складывается цена.", "explanation": "Платят за результат под ключ."}, {"question": "В моей нише вы не делали / нет кейсов в моей нише", "tactic": "Подход важнее отрасли", "message": "Верно, кейса из вашей сферы может не быть — мы как раз заходим в узкие ниши. При этом продающий сайт строится по одним правилам. Расскажите про специфику — покажу, как адаптирую.", "explanation": "Не блефуем, показываем экспертизу в подходе."}, {"question": "Нет доказательств, что поможет / повысит конверсию", "tactic": "Честность + разбор", "message": "Справедливо. Обещать точные цифры до анализа было бы нечестно — они зависят и от трафика. Что даём точно — продающую структуру по рабочим правилам. На созвоне покажу на вашем сайте, где теряются заявки.", "explanation": "Не обещаем невозможного."}, {"question": "Нужен полный комплект — сайт, SEO, реклама, воронки, у вас этого нет", "tactic": "Честно про фокус", "message": "Верно, мы сильны именно в продающих сайтах — это наша зона. Рекламу и SEO не тянем сами, зато не распыляемся и делаем сайт качественно. По остальному подскажу проверенных подрядчиков. Давайте начнём с сайта — это фундамент, без него остальное не работает.", "explanation": "Честно очерчиваем зону, позиционируем как фундамент."}]}, {"groupTitle": "Подумаю / отложим", "items": [{"question": "Я подумаю", "tactic": "Разбери до паузы", "message": "Понимаю, хочется взвесить. Именно поэтому давайте сразу разберём главные вопросы. Что для вас сейчас основной — цена, сроки или результат?", "explanation": "Вытаскиваем настоящую причину."}, {"question": "Мне надо позже / не сейчас", "tactic": "Уточни срок", "message": "Хорошо, тема на потом — это нормально. „Позже“ — это месяц-два? Или ближе к событию: сезон, запуск?", "explanation": "Уточняем дату вместо давления."}, {"question": "Давайте отложим на будущее", "tactic": "Дай пользу заранее", "message": "Хорошо. Чтобы будущее было продуктивным — давайте я на бесплатном созвоне накидаю план сайта. К моменту решения он у вас уже будет готов. Когда удобно?", "explanation": "Пауза с пользой, а не пустое «ок»."}, {"question": "Свяжитесь по почте, мы рассмотрим", "tactic": "Верни в диалог", "message": "Хорошо, отправлю. Только письмо без деталей мало что даст. Давайте пару слов сейчас — соберу предложение по делу, а не общий шаблон. Что у вас за бизнес?", "explanation": "Не даём уйти в почту."}, {"question": "Скиньте портфолио на будущее", "tactic": "Персонализируй", "message": "Скину. Только общее портфолио мало скажет. Давайте подберу 1–2 кейса под вашу задачу — так полезнее. Пару слов о бизнесе?", "explanation": "Отписку превращаем в диалог."}]}, {"groupTitle": "Не интересно / отказ", "items": [{"question": "Мне ничего не нужно / не интересно", "tactic": "Уважительный вопрос", "message": "Понял, спасибо. Один вопрос напоследок: тема сайтов вообще не в фокусе? Или просто сейчас неудачный момент? Пойму любой ответ.", "explanation": "Не давим, уточняем причину."}, {"question": "Благодарим за интерес / взял на заметку / если что обращусь", "tactic": "Зацепи вопросом", "message": "Спасибо! Подскажите честно, чтобы понять: тема сайта в принципе интересна, просто сейчас не время? Или пока не увидели, чем он вам поможет? От ответа зависит, что я вам подберу.", "explanation": "«Взял на заметку» — мягкий уход, а не «нет». Задаём вопрос, чтобы понять реальную причину."}, {"question": "Благодарим за интерес / взял на заметку (если вопрос не сработал)", "tactic": "Дай микро-пользу", "message": "Понял. Тогда, чтобы „на заметке“ было предметно, скину короткий разбор: 3 вещи, которые чаще всего мешают сайту приносить заявки. Прочитаете за минуту, вам решать. Скинуть?", "explanation": "Оставляем себе повод для следующего касания и даём ценность, а не просто прощаемся."}, {"question": "Благодарим за интерес (после 1–2 попыток всё равно закрыт)", "tactic": "Красивый выход", "message": "Понял, спасибо! Тогда буду на связи. Появится тема — напишите, помогу быстро. Хорошего дня!", "explanation": "Выход уместен ТОЛЬКО после попытки отработки, а не вместо неё."}, {"question": "Не нужно спамить", "tactic": "Извинись и выйди", "message": "Понял, извините за беспокойство. Спамить не буду. Если тема сайтов появится — я на связи. Хорошего дня!", "explanation": "Уважаем границу, оставляем позитив."}, {"question": "Жёсткий отказ / «шлют» при отработке", "tactic": "Спокойствие и достоинство", "message": "Понял вас, больше не побеспокою. Извините, если написал не вовремя. Всего доброго!", "explanation": "Не отвечаем грубостью. Спокойный выход = репутация бренда. Такой контакт иногда возвращается позже."}]}, {"groupTitle": "Реклама и трафик", "items": [{"question": "Я не гоню рекламу, сайт бесполезен", "tactic": "Свяжи в систему", "message": "Справедливо, без трафика сайт молчит. Именно поэтому сайт и реклама работают в паре. Давайте разберём, как выстроить это вместе. С какого канала планируете вести людей?", "explanation": "Переводим в разговор про систему «сайт + трафик»."}, {"question": "Работал с дизайнерами, пользы нет, сайт — трата денег", "tactic": "Разбери прошлый опыт", "message": "Понимаю, если прошлый опыт разочаровал. Скорее всего, сделали красиво, но без продающей логики или без трафика. Давайте разберём, что тогда пошло не так. Покажу, чем мы отличаемся.", "explanation": "Работаем с причиной провала."}, {"question": "Сайт не привлекает клиентов / вы не делаете рекламу", "tactic": "Честно про зону", "message": "Верно, рекламу мы не ведём. Наша зона — продающий сайт, который превращает трафик в заявки. Без хорошего сайта реклама сливает бюджет. Давайте сделаем сайт продающим, а по рекламе подскажу проверенных людей.", "explanation": "Честно очерчиваем зону, показываем себя как звено системы."}]}, {"groupTitle": "Согласование с руководителем", "items": [{"question": "«Мне нужно согласовать с руководителем» (и потом тишина)", "tactic": "Вооружи посредника", "message": "«Понял, решение за руководителем. Помогу вам его презентовать: подготовлю короткое КП с выгодами и цифрами — чтобы вы передали не „сайт за N“, а конкретную пользу. Так согласовать проще. Скинуть?»", "explanation": "Делаем сотрудника союзником и даём ему готовый аргумент."}, {"question": "«Надо согласовать с руководителем»", "tactic": "Уточни критерии ЛПР", "message": "«ИО, чтобы попасть в точку — подскажите, что для руководителя обычно решающее: цена, сроки, результат или примеры работ? Соберу материалы именно под это, чтобы согласовать было легче.»", "explanation": "Готовим аргументы под реальные критерии ЛПР, а не наугад."}, {"question": "«Надо согласовать»", "tactic": "Договорись о возврате", "message": "«Понял, согласуйте спокойно. Давайте наметим, когда мне вернуться, чтобы не потеряться: в [день] будет удобно узнать реакцию руководителя?»", "explanation": "Фиксируем срок возврата, иначе «согласую» = тишина навсегда."}, {"question": "Сотрудник не может внятно объяснить проект ЛПР", "tactic": "Предложи прямой контакт", "message": "«ИО, чтобы ничего не потерялось при пересказе — может, подключим руководителя на короткий созвон на 10 минут? Я всё покажу сам, вам не придётся отвечать за детали. Как удобнее организовать?»", "explanation": "Убираем «испорченный телефон» — выходим на ЛПР бережно к посреднику."}, {"question": "Сотрудник не может объяснить проект", "tactic": "Дай готовую подачу", "message": "«ИО, давайте так: подготовлю вам короткую выжимку в 3 пунктах — что делаем, что даст, сколько стоит. Вам останется просто переслать руководителю, ничего расписывать не придётся.»", "explanation": "Даём готовый «текст для пересылки» — снимаем нагрузку с посредника."}, {"question": "Сотрудник не может объяснить проект", "tactic": "Запиши мини-презентацию", "message": "«ИО, могу записать короткое видео на 2 минуты, где сам покажу проект и выгоды. Вы просто перешлёте руководителю — он увидит всё как есть, без искажений. Прислать?»", "explanation": "Видео от эксперта убеждает лучше пересказа сотрудника."}, {"question": "«Руководитель пока не смотрел / не решил»", "tactic": "Помоги сдвинуть", "message": "«Понимаю, у руководителя загрузка. Облегчу задачу: соберу всё на одной странице — суть, выгода, цена, сроки. Ему хватит минуты, чтобы принять решение. Подготовить?»", "explanation": "Снижаем усилие ЛПР до минимума — решение принимается быстрее."}, {"question": "«Руководитель не решил»", "tactic": "Предложи снять вопросы", "message": "«ИО, если у руководителя остались вопросы — я готов ответить на них напрямую, письменно или на коротком созвоне. Часто пара уточнений и решает. Организуем?»", "explanation": "Даём ЛПР канал задать вопросы — снимаем скрытые сомнения."}, {"question": "ЛПР недоступен, посредник тянет неделями", "tactic": "Мягкий дедлайн через ценность", "message": "«ИО, чтобы вы не потеряли текущие условия и место в графике — наметим срок, к которому получится показать руководителю? Придержу за вами цену до этой даты.»", "explanation": "Не давим страхом, а даём выгоду успеть. Дедлайн = забота."}, {"question": "ЛПР недоступен", "tactic": "Держи контакт полезным", "message": "«ИО, пока руководитель недоступен — давайте не терять связь. Скину пару идей по вашему сайту, чтобы, когда дойдёт до решения, было что показать. Ок?»", "explanation": "Остаёмся «на радаре» через пользу, а не через напоминания «ну что там?»."}, {"question": "Посредник сам «за», но боится выносить наверх", "tactic": "Сними его риск", "message": "«ИО, вижу, вам самому идея близка — спасибо. Чтобы вам было спокойно выносить её руководителю, подготовлю всё так, чтобы вы выглядели молодцом: с цифрами и обоснованием. Помогу с любым вопросом от него.»", "explanation": "Главный страх посредника — «а вдруг раскритикуют». Делаем его героем."}, {"question": "Посредник «за», но боится", "tactic": "Раздели ответственность", "message": "«ИО, давайте так: вы просто передаёте материалы, а если у руководителя вопросы — переключаете на меня, и я отвечаю сам. Никакой ответственности за детали на вас. Спокойнее так?»", "explanation": "Снимаем с посредника страх «спросят, а я не отвечу»."}]}, {"groupTitle": "Пропал во время работы над сайтом", "items": [{"question": "Не отвечает после отправки макета / правок на согласование", "tactic": "Упрости ответ", "message": "«ИО, отправлял макет на согласование. Чтобы вам было проще — скажите одним словом: „ок, идём дальше“ или „есть правки“? Если правки — накидайте, что поменять.»", "explanation": "Даём готовые варианты ответа — отвечать легче, чем формулировать."}, {"question": "Не отвечает после макета", "tactic": "Направь внимание", "message": "«ИО, посмотрите, пожалуйста, [первый экран / блок с ценами] — там ключевое. Всё ок или что-то поправить? От вашего ответа зависит, двигаемся ли дальше.»", "explanation": "Указываем, на что именно смотреть — снимаем «лень вникать»."}, {"question": "Не отвечает после макета", "tactic": "Предложи созвон-разбор", "message": "«ИО, если по макету проще обсудить голосом — давайте на 10 минут созвонимся, пройдёмся по экранам и сразу зафиксируем правки. Когда удобно?»", "explanation": "Кому-то легче проговорить, чем писать. Убираем барьер формата."}, {"question": "Пропал на этапе сбора материалов (тексты, фото, доступы)", "tactic": "Сними барьер", "message": "«ИО, работа готова двигаться, ждём от вас [материалы]. Понимаю, собрать бывает некогда. Помогу: подскажу, что именно нужно, или созвонимся и соберём вместе за 10 минут?»", "explanation": "Клиент тормозит не из-за нежелания, а потому что «не дошли руки»."}, {"question": "Пропал на этапе сбора материалов", "tactic": "Дай чек-лист", "message": "«ИО, чтобы вам не гадать, что присылать, — вот короткий список: [1) …, 2) …, 3) …]. Отметьте, что готово, а с остальным помогу. Так быстрее закроем этап.»", "explanation": "Понятный список снижает нагрузку и запускает действие."}, {"question": "Пропал на этапе сбора материалов", "tactic": "Возьми на себя", "message": "«ИО, если со сбором совсем никак — можем часть взять на себя: тексты напишем сами, фото подберём из стоков под вашу нишу. От вас только правки. Так удобнее?»", "explanation": "Убираем работу с плеч клиента — частая причина зависания."}, {"question": "«Занят, напишу позже» — и тишина", "tactic": "Мягко верни к дате", "message": "«ИО, понимаю, загрузка. Чтобы проект не завис — наметим ориентир: вернёмся к нему на этой неделе или лучше на следующей? Подстроюсь под вас.»", "explanation": "«Позже» без даты = проект зависает навсегда. Фиксируем срок."}, {"question": "«Занят, напишу позже»", "tactic": "Возьми инициативу", "message": "«ИО, давайте я сам напомню, чтобы вам не держать в голове. Написать в [день] или лучше на следующей неделе? Как удобно.»", "explanation": "Снимаем с клиента задачу «не забыть» — берём её на себя."}, {"question": "Сорвал назначенный созвон, не выходит на связь", "tactic": "Без упрёка, новый слот", "message": "«ИО, созвон не состоялся — ничего страшного, у всех бывает. Давайте перенесём. Когда удобнее — [вариант 1] или [вариант 2]?»", "explanation": "Не обвиняем, сразу даём 2 конкретных слота на выбор."}, {"question": "Сорвал созвон", "tactic": "Предложи переписку", "message": "«ИО, если созвон сложно вписать в график — можем всё решить в переписке, без звонка. Напишу вопросы по пунктам, ответите, когда удобно. Так подойдёт?»", "explanation": "Даём альтернативу формату — иногда звонок и есть барьер."}, {"question": "Отвечает односложно и тянет («ок», «угу», «позже»)", "tactic": "Задай конкретный вопрос", "message": "«ИО, чтобы двигаться предметно: что сейчас основное — определиться с бюджетом, сроками или ещё присматриваетесь? От этого зависит, что предложу.»", "explanation": "Односложные ответы = скрытое сомнение. Вытаскиваем его."}, {"question": "Отвечает односложно", "tactic": "Проверь актуальность прямо", "message": "«ИО, скажу честно — по коротким ответам сложно понять, в ту ли сторону идём. Тема сайта сейчас в приоритете или лучше вернуться позже? Пойму любой ответ.»", "explanation": "Прямой честный вопрос часто разблокирует настоящий разговор."}]}, {"groupTitle": "Не оплачивает счёт", "items": [{"question": "Не отвечает после выставленного счёта", "tactic": "Помоги с оплатой", "message": "«ИО, выставил вам счёт. Подскажите — оплата планируется в этот срок? Или удобнее сдвинуть / разбить на части? Подстроюсь, как вам комфортнее.»", "explanation": "Молчание на счёте часто = вопрос удобства/сроков. Предлагаем гибкость."}, {"question": "Не отвечает после выставленного счёта", "tactic": "Убери техбарьер", "message": "«ИО, подскажите — счёт дошёл нормально, реквизиты открылись? Если что-то не так с оплатой или нужен другой способ (карта / рассрочка) — скажите, пришлю.»", "explanation": "Иногда не платят из-за банальной технической загвоздки. Снимаем её."}, {"question": "Не отвечает после выставленного счёта", "tactic": "Напомни, что ждёт после", "message": "«ИО, как только счёт пройдёт — сразу стартуем и вы получите [первый этап / прототип] к [срок]. Не хочу, чтобы старт сдвигался. Оплата в силе?»", "explanation": "Показываем, что за оплатой идёт конкретное действие, а не пустота."}, {"question": "Клиент не оплачивает счёт (срок подходит/прошёл)", "tactic": "Уточни причину без давления", "message": "«ИО, вижу, счёт пока не прошёл. Всё в силе? Если что-то поменялось или нужна отсрочка — скажите честно, найдём решение.»", "explanation": "Не давим страхом, выясняем реальную причину."}, {"question": "Клиент не оплачивает счёт", "tactic": "Дай выбор", "message": "«ИО, чтобы понимать, как быть: удобнее оплатить полностью сейчас или разбить — часть сейчас, часть к сдаче? Оба варианта рабочие, скажите, как вам.»", "explanation": "Заменяем вопрос «платите или нет?» на «как именно платите?»."}, {"question": "«Нет денег прямо сейчас, оплачу позже»", "tactic": "Зафиксируй срок + гибкость", "message": "«Понял, бывает. Чтобы придержать за вами условия и место в графике — „позже“ это примерно когда? И если удобнее разбить на части — тоже можем.»", "explanation": "Размытое «позже» превращаем в дату + снимаем барьер рассрочкой."}, {"question": "«Нет денег прямо сейчас»", "tactic": "Стартуй с малого", "message": "«Понимаю. Тогда можем начать с небольшого этапа — [прототип / структура], это недорого. Увидите подход в деле, а основную оплату — когда будете готовы. Как вам?»", "explanation": "Снижаем порог входа, чтобы не терять контакт из-за бюджета."}, {"question": "«Оплачу со следующего поступления / после оплаты от клиентов»", "tactic": "Привяжись к событию", "message": "«Понимаю, ждёте поступление. Давайте так: закреплю за вами цену и старт, а вы напишете, как деньги придут. Ориентир по срокам есть?»", "explanation": "Не давим, но фиксируем договорённость и повод вернуться."}, {"question": "«Оплачу с поступления»", "tactic": "Подготовь всё заранее", "message": "«Отлично, тогда, пока ждёте поступление, давайте не терять время: соберу структуру и план, чтобы в день оплаты сразу стартовать. Так к запуску придём быстрее. Ок?»", "explanation": "Держим клиента «в проекте», даже пока нет оплаты."}, {"question": "Просит отсрочку / рассрочку", "tactic": "Предложи формат", "message": "«Без проблем, многие так стартуют. Можем разбить: часть сейчас — запускаем работу, остаток к сдаче. Так комфортнее? Подстрою под бюджет.»", "explanation": "Рассрочка часто снимает главный тормоз на финише."}, {"question": "Просит рассрочку", "tactic": "Раздели по этапам", "message": "«Давайте привяжем оплату к этапам: [оплата 1 → структура и прототип], [оплата 2 → сборка], [оплата 3 → запуск]. Платите за то, что уже видите. Честно для обеих сторон.»", "explanation": "Поэтапная оплата = доверие + предсказуемость для клиента."}, {"question": "«Оплачу, когда увижу первый результат»", "tactic": "Раздели этапы", "message": "«Понимаю, хочется уверенности. Именно поэтому работаем по этапам: вносите часть — показываю первый блок / прототип. Видите результат — двигаемся дальше. Ок?»", "explanation": "Дробим проект на этапы вместо спора про предоплату."}, {"question": "«Оплачу по результату»", "tactic": "Дай гарантию правок", "message": "«ИО, чтобы вам было спокойно: первый макет покажу до финальной оплаты, и правки на этом этапе входят в работу. Увидите, что делаем именно то, что нужно. Так подойдёт?»", "explanation": "Меняем «оплата по результату» на «предоплата + гарантия правок»."}, {"question": "Оспаривает сумму в счёте после согласования", "tactic": "Верни к договорённости", "message": "«Понял. Давайте сверимся — счёт собран ровно по тому, что согласовали: [состав]. Если что-то поменялось в задаче — скажите, пересчитаю честно. Что именно смущает?»", "explanation": "Спокойно возвращаем к зафиксированному объёму, без обороны."}, {"question": "Оспаривает сумму", "tactic": "Разложи на составляющие", "message": "«ИО, давайте разложу, из чего сумма: [структура + копирайтинг + сборка + запуск]. Так видно, за что платите. Если какой-то блок сейчас не нужен — уберём и цена снизится.»", "explanation": "Прозрачность состава снимает ощущение «дорого просто так»."}]}, {"groupTitle": "Реанимация и повторные касания", "items": [{"question": "Не ответил на первое приветственное сообщение", "tactic": "Мягкий повтор", "message": "«ИО, добрый день! Возможно, сообщение потерялось. Коротко: делаем продающие сайты на Tilda. Если неактуально — просто скажите, больше не побеспокою.»", "explanation": "Второе касание без напора + лёгкий выход."}, {"question": "Не ответил на первое приветственное сообщение", "tactic": "Заход с пользой", "message": "«ИО, здравствуйте! Не буду с порога ничего предлагать. Скажите только: сайт для [ниша клиента] у вас сейчас есть и он приносит заявки? От этого зависит, есть ли смысл общаться.»", "explanation": "Начинаем с вопроса о его ситуации, а не с продажи."}, {"question": "Не ответил на первое приветственное сообщение", "tactic": "Конкретный крючок", "message": "«ИО, добрый день! Смотрел ваш [сайт / профиль] — есть пара идей, как получать больше заявок с той же аудитории. Интересно, если покажу? Или сейчас не до этого?»", "explanation": "Персональный повод отвечает выше, чем шаблон."}, {"question": "Не отвечает после дозвона (созвон был, тишина)", "tactic": "Резюме + шаг", "message": "«ИО, спасибо за созвон! Как договаривались — готовлю [КП / варианты]. Подскажите, к [дата] актуально? Или сроки сдвинулись?»", "explanation": "Опираемся на договорённость, не начинаем с нуля."}, {"question": "Не отвечает после дозвона", "tactic": "Напомни ценность", "message": "«ИО, по итогу нашего разговора главное, что решаемо у вас — [боль клиента, которую озвучил]. Не хочу, чтобы задача зависла. Двигаемся дальше?»", "explanation": "Возвращаем к его же боли, а не к «ну что решили»."}, {"question": "Не отвечает после дозвона", "tactic": "Лёгкий выход", "message": "«ИО, вижу, после созвона тишина — бывает, планы меняются. Скажите честно: тема ещё живая или отложили? Пойму любой ответ.»", "explanation": "Даём сказать «нет» без неловкости — часто в ответ идёт «да, актуально»."}, {"question": "Не отвечает после КП", "tactic": "Спроси обратную связь", "message": "«ИО, отправлял вам КП по сайту. Не тороплю с решением. Скажите — вопросы появились? Или что-то смутило? Разберу любой момент.»", "explanation": "Ждём не «да», а обратную связь — на неё легче ответить."}, {"question": "Не отвечает после КП", "tactic": "Сними частые сомнения", "message": "«ИО, чтобы не гадать: после КП людей обычно тормозит цена, сроки или сомнение „а точно сработает“. Что ближе к вам? Помогу разобраться без обязательств.»", "explanation": "Даём варианты причин — выбрать проще, чем формулировать самому."}, {"question": "Не отвечает после КП", "tactic": "Уточни формат", "message": "«ИО, подскажите — КП в таком виде вам удобно смотреть? Могу собрать короче, только суть и цифры, если так нагляднее. Как лучше?»", "explanation": "Иногда молчат, потому что КП тяжело читать. Убираем этот барьер."}, {"question": "Не отвечает после нескольких касаний (2–3 сообщения)", "tactic": "Финальное деликатное касание", "message": "«ИО, не хочу быть навязчивым — это последнее сообщение по теме. Если сайт неактуален, всё пойму. Появится задача — просто напишите, помогу быстро. Хорошего дня!»", "explanation": "«Закрывающее» касание снимает давление и часто возвращает клиента."}, {"question": "Не отвечает после нескольких касаний", "tactic": "Смена угла", "message": "«ИО, возможно, я не туда захожу. Скажите прямо: вопрос в деньгах, во времени или сайт вообще не в приоритете сейчас? Подстроюсь под реальную ситуацию.»", "explanation": "Перед выходом — одна честная попытка нащупать настоящую причину."}, {"question": "Пропал в середине диалога", "tactic": "Вернись без упрёка", "message": "«ИО, вижу, диалог подвис — понимаю, дел хватает. Скажите одним словом: тема ещё актуальна? Или сейчас не время? Пойму любой ответ.»", "explanation": "Возвращаем мягко, ответ в один клик."}, {"question": "Пропал (долгая тишина, реанимация)", "tactic": "Заход через пользу", "message": "«ИО, добрый день! Не по продаже — просто полезное: собрал 3 ошибки, из-за которых сайт не приносит заявки. Скинуть? Вдруг пригодится.»", "explanation": "Возвращаем «остывшего» клиента ценностью, а не «ну что, решили?»."}, {"question": "Пропал (долгая тишина)", "tactic": "Новость как повод", "message": "«ИО, здравствуйте! Вспомнил про вашу задачу — у нас как раз [новый кейс в вашей сфере / решение]. Подумал, вам может быть в тему. Актуально ещё?»", "explanation": "Свежий повод оживить контакт без давления."}]}], "niche": [{"question": "У вас нет кейсов в моей нише", "tactic": "Наоборот, специализация", "message": "Как раз наоборот. Мы делаем сайты именно для [ЖК / автосалонов]. Знаем, на что смотрит ваш клиент — [конкретика ниши]. И строим сайт под это. На созвоне покажу кейсы из вашей сферы.", "explanation": "Бывший минус превращаем в главное УТП."}, {"question": "Вы делаете сайты всем подряд", "tactic": "Фокус = глубина", "message": "Нет, мы работаем только с [нишей]. Именно поэтому не учимся на вашем проекте, а сразу применяем то, что уже сработало у похожих компаний.", "explanation": "Узкий фокус читается как экспертность."}, {"question": "Чем вы лучше студии, что тоже делает сайты для [ниши]?", "tactic": "Назови конкретное отличие", "message": "Хороший вопрос. Наше отличие — [конкретика: скорость / тексты / кейс с цифрами по нише]. Давайте на созвоне сравним по делу. А вы выберете, что ближе.", "explanation": "При нишевании появляется прямой конкурент — нужен чёткий плюс."}, {"question": "У конкурентов в нише дешевле", "tactic": "Понимание специфики", "message": "В вашей сфере важна не цена, а то, что подрядчик понимает [специфику ниши] и не переделывает сайт трижды. Мы это уже проходили. Что для вас важно, кроме цены?", "explanation": "Экономия на понимании ниши = переделки. Подсвечиваем."}, {"question": "Наш сайт делает [название известной студии в нише]", "tactic": "Уважение + разбор", "message": "Хорошая студия, знаю их. Именно поэтому предлагаю не менять, а сделать бесплатный разбор текущего сайта. Покажу пару точек роста под [нишу]. Будет с чем сравнить.", "explanation": "Не воюем с сильным конкурентом, заходим через пользу."}, {"question": "У нас типовой сайт от застройщика / дилера / франшизы", "tactic": "Отличие от шаблона", "message": "Понял. Типовой сайт есть у всех в [нише] — и в этом проблема: вы неотличимы от конкурентов. Мы делаем сайт, который выделяет именно вас. Скажите, сколько заявок он даёт сейчас?", "explanation": "Показываем: типовое = слитая уникальность и заявки."}]}
+</script>
+<script src="assets/memory.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var RAW = JSON.parse(document.getElementById('raw-tables-data').textContent);
+
+  var ALL_GROUPS = [];
+  ALL_GROUPS.push({ key:'top5', title:'Топ 5', items: RAW.top5 });
+  (RAW.standard || []).forEach(function(g, i){
+    ALL_GROUPS.push({ key:'std'+i, title: g.groupTitle, items: g.items });
+  });
+  ALL_GROUPS.push({ key:'niche', title:'Нишевые', items: RAW.niche });
+
+  var FLAT_ALL = [];
+  ALL_GROUPS.forEach(function(g){
+    g.items.forEach(function(it){
+      var copy = {}; for(var k in it){ copy[k] = it[k]; }
+      copy.groupKey = g.key;
+      copy.groupTitle = g.title;
+      FLAT_ALL.push(copy);
+    });
+  });
+
+  var state = {
+    rawQuery: '',
+    primeraFilter: null
+  };
+
+  var toastEl = document.getElementById('toast');
+  var toastText = document.getElementById('toastText');
+  var toastTimer = null;
+
+  function esc(s){
+    return (s||'').replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function gtext(s){
+    return window.peGenderTransform ? window.peGenderTransform(s||'') : (s||'');
+  }
+
+  var rawMainEl = document.getElementById('rawMain');
+  var rawSearchInput = document.getElementById('rawSearchInput');
+
+  function rawHighlight(text, q){
+    var e = esc(text);
+    if(!q) return e;
+    var eq = esc(q);
+    try{
+      var re = new RegExp('(' + eq.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'ig');
+      return e.replace(re, '<span class="hl">$1</span>');
+    }catch(err){ return e; }
+  }
+
+  function rawCardHtml(item, idx){
+    var h = '<div class="raw-card">';
+    h += '<div class="raw-card-head"><span class="dot"></span><span class="raw-question">' + esc(item.question) + '</span></div>';
+    h += '<div class="raw-card-body">';
+    if(item.tactic){
+      var isTpl = item.groupKey === 'niche';
+      h += '<div class="ans-tags">';
+      h += '<span class="ans-tag niche">' + esc(item.tactic) + '</span>';
+      if(isTpl){ h += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
+      h += '</div>';
+    }
+    h += '<div class="raw-message" data-rawcopy="'+idx+'">' + esc(gtext(item.message)) +
+      '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+    '</div>';
+    if(item.explanation){
+      h += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + esc(item.explanation) + '</div>';
+    }
+    h += '</div></div>';
+    return h;
+  }
+
+  function renderRaw(){
+    var q = state.rawQuery.trim().toLowerCase();
+
+    var filterHtml = '<div class="primera-filters">';
+    filterHtml += '<button class="primera-filter-btn'+(state.primeraFilter===null?' active':'')+'" data-filter="">Все <span class="n">['+FLAT_ALL.length+']</span></button>';
+    ALL_GROUPS.forEach(function(g){
+      filterHtml += '<button class="primera-filter-btn'+(state.primeraFilter===g.key?' active':'')+'" data-filter="'+g.key+'">'+esc(g.title)+' <span class="n">['+g.items.length+']</span></button>';
+    });
+    filterHtml += '</div>';
+
+    var contentHtml;
+    if(q){
+      contentHtml = rawSearchHtml(q);
+    } else {
+      contentHtml = '';
+      var runningIdx = 0;
+      ALL_GROUPS.forEach(function(g){
+        if(state.primeraFilter !== null && state.primeraFilter !== g.key){
+          runningIdx += g.items.length;
+          return;
+        }
+        if(state.primeraFilter === null){
+          contentHtml += '<div class="search-group-title">' + esc(g.title) + ' <span class="raw-group-count">[' + g.items.length + ']</span></div>';
+        }
+        g.items.forEach(function(item){
+          var flatItem = FLAT_ALL[runningIdx];
+          contentHtml += rawCardHtml(flatItem, runningIdx);
+          runningIdx++;
+        });
+      });
+    }
+
+    rawMainEl.innerHTML = '<div class="primera-layout">' + filterHtml + '<div class="primera-content" id="primeraContent">' + contentHtml + '</div></div>';
+
+    var contentEl = document.getElementById('primeraContent');
+    if(contentEl){
+      contentEl.classList.remove('primera-anim');
+      void contentEl.offsetWidth;
+      contentEl.classList.add('primera-anim');
+    }
+  }
+
+  function rawSearchHtml(q){
+    var results = [];
+    FLAT_ALL.forEach(function(item, idx){
+      var hit = (item.question && item.question.toLowerCase().indexOf(q) !== -1) ||
+                (item.message && item.message.toLowerCase().indexOf(q) !== -1) ||
+                (item.tactic && item.tactic.toLowerCase().indexOf(q) !== -1) ||
+                (item.explanation && item.explanation.toLowerCase().indexOf(q) !== -1);
+      if(hit){ results.push({item:item, idx:idx}); }
+    });
+
+    var html = '';
+    if(!results.length){
+      html += '<div class="empty-state">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
+        '<p>ничего не найдено по запросу «' + esc(state.rawQuery) + '»</p>' +
+      '</div>';
+      return html;
+    }
+    html += '<div class="search-meta">найдено: ' + results.length + '</div>';
+    var lastGroup = null;
+    results.forEach(function(r){
+      var item = r.item;
+      if(item.groupTitle !== lastGroup){
+        html += '<div class="search-group-title">' + esc(item.groupTitle) + '</div>';
+        lastGroup = item.groupTitle;
+      }
+      html += '<div class="raw-card">';
+      html += '<div class="raw-card-head"><span class="dot"></span><span class="raw-question">' + rawHighlight(item.question, state.rawQuery) + '</span></div>';
+      html += '<div class="raw-card-body">';
+      if(item.tactic){
+        var isTpl = item.groupKey === 'niche';
+        html += '<div class="ans-tags">';
+        html += '<span class="ans-tag niche">' + rawHighlight(item.tactic, state.rawQuery) + '</span>';
+        if(isTpl){ html += '<span class="ans-tag template">&#9888; шаблон — впишите нишу</span>'; }
+        html += '</div>';
+      }
+      html += '<div class="raw-message" data-rawcopy="'+r.idx+'">' + rawHighlight(gtext(item.message), state.rawQuery) +
+        '<svg class="ans-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+      '</div>';
+      if(item.explanation){
+        html += '<div class="raw-explain"><span class="raw-explain-label">пояснение</span>' + rawHighlight(item.explanation, state.rawQuery) + '</div>';
+      }
+      html += '</div></div>';
+    });
+    return html;
+  }
+
+  function copyText(text, el){
+    if(window.peGenderTransform){ text = window.peGenderTransform(text); }
+    var done = function(ok){
+      if(ok){
+        el.classList.add('copied');
+        setTimeout(function(){ el.classList.remove('copied'); }, 1400);
+        showToast('ответ скопирован — вставляйте в чат');
+      } else {
+        showToast('не удалось скопировать, выделите текст вручную');
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){done(true);}).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, cb){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      cb(ok);
+    }catch(e){
+      cb(false);
+    }
+  }
+
+  function showToast(msg){
+    toastText.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2000);
+  }
+
+  rawMainEl.addEventListener('click', function(e){
+    var filterBtn = e.target.closest('[data-filter]');
+    var rawCopyEl = e.target.closest('[data-rawcopy]');
+    if(filterBtn){
+      var key = filterBtn.getAttribute('data-filter');
+      state.primeraFilter = key === '' ? null : key;
+      renderRaw();
+      return;
+    }
+    if(rawCopyEl){
+      var idx = parseInt(rawCopyEl.getAttribute('data-rawcopy'),10);
+      var text = FLAT_ALL[idx].message;
+      copyText(text, rawCopyEl);
+      return;
+    }
+  });
+
+  if(rawSearchInput){
+    var rawSearchDebounce = null;
+    rawSearchInput.addEventListener('input', function(){
+      clearTimeout(rawSearchDebounce);
+      var val = rawSearchInput.value;
+      rawSearchDebounce = setTimeout(function(){
+        state.rawQuery = val;
+        renderRaw();
+      }, 120);
+    });
+  }
+
+  window.peRerenderObjections = function(){
+    renderRaw();
+  };
+
+  renderRaw();
+})();
+</script>
+</body>
+</html>
