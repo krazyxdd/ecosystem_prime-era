@@ -70,18 +70,37 @@
   .edit-banner .dot{width:9px;height:9px;border-radius:50%;background:#e8672c;animation:pulseDot 1.1s infinite;}
   @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
   body.edit-mode .edit-banner{display:inline-flex;}
-  body[data-header-dark="1"] .logo-wrap img{filter:invert(1) brightness(1.7);}
   body[data-header-dark="1"] .edit-banner{color:#ffb99e;}
-  .brand{display:flex;align-items:center;gap:10px;flex:none;}
-  .logo-wrap{position:relative;height:40px;display:flex;align-items:center;cursor:default;border-radius:6px;flex:none;}
-  .logo-wrap img{height:40px;display:block;}
-  body.edit-mode .logo-wrap{cursor:pointer;}
-  .logo-wrap .logo-hint{
-    position:absolute;inset:-4px;border:1.5px dashed transparent;border-radius:8px;
-    display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;
-    color:#fff;background:rgba(32,36,43,0);opacity:0;transition:opacity .15s;
+  .toolbar > *:not(.logo-frame){position:relative;z-index:2;}
+  .logo-frame{
+    position:absolute;inset:0;z-index:0;overflow:hidden;
+    background:#eef0f3;touch-action:none;
   }
-  body.edit-mode .logo-wrap:hover .logo-hint{opacity:1;background:rgba(32,36,43,.72);border-color:#fff;}
+  .logo-frame img{
+    position:absolute;top:50%;left:50%;
+    max-width:100%;max-height:100%;width:auto;height:auto;
+    transform:translate(-50%,-50%);
+    user-select:none;-webkit-user-drag:none;pointer-events:none;
+  }
+  body[data-header-dark="1"] .logo-frame{background:#2b2f36;}
+  body.edit-mode .logo-frame{cursor:grab;}
+  body.edit-mode .logo-frame.dragging{cursor:grabbing;}
+  .logo-edit-hint{
+    position:absolute;top:6px;left:12px;z-index:3;font-size:10px;font-weight:700;color:#fff;
+    background:rgba(32,36,43,.55);padding:4px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .15s;
+  }
+  body.edit-mode .logo-frame:hover .logo-edit-hint{opacity:.9;}
+  .logo-edit-controls{
+    position:absolute;left:12px;bottom:6px;z-index:3;display:none;align-items:center;gap:8px;
+    background:rgba(32,36,43,.72);padding:6px 10px;border-radius:999px;
+  }
+  body.edit-mode .logo-edit-controls{display:flex;}
+  .logo-edit-controls button{
+    border:none;background:rgba(255,255,255,.14);color:#fff;width:24px;height:24px;border-radius:50%;
+    cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .logo-edit-controls button:hover{background:rgba(255,255,255,.28);}
+  .logo-edit-controls input[type=range]{width:90px;accent-color:#e8672c;}
   .brand-titles{flex:1 1 auto;min-width:0;line-height:1.05;text-align:center;padding:0 10px;}
   .brand-titles h1{margin:0;font-size:clamp(20px,2.8vw,40px);font-weight:900;font-family:var(--heading-font);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--toolbar-fg);}
@@ -170,7 +189,7 @@
     --tint:#eceef1;--mid:#d7dade;--accent:#4b5563;
   }
   .exec-chip{margin-top:7px;display:flex;justify-content:center;}
-  .sec-card-wrap{height:70px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
+  .sec-card-wrap{height:104px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
   .sec-card{
     background:#f4f5f7;border:1px solid #cfd3da;border-radius:8px;
     padding:9px 20px 10px;text-align:center;font-size:12.5px;font-weight:800;line-height:1.3;
@@ -236,31 +255,31 @@
   .unit-desc:before{content:"";position:absolute;left:0;top:6px;width:3px;height:3px;border-radius:50%;background:var(--accent);}
 
   .person{
-    display:inline-flex;align-items:center;gap:6px;max-width:100%;
+    display:inline-flex;align-items:center;gap:8px;max-width:100%;
     background:var(--tint);border:1px solid var(--mid);color:var(--ink);
-    border-radius:999px;padding:3px 10px 3px 3px;font-size:9.6px;font-weight:700;position:relative;
+    border-radius:999px;padding:4px 12px 4px 4px;font-size:10.6px;font-weight:700;position:relative;
   }
   .p-avatar{
-    width:23px;height:23px;border-radius:50%;background-color:var(--accent);background-size:cover;background-position:center;
-    color:#fff;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:800;flex:none;
-    cursor:pointer;box-shadow:0 0 0 1.5px #fff;filter:var(--col-filter);
+    width:46px;height:46px;border-radius:50%;background-color:var(--accent);background-size:cover;background-position:center;
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none;
+    cursor:pointer;box-shadow:0 0 0 2px #fff;filter:var(--col-filter);
   }
-  .p-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88px;}
+  .p-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:none;min-width:0;flex:0 1 auto;}
   .p-select{
-    display:none;border:none;background:transparent;font-size:9.6px;font-weight:700;color:var(--ink);
-    max-width:112px;cursor:pointer;
+    display:none;border:none;background:transparent;font-size:10.6px;font-weight:700;color:var(--ink);
+    max-width:170px;cursor:pointer;
   }
   body.edit-mode .p-name{display:none;}
   body.edit-mode .p-select{display:inline-block;}
 
   /* ---------- employee avatars in the toolbar ---------- */
   .toolbar-avatars{display:flex;align-items:center;flex:none;}
-  .toolbar-avatars .dock-avatar{margin-left:-9px;}
+  .toolbar-avatars .dock-avatar{margin-left:-20px;}
   .toolbar-avatars .dock-avatar:first-child{margin-left:0;}
   .dock-avatar{
-    width:32px;height:32px;border-radius:50%;background-color:#4b5563;background-size:cover;background-position:center;
-    border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);cursor:pointer;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex:none;
+    width:64px;height:64px;border-radius:50%;background-color:#4b5563;background-size:cover;background-position:center;
+    border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.28);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;font-weight:800;flex:none;
     transition:transform .12s ease, z-index 0s;
   }
   .toolbar-avatars .dock-avatar:hover{transform:translateY(-3px) scale(1.08);z-index:5;}
@@ -280,8 +299,11 @@
   }
   .emp-name-input{width:100%;text-align:center;font-size:13px;font-weight:800;border:1px solid transparent;border-radius:6px;padding:4px 6px;margin-bottom:4px;background:transparent;}
   .emp-name-input:hover, .emp-name-input:focus{border-color:#dcdfe4;background:#fff;outline:none;}
-  .emp-pos-input{width:100%;text-align:center;font-size:11px;color:#6b5f00;border:1px solid transparent;border-radius:6px;padding:3px 6px;margin-bottom:6px;background:transparent;font-weight:700;}
-  .emp-pos-input:hover, .emp-pos-input:focus{border-color:#dcdfe4;background:#fff;outline:none;}
+  .emp-pos-computed{
+    font-size:11px;color:#6b5f00;font-weight:700;margin-bottom:6px;line-height:1.35;
+    text-align:center;white-space:normal;word-wrap:break-word;overflow-wrap:anywhere;
+  }
+  .emp-pos-computed.empty{color:#a7abb2;font-weight:600;font-style:italic;}
   .emp-desc{font-size:11px;color:var(--ink-soft);line-height:1.4;min-height:16px;}
   .emp-del{display:none;position:absolute;top:8px;right:8px;border:none;background:none;color:#c7a0ab;font-size:13px;cursor:pointer;}
   body.edit-mode .emp-del{display:inline-block;}
@@ -416,8 +438,8 @@
      на высоту общего меню и сдвигаем её вниз, чтобы всё по-прежнему точно
      помещалось в экран и ничего не перекрывалось общим меню сверху */
   body{
-    height:calc(100vh - var(--nav-h)) !important;
-    margin-top:var(--nav-h) !important;
+    height:calc(100vh - var(--nav-h, 60px)) !important;
+    margin-top:var(--nav-h, 60px) !important;
   }
 </style>
 </head>
@@ -438,13 +460,18 @@
 <script src="assets/memory.js"></script>
 
   <div class="toolbar">
-    <div class="brand">
-      <div class="logo-wrap" id="logoWrap">
-        <img id="logoImg" src="" alt="Логотип">
-        <div class="logo-hint">Изменить логотип</div>
+    <div class="logo-frame" id="logoFrame">
+      <img id="logoImg" src="" alt="Логотип" draggable="false">
+      <div class="logo-edit-hint">Перетащите, чтобы подвинуть</div>
+      <div class="logo-edit-controls">
+        <button type="button" id="logoZoomOut" title="Уменьшить">−</button>
+        <input type="range" id="logoZoomRange" min="0.3" max="4" step="0.01" value="1">
+        <button type="button" id="logoZoomIn" title="Увеличить">+</button>
+        <button type="button" id="logoChangeBtn" title="Заменить логотип">🖼</button>
+        <button type="button" id="logoResetBtn" title="Сбросить положение">⟲</button>
       </div>
-      <input type="file" id="logoFile" accept="image/*" style="display:none;">
     </div>
+    <input type="file" id="logoFile" accept="image/*" style="display:none;">
     <div class="brand-titles">
       <h1 contenteditable="false" class="ed" data-bind="header.title">Организационная схема</h1>
       <p contenteditable="false" class="ed" data-bind="header.subtitle">СТРУКТУРА УПРАВЛЕНИЯ</p>
@@ -724,6 +751,7 @@ function ensureIds(obj){
   if(!obj.theme.stageBg) obj.theme.stageBg = '#6b6f79';
   if(!obj.theme.headerBg) obj.theme.headerBg = '#ffffff';
   if(!obj.theme.style) obj.theme.style = 'classic';
+  if(!obj.header.logoTransform) obj.header.logoTransform = {x:0,y:0,scale:1};
   return obj;
 }
 function cloneSeed(){ return JSON.parse(JSON.stringify(seed)); }
@@ -761,6 +789,18 @@ function editable(tag, cls, html, onInput){
   return e;
 }
 function employeeById(id){ return state.employees.find(e=>e.id===id) || null; }
+function stripTags(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return tmp.textContent || tmp.innerText || '';
+}
+function computeEmployeePositions(id){
+  const list = [];
+  if(state.director.employeeId === id) list.push(stripTags(state.director.label));
+  state.secretaries.forEach(sec=>{ if(sec.employeeId === id) list.push(stripTags(sec.label)); });
+  state.departments.forEach(dept=>{ if(dept.secEmployeeId === id) list.push(stripTags(dept.secLabel)); });
+  return list;
+}
 function initials(name){
   const parts = (name||'').trim().split(/\s+/).filter(Boolean);
   if(!parts.length) return '?';
@@ -833,6 +873,18 @@ function renderHeaderBindings(){
 
 
   document.getElementById('logoImg').src = state.header.logo || LOGO_DEFAULT;
+  applyLogoTransform();
+}
+function ensureLogoTransform(){
+  if(!state.header.logoTransform) state.header.logoTransform = {x:0,y:0,scale:1};
+}
+function applyLogoTransform(){
+  ensureLogoTransform();
+  const t = state.header.logoTransform;
+  const img = document.getElementById('logoImg');
+  img.style.transform = `translate(-50%,-50%) translate(${t.x}px, ${t.y}px) scale(${t.scale})`;
+  const range = document.getElementById('logoZoomRange');
+  if(range) range.value = t.scale;
 }
 
 const colRefs = {}; // id -> {tagEl, headEl}
@@ -1020,7 +1072,8 @@ function openEmployeeCard(id){
   if(a.bg) av.style.backgroundImage = a.bg;
   c.appendChild(av);
   c.appendChild(el('div','emp-pop-name', emp.name));
-  if(emp.positions) c.appendChild(el('div','emp-pop-positions', emp.positions));
+  const positions = computeEmployeePositions(id);
+  if(positions.length) c.appendChild(el('div','emp-pop-positions', positions.join(', ')));
   const desc = el('div','emp-pop-desc');
   desc.innerHTML = emp.description || '<i>Описание пока не добавлено.</i>';
   c.appendChild(desc);
@@ -1117,6 +1170,7 @@ document.getElementById('headerCustom').addEventListener('input', function(){
 document.getElementById('themeBtn').addEventListener('click', ()=>{
   renderThemeModal();
   openModal('themeOverlay');
+  setTimeout(renderThemeModal, 220);
 });
 
 let pendingAvatarEmployeeId = null;
@@ -1157,13 +1211,10 @@ function renderEmployeesModal(){
     nameInput.addEventListener('change', ()=>{ renderAll(); scheduleSave(); });
     card.appendChild(nameInput);
 
-    const posInput = document.createElement('input');
-    posInput.className = 'emp-pos-input';
-    posInput.value = emp.positions || '';
-    posInput.placeholder = 'Должность(и)';
-    posInput.disabled = !editMode;
-    posInput.addEventListener('input', ()=>{ emp.positions = posInput.value; scheduleSave(); });
-    card.appendChild(posInput);
+    const positions = computeEmployeePositions(emp.id);
+    const posDiv = el('div','emp-pos-computed', positions.length ? positions.join(', ') : 'Нет назначений в схеме');
+    if(!positions.length) posDiv.classList.add('empty');
+    card.appendChild(posDiv);
 
     const desc = editable('div','emp-desc', emp.description || '', v=> emp.description = v);
     if(!emp.description && !editMode) desc.innerHTML = '<i>Описание не указано.</i>';
@@ -1336,22 +1387,82 @@ document.getElementById('resetBtn').addEventListener('click', ()=> askPassword('
 document.getElementById('glossaryBtn').addEventListener('click', ()=> openModal('glossOverlay'));
 document.getElementById('employeesBtn').addEventListener('click', ()=> openModal('employeesOverlay'));
 
-/* ============ logo upload ============ */
-document.getElementById('logoWrap').addEventListener('click', ()=>{
-  if(!editMode) return;
-  document.getElementById('logoFile').click();
-});
+/* ============ logo upload / drag / zoom ============ */
 document.getElementById('logoFile').addEventListener('change', (ev)=>{
   const file = ev.target.files[0];
   if(!file) return;
   const reader = new FileReader();
   reader.onload = () => {
     state.header.logo = reader.result;
+    state.header.logoTransform = {x:0,y:0,scale:1};
     document.getElementById('logoImg').src = reader.result;
+    applyLogoTransform();
     scheduleSave();
   };
   reader.readAsDataURL(file);
 });
+(function setupLogoFrame(){
+  const frame = document.getElementById('logoFrame');
+  let dragging=false, startX=0, startY=0, origX=0, origY=0;
+  frame.addEventListener('pointerdown', (e)=>{
+    if(!editMode || e.target.closest('.logo-edit-controls')) return;
+    dragging = true;
+    frame.classList.add('dragging');
+    startX = e.clientX; startY = e.clientY;
+    ensureLogoTransform();
+    origX = state.header.logoTransform.x;
+    origY = state.header.logoTransform.y;
+    try{ frame.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  frame.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    state.header.logoTransform.x = origX + (e.clientX - startX);
+    state.header.logoTransform.y = origY + (e.clientY - startY);
+    applyLogoTransform();
+  });
+  function endDrag(e){
+    if(!dragging) return;
+    dragging = false;
+    frame.classList.remove('dragging');
+    try{ frame.releasePointerCapture(e.pointerId); }catch(_){}
+    scheduleSave();
+  }
+  frame.addEventListener('pointerup', endDrag);
+  frame.addEventListener('pointercancel', endDrag);
+  frame.addEventListener('wheel', (e)=>{
+    if(!editMode || e.target.closest('.logo-edit-controls')) return;
+    e.preventDefault();
+    ensureLogoTransform();
+    const delta = e.deltaY < 0 ? 1.08 : 1/1.08;
+    state.header.logoTransform.scale = Math.min(4, Math.max(0.3, state.header.logoTransform.scale*delta));
+    applyLogoTransform();
+    scheduleSave();
+  }, {passive:false});
+  document.getElementById('logoZoomRange').addEventListener('input', function(){
+    ensureLogoTransform();
+    state.header.logoTransform.scale = parseFloat(this.value);
+    applyLogoTransform();
+    scheduleSave();
+  });
+  document.getElementById('logoZoomIn').addEventListener('click', ()=>{
+    ensureLogoTransform();
+    state.header.logoTransform.scale = Math.min(4, state.header.logoTransform.scale*1.15);
+    applyLogoTransform();
+    scheduleSave();
+  });
+  document.getElementById('logoZoomOut').addEventListener('click', ()=>{
+    ensureLogoTransform();
+    state.header.logoTransform.scale = Math.max(0.3, state.header.logoTransform.scale/1.15);
+    applyLogoTransform();
+    scheduleSave();
+  });
+  document.getElementById('logoResetBtn').addEventListener('click', ()=>{
+    state.header.logoTransform = {x:0,y:0,scale:1};
+    applyLogoTransform();
+    scheduleSave();
+  });
+  document.getElementById('logoChangeBtn').addEventListener('click', ()=> document.getElementById('logoFile').click());
+})();
 
 /* ============ employee avatar upload ============ */
 document.getElementById('employeeAvatarFile').addEventListener('change', (ev)=>{
