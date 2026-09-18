@@ -71,36 +71,22 @@
   @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
   body.edit-mode .edit-banner{display:inline-flex;}
   body[data-header-dark="1"] .edit-banner{color:#ffb99e;}
-  .toolbar > *:not(.logo-frame){position:relative;z-index:2;}
-  .logo-frame{
-    position:absolute;inset:0;z-index:0;overflow:hidden;
-    background:#eef0f3;touch-action:none;
+  .logo-box{
+    position:relative;height:100%;width:200px;flex:none;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
   }
-  .logo-frame img{
-    position:absolute;top:50%;left:50%;
-    max-width:100%;max-height:100%;width:auto;height:auto;
-    transform:translate(-50%,-50%);
-    user-select:none;-webkit-user-drag:none;pointer-events:none;
+  .logo-box img{max-width:100%;max-height:76px;width:auto;height:auto;display:block;}
+  .logo-edit-btn{
+    display:none;position:absolute;right:6px;bottom:6px;z-index:2;
+    width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(32,36,43,.78);color:#fff;font-size:13px;
+    align-items:center;justify-content:center;
   }
-  body[data-header-dark="1"] .logo-frame{background:#2b2f36;}
-  body.edit-mode .logo-frame{cursor:grab;}
-  body.edit-mode .logo-frame.dragging{cursor:grabbing;}
-  .logo-edit-hint{
-    position:absolute;top:6px;left:12px;z-index:3;font-size:10px;font-weight:700;color:#fff;
-    background:rgba(32,36,43,.55);padding:4px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .15s;
-  }
-  body.edit-mode .logo-frame:hover .logo-edit-hint{opacity:.9;}
-  .logo-edit-controls{
-    position:absolute;left:12px;bottom:6px;z-index:3;display:none;align-items:center;gap:8px;
-    background:rgba(32,36,43,.72);padding:6px 10px;border-radius:999px;
-  }
-  body.edit-mode .logo-edit-controls{display:flex;}
-  .logo-edit-controls button{
-    border:none;background:rgba(255,255,255,.14);color:#fff;width:24px;height:24px;border-radius:50%;
-    cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;
-  }
-  .logo-edit-controls button:hover{background:rgba(255,255,255,.28);}
-  .logo-edit-controls input[type=range]{width:90px;accent-color:#e8672c;}
+  body.edit-mode .logo-edit-btn{display:flex;}
+  .logo-edit-btn:hover{background:rgba(32,36,43,.95);}
+  body.edit-mode .menu-draggable{cursor:grab;}
+  body.edit-mode .menu-draggable:hover{outline:1.5px dashed #e8672c;outline-offset:3px;border-radius:10px;}
+  body.edit-mode .menu-draggable.dragging{cursor:grabbing;outline-style:solid;outline-offset:2px;}
   .brand-titles{flex:1 1 auto;min-width:0;line-height:1.05;text-align:center;padding:0 10px;}
   .brand-titles h1{margin:0;font-size:clamp(20px,2.8vw,40px);font-weight:900;font-family:var(--heading-font);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--toolbar-fg);}
@@ -189,7 +175,7 @@
     --tint:#eceef1;--mid:#d7dade;--accent:#4b5563;
   }
   .exec-chip{margin-top:7px;display:flex;justify-content:center;}
-  .sec-card-wrap{height:104px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
+  .sec-card-wrap{height:80px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
   .sec-card{
     background:#f4f5f7;border:1px solid #cfd3da;border-radius:8px;
     padding:9px 20px 10px;text-align:center;font-size:12.5px;font-weight:800;line-height:1.3;
@@ -260,9 +246,9 @@
     border-radius:999px;padding:4px 12px 4px 4px;font-size:10.6px;font-weight:700;position:relative;
   }
   .p-avatar{
-    width:46px;height:46px;border-radius:50%;background-color:var(--accent);background-size:cover;background-position:center;
-    color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none;
-    cursor:pointer;box-shadow:0 0 0 2px #fff;filter:var(--col-filter);
+    width:32px;height:32px;border-radius:50%;background-color:var(--accent);background-size:cover;background-position:center;
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none;
+    cursor:pointer;box-shadow:0 0 0 1.5px #fff;filter:var(--col-filter);
   }
   .p-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:none;min-width:0;flex:0 1 auto;}
   .p-select{
@@ -300,8 +286,8 @@
   .emp-name-input{width:100%;text-align:center;font-size:13px;font-weight:800;border:1px solid transparent;border-radius:6px;padding:4px 6px;margin-bottom:4px;background:transparent;}
   .emp-name-input:hover, .emp-name-input:focus{border-color:#dcdfe4;background:#fff;outline:none;}
   .emp-pos-computed{
-    font-size:11px;color:#6b5f00;font-weight:700;margin-bottom:6px;line-height:1.35;
-    text-align:center;white-space:normal;word-wrap:break-word;overflow-wrap:anywhere;
+    font-size:11px;color:#6b5f00;font-weight:700;margin-bottom:6px;line-height:1.5;
+    text-align:center;white-space:pre-line;word-wrap:break-word;overflow-wrap:anywhere;
   }
   .emp-pos-computed.empty{color:#a7abb2;font-weight:600;font-style:italic;}
   .emp-desc{font-size:11px;color:var(--ink-soft);line-height:1.4;min-height:16px;}
@@ -323,7 +309,7 @@
     box-shadow:0 6px 20px rgba(0,0,0,.25);
   }
   .emp-pop-name{text-align:center;font-size:19px;font-weight:800;margin-bottom:4px;}
-  .emp-pop-positions{text-align:center;font-size:12.5px;font-weight:700;color:#a5810a;margin-bottom:14px;}
+  .emp-pop-positions{text-align:center;font-size:12.5px;font-weight:700;color:#a5810a;margin-bottom:14px;white-space:pre-line;line-height:1.5;}
   .emp-pop-desc{font-size:13.5px;line-height:1.55;color:var(--ink-soft);text-align:center;}
 
   .duties-toggle{
@@ -420,6 +406,17 @@
     border:2px solid rgba(255,255,255,.85);
   }
   .crop-controls{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
+
+  /* ---------- logo cropper ---------- */
+  .logo-crop-stage{
+    position:relative;width:100%;max-width:440px;aspect-ratio:440/152;margin:0 auto 14px;border-radius:10px;overflow:hidden;
+    background:#20242b;cursor:grab;touch-action:none;
+  }
+  .logo-crop-stage:active{cursor:grabbing;}
+  .logo-crop-stage canvas{display:block;width:100%;height:100%;}
+  .logo-crop-ring{
+    position:absolute;inset:0;pointer-events:none;border:2px dashed rgba(255,255,255,.5);border-radius:10px;
+  }
   .crop-controls input[type=range]{flex:1;accent-color:#3b5fcf;}
   .gloss-item{background:#f7f7f8;border:1px solid #e7e8ea;border-radius:10px;padding:11px 13px;position:relative;}
   .gloss-item b{display:block;font-size:12px;margin-bottom:3px;}
@@ -460,16 +457,9 @@
 <script src="assets/memory.js"></script>
 
   <div class="toolbar">
-    <div class="logo-frame" id="logoFrame">
+    <div class="logo-box" id="logoBox">
       <img id="logoImg" src="" alt="Логотип" draggable="false">
-      <div class="logo-edit-hint">Перетащите, чтобы подвинуть</div>
-      <div class="logo-edit-controls">
-        <button type="button" id="logoZoomOut" title="Уменьшить">−</button>
-        <input type="range" id="logoZoomRange" min="0.3" max="4" step="0.01" value="1">
-        <button type="button" id="logoZoomIn" title="Увеличить">+</button>
-        <button type="button" id="logoChangeBtn" title="Заменить логотип">🖼</button>
-        <button type="button" id="logoResetBtn" title="Сбросить положение">⟲</button>
-      </div>
+      <button type="button" class="logo-edit-btn" id="logoEditBtn" title="Изменить логотип">✎</button>
     </div>
     <input type="file" id="logoFile" accept="image/*" style="display:none;">
     <div class="brand-titles">
@@ -615,6 +605,27 @@
     </div>
   </div>
 
+  <!-- logo crop/editor modal -->
+  <div class="modal-overlay" id="logoCropOverlay">
+    <div class="modal-box">
+      <button class="modal-close" data-close="logoCropOverlay">✕</button>
+      <h2>Редактор логотипа</h2>
+      <p class="modal-sub">Перетащите изображение мышью, чтобы выбрать нужную область, и отрегулируйте масштаб ползунком.</p>
+      <div class="logo-crop-stage" id="logoCropStage">
+        <canvas id="logoCropCanvas" width="440" height="152"></canvas>
+        <div class="logo-crop-ring"></div>
+      </div>
+      <div class="crop-controls">
+        <span>Масштаб</span>
+        <input type="range" id="logoCropZoom" min="1" max="4" step="0.01" value="1">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" data-close="logoCropOverlay">Отмена</button>
+        <button class="btn primary" id="logoCropApply">Применить</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="empCardOverlay">
     <div class="modal-box">
       <button class="modal-close" data-close="empCardOverlay">✕</button>
@@ -751,7 +762,6 @@ function ensureIds(obj){
   if(!obj.theme.stageBg) obj.theme.stageBg = '#6b6f79';
   if(!obj.theme.headerBg) obj.theme.headerBg = '#ffffff';
   if(!obj.theme.style) obj.theme.style = 'classic';
-  if(!obj.header.logoTransform) obj.header.logoTransform = {x:0,y:0,scale:1};
   return obj;
 }
 function cloneSeed(){ return JSON.parse(JSON.stringify(seed)); }
@@ -873,18 +883,6 @@ function renderHeaderBindings(){
 
 
   document.getElementById('logoImg').src = state.header.logo || LOGO_DEFAULT;
-  applyLogoTransform();
-}
-function ensureLogoTransform(){
-  if(!state.header.logoTransform) state.header.logoTransform = {x:0,y:0,scale:1};
-}
-function applyLogoTransform(){
-  ensureLogoTransform();
-  const t = state.header.logoTransform;
-  const img = document.getElementById('logoImg');
-  img.style.transform = `translate(-50%,-50%) translate(${t.x}px, ${t.y}px) scale(${t.scale})`;
-  const range = document.getElementById('logoZoomRange');
-  if(range) range.value = t.scale;
 }
 
 const colRefs = {}; // id -> {tagEl, headEl}
@@ -1073,7 +1071,7 @@ function openEmployeeCard(id){
   c.appendChild(av);
   c.appendChild(el('div','emp-pop-name', emp.name));
   const positions = computeEmployeePositions(id);
-  if(positions.length) c.appendChild(el('div','emp-pop-positions', positions.join(', ')));
+  if(positions.length) c.appendChild(el('div','emp-pop-positions', positions.join('\n')));
   const desc = el('div','emp-pop-desc');
   desc.innerHTML = emp.description || '<i>Описание пока не добавлено.</i>';
   c.appendChild(desc);
@@ -1212,7 +1210,7 @@ function renderEmployeesModal(){
     card.appendChild(nameInput);
 
     const positions = computeEmployeePositions(emp.id);
-    const posDiv = el('div','emp-pos-computed', positions.length ? positions.join(', ') : 'Нет назначений в схеме');
+    const posDiv = el('div','emp-pos-computed', positions.length ? positions.join('\n') : 'Нет назначений в схеме');
     if(!positions.length) posDiv.classList.add('empty');
     card.appendChild(posDiv);
 
@@ -1387,82 +1385,105 @@ document.getElementById('resetBtn').addEventListener('click', ()=> askPassword('
 document.getElementById('glossaryBtn').addEventListener('click', ()=> openModal('glossOverlay'));
 document.getElementById('employeesBtn').addEventListener('click', ()=> openModal('employeesOverlay'));
 
-/* ============ logo upload / drag / zoom ============ */
+/* ============ logo editor (button-triggered crop modal) ============ */
+document.getElementById('logoEditBtn').addEventListener('click', ()=>{
+  if(!editMode) return;
+  document.getElementById('logoFile').click();
+});
 document.getElementById('logoFile').addEventListener('change', (ev)=>{
   const file = ev.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
-    state.header.logo = reader.result;
-    state.header.logoTransform = {x:0,y:0,scale:1};
-    document.getElementById('logoImg').src = reader.result;
-    applyLogoTransform();
-    scheduleSave();
-  };
+  reader.onload = () => openLogoCropper(reader.result);
   reader.readAsDataURL(file);
+  ev.target.value = '';
 });
-(function setupLogoFrame(){
-  const frame = document.getElementById('logoFrame');
-  let dragging=false, startX=0, startY=0, origX=0, origY=0;
-  frame.addEventListener('pointerdown', (e)=>{
-    if(!editMode || e.target.closest('.logo-edit-controls')) return;
-    dragging = true;
-    frame.classList.add('dragging');
-    startX = e.clientX; startY = e.clientY;
-    ensureLogoTransform();
-    origX = state.header.logoTransform.x;
-    origY = state.header.logoTransform.y;
-    try{ frame.setPointerCapture(e.pointerId); }catch(_){}
-  });
-  frame.addEventListener('pointermove', (e)=>{
-    if(!dragging) return;
-    state.header.logoTransform.x = origX + (e.clientX - startX);
-    state.header.logoTransform.y = origY + (e.clientY - startY);
-    applyLogoTransform();
-  });
-  function endDrag(e){
-    if(!dragging) return;
-    dragging = false;
-    frame.classList.remove('dragging');
-    try{ frame.releasePointerCapture(e.pointerId); }catch(_){}
-    scheduleSave();
-  }
-  frame.addEventListener('pointerup', endDrag);
-  frame.addEventListener('pointercancel', endDrag);
-  frame.addEventListener('wheel', (e)=>{
-    if(!editMode || e.target.closest('.logo-edit-controls')) return;
-    e.preventDefault();
-    ensureLogoTransform();
-    const delta = e.deltaY < 0 ? 1.08 : 1/1.08;
-    state.header.logoTransform.scale = Math.min(4, Math.max(0.3, state.header.logoTransform.scale*delta));
-    applyLogoTransform();
-    scheduleSave();
-  }, {passive:false});
-  document.getElementById('logoZoomRange').addEventListener('input', function(){
-    ensureLogoTransform();
-    state.header.logoTransform.scale = parseFloat(this.value);
-    applyLogoTransform();
-    scheduleSave();
-  });
-  document.getElementById('logoZoomIn').addEventListener('click', ()=>{
-    ensureLogoTransform();
-    state.header.logoTransform.scale = Math.min(4, state.header.logoTransform.scale*1.15);
-    applyLogoTransform();
-    scheduleSave();
-  });
-  document.getElementById('logoZoomOut').addEventListener('click', ()=>{
-    ensureLogoTransform();
-    state.header.logoTransform.scale = Math.max(0.3, state.header.logoTransform.scale/1.15);
-    applyLogoTransform();
-    scheduleSave();
-  });
-  document.getElementById('logoResetBtn').addEventListener('click', ()=>{
-    state.header.logoTransform = {x:0,y:0,scale:1};
-    applyLogoTransform();
-    scheduleSave();
-  });
-  document.getElementById('logoChangeBtn').addEventListener('click', ()=> document.getElementById('logoFile').click());
-})();
+
+const LOGO_CROP_W = 440, LOGO_CROP_H = 152;
+const logoCropCanvas = document.getElementById('logoCropCanvas');
+const logoCropCtx = logoCropCanvas.getContext('2d');
+let logoCropImg = null, logoCropScale = 1, logoCropMinScale = 1, logoCropX = 0, logoCropY = 0;
+let logoCropDragging = false, logoCropStartX = 0, logoCropStartY = 0;
+
+function drawLogoCrop(){
+  if(!logoCropImg) return;
+  logoCropCtx.clearRect(0,0,LOGO_CROP_W,LOGO_CROP_H);
+  logoCropCtx.fillStyle = '#20242b';
+  logoCropCtx.fillRect(0,0,LOGO_CROP_W,LOGO_CROP_H);
+  const w = logoCropImg.width * logoCropScale;
+  const h = logoCropImg.height * logoCropScale;
+  logoCropCtx.drawImage(logoCropImg, logoCropX, logoCropY, w, h);
+}
+function clampLogoCrop(){
+  const w = logoCropImg.width * logoCropScale;
+  const h = logoCropImg.height * logoCropScale;
+  logoCropX = Math.min(0, Math.max(LOGO_CROP_W - w, logoCropX));
+  logoCropY = Math.min(0, Math.max(LOGO_CROP_H - h, logoCropY));
+}
+function openLogoCropper(dataUrl){
+  const img = new Image();
+  img.onload = () => {
+    logoCropImg = img;
+    logoCropMinScale = Math.max(LOGO_CROP_W / img.width, LOGO_CROP_H / img.height);
+    logoCropScale = logoCropMinScale;
+    logoCropX = (LOGO_CROP_W - img.width * logoCropScale) / 2;
+    logoCropY = (LOGO_CROP_H - img.height * logoCropScale) / 2;
+    const zoom = document.getElementById('logoCropZoom');
+    zoom.min = logoCropMinScale;
+    zoom.max = logoCropMinScale * 4;
+    zoom.step = (logoCropMinScale * 3) / 100;
+    zoom.value = logoCropScale;
+    drawLogoCrop();
+    openModal('logoCropOverlay');
+  };
+  img.src = dataUrl;
+}
+document.getElementById('logoCropZoom').addEventListener('input', function(){
+  if(!logoCropImg) return;
+  const prev = logoCropScale;
+  logoCropScale = parseFloat(this.value);
+  const cx = LOGO_CROP_W/2, cy = LOGO_CROP_H/2;
+  logoCropX = cx - (cx - logoCropX) * (logoCropScale / prev);
+  logoCropY = cy - (cy - logoCropY) * (logoCropScale / prev);
+  clampLogoCrop();
+  drawLogoCrop();
+});
+const logoCropStage = document.getElementById('logoCropStage');
+function logoCropScaleFactor(){
+  return logoCropCanvas.width / logoCropStage.getBoundingClientRect().width;
+}
+logoCropStage.addEventListener('pointerdown', e=>{
+  if(!logoCropImg) return;
+  logoCropDragging = true;
+  const f = logoCropScaleFactor();
+  logoCropStartX = e.clientX * f - logoCropX;
+  logoCropStartY = e.clientY * f - logoCropY;
+  logoCropStage.setPointerCapture(e.pointerId);
+});
+logoCropStage.addEventListener('pointermove', e=>{
+  if(!logoCropDragging) return;
+  const f = logoCropScaleFactor();
+  logoCropX = e.clientX * f - logoCropStartX;
+  logoCropY = e.clientY * f - logoCropStartY;
+  clampLogoCrop();
+  drawLogoCrop();
+});
+logoCropStage.addEventListener('pointerup', e=>{
+  logoCropDragging = false;
+  try{ logoCropStage.releasePointerCapture(e.pointerId); }catch(_){}
+});
+document.getElementById('logoCropApply').addEventListener('click', ()=>{
+  if(!logoCropImg) return;
+  const out = document.createElement('canvas');
+  out.width = LOGO_CROP_W; out.height = LOGO_CROP_H;
+  const octx = out.getContext('2d');
+  octx.drawImage(logoCropImg, logoCropX, logoCropY, logoCropImg.width*logoCropScale, logoCropImg.height*logoCropScale);
+  state.header.logo = out.toDataURL('image/png');
+  document.getElementById('logoImg').src = state.header.logo;
+  logoCropImg = null;
+  closeModal('logoCropOverlay');
+  scheduleSave();
+});
 
 /* ============ employee avatar upload ============ */
 document.getElementById('employeeAvatarFile').addEventListener('change', (ev)=>{
@@ -1674,9 +1695,78 @@ document.getElementById('fbClear').addEventListener('click', ()=>{
   afterCommand();
 });
 
+/* ============ draggable menu elements ============ */
+let suppressClickUntil = 0;
+document.addEventListener('click', (e)=>{
+  if(Date.now() < suppressClickUntil){ e.stopPropagation(); e.preventDefault(); }
+}, true);
+
+function makeMenuDraggable(el, key){
+  if(!el) return;
+  el.classList.add('menu-draggable');
+  let dragging = false, moved = false, startX = 0, startY = 0, origX = 0, origY = 0;
+  function pos(){
+    if(!state.header.positions) state.header.positions = {};
+    if(!state.header.positions[key]) state.header.positions[key] = {x:0,y:0};
+    return state.header.positions[key];
+  }
+  function apply(){
+    const p = pos();
+    el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+  }
+  el.addEventListener('pointerdown', (e)=>{
+    if(!editMode) return;
+    if(e.target !== el && e.target.closest('button, input, select, a, textarea')) return;
+    dragging = true; moved = false;
+    startX = e.clientX; startY = e.clientY;
+    const p = pos();
+    origX = p.x; origY = p.y;
+    el.classList.add('dragging');
+    try{ el.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  el.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+    const p = pos();
+    p.x = origX + dx; p.y = origY + dy;
+    apply();
+  });
+  function endDrag(e){
+    if(!dragging) return;
+    dragging = false;
+    el.classList.remove('dragging');
+    try{ el.releasePointerCapture(e.pointerId); }catch(_){}
+    if(moved){ suppressClickUntil = Date.now() + 250; scheduleSave(); }
+  }
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+  el.addEventListener('dblclick', ()=>{
+    if(!editMode) return;
+    state.header.positions[key] = {x:0,y:0};
+    apply();
+    scheduleSave();
+  });
+  apply();
+}
+
+function setupMenuDragging(){
+  [
+    ['logoBox', document.getElementById('logoBox')],
+    ['brandTitles', document.querySelector('.brand-titles')],
+    ['editBanner', document.getElementById('editBanner')],
+    ['employeesBtn', document.getElementById('employeesBtn')],
+    ['employeeDock', document.getElementById('employeeDock')],
+    ['glossaryBtn', document.getElementById('glossaryBtn')],
+    ['themeBtn', document.getElementById('themeBtn')],
+    ['resetBtn', document.getElementById('resetBtn')]
+  ].forEach(([key, el]) => makeMenuDraggable(el, key));
+}
+
 (async function init(){
   await loadState();
   renderAll();
+  setupMenuDragging();
   setEditMode(false);
 })();
 </script>
