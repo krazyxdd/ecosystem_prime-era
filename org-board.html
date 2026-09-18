@@ -139,13 +139,18 @@
   .btn:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px);}
   .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
   #resetBtn{
-    display:none;background:linear-gradient(135deg,#e0392f,#b8261d);color:#fff;border:1px solid #96201a;
-    box-shadow:0 4px 14px rgba(198,40,40,.4);font-weight:800;
-    animation:resetGlow 1.8s ease-in-out infinite;
+    display:none;position:fixed;right:14px;bottom:52px;z-index:50;
+    width:30px;height:30px;padding:0;border-radius:50%;
+    background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.08);color:var(--ink);
+    font-size:13px;cursor:pointer;opacity:.28;
+    align-items:center;justify-content:center;
+    transition:opacity .18s ease, background .18s ease;
   }
-  #resetBtn:hover{box-shadow:0 6px 20px rgba(198,40,40,.6);transform:translateY(-1px);}
-  @keyframes resetGlow{0%,100%{box-shadow:0 4px 14px rgba(198,40,40,.35);}50%{box-shadow:0 4px 20px rgba(198,40,40,.65);}}
-  body.edit-mode #resetBtn{display:inline-flex;}
+  #resetBtn:hover{opacity:1;background:#fdeceb;border-color:#f0918a;box-shadow:none;transform:none;}
+  body.edit-mode #resetBtn{display:flex;}
+  #undoBtn:disabled{opacity:.4;cursor:default;}
+  #undoBtn:disabled:hover{box-shadow:none;transform:none;}
+  #exitEditBtn{padding:8px 11px;}
   #themeBtn{display:none;}
   body.edit-mode #themeBtn{display:inline-flex;}
   .save-note{
@@ -506,9 +511,12 @@
 
   <div class="edit-bar" id="editBar">
     <span class="edit-banner" id="editBanner"><span class="dot"></span>РЕЖИМ РЕДАКТИРОВАНИЯ</span>
+    <button class="btn" id="undoBtn" title="Отменить последнее изменение" disabled>↩ Отменить</button>
     <button class="btn" id="themeBtn">🎨 Оформление</button>
-    <button class="btn" id="resetBtn">🧹 Очистить</button>
+    <button class="btn" id="exitEditBtn" title="Выйти из режима редактирования">🔓</button>
   </div>
+
+  <button class="btn" id="resetBtn" title="Очистить оргсхему">🧹</button>
 
   <button id="editModeBtn" title="Режим редактирования">🔒</button>
 
@@ -788,7 +796,40 @@ function cloneSeed(){ return JSON.parse(JSON.stringify(seed)); }
 
 let saveTimer = null;
 function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveState, 500); }
+
+/* ---- undo history ---- */
+const UNDO_LIMIT = 60;
+let undoStack = [];
+let lastSnapshot = null;
+let restoringHistory = false;
+function updateUndoBtn(){
+  const b = document.getElementById('undoBtn');
+  if(b) b.disabled = undoStack.length === 0;
+}
+function pushHistory(){
+  if(restoringHistory) return;
+  const now = JSON.stringify(state);
+  if(lastSnapshot !== null && lastSnapshot !== now){
+    undoStack.push(lastSnapshot);
+    if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+  }
+  lastSnapshot = now;
+  updateUndoBtn();
+}
+function undoLastChange(){
+  if(!undoStack.length) return;
+  const prev = undoStack.pop();
+  restoringHistory = true;
+  state = ensureIds(JSON.parse(prev));
+  lastSnapshot = prev;
+  renderAll();
+  updateUndoBtn();
+  clearTimeout(saveTimer);
+  saveState().finally(()=>{ restoringHistory = false; });
+}
+
 async function saveState(){
+  pushHistory();
   try{ await window.storage.set('orgboard-state-v2', JSON.stringify(state), false); flashSaved(); }
   catch(e){ /* storage unavailable */ }
 }
@@ -1410,6 +1451,8 @@ document.getElementById('editModeBtn').addEventListener('click', ()=>{
   if(editMode){ setEditMode(false); return; }
   askPassword('edit');
 });
+document.getElementById('exitEditBtn').addEventListener('click', ()=> setEditMode(false));
+document.getElementById('undoBtn').addEventListener('click', undoLastChange);
 document.getElementById('resetBtn').addEventListener('click', ()=> askPassword('reset'));
 document.getElementById('glossaryBtn').addEventListener('click', ()=> openModal('glossOverlay'));
 document.getElementById('employeesBtn').addEventListener('click', ()=> openModal('employeesOverlay'));
@@ -1787,6 +1830,8 @@ document.getElementById('fbClear').addEventListener('click', ()=>{
 (async function init(){
   await loadState();
   renderAll();
+  lastSnapshot = JSON.stringify(state);
+  updateUndoBtn();
   setEditMode(false);
 })();
 </script>
