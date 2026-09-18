@@ -72,7 +72,7 @@
   body.edit-mode .edit-banner{display:inline-flex;}
   body[data-header-dark="1"] .edit-banner{color:#ffb99e;}
   .logo-box{
-    position:relative;height:76px;width:76px;flex:none;
+    position:relative;height:76px;width:auto;max-width:220px;min-width:76px;flex:none;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
   }
   .logo-box img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;}
@@ -416,8 +416,9 @@
 
   /* ---------- logo cropper ---------- */
   .logo-crop-stage{
-    position:relative;width:100%;max-width:300px;aspect-ratio:1/1;margin:0 auto 14px;border-radius:10px;overflow:hidden;
-    background:#20242b;cursor:grab;touch-action:none;
+    position:relative;width:100%;max-width:440px;aspect-ratio:440/152;margin:0 auto 14px;border-radius:10px;overflow:hidden;
+    background:repeating-conic-gradient(#2a2e35 0% 25%, #20242b 0% 50%) 50% / 20px 20px;
+    cursor:grab;touch-action:none;
   }
   .logo-crop-stage:active{cursor:grabbing;}
   .logo-crop-stage canvas{display:block;width:100%;height:100%;}
@@ -1424,17 +1425,15 @@ document.getElementById('logoFile').addEventListener('change', (ev)=>{
   ev.target.value = '';
 });
 
-const LOGO_CROP_W = 300, LOGO_CROP_H = 300;
+const LOGO_CROP_W = 440, LOGO_CROP_H = 152;
 const logoCropCanvas = document.getElementById('logoCropCanvas');
 const logoCropCtx = logoCropCanvas.getContext('2d');
-let logoCropImg = null, logoCropScale = 1, logoCropMinScale = 1, logoCropX = 0, logoCropY = 0;
+let logoCropImg = null, logoCropScale = 1, logoCropFitScale = 1, logoCropX = 0, logoCropY = 0;
 let logoCropDragging = false, logoCropStartX = 0, logoCropStartY = 0;
 
 function drawLogoCrop(){
   if(!logoCropImg) return;
   logoCropCtx.clearRect(0,0,LOGO_CROP_W,LOGO_CROP_H);
-  logoCropCtx.fillStyle = '#20242b';
-  logoCropCtx.fillRect(0,0,LOGO_CROP_W,LOGO_CROP_H);
   const w = logoCropImg.width * logoCropScale;
   const h = logoCropImg.height * logoCropScale;
   logoCropCtx.drawImage(logoCropImg, logoCropX, logoCropY, w, h);
@@ -1442,21 +1441,24 @@ function drawLogoCrop(){
 function clampLogoCrop(){
   const w = logoCropImg.width * logoCropScale;
   const h = logoCropImg.height * logoCropScale;
-  logoCropX = Math.min(0, Math.max(LOGO_CROP_W - w, logoCropX));
-  logoCropY = Math.min(0, Math.max(LOGO_CROP_H - h, logoCropY));
+  // Only pin edges when the image is bigger than the frame in that dimension;
+  // when it's smaller (zoomed out / letterboxed), let it float freely.
+  if(w >= LOGO_CROP_W) logoCropX = Math.min(0, Math.max(LOGO_CROP_W - w, logoCropX));
+  if(h >= LOGO_CROP_H) logoCropY = Math.min(0, Math.max(LOGO_CROP_H - h, logoCropY));
 }
 function openLogoCropper(dataUrl){
   const img = new Image();
   img.onload = () => {
     logoCropImg = img;
-    logoCropMinScale = Math.max(LOGO_CROP_W / img.width, LOGO_CROP_H / img.height);
-    logoCropScale = logoCropMinScale;
+    // Default: show the WHOLE logo (contain), whatever its shape — square, wide or tall.
+    logoCropFitScale = Math.min(LOGO_CROP_W / img.width, LOGO_CROP_H / img.height);
+    logoCropScale = logoCropFitScale;
     logoCropX = (LOGO_CROP_W - img.width * logoCropScale) / 2;
     logoCropY = (LOGO_CROP_H - img.height * logoCropScale) / 2;
     const zoom = document.getElementById('logoCropZoom');
-    zoom.min = logoCropMinScale;
-    zoom.max = logoCropMinScale * 4;
-    zoom.step = (logoCropMinScale * 3) / 100;
+    zoom.min = logoCropFitScale * 0.3;
+    zoom.max = logoCropFitScale * 5;
+    zoom.step = (logoCropFitScale * 4.7) / 100;
     zoom.value = logoCropScale;
     drawLogoCrop();
     openModal('logoCropOverlay');
