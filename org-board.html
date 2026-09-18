@@ -33,6 +33,7 @@
     color:var(--ink);
     background:#eef0f3;
     overflow:hidden;
+    position:relative;
     display:flex;flex-direction:column;height:100vh;
   }
 
@@ -53,15 +54,17 @@
 
   /* ---------- toolbar (real size, not scaled) ---------- */
   .toolbar{
-    flex:0 0 var(--toolbar-h);height:var(--toolbar-h);
-    display:flex;align-items:center;gap:16px;padding:0 20px;
-    background:var(--toolbar-bg-color);border-bottom:1px solid #e2e4e8;
-    position:relative;z-index:5;overflow-x:auto;overflow-y:hidden;
-    transition:background .2s ease, border-color .2s ease;
+    position:absolute;top:16px;left:16px;z-index:50;
+    display:flex;align-items:center;gap:14px;padding:10px 18px;
+    width:fit-content;max-width:calc(100% - 32px);
+    background:var(--toolbar-bg-color);border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.22);
+    overflow:visible;
+    transition:background .2s ease, box-shadow .2s ease;
   }
   body.edit-mode .toolbar{
-    border-bottom:3px solid #e8672c;
-    box-shadow:inset 0 0 0 9999px rgba(232,103,44,.09);
+    outline:3px solid #e8672c;outline-offset:-3px;
+    box-shadow:0 10px 30px rgba(232,103,44,.4);
   }
   .edit-banner{
     display:none;align-items:center;gap:8px;font-size:14px;font-weight:900;
@@ -72,10 +75,20 @@
   body.edit-mode .edit-banner{display:inline-flex;}
   body[data-header-dark="1"] .edit-banner{color:#ffb99e;}
   .logo-box{
-    position:relative;height:100%;width:200px;flex:none;
+    position:relative;height:52px;width:52px;flex:none;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
   }
-  .logo-box img{max-width:100%;max-height:76px;width:auto;height:auto;display:block;}
+  .logo-box img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;}
+  .logo-box.no-logo{
+    width:auto;min-width:110px;padding:0 10px;border:1.5px dashed #cfd3da;border-radius:10px;
+    font-size:11px;font-weight:800;color:#6b7178;cursor:pointer;display:none;
+  }
+  body.edit-mode .logo-box.no-logo{display:flex;}
+  .logo-box.no-logo:hover{border-color:#3b5fcf;color:#3b5fcf;}
+  #logoPlaceholderText{display:none;}
+  .logo-box.no-logo #logoPlaceholderText{display:block;}
+  .logo-box.no-logo img{display:none;}
+  .logo-box.no-logo #logoRemoveBtn{display:none;}
   .logo-edit-btn{
     display:none;position:absolute;right:6px;bottom:6px;z-index:2;
     width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
@@ -409,7 +422,7 @@
 
   /* ---------- logo cropper ---------- */
   .logo-crop-stage{
-    position:relative;width:100%;max-width:440px;aspect-ratio:440/152;margin:0 auto 14px;border-radius:10px;overflow:hidden;
+    position:relative;width:100%;max-width:300px;aspect-ratio:1/1;margin:0 auto 14px;border-radius:10px;overflow:hidden;
     background:#20242b;cursor:grab;touch-action:none;
   }
   .logo-crop-stage:active{cursor:grabbing;}
@@ -459,7 +472,9 @@
   <div class="toolbar">
     <div class="logo-box" id="logoBox">
       <img id="logoImg" src="" alt="Логотип" draggable="false">
+      <span id="logoPlaceholderText">+ Лого</span>
       <button type="button" class="logo-edit-btn" id="logoEditBtn" title="Изменить логотип">✎</button>
+      <button type="button" class="logo-edit-btn" id="logoRemoveBtn" title="Убрать логотип" style="right:38px;">🗑</button>
     </div>
     <input type="file" id="logoFile" accept="image/*" style="display:none;">
     <div class="brand-titles">
@@ -612,7 +627,7 @@
       <h2>Редактор логотипа</h2>
       <p class="modal-sub">Перетащите изображение мышью, чтобы выбрать нужную область, и отрегулируйте масштаб ползунком.</p>
       <div class="logo-crop-stage" id="logoCropStage">
-        <canvas id="logoCropCanvas" width="440" height="152"></canvas>
+        <canvas id="logoCropCanvas" width="300" height="300"></canvas>
         <div class="logo-crop-ring"></div>
       </div>
       <div class="crop-controls">
@@ -762,6 +777,7 @@ function ensureIds(obj){
   if(!obj.theme.stageBg) obj.theme.stageBg = '#6b6f79';
   if(!obj.theme.headerBg) obj.theme.headerBg = '#ffffff';
   if(!obj.theme.style) obj.theme.style = 'classic';
+  if(obj.header.noLogo === undefined) obj.header.noLogo = false;
   return obj;
 }
 function cloneSeed(){ return JSON.parse(JSON.stringify(seed)); }
@@ -882,7 +898,9 @@ function renderHeaderBindings(){
   dirChip.appendChild(personChip(state.director, 'employeeId'));
 
 
-  document.getElementById('logoImg').src = state.header.logo || LOGO_DEFAULT;
+  const logoBoxEl = document.getElementById('logoBox');
+  logoBoxEl.classList.toggle('no-logo', !!state.header.noLogo);
+  document.getElementById('logoImg').src = state.header.noLogo ? '' : (state.header.logo || LOGO_DEFAULT);
 }
 
 const colRefs = {}; // id -> {tagEl, headEl}
@@ -1390,6 +1408,19 @@ document.getElementById('logoEditBtn').addEventListener('click', ()=>{
   if(!editMode) return;
   document.getElementById('logoFile').click();
 });
+document.getElementById('logoRemoveBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(!editMode) return;
+  state.header.noLogo = true;
+  state.header.logo = null;
+  renderHeaderBindings();
+  scheduleSave();
+});
+document.getElementById('logoBox').addEventListener('click', (e)=>{
+  if(!editMode || !state.header.noLogo) return;
+  if(e.target.closest('.logo-edit-btn')) return;
+  document.getElementById('logoFile').click();
+});
 document.getElementById('logoFile').addEventListener('change', (ev)=>{
   const file = ev.target.files[0];
   if(!file) return;
@@ -1399,7 +1430,7 @@ document.getElementById('logoFile').addEventListener('change', (ev)=>{
   ev.target.value = '';
 });
 
-const LOGO_CROP_W = 440, LOGO_CROP_H = 152;
+const LOGO_CROP_W = 300, LOGO_CROP_H = 300;
 const logoCropCanvas = document.getElementById('logoCropCanvas');
 const logoCropCtx = logoCropCanvas.getContext('2d');
 let logoCropImg = null, logoCropScale = 1, logoCropMinScale = 1, logoCropX = 0, logoCropY = 0;
@@ -1479,7 +1510,8 @@ document.getElementById('logoCropApply').addEventListener('click', ()=>{
   const octx = out.getContext('2d');
   octx.drawImage(logoCropImg, logoCropX, logoCropY, logoCropImg.width*logoCropScale, logoCropImg.height*logoCropScale);
   state.header.logo = out.toDataURL('image/png');
-  document.getElementById('logoImg').src = state.header.logo;
+  state.header.noLogo = false;
+  renderHeaderBindings();
   logoCropImg = null;
   closeModal('logoCropOverlay');
   scheduleSave();
@@ -1701,26 +1733,50 @@ document.addEventListener('click', (e)=>{
   if(Date.now() < suppressClickUntil){ e.stopPropagation(); e.preventDefault(); }
 }, true);
 
-function makeMenuDraggable(el, key){
+function makeMenuDraggable(el, key, container){
   if(!el) return;
   el.classList.add('menu-draggable');
-  let dragging = false, moved = false, startX = 0, startY = 0, origX = 0, origY = 0;
+  let dragging = false, moved = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
   function pos(){
     if(!state.header.positions) state.header.positions = {};
-    if(!state.header.positions[key]) state.header.positions[key] = {x:0,y:0};
+    if(!state.header.positions[key]) state.header.positions[key] = {pinned:false,left:0,top:0};
     return state.header.positions[key];
   }
   function apply(){
     const p = pos();
-    el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    if(p.pinned){
+      el.style.position = 'absolute';
+      el.style.left = p.left + 'px';
+      el.style.top = p.top + 'px';
+      el.style.margin = '0';
+      el.style.transform = '';
+    } else {
+      el.style.position = '';
+      el.style.left = '';
+      el.style.top = '';
+      el.style.margin = '';
+      el.style.transform = '';
+    }
+  }
+  function pinAtCurrentSpot(){
+    const p = pos();
+    if(p.pinned) return;
+    const er = el.getBoundingClientRect();
+    const cr = container.getBoundingClientRect();
+    p.pinned = true;
+    p.left = er.left - cr.left;
+    p.top = er.top - cr.top;
+    apply();
   }
   el.addEventListener('pointerdown', (e)=>{
     if(!editMode) return;
     if(e.target !== el && e.target.closest('button, input, select, a, textarea')) return;
+    e.stopPropagation();
+    pinAtCurrentSpot();
     dragging = true; moved = false;
     startX = e.clientX; startY = e.clientY;
     const p = pos();
-    origX = p.x; origY = p.y;
+    origLeft = p.left; origTop = p.top;
     el.classList.add('dragging');
     try{ el.setPointerCapture(e.pointerId); }catch(_){}
   });
@@ -1729,7 +1785,7 @@ function makeMenuDraggable(el, key){
     const dx = e.clientX - startX, dy = e.clientY - startY;
     if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
     const p = pos();
-    p.x = origX + dx; p.y = origY + dy;
+    p.left = origLeft + dx; p.top = origTop + dy;
     apply();
   });
   function endDrag(e){
@@ -1743,7 +1799,7 @@ function makeMenuDraggable(el, key){
   el.addEventListener('pointercancel', endDrag);
   el.addEventListener('dblclick', ()=>{
     if(!editMode) return;
-    state.header.positions[key] = {x:0,y:0};
+    state.header.positions[key] = {pinned:false,left:0,top:0};
     apply();
     scheduleSave();
   });
@@ -1751,6 +1807,8 @@ function makeMenuDraggable(el, key){
 }
 
 function setupMenuDragging(){
+  const toolbarEl = document.querySelector('.toolbar');
+  makeMenuDraggable(toolbarEl, 'toolbarPanel', document.body);
   [
     ['logoBox', document.getElementById('logoBox')],
     ['brandTitles', document.querySelector('.brand-titles')],
@@ -1760,7 +1818,7 @@ function setupMenuDragging(){
     ['glossaryBtn', document.getElementById('glossaryBtn')],
     ['themeBtn', document.getElementById('themeBtn')],
     ['resetBtn', document.getElementById('resetBtn')]
-  ].forEach(([key, el]) => makeMenuDraggable(el, key));
+  ].forEach(([key, el]) => makeMenuDraggable(el, key, toolbarEl));
 }
 
 (async function init(){
