@@ -6,6 +6,8 @@
 <title>Организационная схема</title>
 <link rel="icon" href="assets/favicon.png">
 <link rel="stylesheet" href="assets/shell.css">
+<link rel="stylesheet" href="assets/pe-core.css">
+<script src="assets/pe-core.js" data-module="org-board"></script>
 <script src="assets/storage-polyfill.js"></script>
 <style>
   :root{
@@ -471,20 +473,6 @@
 </style>
 </head>
 <body>
-<header class="pe-nav">
-  <a class="pe-nav-logo" href="index.html"><img src="assets/logo-full-ondark.png" alt="Prime Era"></a>
-  <nav class="pe-nav-links">
-    <a href="index.html" class="pe-nav-item">Главная</a>
-    <a href="glossary.html" class="pe-nav-item">Глоссарий</a>
-    <a href="objections.html" class="pe-nav-item">Возражения</a>
-    <a href="objections-raw.html" class="pe-nav-item">Возражения Prime Era</a>
-    <a href="site-time-tracker.html" class="pe-nav-item">Хронометраж</a>
-    <a href="planner.html" class="pe-nav-item">Планировщик</a>
-    <a href="prime-sales.html" class="pe-nav-item">База знаний</a>
-    <a href="org-board.html" class="pe-nav-item active">Оргсхема</a>
-  </nav>
-</header>
-<script src="assets/memory.js"></script>
 
   <div class="toolbar">
     <div class="logo-spacer" id="logoSpacer"></div>
@@ -516,9 +504,9 @@
     <button class="btn" id="exitEditBtn" title="Выйти из режима редактирования">🔓</button>
   </div>
 
-  <button class="btn" id="resetBtn" title="Очистить оргсхему">🧹</button>
+  <button class="btn pe2-admin-only" id="resetBtn" title="Очистить оргсхему (только администратор)">🧹</button>
 
-  <button id="editModeBtn" title="Режим редактирования">🔒</button>
+  <button id="editModeBtn" class="pe2-admin-only" title="Режим редактирования (только администратор)">🔒</button>
 
   <div class="format-bar" id="formatBar">
     <button type="button" data-cmd="bold" title="Жирный"><b>B</b></button>
@@ -829,6 +817,7 @@ function undoLastChange(){
 }
 
 async function saveState(){
+  if(!isOrgAdmin()) return;   /* v2: сохраняют изменения только администраторы экосистемы */
   pushHistory();
   try{ await window.storage.set('orgboard-state-v2', JSON.stringify(state), false); flashSaved(); }
   catch(e){ /* storage unavailable */ }
@@ -1396,7 +1385,9 @@ function closeModal(id){ document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('[data-close]').forEach(btn=> btn.addEventListener('click', ()=> closeModal(btn.getAttribute('data-close'))));
 document.querySelectorAll('.modal-overlay').forEach(ov=> ov.addEventListener('click', e=>{ if(e.target===ov) closeModal(ov.id); }));
 
-const EDIT_PASSWORD = '1234';
+/* v2: редактирование — только у владельца и администраторов экосистемы (раньше — пароль 1234 в коде) */
+function isOrgAdmin(){ return !!(window.PE && PE.isAdmin()); }
+if(window.PE) PE.onUsers(function(){ if(editMode && !isOrgAdmin()) setEditMode(false); });
 let pwPurpose = 'edit';
 
 function askPassword(purpose){
@@ -1430,7 +1421,7 @@ function cloneBlank(){
 }
 function tryPassword(){
   const val = document.getElementById('pwInput').value;
-  if(val !== EDIT_PASSWORD){
+  if(!isOrgAdmin()){
     document.getElementById('pwError').textContent = 'Неверный пароль. Попробуйте ещё раз.';
     return;
   }
@@ -1449,11 +1440,22 @@ document.getElementById('pwInput').addEventListener('keydown', ev=>{ if(ev.key==
 
 document.getElementById('editModeBtn').addEventListener('click', ()=>{
   if(editMode){ setEditMode(false); return; }
-  askPassword('edit');
+  if(!isOrgAdmin()){ if(window.PE) PE.toast('Редактировать оргсхему может только администратор', 'err'); return; }
+  setEditMode(true);
 });
 document.getElementById('exitEditBtn').addEventListener('click', ()=> setEditMode(false));
 document.getElementById('undoBtn').addEventListener('click', undoLastChange);
-document.getElementById('resetBtn').addEventListener('click', ()=> askPassword('reset'));
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!isOrgAdmin()) return;
+  PE.confirm('Очистить оргсхему?', 'Будет удалён весь список сотрудников, сняты все назначения на должности и удалены все обязанности в плашках. Тексты отделений вернутся к исходным. Отменить это нельзя.', 'Очистить', true).then(function(ok){
+    if(!ok) return;
+    const keepLogo = state.header.logo;
+    state = ensureIds(cloneBlank());
+    state.header.logo = keepLogo;
+    renderAll();
+    saveState();
+  });
+});
 document.getElementById('glossaryBtn').addEventListener('click', ()=> openModal('glossOverlay'));
 document.getElementById('employeesBtn').addEventListener('click', ()=> openModal('employeesOverlay'));
 

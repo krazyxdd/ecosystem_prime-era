@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ-панель — Prime Era</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/pe-core.css">
+<script src="assets/pe-core.js" data-module="admin"></script>
+<style>
+  :root{ --ink:#121212; --soft:#6F6F75; --faint:#A3A3A8; --line:#E6E6E9; --bg:#F5F5F7; --card:#fff; --accent:#008CFF; --accent-t:#E8F3FF; --danger:#D7372F; --ok:#1A8A4B; --warn:#B45309; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',system-ui,sans-serif; font-size:14px; -webkit-font-smoothing:antialiased; }
+  button,input,select,textarea{ font-family:inherit; }
+  .wrap{ max-width:1240px; margin:0 auto; padding:calc(var(--pe-nav-h) + 26px) 24px 60px; }
+  @media(max-width:700px){ .wrap{ padding:calc(var(--pe-nav-h) + 16px) 12px 40px; } }
+  .head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  .head h1{ margin:0; font-size:24px; letter-spacing:-.01em; }
+  .head p{ margin:4px 0 0; color:var(--soft); font-size:13.5px; }
+  .stats{ display:flex; gap:10px; flex-wrap:wrap; }
+  .stat{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:9px 14px; min-width:110px; }
+  .stat b{ display:block; font-size:20px; }
+  .stat span{ font-size:12px; color:var(--soft); }
+  .stat.hot{ border-color:#F5C77A; background:#FFF8EA; }
+
+  .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:18px; overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tabs button{ background:none; border:none; border-bottom:2px solid transparent; padding:10px 14px; font-size:14px; font-weight:600; color:var(--soft); cursor:pointer; white-space:nowrap; display:flex; gap:7px; align-items:center; }
+  .tabs button:hover{ color:var(--ink); }
+  .tabs button.on{ color:var(--ink); border-bottom-color:var(--accent); }
+  .tabs .n{ background:var(--danger); color:#fff; font-size:11px; border-radius:999px; min-width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; }
+  .tabs .n.grey{ background:#E6E6E9; color:var(--soft); }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; }
+  .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+  .search{ flex:0 1 280px; min-width:180px; border:1px solid var(--line); border-radius:999px; padding:9px 14px; font-size:14px; background:#fff; outline:none; }
+  .search:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,140,255,.12); }
+  .chip{ border:1px solid var(--line); background:#fff; border-radius:999px; padding:7px 12px; font-size:13px; cursor:pointer; color:var(--soft); display:inline-flex; gap:6px; align-items:center; }
+  .chip:hover{ border-color:#C9C9CF; color:var(--ink); }
+  .chip.on{ border-color:var(--accent); background:var(--accent-t); color:#0062B8; font-weight:600; }
+  .grow{ flex:1; }
+  .btn{ display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 13px; font-size:13.5px; font-weight:600; cursor:pointer; color:var(--ink); white-space:nowrap; text-decoration:none; }
+  .btn:hover{ border-color:var(--accent); background:#F2F8FF; }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ background:#0077DB; }
+  .btn.ok{ background:var(--ok); border-color:var(--ok); color:#fff; }
+  .btn.ok:hover{ background:#157540; }
+  .btn.danger-t{ color:var(--danger); }
+  .btn.danger-t:hover{ border-color:var(--danger); background:#FDF0EF; }
+  .btn.sm{ padding:6px 10px; font-size:12.5px; border-radius:9px; }
+  .btn:disabled{ opacity:.5; cursor:default; }
+
+  /* заявки */
+  .req-list{ display:flex; flex-direction:column; gap:12px; }
+  .req{ display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:start; padding:18px; }
+  .req h3{ margin:0 0 3px; font-size:16px; }
+  .req .meta{ color:var(--soft); font-size:13px; line-height:1.55; }
+  .req .meta b{ color:var(--ink); font-weight:600; }
+  .req .comment{ margin-top:8px; background:#F6F6F7; border-radius:10px; padding:8px 11px; font-size:13.5px; line-height:1.5; }
+  .req .mods{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .req .acts{ display:flex; flex-direction:column; gap:6px; }
+  .kind{ display:inline-block; font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; padding:3px 7px; border-radius:6px; margin-left:6px; vertical-align:2px; }
+  .kind.reg{ background:#FFF1D6; color:#8A5A00; }
+  .kind.acc{ background:#E8F3FF; color:#0062B8; }
+  .kind.gst{ background:#EFEAFE; color:#5B3CC4; }
+  @media(max-width:720px){ .req{ grid-template-columns:auto 1fr; } .req .acts{ grid-column:1 / -1; flex-direction:row; flex-wrap:wrap; } }
+  .mod-pill{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px; padding:4px 10px 4px 6px; font-size:12.5px; background:#fff; }
+  .mod-pill i{ width:20px; height:20px; border-radius:6px; background:var(--accent-t); color:#0070D6; display:inline-flex; align-items:center; justify-content:center; }
+  .empty{ padding:46px 20px; text-align:center; color:var(--soft); }
+  .empty b{ display:block; color:var(--ink); font-size:16px; margin-bottom:6px; }
+
+  /* пользователи */
+  table.users{ width:100%; border-collapse:collapse; }
+  table.users th{ text-align:left; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); padding:12px 14px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  table.users td{ padding:11px 14px; border-bottom:1px solid #F0F0F2; vertical-align:middle; }
+  table.users tr:last-child td{ border-bottom:none; }
+  table.users tbody tr{ cursor:pointer; transition:background .1s; }
+  table.users tbody tr:hover{ background:#FAFAFB; }
+  .who{ display:flex; align-items:center; gap:11px; min-width:0; }
+  .who b{ display:block; font-weight:600; }
+  .who span{ display:block; font-size:12.5px; color:var(--faint); }
+  .st{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .st i{ width:8px; height:8px; border-radius:50%; }
+  .st.active i{ background:var(--ok); } .st.pending i{ background:#F59E0B; } .st.blocked i{ background:var(--danger); } .st.rejected i, .st.deleted i{ background:#B5B5BA; }
+  .role{ font-size:12.5px; color:var(--soft); white-space:nowrap; }
+  .role.owner{ color:#8A5A00; font-weight:600; } .role.admin{ color:#0062B8; font-weight:600; }
+  .acc-icons{ display:flex; gap:4px; flex-wrap:wrap; }
+  .acc-icons i{ width:24px; height:24px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-t); color:#0070D6; }
+  .acc-icons i.no{ background:#F3F3F5; color:#C5C5CA; }
+  .acc-all{ font-size:12.5px; color:var(--soft); }
+  .muted{ color:var(--faint); font-size:13px; }
+  .table-wrap{ overflow-x:auto; }
+  @media(max-width:860px){
+    table.users thead{ display:none; }
+    table.users, table.users tbody, table.users tr, table.users td{ display:block; width:100%; }
+    table.users tr{ padding:12px 14px; border-bottom:1px solid #F0F0F2; }
+    table.users td{ padding:3px 0; border:none; }
+    table.users td[data-l]::before{ content:attr(data-l)': '; color:var(--faint); font-size:12px; }
+  }
+
+  /* матрица доступа */
+  table.matrix{ width:100%; border-collapse:collapse; }
+  table.matrix th, table.matrix td{ padding:10px 12px; border-bottom:1px solid #F0F0F2; text-align:center; }
+  table.matrix th:first-child, table.matrix td:first-child{ text-align:left; position:sticky; left:0; background:#fff; z-index:1; }
+  table.matrix thead th{ font-size:12.5px; font-weight:600; vertical-align:bottom; min-width:110px; }
+  table.matrix thead th small{ display:block; margin-top:6px; }
+  .tgl{ appearance:none; -webkit-appearance:none; width:38px; height:22px; border-radius:999px; background:#DADADF; position:relative; cursor:pointer; transition:background .15s; vertical-align:middle; margin:0; }
+  .tgl::after{ content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s; }
+  .tgl:checked{ background:var(--accent); }
+  .tgl:checked::after{ transform:translateX(16px); }
+  .tgl:disabled{ opacity:.45; cursor:default; }
+  .tgl:focus-visible{ outline:3px solid rgba(0,140,255,.35); outline-offset:2px; }
+  .link-btn{ background:none; border:none; color:var(--accent); font-size:11.5px; cursor:pointer; padding:0; }
+  .link-btn:hover{ text-decoration:underline; }
+
+  /* модули */
+  .mod-row{ display:grid; grid-template-columns:auto 1fr repeat(3, 150px); gap:14px; align-items:center; padding:16px 18px; border-bottom:1px solid #F0F0F2; }
+  .mod-row:last-child{ border-bottom:none; }
+  .mod-row .ic{ width:40px; height:40px; border-radius:11px; background:var(--accent-t); color:#0070D6; display:flex; align-items:center; justify-content:center; }
+  .mod-row h3{ margin:0 0 3px; font-size:15px; }
+  .mod-row p{ margin:0; color:var(--soft); font-size:13px; line-height:1.45; }
+  .mod-row label{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--soft); cursor:pointer; }
+  .mod-head{ padding:10px 18px; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); border-bottom:1px solid var(--line); }
+  @media(max-width:860px){ .mod-row{ grid-template-columns:auto 1fr; } .mod-row label{ grid-column:2; } .mod-head{ display:none; } }
+
+  /* журнал */
+  .log-row{ display:grid; grid-template-columns:150px 1fr; gap:14px; padding:10px 16px; border-bottom:1px solid #F0F0F2; font-size:13.5px; }
+  .log-row:last-child{ border-bottom:none; }
+  .log-row time{ color:var(--faint); font-size:12.5px; }
+  @media(max-width:600px){ .log-row{ grid-template-columns:1fr; gap:2px; } }
+
+  /* детали пользователя */
+  .u-head{ display:flex; gap:14px; align-items:center; margin-bottom:16px; }
+  .u-head h2{ margin:0; }
+  .u-head span{ color:#8A8A8A; font-size:13px; }
+  .sec-t{ font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:#8A8A8A; margin:18px 0 8px; }
+  .pass-box{ display:flex; align-items:center; gap:10px; background:#F2F8FF; border:1px dashed #9CCBFF; border-radius:12px; padding:12px 14px; font:600 16px 'IBM Plex Mono',monospace; margin:10px 0; }
+  .pass-box span{ flex:1; word-break:break-all; }
+  .danger-zone{ display:flex; gap:8px; flex-wrap:wrap; padding-top:14px; margin-top:6px; border-top:1px solid #EEE; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+PE.onReady(function(){
+"use strict";
+var esc=PE.esc, M=PE.MODULES;
+var tab=(location.hash||'').replace('#','') || 'requests';
+var q='', stFilter='all', auditCache=null;
+
+function modIcon(m, s){ return '<svg width="'+(s||13)+'" height="'+(s||13)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg>'; }
+function modById(id){ return PE.moduleById(id); }
+function usersList(){ return Object.keys(PE.users).map(function(k){ return PE.users[k]; }); }
+function me(){ return PE.user; }
+function canManage(u){
+  var m=me(); if(!u || !m) return false;
+  if(u.id===m.id) return false;
+  if(u.role==='owner') return false;
+  if(u.role==='admin' && !PE.isOwner()) return false;
+  return true;
+}
+function plural(n,a,b,c){ var x=n%10,h=n%100; if(x===1&&h!==11) return a; if(x>=2&&x<=4&&(h<10||h>=20)) return b; return c; }
+function openRequests(){
+  var R=PE.requests||{};
+  return Object.keys(R).map(function(k){ var r=R[k]; r.id=k; return r; }).filter(function(r){ return r && r.status==='new'; }).sort(function(a,b){ return a.at-b.at; });
+}
+function pendingUsers(){ return usersList().filter(function(u){ return u.status==='pending'; }).sort(function(a,b){ return a.createdAt-b.createdAt; }); }
+function modPills(ids){ return '<div class="mods">'+(ids||[]).map(function(id){ var m=modById(id); return m?'<span class="mod-pill"><i>'+modIcon(m,12)+'</i>'+esc(m.name)+'</span>':''; }).join('')+'</div>'; }
+function statusHtml(u){ return '<span class="st '+esc(u.status)+'"><i></i>'+esc(u.status==='deleted'?'Удалён':(PE.STATUS_NAMES[u.status]||u.status))+'</span>'; }
+function audit(action, target, details){ PE.audit(action, target, details); auditCache=null; }
+
+function render(){
+  var pu=pendingUsers(), rq=openRequests(), all=usersList().filter(function(u){ return u.status!=='deleted'; });
+  var active=all.filter(function(u){ return u.status==='active'; }).length;
+  var h='<div class="head"><div><h1>Админ-панель</h1><p>Пользователи, заявки и права доступа к модулям экосистемы.</p></div>'+
+    '<div class="stats"><div class="stat"><b>'+active+'</b><span>активных</span></div>'+
+    '<div class="stat'+((pu.length+rq.length)?' hot':'')+'"><b>'+(pu.length+rq.length)+'</b><span>ждут решения</span></div>'+
+    '<div class="stat"><b>'+M.filter(function(m){ return PE.modConf(m.id).enabled; }).length+' / '+M.length+'</b><span>модулей включено</span></div></div></div>';
+  h+='<div class="tabs">'+[['requests','Заявки',pu.length+rq.length],['users','Пользователи',all.length,true],['access','Доступ к модулям'],['modules','Модули'],['log','Журнал']].map(function(t){
+    return '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'">'+t[1]+(t[2]?'<span class="n'+(t[3]?' grey':'')+'">'+t[2]+'</span>':'')+'</button>';
+  }).join('')+'</div>';
+  h+='<div id="pane"></div>';
+  document.getElementById('app').innerHTML=h;
+  renderPane();
+}
+function renderPane(){
+  var el=document.getElementById('pane'); if(!el) return;
+  if(tab==='requests') el.innerHTML=requestsHtml();
+  else if(tab==='users') el.innerHTML=usersHtml();
+  else if(tab==='access') el.innerHTML=matrixHtml();
+  else if(tab==='modules') el.innerHTML=modulesHtml();
+  else if(tab==='log'){ el.innerHTML='<div class="card"><div class="empty">Загружаю журнал…</div></div>'; loadAudit().then(function(list){ if(tab==='log') el.innerHTML=logHtml(list); }); }
+  var s=document.getElementById('u-search'); if(s && document.activeElement!==s && q){ /* сохраняем фокус при перерисовке */ }
+}
+
+/* ---------------- заявки ---------------- */
+function requestsHtml(){
+  var pu=pendingUsers(), rq=openRequests();
+  if(!pu.length && !rq.length && !PE.requestsLoaded) return '<div class="card"><div class="empty"><b>Загружаю заявки…</b>Подключаюсь к серверу.</div></div>';
+  if(!pu.length && !rq.length) return '<div class="card"><div class="empty"><b>Новых заявок нет</b>Когда кто-то зарегистрируется или попросит доступ к модулю, заявка появится здесь, а в меню — красный счётчик.</div></div>';
+  var h='<div class="req-list">';
+  pu.forEach(function(u){
+    var req=Object.keys(u.requested||{}).filter(function(k){ return u.requested[k]; });
+    h+='<div class="card req">'+PE.avatar(u,52)+'<div><h3>'+esc(PE.fullName(u))+'<span class="kind reg">регистрация</span></h3>'+
+      '<div class="meta">'+(u.position?esc(u.position)+' · ':'')+'логин <b>'+esc(u.login)+'</b>'+(u.contact?' · '+esc(u.contact):'')+(u.email?' · '+esc(u.email):'')+'<br>Заявка '+esc(PE.relTime(u.createdAt))+'</div>'+
+      (u.comment?'<div class="comment">'+esc(u.comment)+'</div>':'')+
+      (req.length?modPills(req):'<div class="meta" style="margin-top:8px">Модули не выбраны</div>')+'</div>'+
+      '<div class="acts"><button class="btn ok" data-approve-user="'+u.id+'">Одобрить…</button><button class="btn danger-t" data-reject-user="'+u.id+'">Отклонить</button></div></div>';
+  });
+  rq.forEach(function(r){
+    var u=r.uid?PE.userById(r.uid):null, isGuest=r.type==='guest';
+    h+='<div class="card req">'+(u?PE.avatar(u,52):'<span class="pe2-av" style="width:52px;height:52px;background:#8B7AD8;font-size:20px">'+esc((r.name||'Г').charAt(0).toUpperCase())+'</span>')+
+      '<div><h3>'+esc(u?PE.fullName(u):(r.name||'Гость'))+'<span class="kind '+(isGuest?'gst':'acc')+'">'+(isGuest?'гость':'доступ')+'</span></h3>'+
+      '<div class="meta">'+(isGuest?'Контакт: <b>'+esc(r.contact||'—')+'</b>':esc(u&&u.position||''))+' · '+esc(PE.relTime(r.at))+'</div>'+
+      (r.comment?'<div class="comment">'+esc(r.comment)+'</div>':'')+modPills(r.modules)+'</div>'+
+      '<div class="acts">'+(isGuest?'<button class="btn ok" data-guest-create="'+r.id+'">Создать аккаунт…</button>':'<button class="btn ok" data-approve-req="'+r.id+'">Выдать доступ</button>')+
+      '<button class="btn danger-t" data-reject-req="'+r.id+'">Отклонить</button></div></div>';
+  });
+  return h+'</div>';
+}
+function approveUserModal(u){
+  var sel=Object.assign({}, u.requested||{});
+  var m=PE.modal('<div class="u-head">'+PE.avatar(u,56)+'<div><h2>'+esc(PE.fullName(u))+'</h2><span>'+esc(u.position||'')+(u.contact?' · '+esc(u.contact):'')+'</span></div></div>'+
+    '<form><div class="pe2-label">Открыть модули</div>'+PE.modulesChecklist('mods', sel)+
+    (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member">Сотрудник</option><option value="admin">Администратор — может управлять пользователями</option></select>'):'')+
+    '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Одобрить</button></div></form>', { wide:true });
+  m.el.querySelector('form').onsubmit=function(e){
+    e.preventDefault();
+    var acc={}; m.el.querySelectorAll('input[name="mods"]:checked').forEach(function(c){ acc[c.value]=true; });
+    var role=m.el.querySelector('[name="role"]'); role=role?role.value:'member';
+    PE.fb('PATCH','users/'+u.id,{ status:'active', access:acc, role:role, requested:null, rejectReason:null, approvedAt:Date.now(), approvedBy:me().id }).then(function(){
+      audit('approve', u.id, PE.fullName(u)+': '+(Object.keys(acc).map(function(k){ return modById(k).name; }).join(', ')||'без модулей'));
+      m.close(); PE.toast(PE.fullName(u)+' одобрен(а)');
+    }).catch(fail);
+  };
+}
+function rejectModal(title, onOk){
+  var m=PE.modal('<h2>'+esc(title)+'</h2><form>'+PE.field('Причина','<textarea name="r" rows="2" maxlength="300" placeholder="Необязательно — человек увидит её на экране входа" autofocus></textarea>')+
+    '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn danger">Отклонить</button></div></form>');
+  m.el.querySelector('form').onsubmit=function(e){ e.preventDefault(); onOk(m.el.querySelector('[name="r"]').value.trim()); m.close(); };
+}
+function fail(){ PE.toast('Не удалось сохранить — нет связи с сервером','err'); }
+
+function resolveRequest(r, status, extra){
+  var patch=Object.assign({ status:status, resolvedAt:Date.now(), resolvedBy:me().id }, extra||{});
+  var jobs=[PE.fb('PATCH','requests/'+r.id, patch)];
+  if(r.uid && PE.userById(r.uid)) jobs.push(PE.fb('PATCH','users/'+r.uid+'/requests/'+r.id, { status:status }));
+  return Promise.all(jobs);
+}
+
+/* ---------------- пользователи ---------------- */
+function usersHtml(){
+  var list=usersList();
+  var counts={ all:0, active:0, pending:0, blocked:0, rejected:0, deleted:0 };
+  list.forEach(function(u){ counts[u.status]=(counts[u.status]||0)+1; if(u.status!=='deleted') counts.all++; });
+  var ql=q.trim().toLowerCase();
+  var rows=list.filter(function(u){
+    if(stFilter==='all' ? u.status==='deleted' : u.status!==stFilter) return false;
+    if(!ql) return true;
+    return [u.first,u.last,u.login,u.position,u.contact,u.email].join(' ').toLowerCase().indexOf(ql)>=0;
+  }).sort(function(a,b){ var o={ owner:0, admin:1, member:2 }; return (o[a.role]-o[b.role]) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); });
+  var h='<div class="toolbar"><input class="search" id="u-search" placeholder="Поиск: имя, логин, контакт…" value="'+esc(q)+'">'+
+    [['all','Все'],['active','Активные'],['pending','Ждут'],['blocked','Заблокированы'],['rejected','Отклонены'],['deleted','Удалённые']].filter(function(f){ return f[0]==='all'||f[0]==='active'||counts[f[0]]; }).map(function(f){
+      return '<button class="chip'+(stFilter===f[0]?' on':'')+'" data-st="'+f[0]+'">'+f[1]+' <span style="opacity:.6">'+(counts[f[0]]||0)+'</span></button>';
+    }).join('')+'<span class="grow"></span><button class="btn primary" data-add-user>'+'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить пользователя</button></div>';
+  if(!rows.length) return h+'<div class="card"><div class="empty"><b>Никого не найдено</b>Измените поиск или фильтр.</div></div>';
+  h+='<div class="card table-wrap"><table class="users"><thead><tr><th>Сотрудник</th><th>Должность</th><th>Контакт</th><th>Роль</th><th>Доступ</th><th>Статус</th><th>Был(а)</th></tr></thead><tbody>';
+  rows.forEach(function(u){
+    var adminAll=PE.isAdmin(u);
+    h+='<tr data-user="'+u.id+'"><td><div class="who">'+PE.avatar(u,36)+'<div><b>'+esc(PE.fullName(u))+(u.id===me().id?' <span style="display:inline;color:var(--faint);font-weight:400">(вы)</span>':'')+'</b><span>@'+esc(u.login)+'</span></div></div></td>'+
+      '<td data-l="Должность">'+(u.position?esc(u.position):'<span class="muted">—</span>')+'</td>'+
+      '<td data-l="Контакт">'+(u.contact||u.email?esc(u.contact||'')+(u.contact&&u.email?'<br>':'')+'<span class="muted">'+esc(u.email||'')+'</span>':'<span class="muted">—</span>')+'</td>'+
+      '<td data-l="Роль"><span class="role '+esc(u.role)+'">'+esc(PE.ROLE_NAMES[u.role]||u.role)+'</span></td>'+
+      '<td data-l="Доступ">'+(adminAll?'<span class="acc-all">Все модули</span>':'<div class="acc-icons">'+M.map(function(m){ var on=u.access&&u.access[m.id]; return '<i class="'+(on?'':'no')+'" title="'+esc(m.name)+(on?' — есть доступ':' — нет доступа')+'">'+modIcon(m,12)+'</i>'; }).join('')+'</div>')+'</td>'+
+      '<td data-l="Статус">'+statusHtml(u)+'</td>'+
+      '<td data-l="Был(а)" class="muted" title="'+esc(PE.fmtDate(u.lastSeen))+'">'+esc(PE.relTime(u.lastSeen))+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+function userModal(u){
+  var manage=canManage(u), self=u.id===me().id;
+  var editable=manage || self;
+  var h='<div class="u-head">'+PE.avatar(u,60)+'<div><h2>'+esc(PE.fullName(u))+'</h2><span>@'+esc(u.login)+' · '+esc(PE.ROLE_NAMES[u.role])+' · '+statusHtml(u)+'</span></div></div>';
+  h+='<div class="pe2-kv"><span>Зарегистрирован(а)</span><b>'+esc(PE.fmtDate(u.createdAt))+'</b>'+
+    (u.approvedAt?'<span>Одобрен(а)</span><b>'+esc(PE.fmtDate(u.approvedAt))+(u.approvedBy&&PE.userById(u.approvedBy)?' · '+esc(PE.fullName(PE.userById(u.approvedBy))):'')+'</b>':'')+
+    '<span>Последний вход</span><b>'+esc(PE.fmtDate(u.lastLogin))+'</b><span>Последняя активность</span><b>'+esc(PE.fmtDate(u.lastSeen))+'</b>'+
+    (u.comment?'<span>Комментарий</span><b style="font-weight:400">'+esc(u.comment)+'</b>':'')+
+    (u.rejectReason?'<span>Причина отказа</span><b style="font-weight:400">'+esc(u.rejectReason)+'</b>':'')+
+    (u.blockReason?'<span>Причина блокировки</span><b style="font-weight:400">'+esc(u.blockReason)+'</b>':'')+'</div>';
+  h+='<form>';
+  if(editable){
+    h+='<div class="sec-t">Профиль</div>'+PE.profileFields(u, {});
+  }
+  if(manage){
+    h+='<div class="sec-t">Доступ к модулям</div>'+PE.modulesChecklist('mods', u.access||{});
+    h+='<div class="pe2-grid2">'+
+      (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member"'+(u.role==='member'?' selected':'')+'>Сотрудник</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Администратор</option></select>','Администратор видит админку и управляет сотрудниками'):'')+
+      PE.field('Имя в экосистеме v1','<select name="legacy"><option value="">— нет —</option>'+PE.LEGACY_NAMES.map(function(n){ return '<option'+(u.legacyName===n?' selected':'')+'>'+n+'</option>'; }).join('')+'</select>','Подтянет личные данные из v1 при следующем входе')+
+    '</div>';
+  } else if(PE.isAdmin(u)) h+='<div class="pe2-muted" style="margin:8px 0 14px">'+(u.role==='owner'?'Владелец':'Администратор')+' видит все модули.</div>';
+  h+='<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Закрыть</button>'+(editable?'<button type="submit" class="pe2-btn primary">Сохранить</button>':'')+'</div>';
+  if(manage){
+    h+='<div class="danger-zone">'+
+      (u.status==='pending'?'<button type="button" class="btn ok sm" data-x="approve">Одобрить…</button>':'')+
+      '<button type="button" class="btn sm" data-x="reset">Сбросить пароль</button>'+
+      (u.status==='blocked'?'<button type="button" class="btn sm" data-x="unblock">Разблокировать</button>':u.status==='active'?'<button type="button" class="btn sm danger-t" data-x="block">Заблокировать</button>':'')+
+      (u.status==='rejected'||u.status==='deleted'?'<button type="button" class="btn sm" data-x="restore">Восстановить как активного</button>':'')+
+      (u.status!=='deleted'?'<button type="button" class="btn sm danger-t" data-x="delete">Удалить</button>':'')+'</div>';
+  }
+  h+='</form>';
+  var m=PE.modal(h, { wide:true });
+  PE.bindAvatarPicker(m.el);
+  var form=m.el.querySelector('form');
+  form.onsubmit=function(e){
+    e.preventDefault();
+    var patch={};
+    if(editable){
+      var p=PE.readProfile(form);
+      if(!p.first || !p.last){ var er=form.querySelector('[data-err]'); er.textContent='Имя и фамилия обязательны'; er.style.display='block'; return; }
+      Object.assign(patch, p);
+    }
+    if(manage){
+      var acc={}; form.querySelectorAll('input[name="mods"]:checked').forEach(function(c){ acc[c.value]=true; });
+      patch.access=acc;
+      var r=form.querySelector('[name="role"]'); if(r) patch.role=r.value;
+      patch.legacyName=form.querySelector('[name="legacy"]').value;
+      if(patch.legacyName!==(u.legacyName||'')) patch.migratedAt=null;
+    }
+    PE.fb('PATCH','users/'+u.id, patch).then(function(){
+      audit('edit', u.id, PE.fullName(Object.assign({}, u, patch))+(manage?': доступ — '+(Object.keys(patch.access).map(function(k){ return modById(k).name; }).join(', ')||'нет'):''));
+      m.close(); PE.toast('Сохранено');
+    }).catch(fail);
+  };
+  form.addEventListener('click', function(e){
+    var b=e.target.closest('[data-x]'); if(!b) return;
+    var x=b.dataset.x;
+    if(x==='approve'){ m.close(); approveUserModal(u); }
+    if(x==='reset'){ PE.confirm('Сбросить пароль?', 'Будет создан временный пароль. При следующем входе '+PE.fullName(u)+' придумает свой.', 'Сбросить').then(function(ok){ if(!ok) return; var pass=PE.genPassword(), salt=PE.makeSalt();
+      PE.fb('PUT','auth/'+PE.encKey(u.login),{ uid:u.id, salt:salt, hash:PE.hashPass(pass,salt) }).then(function(){ return PE.fb('PATCH','users/'+u.id,{ mustChangePass:true }); })
+        .then(function(){ audit('reset-pass', u.id, PE.fullName(u)); m.close(); showCreds(u, u.login, pass, 'Пароль сброшен'); }).catch(fail); }); }
+    if(x==='block') rejectModal('Заблокировать '+PE.fullName(u)+'?', function(reason){ PE.fb('PATCH','users/'+u.id,{ status:'blocked', blockReason:reason||null, blockedAt:Date.now() }).then(function(){ audit('block', u.id, PE.fullName(u)+(reason?': '+reason:'')); m.close(); PE.toast('Аккаунт заблокирован — вход закрыт сразу на всех устройствах'); }).catch(fail); });
+    if(x==='unblock') PE.fb('PATCH','users/'+u.id,{ status:'active', blockReason:null }).then(function(){ audit('unblock', u.id, PE.fullName(u)); m.close(); PE.toast('Разблокирован(а)'); }).catch(fail);
+    if(x==='restore'){
+      var job = u.status==='deleted'
+        ? (function(){ var pass=PE.genPassword(), salt=PE.makeSalt(); return PE.tx('auth/'+PE.encKey(u.login), function(cur){ if(cur && cur.uid!==u.id) return undefined; return { uid:u.id, salt:salt, hash:PE.hashPass(pass,salt) }; })
+            .then(function(r){ if(!r.committed) throw new Error('login'); return PE.fb('PATCH','users/'+u.id,{ status:'active', mustChangePass:true, deletedAt:null }); }).then(function(){ m.close(); showCreds(u, u.login, pass, 'Аккаунт восстановлен'); }); })()
+        : PE.fb('PATCH','users/'+u.id,{ status:'active', rejectReason:null, approvedAt:Date.now(), approvedBy:me().id }).then(function(){ m.close(); PE.toast('Восстановлен(а)'); });
+      job.then(function(){ audit('restore', u.id, PE.fullName(u)); }).catch(function(err){ PE.toast(err&&err.message==='login'?'Логин уже занят другим аккаунтом':'Не удалось восстановить','err'); });
+    }
+    if(x==='delete') PE.confirm('Удалить '+PE.fullName(u)+'?', 'Вход будет закрыт, человек пропадёт из списков команды. Задачи и история останутся — с его именем. Аккаунт можно восстановить из фильтра «Удалённые».', 'Удалить', true).then(function(ok){ if(!ok) return;
+      PE.fb('DELETE','auth/'+PE.encKey(u.login)).then(function(){ return PE.fb('PATCH','users/'+u.id,{ status:'deleted', deletedAt:Date.now() }); }).then(function(){ audit('delete', u.id, PE.fullName(u)); m.close(); PE.toast('Пользователь удалён'); }).catch(fail); });
+  });
+}
+function showCreds(u, login, pass, title){
+  var text='Prime Era · экосистема\nАдрес: '+location.href.replace(/admin\.html.*$/,'index.html')+'\nЛогин: '+login+'\nВременный пароль: '+pass;
+  var m=PE.modal('<h2>'+esc(title)+'</h2><p class="pe2-muted">Передайте данные для входа '+esc(PE.fullName(u))+'. Пароль показывается один раз — при первом входе человек сменит его на свой.</p>'+
+    '<div class="pass-box"><span>'+esc(login)+' / '+esc(pass)+'</span></div>'+
+    '<div class="pe2-actions"><button class="pe2-btn" data-copy>Скопировать приглашение</button><button class="pe2-btn primary" data-pe2-close>Готово</button></div>', { sticky:true });
+  m.el.querySelector('[data-copy]').onclick=function(){
+    var done=function(){ PE.toast('Скопировано'); };
+    if(navigator.clipboard) navigator.clipboard.writeText(text).then(done, function(){ prompt('Скопируйте:', text); }); else prompt('Скопируйте:', text);
+  };
+}
+function addUserModal(prefill, fromRequest){
+  prefill=prefill||{};
+  var def={}; if(prefill.modules) prefill.modules.forEach(function(k){ def[k]=true; }); else M.forEach(function(x){ if(PE.modConf(x.id).byDefault) def[x.id]=true; });
+  var tmp=PE.genPassword();
+  var m=PE.modal('<h2>'+(fromRequest?'Аккаунт по заявке гостя':'Новый пользователь')+'</h2><p class="pe2-muted">Аккаунт сразу активен. Человек войдёт по временному паролю и задаст свой.</p><form>'+
+    PE.profileFields({ first:prefill.first, last:prefill.last, contact:prefill.contact }, { focusFirst:true })+
+    '<div class="pe2-grid2">'+PE.field('Логин *','<input name="login" required maxlength="32" autocapitalize="off" spellcheck="false">','Буквы, цифры, _ и -')+
+      PE.field('Временный пароль','<input name="pass" value="'+tmp+'" required minlength="6">','Можно заменить на свой')+'</div>'+
+    '<div class="pe2-label">Доступ к модулям</div>'+PE.modulesChecklist('mods', def)+
+    (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member">Сотрудник</option><option value="admin">Администратор</option></select>'):'')+
+    '<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Создать</button></div></form>', { wide:true });
+  PE.bindAvatarPicker(m.el);
+  var form=m.el.querySelector('form'), err=form.querySelector('[data-err]');
+  function E(t){ err.textContent=t; err.style.display=t?'block':'none'; }
+  form.addEventListener('input', function(){ E(''); });
+  var fn=form.querySelector('[name="first"]'), ln=form.querySelector('[name="last"]'), lg=form.querySelector('[name="login"]'), touched=false;
+  lg.addEventListener('input', function(){ touched=true; });
+  function suggest(){ if(touched) return; lg.value=translit((fn.value+(ln.value?'.'+ln.value.charAt(0):'')).toLowerCase()).replace(/[^a-z0-9_-]/g,''); }
+  fn.addEventListener('input', suggest); ln.addEventListener('input', suggest); suggest();
+  form.onsubmit=function(e){
+    e.preventDefault();
+    var p=PE.readProfile(form), login=PE.normLogin(lg.value), pass=form.querySelector('[name="pass"]').value;
+    if(!p.first || !p.last) return E('Укажите имя и фамилию');
+    if(!PE.validLogin(login)) return E('Логин: 3–32 символа, только буквы, цифры, _ и -');
+    if(pass.length<6) return E('Пароль — минимум 6 символов');
+    var acc={}; form.querySelectorAll('input[name="mods"]:checked').forEach(function(c){ acc[c.value]=true; });
+    var role=form.querySelector('[name="role"]'); role=role?role.value:'member';
+    var id=PE.uid('u'), salt=PE.makeSalt(), n=usersList().length;
+    var btn=form.querySelector('[type="submit"]'); btn.disabled=true; btn.classList.add('busy');
+    PE.tx('auth/'+PE.encKey(login), function(cur){ if(cur) return undefined; return { uid:id, salt:salt, hash:PE.hashPass(pass,salt) }; }).then(function(r){
+      if(!r.committed) throw new Error('Логин «'+login+'» уже занят');
+      var u=Object.assign(p, { id:id, login:login, color:PE.COLORS[n%PE.COLORS.length], role:role, status:'active', access:acc, mustChangePass:true,
+        createdAt:Date.now(), approvedAt:Date.now(), approvedBy:me().id, createdBy:me().id });
+      return PE.fb('PUT','users/'+id, u).then(function(){ return u; });
+    }).then(function(u){
+      audit('create', id, PE.fullName(u)+(fromRequest?' (по заявке гостя)':''));
+      var j = fromRequest ? resolveRequest(fromRequest, 'approved', { createdUid:id }) : Promise.resolve();
+      return j.then(function(){ m.close(); showCreds(u, login, pass, 'Пользователь создан'); });
+    }).catch(function(er){ btn.disabled=false; btn.classList.remove('busy'); E(er && er.message && !/^Firebase/.test(er.message) ? er.message : 'Нет связи с сервером'); });
+  };
+}
+function translit(s){
+  var map={ 'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya','.':'_' };
+  return s.split('').map(function(c){ return map[c]!=null?map[c]:c; }).join('');
+}
+
+/* ---------------- матрица доступа ---------------- */
+function matrixHtml(){
+  var list=usersList().filter(function(u){ return u.status==='active' || u.status==='pending' || u.status==='blocked'; })
+    .sort(function(a,b){ var o={ owner:0, admin:1, member:2 }; return (o[a.role]-o[b.role]) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); });
+  var h='<p class="muted" style="margin:0 0 12px">Переключатель = доступ к модулю. Изменения применяются сразу — у человека модуль откроется или закроется без перезагрузки. Владелец и администраторы видят всё.</p>';
+  h+='<div class="card table-wrap"><table class="matrix"><thead><tr><th>Сотрудник</th>'+M.map(function(m){
+    var conf=PE.modConf(m.id);
+    return '<th><span style="display:inline-flex;flex-direction:column;align-items:center;gap:6px"><span class="mod-pill" style="padding:4px 8px"><i>'+modIcon(m,12)+'</i>'+esc(m.name)+'</span>'+(!conf.enabled?'<small class="muted">выключен</small>':'')+'</span><small><button class="link-btn" data-col-all="'+m.id+'">всем</button> · <button class="link-btn" data-col-none="'+m.id+'">никому</button></small></th>';
+  }).join('')+'</tr></thead><tbody>';
+  list.forEach(function(u){
+    var all=PE.isAdmin(u), manage=canManage(u);
+    h+='<tr><td><div class="who">'+PE.avatar(u,30)+'<div><b>'+esc(PE.fullName(u))+'</b><span>'+esc(PE.ROLE_NAMES[u.role])+(u.status!=='active'?' · '+esc(PE.STATUS_NAMES[u.status]):'')+'</span></div></div></td>'+
+      M.map(function(m){ var on=all || (u.access&&u.access[m.id]); return '<td><input type="checkbox" class="tgl" data-acc="'+u.id+'|'+m.id+'"'+(on?' checked':'')+(all||!manage?' disabled':'')+' title="'+esc(PE.fullName(u)+' — '+m.name)+'" aria-label="'+esc(PE.fullName(u)+' — '+m.name)+'"></td>'; }).join('')+'</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+function setAccess(u, mid, on){
+  return PE.fb('PATCH','users/'+u.id+'/access', (function(){ var o={}; o[mid]=on?true:null; return o; })());
+}
+
+/* ---------------- модули ---------------- */
+function modulesHtml(){
+  var h='<div class="card"><div class="mod-row mod-head"><span></span><span>Модуль</span><span>Включён</span><span>Для гостей</span><span>Новым — сразу</span></div>';
+  M.forEach(function(m){
+    var c=PE.modConf(m.id);
+    h+='<div class="mod-row"><div class="ic">'+modIcon(m,18)+'</div><div><h3>'+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p></div>'+
+      '<label title="Выключенный модуль не виден сотрудникам и гостям"><input type="checkbox" class="tgl" data-mod="'+m.id+'|enabled"'+(c.enabled?' checked':'')+'>Включён</label>'+
+      '<label title="Гости смогут открыть модуль без заявки"><input type="checkbox" class="tgl" data-mod="'+m.id+'|guest"'+(c.guest?' checked':'')+'>Гостям</label>'+
+      '<label title="Галочка «нужен доступ» будет стоять по умолчанию при регистрации и создании аккаунта"><input type="checkbox" class="tgl" data-mod="'+m.id+'|byDefault"'+(c.byDefault?' checked':'')+'>По умолчанию</label></div>';
+  });
+  return h+'</div><p class="muted" style="margin-top:12px">«По умолчанию» только предлагает модуль в форме — доступ всё равно выдаётся при одобрении.</p>';
+}
+
+/* ---------------- журнал ---------------- */
+var ACT={ login:['вошёл','вошла'], register:['зарегистрировался','зарегистрировалась'], setup:['создал экосистему','создала экосистему'], approve:['одобрил','одобрила'], reject:['отклонил регистрацию','отклонила регистрацию'], create:['создал аккаунт','создала аккаунт'], edit:['изменил профиль / доступ','изменила профиль / доступ'], block:['заблокировал','заблокировала'], unblock:['разблокировал','разблокировала'], delete:['удалил','удалила'], restore:['восстановил','восстановила'], 'reset-pass':['сбросил пароль','сбросила пароль'], grant:['выдал доступ','выдала доступ'], revoke:['закрыл доступ','закрыла доступ'], 'req-approve':['одобрил запрос','одобрила запрос'], 'req-reject':['отклонил запрос','отклонила запрос'], module:['изменил модуль','изменила модуль'] };
+function act(e, who){ var a=ACT[e.action]; if(!a) return e.action; return a[who && who.gender==='f' ? 1 : 0]; }
+function loadAudit(){
+  if(auditCache) return Promise.resolve(auditCache);
+  var p = PE.CFG.MOCK ? PE.fb('GET','audit')
+    : fetch(PE.CFG.FB+'/'+PE.CFG.ROOT+'/audit.json?orderBy=%22$key%22&limitToLast=300').then(function(r){ return r.ok?r.json():null; });
+  return p.then(function(d){ auditCache=Object.keys(d||{}).map(function(k){ return d[k]; }).sort(function(a,b){ return b.at-a.at; }).slice(0,300); return auditCache; }).catch(function(){ return []; });
+}
+function logHtml(list){
+  if(!list.length) return '<div class="card"><div class="empty"><b>Журнал пуст</b>Здесь появятся входы, заявки и все действия администраторов.</div></div>';
+  return '<div class="card">'+list.map(function(e){
+    var who=PE.userById(e.by);
+    return '<div class="log-row"><time>'+esc(PE.fmtDate(e.at))+'</time><div><b>'+esc(who?PE.fullName(who):(e.byName||'—'))+'</b> '+esc(act(e, who))+(e.details?' — '+esc(e.details):'')+'</div></div>';
+  }).join('')+'</div>';
+}
+
+/* ---------------- события ---------------- */
+var app=document.getElementById('app');
+app.addEventListener('click', function(e){
+  var b, t;
+  if((b=e.target.closest('[data-tab]'))){ tab=b.dataset.tab; history.replaceState(null,'','#'+tab); render(); return; }
+  if((b=e.target.closest('[data-st]'))){ stFilter=b.dataset.st; renderPane(); return; }
+  if(e.target.closest('[data-add-user]')){ addUserModal(); return; }
+  if((b=e.target.closest('tr[data-user]'))){ userModal(PE.userById(b.dataset.user)); return; }
+  if((b=e.target.closest('[data-approve-user]'))){ approveUserModal(PE.userById(b.dataset.approveUser)); return; }
+  if((b=e.target.closest('[data-reject-user]'))){ t=PE.userById(b.dataset.rejectUser);
+    rejectModal('Отклонить заявку '+PE.fullName(t)+'?', function(reason){ PE.fb('PATCH','users/'+t.id,{ status:'rejected', rejectReason:reason||null, requested:null }).then(function(){ audit('reject', t.id, PE.fullName(t)+(reason?': '+reason:'')); PE.toast('Заявка отклонена'); }).catch(fail); }); return; }
+  if((b=e.target.closest('[data-approve-req]'))){ var r=PE.requests[b.dataset.approveReq]; r.id=b.dataset.approveReq; var u=PE.userById(r.uid);
+    if(!u){ PE.toast('Пользователь уже удалён','err'); return; }
+    var acc={}; (r.modules||[]).forEach(function(k){ acc[k]=true; });
+    PE.fb('PATCH','users/'+u.id+'/access', acc).then(function(){ return resolveRequest(r,'approved'); }).then(function(){ audit('req-approve', u.id, PE.fullName(u)+': '+r.modules.map(function(k){ return modById(k)?modById(k).name:k; }).join(', ')); PE.toast('Доступ выдан — у '+PE.shortName(u)+' модули уже открыты'); }).catch(fail); return; }
+  if((b=e.target.closest('[data-reject-req]'))){ var r2=PE.requests[b.dataset.rejectReq]; r2.id=b.dataset.rejectReq;
+    rejectModal('Отклонить запрос?', function(reason){ resolveRequest(r2,'rejected',{ reason:reason||null }).then(function(){ audit('req-reject', r2.uid||'', (r2.name||'')+(reason?': '+reason:'')); PE.toast('Запрос отклонён'); }).catch(fail); }); return; }
+  if((b=e.target.closest('[data-guest-create]'))){ var r3=PE.requests[b.dataset.guestCreate]; r3.id=b.dataset.guestCreate; var parts=(r3.name||'').trim().split(/\s+/);
+    addUserModal({ first:parts[0]||'', last:parts.slice(1).join(' '), contact:r3.contact, modules:r3.modules }, r3); return; }
+  if((b=e.target.closest('[data-col-all]'))||(t=e.target.closest('[data-col-none]'))){
+    var el=b||t, mid=el.dataset.colAll||el.dataset.colNone, on=!!b, mm=modById(mid);
+    var targets=usersList().filter(function(u){ return u.status==='active' && canManage(u) && !PE.isAdmin(u) && !!(u.access&&u.access[mid])!==on; });
+    if(!targets.length){ PE.toast(on?'У всех уже есть доступ':'Ни у кого нет доступа'); return; }
+    PE.confirm((on?'Открыть':'Закрыть')+' «'+mm.name+'» для '+targets.length+' '+plural(targets.length,'человека','человек','человек')+'?', targets.map(PE.fullName).join(', '), on?'Открыть':'Закрыть', !on).then(function(ok){ if(!ok) return;
+      Promise.all(targets.map(function(u){ return setAccess(u, mid, on); })).then(function(){ audit(on?'grant':'revoke', '', mm.name+' — '+targets.map(PE.fullName).join(', ')); PE.toast('Готово'); }).catch(fail); });
+    return;
+  }
+});
+app.addEventListener('change', function(e){
+  var t=e.target;
+  if(t.dataset.acc){
+    var p=t.dataset.acc.split('|'), u=PE.userById(p[0]), mm=modById(p[1]);
+    setAccess(u, p[1], t.checked).then(function(){ audit(t.checked?'grant':'revoke', u.id, mm.name+' — '+PE.fullName(u)); PE.toast((t.checked?'Открыт':'Закрыт')+' «'+mm.name+'» для '+PE.shortName(u)); }).catch(function(){ t.checked=!t.checked; fail(); });
+  }
+  if(t.dataset.mod){
+    var q2=t.dataset.mod.split('|'), o={}; o[q2[1]]=t.checked;
+    PE.fb('PATCH','modules/'+q2[0], o).then(function(){ audit('module','', modById(q2[0]).name+': '+({ enabled:'включён', guest:'для гостей', byDefault:'по умолчанию' })[q2[1]]+' — '+(t.checked?'да':'нет')); }).catch(function(){ t.checked=!t.checked; fail(); });
+  }
+});
+app.addEventListener('input', function(e){
+  if(e.target.id==='u-search'){ q=e.target.value; var pos=e.target.selectionStart; renderPane(); var s=document.getElementById('u-search'); if(s){ s.focus(); s.setSelectionRange(pos,pos); } }
+});
+/* живые обновления: перерисовываем, но не пока человек печатает в поиске */
+var rT=null;
+PE.onUsers(function(){ clearTimeout(rT); rT=setTimeout(function(){ if(document.activeElement && document.activeElement.id==='u-search') renderPane(); else render(); }, 60); });
+render();
+});
+</script>
+</body>
+</html>

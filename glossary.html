@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/shell.css">
+<link rel="stylesheet" href="assets/pe-core.css">
+<script src="assets/pe-core.js" data-module="glossary"></script>
 <style>
 :root {
         --green: #0A0A0B;
@@ -686,21 +688,6 @@
   <div class="pe-grid-line accent"></div>
 </div>
 
-<header class="pe-nav">
-  <a class="pe-nav-logo" href="index.html"><img src="assets/logo-full-ondark.png" alt="Prime Era"></a>
-  <nav class="pe-nav-links">
-    <a href="index.html" class="pe-nav-item">Главная</a>
-    <a href="glossary.html" class="pe-nav-item active">Глоссарий</a>
-    <a href="objections.html" class="pe-nav-item">Возражения</a>
-    <a href="objections-raw.html" class="pe-nav-item">Возражения Prime Era</a>
-    <a href="site-time-tracker.html" class="pe-nav-item">Хронометраж</a>
-    <a href="planner.html" class="pe-nav-item">Планировщик</a>
-    <a href="prime-sales.html" class="pe-nav-item">База знаний</a>
-    <a href="org-board.html" class="pe-nav-item">Оргсхема</a>
-  </nav>
-</header>
-
-<script src="assets/memory.js"></script>
 
 <style>#page-glossary{ padding-top:calc(var(--nav-h) + 20px); }</style>
 
@@ -733,7 +720,7 @@
                 <div id="prevNames"></div>
             </div>
             <div style="margin-top:14px;text-align:center;">
-                <button class="ghost" onclick="goAdminLogin()">Панель администратора</button>
+                <button class="ghost pe2-admin-only" onclick="goAdminLogin()">Панель администратора</button>
             </div>
         </div>
 
@@ -759,6 +746,10 @@
                 <div class="menu-tile" style="--tile-accent:#FF5C93; grid-column:1 / -1;" onclick="goAllWords()">
                     <div class="ttl">Все слова</div>
                     <div class="desc">Полный список терминов — списком. По клику показывается определение и примеры</div>
+                </div>
+                <div class="menu-tile pe2-admin-only" style="--tile-accent:#6B7280; grid-column:1 / -1;" onclick="goAdminLogin()">
+                    <div class="ttl">Панель администратора</div>
+                    <div class="desc">Редактирование: добавление терминов и картинок, аналитика по сотрудникам. Видно только администраторам</div>
                 </div>
             </div>
         </div>
@@ -1613,8 +1604,7 @@
     const ANSWERS_KEY = "pe_glossary_answers_v1";
     const CUSTOM_TERMS_KEY = "pe_glossary_customterms_v1";
     const TERM_IMAGES_KEY = "pe_glossary_termimages_v1";
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "admi11";
+    /* v2: вход в панель администратора — по роли в экосистеме (владелец / администратор), а не по паролю в коде */
     /* ============================================================
        ICONS — литеральные мини-схемы (см. предыдущую версию).
        ============================================================ */
@@ -2456,15 +2446,11 @@
 
     // ---------- ADMIN ----------
     function goAdminLogin() {
-        $("adminLoginError").style.display = "none";
-        $("adminUser").value = "";
-        $("adminPass").value = "";
-        showScreen("screen-admin-login");
+        if (window.PE && PE.isAdmin()) { isAdmin = true; goAdminDashboard(); return; }
+        if (window.PE) PE.toast('Панель глоссария доступна только администраторам экосистемы', 'err');
     }
     function adminLogin() {
-        const u = $("adminUser").value.trim();
-        const p = $("adminPass").value;
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
+        if (window.PE && PE.isAdmin()) {
             isAdmin = true;
             goAdminDashboard();
         } else {
