@@ -1,0 +1,222 @@
+/* =========================================================================
+   Prime Era — оболочка экосистемы v2 (навигация, вход, модалки, аватарки).
+   Классы с префиксом pe2- — чтобы не пересекаться со стилями модулей.
+   ========================================================================= */
+:root{
+  --pe-nav-h:0px;
+  --pe2-bg:#050506; --pe2-panel:#0E0E12; --pe2-line:rgba(255,255,255,.10);
+  --pe2-text:#F4F4F6; --pe2-soft:rgba(255,255,255,.62); --pe2-faint:rgba(255,255,255,.38);
+  --pe2-accent:#008CFF; --pe2-accent-2:#4DB2FF; --pe2-danger:#FF5A52; --pe2-ok:#2BC37A; --pe2-warn:#FFB020;
+}
+html.pe2-has-nav{ --pe-nav-h:56px; --nav-h:56px; }
+
+/* пока ядро не решило, пускать ли — страницу не видно (без «мигания» чужих данных) */
+html.pe2-wait body > *:not(.pe2-gate):not(#pe2-toasts){ visibility:hidden !important; }
+html.pe2-wait body{ background:#050506; }
+html.pe2-gated body{ overflow:hidden !important; }
+html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ visibility:hidden !important; }
+/* старые экраны входа v1 больше не нужны */
+#loginGate, .pe-float-bar, header.pe-nav{ display:none !important; }
+
+/* ================= навигация ================= */
+.pe2-nav{
+  position:fixed; top:0; left:0; right:0; height:56px; z-index:900;
+  display:flex; align-items:center; gap:14px; padding:0 18px;
+  background:rgba(8,8,11,.94); -webkit-backdrop-filter:blur(16px) saturate(140%); backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--pe2-line);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+}
+.pe2-nav-logo{ display:flex; align-items:center; flex:none; }
+.pe2-nav-logo img{ height:19px; width:auto; display:block; }
+.pe2-nav-links{ display:flex; align-items:center; gap:2px; flex:1 1 auto; min-width:0; overflow-x:auto; scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
+          mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%); padding:0 8px; }
+.pe2-nav-links::-webkit-scrollbar{ display:none; }
+.pe2-nav-links a{
+  color:rgba(255,255,255,.62); text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;
+  padding:7px 11px; border-radius:999px; transition:color .15s, background .15s;
+}
+.pe2-nav-links a:hover{ color:#fff; background:rgba(255,255,255,.07); }
+.pe2-nav-links a.on{ color:#fff; background:rgba(0,140,255,.22); }
+.pe2-nav-right{ display:flex; align-items:center; gap:8px; flex:none; }
+.pe2-nav-admin{
+  display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,.72); text-decoration:none;
+  font-size:12.5px; font-weight:600; padding:6px 11px; border:1px solid var(--pe2-line); border-radius:999px; transition:all .15s;
+}
+.pe2-nav-admin:hover, .pe2-nav-admin.on{ color:#fff; border-color:var(--pe2-accent); }
+.pe2-nav-admin b{ background:var(--pe2-danger); color:#fff; font-size:10.5px; min-width:18px; height:18px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; }
+.pe2-nav-user{
+  display:inline-flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:#fff; cursor:pointer;
+  font:600 13px 'IBM Plex Sans',sans-serif; padding:3px 10px 3px 3px; border-radius:999px; transition:background .15s, border-color .15s;
+}
+.pe2-nav-user:hover{ background:rgba(255,255,255,.07); border-color:var(--pe2-line); }
+.pe2-testbadge{ font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; color:#1A1200; background:var(--pe2-warn); padding:4px 8px; border-radius:6px; }
+@media(max-width:720px){
+  .pe2-nav{ padding:0 10px; gap:6px; }
+  .pe2-nav-logo img{ height:15px; }
+  .pe2-nav-admin span, .pe2-nav-user > span:not(.pe2-av){ display:none; }
+  .pe2-nav-admin{ padding:6px 8px; }
+  .pe2-nav-user{ padding:3px; }
+  .pe2-testbadge{ display:none; }
+}
+
+/* ================= аватарки ================= */
+.pe2-av{
+  display:inline-flex; align-items:center; justify-content:center; flex:none; border-radius:50%; overflow:hidden;
+  color:#fff; font-family:'IBM Plex Sans',system-ui,sans-serif; font-weight:700; letter-spacing:.02em; line-height:1;
+  background:#6B7280; user-select:none;
+}
+.pe2-av img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* ================= меню пользователя ================= */
+.pe2-menu{
+  position:fixed; z-index:1200; min-width:250px; background:#131318; border:1px solid var(--pe2-line); border-radius:14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.45); padding:6px; font-family:'IBM Plex Sans',sans-serif; animation:pe2pop .14s ease;
+}
+.pe2-menu-head{ display:flex; gap:10px; align-items:center; padding:10px 10px 12px; border-bottom:1px solid var(--pe2-line); margin-bottom:4px; }
+.pe2-menu-head b{ display:block; color:#fff; font-size:14px; }
+.pe2-menu-head span{ color:var(--pe2-soft); font-size:12px; }
+.pe2-menu button, .pe2-menu a{
+  display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; color:rgba(255,255,255,.85);
+  font:500 13.5px 'IBM Plex Sans',sans-serif; padding:9px 10px; border-radius:9px; cursor:pointer; text-decoration:none; text-align:left;
+}
+.pe2-menu button:hover, .pe2-menu a:hover{ background:rgba(255,255,255,.07); color:#fff; }
+.pe2-menu .danger{ color:#FF8A84; }
+@keyframes pe2pop{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:none; } }
+
+/* ================= экран входа ================= */
+.pe2-gate{
+  position:fixed; inset:0; z-index:5000; overflow-y:auto; background:
+    radial-gradient(900px 500px at 50% -10%, rgba(0,140,255,.16), transparent 60%), #050506;
+  display:flex; justify-content:center; align-items:flex-start; padding:7vh 16px 40px;
+  font-family:'IBM Plex Sans',system-ui,sans-serif; color:var(--pe2-text);
+}
+.pe2-gate-box{ width:100%; max-width:400px; margin:auto 0; animation:pe2in .25s ease; }
+.pe2-gate-box.wide{ max-width:560px; }
+@keyframes pe2in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+.pe2-gate-logo{ height:30px; width:auto; display:block; margin:0 auto 10px; }
+.pe2-gate-sub{ text-align:center; font:500 11px 'IBM Plex Mono',monospace; letter-spacing:.24em; text-transform:uppercase; color:var(--pe2-faint); margin-bottom:26px; }
+.pe2-gate-h{ font-size:22px; font-weight:700; margin:0 0 10px; text-align:center; letter-spacing:-.01em; }
+.pe2-gate-p{ font-size:14px; line-height:1.55; color:var(--pe2-soft); margin:0 0 20px; text-align:center; }
+.pe2-gate-p b{ color:#fff; }
+.pe2-gate-foot{ margin-top:18px; text-align:center; font-size:13px; line-height:1.55; color:var(--pe2-faint); }
+.pe2-gate-foot a{ color:var(--pe2-accent-2); cursor:pointer; text-decoration:none; }
+.pe2-gate-foot a:hover{ text-decoration:underline; }
+.pe2-gate-tabs{ display:flex; gap:3px; padding:4px; border:1px solid var(--pe2-line); border-radius:999px; margin-bottom:22px; background:rgba(255,255,255,.03); }
+.pe2-gate-tabs button{ flex:1; background:none; border:none; color:var(--pe2-soft); font:600 13px 'IBM Plex Sans',sans-serif; padding:9px 6px; border-radius:999px; cursor:pointer; }
+.pe2-gate-tabs button:hover{ color:#fff; }
+.pe2-gate-tabs button.on{ background:#fff; color:#0A0A0B; }
+.pe2-note{ background:rgba(0,140,255,.12); border:1px solid rgba(0,140,255,.35); color:#CFE8FF; border-radius:12px; padding:10px 12px; font-size:13px; margin-bottom:14px; }
+.pe2-lock{ width:64px; height:64px; margin:0 auto 16px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--pe2-line); color:var(--pe2-accent-2); }
+.pe2-status-av{ position:relative; width:72px; margin:0 auto 16px; }
+.pe2-status-dot{ position:absolute; right:-4px; bottom:-2px; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:3px solid #050506; }
+.pe2-status-dot.wait{ background:var(--pe2-warn); color:#1A1200; }
+
+/* ================= поля форм (тёмные — вход; светлые — внутри .pe2-modal) ================= */
+.pe2-field{ display:block; margin-bottom:14px; }
+.pe2-field > span{ display:block; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--pe2-soft); margin-bottom:6px; }
+.pe2-field input, .pe2-field select, .pe2-field textarea{
+  width:100%; box-sizing:border-box; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:#fff;
+  font:400 15px 'IBM Plex Sans',sans-serif; padding:11px 13px; border-radius:11px; outline:none; transition:border-color .15s, background .15s;
+}
+.pe2-field textarea{ resize:vertical; min-height:60px; }
+.pe2-field select option{ color:#000; }
+.pe2-field input:focus, .pe2-field select:focus, .pe2-field textarea:focus{ border-color:var(--pe2-accent); background:rgba(255,255,255,.09); }
+.pe2-field small{ display:block; margin-top:5px; font-size:12px; color:var(--pe2-faint); line-height:1.4; }
+.pe2-field input[type="date"]{ color-scheme:dark; }
+.pe2-grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+.pe2-half{ max-width:calc(50% - 6px); }
+@media(max-width:520px){ .pe2-grid2{ grid-template-columns:1fr; } .pe2-half{ max-width:none; } }
+.pe2-label{ font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--pe2-soft); margin:0 0 8px; }
+.pe2-sep{ height:1px; background:var(--pe2-line); margin:6px 0 18px; }
+.pe2-err{ display:none; background:rgba(255,90,82,.12); border:1px solid rgba(255,90,82,.4); color:#FFB3AE; border-radius:10px; padding:9px 12px; font-size:13px; margin:2px 0 12px; }
+.pe2-muted{ color:var(--pe2-faint); font-size:13px; line-height:1.5; }
+
+.pe2-av-pick{ display:flex; gap:16px; align-items:center; margin-bottom:18px; }
+.pe2-av-drop{
+  width:84px; height:84px; flex:none; border-radius:50%; overflow:hidden; cursor:pointer; position:relative;
+  background:rgba(255,255,255,.06); border:1.5px dashed rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center;
+  color:var(--pe2-faint); transition:border-color .15s;
+}
+.pe2-av-drop:hover, .pe2-av-drop.over{ border-color:var(--pe2-accent); color:var(--pe2-accent-2); }
+.pe2-av-drop img{ width:100%; height:100%; object-fit:cover; }
+.pe2-av-side{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+.pe2-av-side b{ font-size:14px; }
+.pe2-av-side span{ font-size:12.5px; line-height:1.45; color:var(--pe2-faint); }
+
+.pe2-mod-checks{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.pe2-check{ display:flex; gap:11px; align-items:flex-start; padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; cursor:pointer; transition:border-color .15s, background .15s; }
+.pe2-check:hover{ border-color:rgba(255,255,255,.3); }
+.pe2-check:has(input:checked){ border-color:var(--pe2-accent); background:rgba(0,140,255,.1); }
+.pe2-check input{ margin:3px 0 0; accent-color:var(--pe2-accent); width:16px; height:16px; flex:none; }
+.pe2-check .ic{ width:30px; height:30px; border-radius:9px; background:rgba(0,140,255,.18); color:var(--pe2-accent-2); display:flex; align-items:center; justify-content:center; flex:none; }
+.pe2-check b{ display:block; font-size:14px; margin-bottom:2px; }
+.pe2-check small{ display:block; font-size:12px; line-height:1.4; color:var(--pe2-faint); }
+
+/* ================= кнопки ================= */
+.pe2-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px; box-sizing:border-box;
+  font:600 14px 'IBM Plex Sans',sans-serif; padding:11px 18px; border-radius:11px; cursor:pointer; text-decoration:none;
+  background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.16); transition:background .15s, border-color .15s, opacity .15s;
+}
+.pe2-btn:hover{ background:rgba(255,255,255,.13); }
+.pe2-btn.primary{ background:var(--pe2-accent); border-color:var(--pe2-accent); }
+.pe2-btn.primary:hover{ background:#0077DB; }
+.pe2-btn.danger{ background:#D7372F; border-color:#D7372F; }
+.pe2-btn.ghost{ background:transparent; border-color:transparent; color:var(--pe2-soft); }
+.pe2-btn.ghost:hover{ color:#fff; background:rgba(255,255,255,.06); }
+.pe2-btn.sm{ padding:6px 11px; font-size:12.5px; border-radius:9px; }
+.pe2-btn.block{ width:100%; }
+.pe2-btn:disabled{ opacity:.55; cursor:default; }
+.pe2-btn.busy{ position:relative; color:transparent !important; }
+.pe2-btn.busy::after{ content:""; position:absolute; width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:pe2spin .7s linear infinite; }
+@keyframes pe2spin{ to{ transform:rotate(360deg); } }
+.pe2-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:6px; flex-wrap:wrap; }
+.pe2-actions.col{ flex-direction:column; }
+
+/* ================= модалки (светлые — поверх любых модулей) ================= */
+.pe2-modal-back{ position:fixed; inset:0; z-index:6000; background:rgba(5,5,8,.62); display:flex; align-items:flex-start; justify-content:center; padding:6vh 14px 30px; overflow-y:auto; animation:pe2fade .15s ease; }
+@keyframes pe2fade{ from{ opacity:0; } to{ opacity:1; } }
+.pe2-modal{
+  width:100%; max-width:440px; background:#fff; color:#121212; border-radius:18px; padding:22px 22px 18px; box-sizing:border-box;
+  box-shadow:0 30px 80px rgba(0,0,0,.35); font-family:'IBM Plex Sans',sans-serif; animation:pe2in .18s ease; margin:auto 0;
+}
+.pe2-modal.wide{ max-width:600px; }
+.pe2-modal h2{ margin:0 0 8px; font-size:19px; }
+.pe2-modal .pe2-muted{ color:#7A7A7A; }
+.pe2-modal .pe2-field > span, .pe2-modal .pe2-label{ color:#7A7A7A; }
+.pe2-modal .pe2-field input, .pe2-modal .pe2-field select, .pe2-modal .pe2-field textarea{ background:#fff; border-color:#DADADD; color:#121212; }
+.pe2-modal .pe2-field input:focus, .pe2-modal .pe2-field select:focus, .pe2-modal .pe2-field textarea:focus{ border-color:var(--pe2-accent); box-shadow:0 0 0 3px rgba(0,140,255,.15); }
+.pe2-modal .pe2-field small{ color:#9A9A9A; }
+.pe2-modal .pe2-field input[type="date"]{ color-scheme:light; }
+.pe2-modal .pe2-sep{ background:#EEE; }
+.pe2-modal .pe2-btn{ background:#fff; color:#121212; border-color:#DADADD; }
+.pe2-modal .pe2-btn:hover{ background:#F2F6FF; border-color:var(--pe2-accent); }
+.pe2-modal .pe2-btn.primary{ background:var(--pe2-accent); color:#fff; border-color:var(--pe2-accent); }
+.pe2-modal .pe2-btn.primary:hover{ background:#0077DB; }
+.pe2-modal .pe2-btn.danger{ background:#D7372F; color:#fff; border-color:#D7372F; }
+.pe2-modal .pe2-btn.ghost{ background:transparent; border-color:transparent; color:#7A7A7A; }
+.pe2-modal .pe2-btn.ghost:hover{ color:#121212; background:#F4F4F5; }
+.pe2-modal .pe2-btn.busy::after{ border-color:rgba(0,0,0,.2); border-top-color:#121212; }
+.pe2-modal .pe2-btn.primary.busy::after{ border-color:rgba(255,255,255,.4); border-top-color:#fff; }
+.pe2-modal .pe2-av-drop{ background:#F4F4F5; border-color:#CFCFD4; color:#9A9A9A; }
+.pe2-modal .pe2-av-side span{ color:#8A8A8A; }
+.pe2-modal .pe2-check{ border-color:#E4E4E7; }
+.pe2-modal .pe2-check:hover{ border-color:#C9C9CF; }
+.pe2-modal .pe2-check:has(input:checked){ background:#EEF6FF; border-color:var(--pe2-accent); }
+.pe2-modal .pe2-check .ic{ background:#E6F2FF; color:#0070D6; }
+.pe2-modal .pe2-check small{ color:#8A8A8A; }
+.pe2-modal .pe2-err{ background:#FDECEA; border-color:#F5C2BD; color:#A8322A; }
+.pe2-kv{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:13px; margin:0 0 14px; padding:10px 12px; background:#F6F6F7; border-radius:10px; }
+.pe2-kv span{ color:#8A8A8A; }
+
+/* ================= тосты ================= */
+#pe2-toasts{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:7000; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+.pe2-toast{ background:#141418; color:#fff; font:500 13.5px 'IBM Plex Sans',sans-serif; padding:11px 16px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.1); animation:pe2in .2s ease; max-width:min(92vw,460px); transition:opacity .3s, transform .3s; }
+.pe2-toast.err{ background:#3A0F0C; border-color:#7A2A24; }
+.pe2-toast.out{ opacity:0; transform:translateY(6px); }
+
+@media (prefers-reduced-motion: reduce){ .pe2-gate-box, .pe2-modal, .pe2-menu, .pe2-toast{ animation:none; } }
+
+/* элементы только для владельца и администраторов (кнопки редактирования в модулях) */
+html:not(.pe2-admin) .pe2-admin-only{ display:none !important; }
