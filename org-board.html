@@ -473,6 +473,10 @@
   /* v2: логотип студии уже есть в меню экосистемы — в шапке схемы его нет, заголовок слева */
   #logoBox, #logoSpacer, #logoFile, #titleGrip{ display:none !important; }
   .brand-titles{ text-align:left !important; transform:none !important; padding-left:20px; }
+  .person-multi{ display:inline-flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:100%; }
+  .p-add{ display:none; width:26px; height:26px; border-radius:50%; border:1.5px dashed var(--mid, #c9ccd3); background:transparent; color:var(--ink, #333); font-size:15px; font-weight:800; line-height:1; cursor:pointer; flex:none; }
+  body.edit-mode .p-add{ display:inline-flex; align-items:center; justify-content:center; }
+  .p-add:hover{ border-style:solid; }
   .emp-eco-note{ font-size:11px; color:#8a8f98; text-align:center; margin:-2px 0 6px; }
 </style>
 </head>
@@ -880,18 +884,27 @@ function linkEmployeesToUsers(){
   const users = ecoUsers(); if(!users.length) return false;
   let changed = false;
   const refs = [];
+  function swap(oldId, newIds){
+    refs.forEach(r=>{ const ids=getIds(r[0], r[1]); const i=ids.indexOf(oldId); if(i<0) return; ids.splice(i, 1, ...newIds); setIds(r[0], r[1], ids); });
+  }
   if(state.director) refs.push([state.director,'employeeId']);
   (state.secretaries||[]).forEach(x=>refs.push([x,'employeeId']));
   (state.departments||[]).forEach(d=>{ refs.push([d,'secEmployeeId']); (d.units||[]).forEach(u=>refs.push([u,'employeeId'])); });
   state.employees = state.employees.filter(emp=>{
     const n = normName(emp.name);
+    /* «общий» сотрудник вида «Лина Лиана Андрей» — раскладываем на реальных людей */
+    const words = n.split(' ').filter(Boolean);
+    if(words.length>1){
+      const group = [];
+      words.forEach(w=>{ const u=users.find(u=>normName(u.first)===w || normName(u.legacyName)===w); if(u && group.indexOf(u)<0) group.push(u); });
+      if(group.length>1 && group.length===words.length){ swap(emp.id, group.map(u=>'u:'+u.id)); changed=true; return false; }
+    }
     const u = users.find(u=>{
       const full = normName(PE.fullName(u)), first = normName(u.first), last = normName(u.last), leg = normName(u.legacyName), rev = normName((u.last||'')+' '+(u.first||''));
       return n && (n===full || n===rev || n===first || (leg && n===leg) || (last && n===last));
     });
     if(!u) return true;
-    const newId = 'u:'+u.id;
-    refs.forEach(r=>{ if(r[0][r[1]]===emp.id){ r[0][r[1]]=newId; } });
+    swap(emp.id, ['u:'+u.id]);
     if(!state.userDesc) state.userDesc = {};
     if(emp.description && !state.userDesc[u.id]) state.userDesc[u.id] = emp.description;
     changed = true;
@@ -904,11 +917,19 @@ function stripTags(html){
   tmp.innerHTML = html || '';
   return tmp.textContent || tmp.innerText || '';
 }
+/* v2: на должности может быть несколько исполнителей — поле хранит id или массив id
+   (старые данные с одним id читаются как раньше) */
+function getIds(h, f){ const v=h&&h[f]; if(Array.isArray(v)) return v.filter(Boolean); return v ? [v] : []; }
+function setIds(h, f, arr){ arr=arr.filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i); h[f] = arr.length>1 ? arr : (arr[0]||null); }
+function hasId(h, f, id){ return getIds(h, f).indexOf(id)>=0; }
 function computeEmployeePositions(id){
   const list = [];
-  if(state.director.employeeId === id) list.push(stripTags(state.director.label));
-  state.secretaries.forEach(sec=>{ if(sec.employeeId === id) list.push(stripTags(sec.label)); });
-  state.departments.forEach(dept=>{ if(dept.secEmployeeId === id) list.push(stripTags(dept.secLabel)); });
+  if(hasId(state.director,'employeeId',id)) list.push(stripTags(state.director.label));
+  state.secretaries.forEach(sec=>{ if(hasId(sec,'employeeId',id)) list.push(stripTags(sec.label)); });
+  state.departments.forEach(dept=>{
+    if(hasId(dept,'secEmployeeId',id)) list.push(stripTags(dept.secLabel));
+    (dept.units||[]).forEach(u=>{ if(hasId(u,'employeeId',id)) list.push(stripTags(u.title)); });
+  });
   return list;
 }
 function initials(name){
@@ -921,42 +942,66 @@ function avatarStyleAndText(emp){
   return {bg:'', text: emp ? initials(emp.name) : '·'};
 }
 function personChip(holderObj, field){
-  const wrap = el('span','person');
-  const avatar = el('span','p-avatar');
-  const nameSpan = el('span','p-name');
-  const select = document.createElement('select');
-  select.className = 'p-select';
-
-  function paint(){
-    const emp = employeeById(holderObj[field]);
+  const wrap = el('span','person-multi');
+  function chip(id){
+    const emp = id ? employeeById(id) : null;
+    const c = el('span','person');
+    const avatar = el('span','p-avatar');
     const a = avatarStyleAndText(emp);
-    avatar.style.backgroundImage = a.bg;
-    avatar.textContent = a.text;
-    nameSpan.textContent = emp ? emp.name : '—';
-    select.innerHTML = '';
-    const optNone = document.createElement('option');
-    optNone.value = ''; optNone.textContent = '— не назначен —';
-    select.appendChild(optNone);
-    allEmployees().forEach(e=>{
-      const opt = document.createElement('option');
-      opt.value = e.id; opt.textContent = e.name;
-      if(e.id === holderObj[field]) opt.selected = true;
-      select.appendChild(opt);
-    });
+    avatar.style.backgroundImage = a.bg; avatar.textContent = a.text;
     avatar.onclick = emp ? ()=> openEmployeeCard(emp.id) : null;
     avatar.style.cursor = emp ? 'pointer' : 'default';
+    c.appendChild(avatar);
+    c.appendChild(el('span','p-name', emp ? emp.name : '—'));
+    return c;
+  }
+  function makeSelect(current, index, ids){
+    const select = document.createElement('select');
+    select.className = 'p-select';
+    const none = document.createElement('option');
+    none.value=''; none.textContent = index>0 || ids.length>1 ? '— убрать —' : '— не назначен —';
+    select.appendChild(none);
+    allEmployees().forEach(e=>{
+      if(e.id!==current && ids.indexOf(e.id)>=0) return;   // уже стоит на этой должности
+      const opt = document.createElement('option');
+      opt.value = e.id; opt.textContent = e.name;
+      if(e.id === current) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('mousedown', e=> e.stopPropagation());
+    select.addEventListener('change', ()=>{
+      const arr = getIds(holderObj, field).slice();
+      if(index < arr.length){ if(select.value) arr[index]=select.value; else arr.splice(index,1); }
+      else if(select.value) arr.push(select.value);
+      setIds(holderObj, field, arr);
+      paint(); renderEmployeeDock(); scheduleSave();
+    });
+    return select;
+  }
+  function paint(){
+    wrap.innerHTML = '';
+    const ids = getIds(holderObj, field);
+    (ids.length ? ids : [null]).forEach((id, i)=>{
+      const c = chip(id);
+      c.appendChild(makeSelect(id, i, ids));
+      wrap.appendChild(c);
+    });
+    if(ids.length){
+      const add = el('button','p-add','+');
+      add.type = 'button'; add.title = 'Добавить ещё исполнителя на эту должность';
+      add.addEventListener('mousedown', e=> e.stopPropagation());
+      add.addEventListener('click', e=>{
+        e.stopPropagation();
+        const c = chip(null); c.classList.add('p-new');
+        const sel = makeSelect(null, ids.length, ids);
+        sel.querySelector('option').textContent = '— выберите —';
+        c.appendChild(sel); wrap.insertBefore(c, add);
+        try{ sel.focus(); if(sel.showPicker) sel.showPicker(); }catch(_){}
+      });
+      wrap.appendChild(add);
+    }
   }
   paint();
-  select.addEventListener('mousedown', e=> e.stopPropagation());
-  select.addEventListener('change', ()=>{
-    holderObj[field] = select.value || null;
-    paint();
-    scheduleSave();
-  });
-
-  wrap.appendChild(avatar);
-  wrap.appendChild(nameSpan);
-  wrap.appendChild(select);
   return wrap;
 }
 
