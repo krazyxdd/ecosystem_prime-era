@@ -248,8 +248,14 @@ function tx(path, fn, tries){
 /* подписка в реальном времени (EventSource). С токеном: при истечении — обновляем
    и переподключаемся; если доступа нет (правила базы) — вызываем onCancel. */
 var STREAMS=[];
-function stream(path, onChange, onCancel){
-  var tree=null, es=null, closed=false, pollT=null, gotFirst=false, fails=0;
+/* Браузер держит не больше 6 соединений с сервером НА ВСЕ ВКЛАДКИ сразу.
+   Поэтому: живой поток (EventSource) — только там, где нужна мгновенность
+   (доска задач); пользователи и заявки — опросом (opts.poll, мс) без постоянного
+   соединения; а вкладка, спрятанная дольше 2 минут, отпускает поток и
+   восстанавливает его при возвращении (сервер сразу пришлёт свежее состояние). */
+function stream(path, onChange, onCancel, opts){
+  opts=opts||{};
+  var tree=null, es=null, closed=false, pollT=null, gotFirst=false, fails=0, suspended=false, lastJson=null;
   function emit(ev){ try{ onChange(tree, ev); }catch(e){ if(window.console) console.error(e); } }
   if(CFG.MOCK){
     var root='/'+segs(path).join('/');
@@ -263,14 +269,18 @@ function stream(path, onChange, onCancel){
   }
   function cancel(){ if(es){ es.close(); es=null; } closed=true; clearTimeout(pollT); if(onCancel) onCancel(); }
   function poll(){
-    if(closed) return;
-    fb('GET', path).then(function(d){ tree=d; gotFirst=true; emit({ path:'/', full:true }); })
-      .catch(function(e){ if(!gotFirst && onCancel && /40[13]/.test(e.message)) cancel(); });
-    pollT=setTimeout(poll, 20000);
+    if(closed || suspended) return;
+    clearTimeout(pollT);
+    fb('GET', path).then(function(d){
+      var j=JSON.stringify(d===undefined?null:d);
+      var first=!gotFirst; gotFirst=true;
+      if(first || j!==lastJson){ lastJson=j; tree=d; emit({ path:'/', full:true, first:first }); }
+    }).catch(function(e){ if(!gotFirst && onCancel && /40[13]/.test(e.message)) cancel(); });
+    pollT=setTimeout(poll, opts.poll||20000);
   }
   function open(){
-    if(closed) return;
-    if(!window.EventSource) return poll();
+    if(closed || suspended) return;
+    if(opts.poll || !window.EventSource) return poll();
     ensureToken().then(function(t){
       if(closed) return;
       try{ es=new EventSource(withAuth(fbUrl(path), t)); }catch(e){ return poll(); }
@@ -294,7 +304,10 @@ function stream(path, onChange, onCancel){
     });
   }
   var api={ close:function(){ closed=true; if(es) es.close(); clearTimeout(pollT); }, get:function(){ return tree; },
-            reopen:function(){ if(closed) return; if(es){ es.close(); es=null; } clearTimeout(pollT); open(); } };
+            reopen:function(){ if(closed) return; if(es){ es.close(); es=null; } clearTimeout(pollT); open(); },
+            suspend:function(){ if(closed || suspended) return; suspended=true; if(es){ es.close(); es=null; } clearTimeout(pollT); },
+            resume:function(){ if(closed || !suspended) return; suspended=false; open(); },
+            refresh:function(){ if(opts.poll && !closed && !suspended) poll(); } };
   STREAMS.push(api);
   open();
   return api;
@@ -335,6 +348,15 @@ function ensureToken(force){
     });
   return tokP;
 }
+/* спрятанная вкладка через 2 минуты отпускает соединения, при возвращении — сразу обновляется */
+(function(){
+  var hideT=null;
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ hideT=setTimeout(function(){ STREAMS.forEach(function(s){ s.suspend(); }); }, 120000); }
+    else { clearTimeout(hideT); STREAMS.forEach(function(s){ s.resume(); s.refresh(); }); }
+  });
+  window.addEventListener('focus', function(){ STREAMS.forEach(function(s){ s.refresh(); }); });
+})();
 /* токен живёт час: обновляем заранее и переподключаем подписки */
 setInterval(function(){ if(CFG.AUTH && session && session.tok) ensureToken(true).then(function(){ STREAMS.forEach(function(s){ s.reopen(); }); }); }, 45*60000);
 /* создать учётку Firebase для логина (регистрация, админ, сброс пароля) */
@@ -1222,8 +1244,8 @@ function onUsersTree(tree){ R.users=tree||{}; gotUsers=true; maybeLoaded(); noti
 if(session && session.uid){
   /* список команды читают только активные; ожидающий или заблокированный видит свою запись */
   stream('users', onUsersTree, function(){
-    stream('users/'+session.uid, function(tree){ var o={}; if(tree) o[session.uid]=tree; onUsersTree(o); }, function(){ onUsersTree({}); });
-  });
+    stream('users/'+session.uid, function(tree){ var o={}; if(tree) o[session.uid]=tree; onUsersTree(o); }, function(){ onUsersTree({}); }, { poll:30000 });
+  }, { poll:30000 });
 } else {
   gotUsers=true;
 }
@@ -1244,7 +1266,7 @@ window.addEventListener('focus', loadModulesMeta);
 var adminStream=null;
 function watchRequests(force){
   if(adminStream || (!force && !isAdmin())) return;
-  adminStream=stream('requests', function(tree){ R.requests=tree||{}; R.requestsLoaded=true; if(isAdmin()) saveCache(); renderNav(); usersFns.forEach(function(fn){ try{ fn(R.users); }catch(e){} }); });
+  adminStream=stream('requests', function(tree){ R.requests=tree||{}; R.requestsLoaded=true; if(isAdmin()) saveCache(); renderNav(); usersFns.forEach(function(fn){ try{ fn(R.users); }catch(e){} }); }, null, { poll:15000 });
 }
 /* админ по прошлому входу — заявки начинаем грузить сразу, не дожидаясь проверки */
 if(session && session.cache && (session.cache.role==='owner' || session.cache.role==='admin')) watchRequests(true);
