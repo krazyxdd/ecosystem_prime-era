@@ -529,27 +529,76 @@ function avatar(uOrId, size, cls){
 }
 
 /* ---------- обработка аватарки: квадрат 256×256, JPEG ---------- */
-function processAvatar(file){
+/* ---------- фото профиля: чтение файла + редактор кадра (как в оргсхеме) ---------- */
+function readImageFile(file){
   return new Promise(function(res, rej){
     if(!file || !/^image\//.test(file.type)) return rej(new Error('Нужна картинка (JPG, PNG, WEBP)'));
     if(file.size>15*1024*1024) return rej(new Error('Файл больше 15 МБ'));
     var fr=new FileReader();
     fr.onerror=function(){ rej(new Error('Не удалось прочитать файл')); };
-    fr.onload=function(){
-      var img=new Image();
-      img.onerror=function(){ rej(new Error('Не удалось открыть картинку')); };
-      img.onload=function(){
-        var S=256, cv=document.createElement('canvas'); cv.width=S; cv.height=S;
-        var ctx=cv.getContext('2d'), m=Math.min(img.width, img.height);
-        ctx.fillStyle='#fff'; ctx.fillRect(0,0,S,S);
-        ctx.drawImage(img, (img.width-m)/2, (img.height-m)/2, m, m, 0, 0, S, S);
-        res(cv.toDataURL('image/jpeg', 0.84));
-      };
-      img.src=fr.result;
-    };
+    fr.onload=function(){ res(fr.result); };
     fr.readAsDataURL(file);
   });
 }
+/* Редактор: перетаскивание мышью/пальцем, масштаб ползунком, колесом и щипком,
+   поворот на 90°. Круг показывает, что попадёт в аватарку. Результат — 256×256 JPEG. */
+function openAvatarCropper(src){
+  return new Promise(function(resolve){
+    var img=new Image();
+    img.onerror=function(){ toast('Не удалось открыть картинку','err'); resolve(null); };
+    img.onload=function(){
+      var S=Math.max(200, Math.min(280, (window.innerWidth||320)-90)), OUT=256, dpr=Math.min(2, window.devicePixelRatio||1);
+      var m=modal('<h2>Фото профиля</h2><p class="pe2-muted">Перетащите фото, чтобы лицо оказалось в круге. Масштаб — ползунком, колесом мыши или двумя пальцами.</p>'+
+        '<div class="pe2-crop" data-stage style="width:'+S+'px;height:'+S+'px"><canvas width="'+S*dpr+'" height="'+S*dpr+'" style="width:'+S+'px;height:'+S+'px"></canvas><div class="pe2-crop-ring"></div></div>'+
+        '<div class="pe2-crop-ctl"><button type="button" class="pe2-crop-b" data-z="-" title="Уменьшить">−</button><input type="range" data-zoom aria-label="Масштаб"><button type="button" class="pe2-crop-b" data-z="+" title="Увеличить">+</button><button type="button" class="pe2-crop-b" data-rot title="Повернуть на 90°">⟳</button></div>'+
+        '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="button" class="pe2-btn primary" data-ok>Готово</button></div>',
+        { sticky:true, onClose:function(){ if(!done) resolve(null); } });
+      var done=false, el=m.el, stage=el.querySelector('[data-stage]'), cv=stage.querySelector('canvas'), ctx=cv.getContext('2d'), zoom=el.querySelector('[data-zoom]');
+      var srcCv, w, h, minS, scale, x, y, ptrs={}, pinch=null;
+      function prepare(rot){
+        srcCv=document.createElement('canvas');
+        var r=((rot||0)%4+4)%4, iw=img.naturalWidth, ih=img.naturalHeight;
+        srcCv.width = r%2 ? ih : iw; srcCv.height = r%2 ? iw : ih;
+        var sc=srcCv.getContext('2d'); sc.translate(srcCv.width/2, srcCv.height/2); sc.rotate(r*Math.PI/2); sc.drawImage(img, -iw/2, -ih/2);
+        w=srcCv.width; h=srcCv.height; minS=Math.max(S/w, S/h); scale=minS; x=(S-w*scale)/2; y=(S-h*scale)/2;
+        zoom.min=minS; zoom.max=minS*5; zoom.step=minS/100; zoom.value=scale; draw();
+      }
+      var rot=0;
+      function clamp(){ x=Math.min(0, Math.max(S-w*scale, x)); y=Math.min(0, Math.max(S-h*scale, y)); }
+      function draw(){ ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle='#1c1f25'; ctx.fillRect(0,0,S,S); ctx.imageSmoothingQuality='high'; ctx.drawImage(srcCv, x, y, w*scale, h*scale); }
+      function zoomTo(ns, cx, cy){
+        ns=Math.max(minS, Math.min(minS*5, ns)); if(cx==null){ cx=S/2; cy=S/2; }
+        x=cx-(cx-x)*(ns/scale); y=cy-(cy-y)*(ns/scale); scale=ns; clamp(); zoom.value=scale; draw();
+      }
+      function local(e){ var r=cv.getBoundingClientRect(); return { x:e.clientX-r.left, y:e.clientY-r.top }; }
+      stage.addEventListener('pointerdown', function(e){ stage.setPointerCapture(e.pointerId); ptrs[e.pointerId]=local(e); if(Object.keys(ptrs).length===2){ var p=Object.values(ptrs); pinch={ d:Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y), s:scale }; } });
+      stage.addEventListener('pointermove', function(e){
+        if(!ptrs[e.pointerId]) return;
+        var prev=ptrs[e.pointerId], cur=local(e); ptrs[e.pointerId]=cur;
+        var ids=Object.keys(ptrs);
+        if(ids.length===2 && pinch){ var p=Object.values(ptrs), d=Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y); zoomTo(pinch.s*d/pinch.d, (p[0].x+p[1].x)/2, (p[0].y+p[1].y)/2); return; }
+        x+=cur.x-prev.x; y+=cur.y-prev.y; clamp(); draw();
+      });
+      function up(e){ delete ptrs[e.pointerId]; if(Object.keys(ptrs).length<2) pinch=null; }
+      stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+      stage.addEventListener('wheel', function(e){ e.preventDefault(); var p=local(e); zoomTo(scale*(e.deltaY<0?1.08:1/1.08), p.x, p.y); }, { passive:false });
+      zoom.addEventListener('input', function(){ zoomTo(parseFloat(zoom.value)); });
+      el.querySelector('[data-z="-"]').onclick=function(){ zoomTo(scale/1.15); };
+      el.querySelector('[data-z="+"]').onclick=function(){ zoomTo(scale*1.15); };
+      el.querySelector('[data-rot]').onclick=function(){ rot++; prepare(rot); };
+      el.querySelector('[data-ok]').onclick=function(){
+        var out=document.createElement('canvas'); out.width=OUT; out.height=OUT;
+        var o=out.getContext('2d'), k=OUT/S; o.fillStyle='#fff'; o.fillRect(0,0,OUT,OUT); o.imageSmoothingQuality='high';
+        o.drawImage(srcCv, x*k, y*k, w*scale*k, h*scale*k);
+        done=true; m.close(); resolve(out.toDataURL('image/jpeg', 0.86));
+      };
+      prepare(0);
+    };
+    img.src=src;
+  });
+}
+/* совместимость: файл → редактор кадра → dataURL (или null, если отменили) */
+function processAvatar(file){ return readImageFile(file).then(openAvatarCropper); }
 
 /* =========================================================================
    Решение: пускать ли на страницу
@@ -701,8 +750,10 @@ function profileFields(u, opts){
   u=u||{};
   return '<div class="pe2-av-pick">'+
       '<label class="pe2-av-drop" title="Загрузить фото">'+(u.avatar?'<img src="'+esc(u.avatar)+'" alt="">':'<span class="ph">'+I('camera',26)+'</span>')+'<input type="file" accept="image/*" data-avatar-input hidden></label>'+
-      '<div class="pe2-av-side"><b>Фото профиля</b><span>Будет видно в задачах, комментариях и у коллег. Квадратное обрежется по центру.</span>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="pe2-btn sm" data-avatar-pick>Загрузить</button>'+(u.avatar?'<button type="button" class="pe2-btn sm ghost" data-avatar-clear>Убрать</button>':'<button type="button" class="pe2-btn sm ghost" data-avatar-clear style="display:none">Убрать</button>')+'</div></div>'+
+      '<div class="pe2-av-side"><b>Фото профиля</b><span>Будет видно в задачах, комментариях и у коллег. После загрузки можно подвинуть и увеличить фото в круге.</span>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="pe2-btn sm" data-avatar-pick>Загрузить</button>'+
+        '<button type="button" class="pe2-btn sm ghost" data-avatar-crop'+(u.avatar?'':' style="display:none"')+'>Кадрировать</button>'+
+        '<button type="button" class="pe2-btn sm ghost" data-avatar-clear'+(u.avatar?'':' style="display:none"')+'>Убрать</button></div></div>'+
       '<input type="hidden" name="avatar" value="'+esc(u.avatar||'')+'"></div>'+
     '<div class="pe2-grid2">'+
       field('Имя *','<input name="first" required maxlength="40" value="'+esc(u.first||'')+'"'+(opts.focusFirst?' autofocus':'')+'>')+
@@ -815,18 +866,20 @@ function busy(form, on){ var b=form.querySelector('button[type="submit"]'); if(b
 function bindAvatarPicker(root){
   var inp=root.querySelector('[data-avatar-input]'), hidden=root.querySelector('input[name="avatar"]');
   if(!inp) return;
-  var drop=root.querySelector('.pe2-av-drop'), clr=root.querySelector('[data-avatar-clear]');
-  function set(v){ hidden.value=v||''; drop.innerHTML=(v?'<img src="'+v+'" alt="">':'<span class="ph">'+I('camera',26)+'</span>'); drop.appendChild(inp); if(clr) clr.style.display=v?'':'none'; }
-  inp.addEventListener('change', function(){
-    var f=inp.files[0]; if(!f) return;
-    processAvatar(f).then(set, function(e){ toast(e.message, 'err'); });
-    inp.value='';
-  });
+  var drop=root.querySelector('.pe2-av-drop'), clr=root.querySelector('[data-avatar-clear]'), crop=root.querySelector('[data-avatar-crop]');
+  var original=null;   /* исходник последней загрузки — чтобы перекадрировать без потери качества */
+  function set(v){ hidden.value=v||''; drop.innerHTML=(v?'<img src="'+v+'" alt="">':'<span class="ph">'+I('camera',26)+'</span>'); drop.appendChild(inp); if(clr) clr.style.display=v?'':'none'; if(crop) crop.style.display=v?'':'none'; }
+  function fromFile(f){
+    readImageFile(f).then(function(src){ original=src; return openAvatarCropper(src); })
+      .then(function(v){ if(v) set(v); }, function(e){ toast(e.message, 'err'); });
+  }
+  inp.addEventListener('change', function(){ var f=inp.files[0]; if(f) fromFile(f); inp.value=''; });
   var pick=root.querySelector('[data-avatar-pick]'); if(pick) pick.onclick=function(){ inp.click(); };
-  if(clr) clr.onclick=function(){ set(''); };
+  if(clr) clr.onclick=function(){ original=null; set(''); };
+  if(crop) crop.onclick=function(){ var src=original||hidden.value; if(src) openAvatarCropper(src).then(function(v){ if(v) set(v); }); };
   drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('over'); });
   drop.addEventListener('dragleave', function(){ drop.classList.remove('over'); });
-  drop.addEventListener('drop', function(e){ e.preventDefault(); drop.classList.remove('over'); var f=e.dataTransfer.files[0]; if(f) processAvatar(f).then(set, function(er){ toast(er.message,'err'); }); });
+  drop.addEventListener('drop', function(e){ e.preventDefault(); drop.classList.remove('over'); var f=e.dataTransfer.files[0]; if(f) fromFile(f); });
 }
 
 function bindGate(kind){

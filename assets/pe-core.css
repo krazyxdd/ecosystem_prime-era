@@ -220,3 +220,13 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 
 /* элементы только для владельца и администраторов (кнопки редактирования в модулях) */
 html:not(.pe2-admin) .pe2-admin-only{ display:none !important; }
+
+/* ================= редактор кадра аватарки ================= */
+.pe2-crop{ position:relative; width:280px; height:280px; margin:6px auto 14px; border-radius:16px; overflow:hidden; background:#1c1f25; cursor:grab; touch-action:none; user-select:none; }
+.pe2-crop:active{ cursor:grabbing; }
+.pe2-crop canvas{ display:block; }
+.pe2-crop-ring{ position:absolute; inset:0; border-radius:50%; pointer-events:none; box-shadow:0 0 0 999px rgba(0,0,0,.55); border:2px solid rgba(255,255,255,.9); }
+.pe2-crop-ctl{ display:flex; align-items:center; gap:10px; max-width:320px; margin:0 auto 8px; }
+.pe2-crop-ctl input[type=range]{ flex:1; accent-color:var(--pe2-accent); }
+.pe2-crop-b{ width:34px; height:34px; flex:none; border-radius:10px; border:1px solid #DADADD; background:#fff; color:#121212; font:600 18px 'IBM Plex Sans',sans-serif; cursor:pointer; line-height:1; }
+.pe2-crop-b:hover{ border-color:var(--pe2-accent); background:#F2F8FF; }
