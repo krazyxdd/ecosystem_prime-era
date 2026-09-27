@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260927b">
-<script src="assets/pe-core.js?v=20260927b" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=20260927c">
+<script src="assets/pe-core.js?v=20260927c" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -1970,8 +1970,7 @@ function columnTasks(c){
 function onboardHtml(){
   if(Sync.status==='loading' && !syncReady()) return '<div class="onboard" style="border-style:solid"><h2>Загружаю доску…</h2><p>Подключаюсь к общей доске команды.</p></div>';
   return '<div class="onboard"><h2>Общая доска пока пуста</h2><p>Здесь вся команда видит задачи друг друга: ставьте задачи коллегам, отправляйте на проверку, следите за сроками и временем. Всё сохраняется на сервере и доступно с любого устройства.</p>'+
-    '<div class="acts"><button class="btn btn-primary" data-ob="new">'+I('plus',12,2.4)+'Первая задача</button><button class="btn" data-ob="planner">Мои задачи из Планировщика v1</button>'+
-    (IS_ADMIN?'<button class="btn" data-ob="allplanners">Задачи всех из Планировщика v1</button><button class="btn" data-ob="chrono">Время из Хронометража v1</button><button class="btn" data-ob="demo">Демо-данные</button>':'')+'</div>'+
+    '<div class="acts"><button class="btn btn-primary" data-ob="new">'+I('plus',12,2.4)+'Первая задача</button></div>'+
     '<div class="hint">Быстро: клавиша N — новая задача. В названии понимаются @имя, #тег, ! (срочно), «завтра».</div></div>';
 }
 function renderBoard(){
@@ -4146,16 +4145,12 @@ function openMore(anchor){
     { label:'Экспорт доски в JSON', icon:'download', action:function(){
       var blob=new Blob([JSON.stringify({ tasks:state.tasks, entries:state.entries, columns:state.columns, tagColors:state.tagColors, positions:state.positions, seq:state.seq }, null, 2)], { type:'application/json' });
       var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='zadachi-'+todayKey()+'.json'; document.body.appendChild(a); a.click(); a.remove();
-    } },
-    { label:'Перенести мои задачи из Планировщика v1', icon:'cal', hint:'Копирует ваши задачи старого планера на общую доску. Сам планер не меняется', action:importPlanner }
+    } }
   ];
-  if(IS_ADMIN) items.push({ label:'Перенести задачи ВСЕХ из Планировщика v1', icon:'users', hint:'Задачи старого планера каждого сотрудника — на общую доску, с исполнителем', action:importAllPlanners });
-  if(IS_ADMIN) items.push({ label:'Перенести время из Хронометража v1', icon:'timer', hint:'Один раз на всю команду: записи Хронометража копируются в учёт времени', action:importChrono });
   items.push({ label:'Горячие клавиши', icon:'keyboard', action:function(){ showHotkeys(anchor); } });
   if(IS_ADMIN){
     items.push({ sep:true }, { header:'Администратор' });
     items.push({ label:'Заменить доску из JSON…', icon:'upload', action:function(){ $('#import-input').click(); } });
-    if(!state.tasks.length) items.push({ label:'Заполнить демо-данными', icon:'refresh', action:loadDemo });
     items.push({ label:'Удалить все задачи доски', icon:'trash', danger:true, action:wipeAll });
   }
   openMenu(anchor, items, { alignRight:true });
