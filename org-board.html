@@ -470,6 +470,10 @@
     height:calc(100vh - var(--nav-h, 60px)) !important;
     margin-top:var(--nav-h, 60px) !important;
   }
+  /* v2: логотип студии уже есть в меню экосистемы — в шапке схемы его нет, заголовок слева */
+  #logoBox, #logoSpacer, #logoFile, #titleGrip{ display:none !important; }
+  .brand-titles{ text-align:left !important; transform:none !important; padding-left:20px; }
+  .emp-eco-note{ font-size:11px; color:#8a8f98; text-align:center; margin:-2px 0 6px; }
 </style>
 </head>
 <body>
@@ -848,7 +852,53 @@ function editable(tag, cls, html, onInput){
   e.addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); e.blur(); } });
   return e;
 }
-function employeeById(id){ return state.employees.find(e=>e.id===id) || null; }
+/* v2: сотрудники оргсхемы — это сотрудники экосистемы. Имя и аватарка берутся
+   из профиля (id вида 'u:<id пользователя>'), описание в оргсхеме хранится
+   в state.userDesc. Старые записи оргсхемы без аккаунта остаются как были. */
+function ecoUsers(){
+  if(!window.PE) return [];
+  return Object.keys(PE.users||{}).map(k=>PE.users[k]).filter(u=>u && u.status==='active')
+    .sort((a,b)=>PE.fullName(a).localeCompare(PE.fullName(b),'ru'));
+}
+function ecoEmployee(u){
+  if(!state.userDesc) state.userDesc = {};
+  return { id:'u:'+u.id, userId:u.id, eco:true, name:PE.fullName(u), avatar:u.avatar||null, positions:'', description:state.userDesc[u.id]||'', position:u.position||'' };
+}
+function allEmployees(){ return ecoUsers().map(ecoEmployee).concat(state.employees); }
+function employeeById(id){
+  if(typeof id==='string' && id.indexOf('u:')===0){
+    const u = window.PE && PE.userById(id.slice(2));
+    return u ? ecoEmployee(u) : { id:id, eco:true, name:'Бывший сотрудник', avatar:null, description:'' };
+  }
+  return state.employees.find(e=>e.id===id) || null;
+}
+/* один раз связываем старых сотрудников оргсхемы с аккаунтами (по имени) */
+const TR={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'};
+/* имена в старой оргсхеме бывают латиницей («Lina», «Rogozhnikov») — сравниваем в транслите */
+function normName(x){ return String(x||'').toLowerCase().split('').map(c=>TR[c]!==undefined?TR[c]:c).join('').replace(/kh/g,'h').replace(/iy\b/g,'y').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim(); }
+function linkEmployeesToUsers(){
+  const users = ecoUsers(); if(!users.length) return false;
+  let changed = false;
+  const refs = [];
+  if(state.director) refs.push([state.director,'employeeId']);
+  (state.secretaries||[]).forEach(x=>refs.push([x,'employeeId']));
+  (state.departments||[]).forEach(d=>{ refs.push([d,'secEmployeeId']); (d.units||[]).forEach(u=>refs.push([u,'employeeId'])); });
+  state.employees = state.employees.filter(emp=>{
+    const n = normName(emp.name);
+    const u = users.find(u=>{
+      const full = normName(PE.fullName(u)), first = normName(u.first), last = normName(u.last), leg = normName(u.legacyName), rev = normName((u.last||'')+' '+(u.first||''));
+      return n && (n===full || n===rev || n===first || (leg && n===leg) || (last && n===last));
+    });
+    if(!u) return true;
+    const newId = 'u:'+u.id;
+    refs.forEach(r=>{ if(r[0][r[1]]===emp.id){ r[0][r[1]]=newId; } });
+    if(!state.userDesc) state.userDesc = {};
+    if(emp.description && !state.userDesc[u.id]) state.userDesc[u.id] = emp.description;
+    changed = true;
+    return false;
+  });
+  return changed;
+}
 function stripTags(html){
   const tmp = document.createElement('div');
   tmp.innerHTML = html || '';
@@ -887,7 +937,7 @@ function personChip(holderObj, field){
     const optNone = document.createElement('option');
     optNone.value = ''; optNone.textContent = '— не назначен —';
     select.appendChild(optNone);
-    state.employees.forEach(e=>{
+    allEmployees().forEach(e=>{
       const opt = document.createElement('option');
       opt.value = e.id; opt.textContent = e.name;
       if(e.id === holderObj[field]) opt.selected = true;
@@ -1104,7 +1154,7 @@ function renderGlossary(){
 function renderEmployeeDock(){
   const dock = document.getElementById('employeeDock');
   dock.innerHTML = '';
-  state.employees.forEach(emp=>{
+  allEmployees().forEach(emp=>{
     const a = avatarStyleAndText(emp);
     const av = el('div','dock-avatar', a.text);
     if(a.bg) av.style.backgroundImage = a.bg;
@@ -1229,10 +1279,12 @@ let pendingAvatarEmployeeId = null;
 function renderEmployeesModal(){
   const g = document.getElementById('employeesModalGrid');
   g.innerHTML = '';
-  state.employees.forEach(emp=>{
+  allEmployees().forEach(emp=>{
     const card = el('div','emp-card');
+    if(emp.eco) card.classList.add('emp-eco');
 
     const del = el('button','emp-del','✕');
+    if(emp.eco) del.style.display = 'none';
     del.title = 'Удалить сотрудника';
     del.addEventListener('click', ()=>{
       state.employees = state.employees.filter(e=>e.id!==emp.id);
@@ -1245,7 +1297,7 @@ function renderEmployeesModal(){
     const av = el('div','emp-avatar-big', a.text);
     if(a.bg) av.style.backgroundImage = a.bg;
     av.addEventListener('click', ()=>{
-      if(!editMode) return;
+      if(!editMode || emp.eco) return;
       pendingAvatarEmployeeId = emp.id;
       document.getElementById('employeeAvatarFile').click();
     });
@@ -1255,7 +1307,8 @@ function renderEmployeesModal(){
     nameInput.className = 'emp-name-input';
     nameInput.value = emp.name;
     nameInput.placeholder = 'Имя сотрудника';
-    nameInput.disabled = !editMode;
+    nameInput.disabled = !editMode || !!emp.eco;
+    if(emp.eco) nameInput.title = 'Имя и фото берутся из профиля экосистемы';
     nameInput.addEventListener('input', ()=>{
       emp.name = nameInput.value;
       scheduleSave();
@@ -1268,13 +1321,15 @@ function renderEmployeesModal(){
     if(!positions.length) posDiv.classList.add('empty');
     card.appendChild(posDiv);
 
-    const desc = editable('div','emp-desc', emp.description || '', v=> emp.description = v);
+    if(emp.eco) card.appendChild(el('div','emp-eco-note', (emp.position ? emp.position+' · ' : '')+'профиль экосистемы'));
+    const desc = editable('div','emp-desc', emp.description || '', v=>{ if(emp.eco){ if(!state.userDesc) state.userDesc = {}; state.userDesc[emp.userId] = v; } else emp.description = v; });
     if(!emp.description && !editMode) desc.innerHTML = '<i>Описание не указано.</i>';
     card.appendChild(desc);
 
     g.appendChild(card);
   });
-  const addTile = el('button','emp-add-tile','+ добавить сотрудника');
+  const addTile = el('button','emp-add-tile','+ сотрудник без аккаунта');
+  addTile.title = 'Сотрудники экосистемы появляются здесь автоматически. Этой кнопкой можно добавить человека, у которого нет аккаунта';
   addTile.addEventListener('click', ()=>{
     state.employees.push({id:uid(), name:'Новый сотрудник', avatar:null, positions:'', description:''});
     renderAll();
@@ -1831,7 +1886,16 @@ document.getElementById('fbClear').addEventListener('click', ()=>{
 
 (async function init(){
   await loadState();
+  if(linkEmployeesToUsers()) scheduleSave();
   renderAll();
+  /* люди экосистемы подгружаются отдельно: при изменении профилей обновляем схему,
+     но не мешаем, пока администратор что-то печатает */
+  if(window.PE) PE.onUsers(function(){
+    const a = document.activeElement;
+    if(editMode && a && (a.isContentEditable || a.tagName==='INPUT' || a.tagName==='TEXTAREA')) return;
+    if(linkEmployeesToUsers()) scheduleSave();
+    renderAll();
+  });
   lastSnapshot = JSON.stringify(state);
   updateUndoBtn();
   setEditMode(false);
