@@ -339,20 +339,21 @@ function userModal(u){
     var b=e.target.closest('[data-x]'); if(!b) return;
     var x=b.dataset.x;
     if(x==='approve'){ m.close(); approveUserModal(u); }
-    if(x==='reset'){ PE.confirm('Сбросить пароль?', 'Будет создан временный пароль. При следующем входе '+PE.fullName(u)+' придумает свой.', 'Сбросить').then(function(ok){ if(!ok) return; var pass=PE.genPassword(), salt=PE.makeSalt();
-      PE.fb('PUT','auth/'+PE.encKey(u.login),{ uid:u.id, salt:salt, hash:PE.hashPass(pass,salt) }).then(function(){ return PE.fb('PATCH','users/'+u.id,{ mustChangePass:true }); })
+    if(x==='reset'){ PE.confirm('Сбросить пароль?', 'Будет создан временный пароль. При следующем входе '+PE.fullName(u)+' придумает свой.', 'Сбросить').then(function(ok){ if(!ok) return; var pass=PE.genPassword();
+      PE.setCredentials(u, pass).then(function(){ return PE.fb('PATCH','users/'+u.id,{ mustChangePass:true }); })
         .then(function(){ audit('reset-pass', u.id, PE.fullName(u)); m.close(); showCreds(u, u.login, pass, 'Пароль сброшен'); }).catch(fail); }); }
     if(x==='block') rejectModal('Заблокировать '+PE.fullName(u)+'?', function(reason){ PE.fb('PATCH','users/'+u.id,{ status:'blocked', blockReason:reason||null, blockedAt:Date.now() }).then(function(){ audit('block', u.id, PE.fullName(u)+(reason?': '+reason:'')); m.close(); PE.toast('Аккаунт заблокирован — вход закрыт сразу на всех устройствах'); }).catch(fail); });
     if(x==='unblock') PE.fb('PATCH','users/'+u.id,{ status:'active', blockReason:null }).then(function(){ audit('unblock', u.id, PE.fullName(u)); m.close(); PE.toast('Разблокирован(а)'); }).catch(fail);
     if(x==='restore'){
       var job = u.status==='deleted'
-        ? (function(){ var pass=PE.genPassword(), salt=PE.makeSalt(); return PE.tx('auth/'+PE.encKey(u.login), function(cur){ if(cur && cur.uid!==u.id) return undefined; return { uid:u.id, salt:salt, hash:PE.hashPass(pass,salt) }; })
-            .then(function(r){ if(!r.committed) throw new Error('login'); return PE.fb('PATCH','users/'+u.id,{ status:'active', mustChangePass:true, deletedAt:null }); }).then(function(){ m.close(); showCreds(u, u.login, pass, 'Аккаунт восстановлен'); }); })()
+        ? (function(){ var pass=PE.genPassword(); return PE.loginTaken(u.login, u.id)
+            .then(function(t){ if(t) throw new Error('login'); return PE.setCredentials(u, pass); })
+            .then(function(){ return PE.fb('PATCH','users/'+u.id,{ status:'active', mustChangePass:true, deletedAt:null }); }).then(function(){ m.close(); showCreds(u, u.login, pass, 'Аккаунт восстановлен'); }); })()
         : PE.fb('PATCH','users/'+u.id,{ status:'active', rejectReason:null, approvedAt:Date.now(), approvedBy:me().id }).then(function(){ m.close(); PE.toast('Восстановлен(а)'); });
       job.then(function(){ audit('restore', u.id, PE.fullName(u)); }).catch(function(err){ PE.toast(err&&err.message==='login'?'Логин уже занят другим аккаунтом':'Не удалось восстановить','err'); });
     }
     if(x==='delete') PE.confirm('Удалить '+PE.fullName(u)+'?', 'Вход будет закрыт, человек пропадёт из списков команды. Задачи и история останутся — с его именем. Аккаунт можно восстановить из фильтра «Удалённые».', 'Удалить', true).then(function(ok){ if(!ok) return;
-      PE.fb('DELETE','auth/'+PE.encKey(u.login)).then(function(){ return PE.fb('PATCH','users/'+u.id,{ status:'deleted', deletedAt:Date.now() }); }).then(function(){ audit('delete', u.id, PE.fullName(u)); m.close(); PE.toast('Пользователь удалён'); }).catch(fail); });
+      PE.removeCredentials(u).then(function(){ return PE.fb('PATCH','users/'+u.id,{ status:'deleted', deletedAt:Date.now() }); }).then(function(){ audit('delete', u.id, PE.fullName(u)); m.close(); PE.toast('Пользователь удалён'); }).catch(fail); });
   });
 }
 function showCreds(u, login, pass, title){
@@ -394,11 +395,11 @@ function addUserModal(prefill, fromRequest){
     var role=form.querySelector('[name="role"]'); role=role?role.value:'member';
     var id=PE.uid('u'), salt=PE.makeSalt(), n=usersList().length;
     var btn=form.querySelector('[type="submit"]'); btn.disabled=true; btn.classList.add('busy');
-    PE.tx('auth/'+PE.encKey(login), function(cur){ if(cur) return undefined; return { uid:id, salt:salt, hash:PE.hashPass(pass,salt) }; }).then(function(r){
-      if(!r.committed) throw new Error('Логин «'+login+'» уже занят');
+    PE.loginTaken(login).then(function(taken){
+      if(taken) throw new Error('Логин «'+login+'» уже занят');
       var u=Object.assign(p, { id:id, login:login, color:PE.COLORS[n%PE.COLORS.length], role:role, status:'active', access:acc, mustChangePass:true,
         createdAt:Date.now(), approvedAt:Date.now(), approvedBy:me().id, createdBy:me().id });
-      return PE.fb('PUT','users/'+id, u).then(function(){ return u; });
+      return PE.fb('PUT','users/'+id, u).then(function(){ return PE.setCredentials(u, pass); }).then(function(){ return u; });
     }).then(function(u){
       audit('create', id, PE.fullName(u)+(fromRequest?' (по заявке гостя)':''));
       var j = fromRequest ? resolveRequest(fromRequest, 'approved', { createdUid:id }) : Promise.resolve();
