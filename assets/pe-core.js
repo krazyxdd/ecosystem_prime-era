@@ -76,7 +76,7 @@ window.fetch=function(url, opts){
 
 var MODULES = [
   { id:'tasks', name:'Задачи', href:'tasks.html',
-    desc:'Общая доска команды: канбан, календарь, повторы, учёт времени по этапам и отчёты. Заменяет Планировщик и Хронометраж.',
+    desc:'Общая доска команды: канбан, календарь, повторы, учёт времени по этапам и отчёты.',
     icon:'<rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/>' },
   { id:'glossary', name:'Глоссарий', href:'glossary.html',
     desc:'Тренажёр терминов по дизайну, Tilda, Figma, копирайтингу и продажам — изучение, экзамен, разбор слабых мест.',
@@ -805,7 +805,6 @@ function setupHtml(){
       field('Пароль *','<input name="pass" type="password" required minlength="6" autocomplete="new-password">','Не меньше 6 символов')+
     '</div>'+
     field('Повторите пароль *','<input name="pass2" type="password" required autocomplete="new-password">', null, 'pe2-half')+
-    field('Кем вы были в экосистеме v1','<select name="legacy"><option value="">— никем / не переносить —</option>'+LEGACY_NAMES.map(function(n){ return '<option'+(n==='Саша'?' selected':'')+'>'+n+'</option>'; }).join('')+'</select>','Ваши личные данные из v1 (прогресс, настройки) подтянутся при первом входе', 'pe2-half')+
     '<div class="pe2-err" data-err></div>'+
     '<button class="pe2-btn primary block" type="submit">Создать аккаунт владельца</button></form>', true);
 }
@@ -980,7 +979,7 @@ function doRegister(form, isSetup){
     id:id, login:login, color:COLORS[n % COLORS.length], role:isSetup?'owner':'member', status:isSetup?'active':'pending',
     access:{}, requested:requested, comment:comment, createdAt:Date.now(), lastSeen:Date.now(), lastLogin:Date.now()
   });
-  if(isSetup){ user.approvedAt=Date.now(); user.approvedBy=id; user.legacyName=form.legacy.value||''; }
+  if(isSetup){ user.approvedAt=Date.now(); user.approvedBy=id;  }
   busy(form, true);
   if(CFG.AUTH) return doRegisterAuth(form, isSetup, id, login, pass, user);
   var chain = isSetup
