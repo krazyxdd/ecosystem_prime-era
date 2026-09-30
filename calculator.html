@@ -5,29 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Калькулятор сметы</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="calc"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="calc"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
 <style>
 :root{
-  color-scheme:dark;
-  --bg:#08090c; --panel:#111318; --panel2:#171a21; --sunk:#0c0e12; --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
-  --ink:#f2f4f7; --muted:rgba(242,244,247,.62); --faint:rgba(242,244,247,.38);
-  --accent:#1a8fff; --accent-2:#5cb3ff; --accent-soft:rgba(26,143,255,.14);
-  --ok:#2bc37a; --ok-soft:rgba(43,195,122,.14); --warn:#ffb020; --warn-soft:rgba(255,176,32,.14);
-  --bad:#ff5a52; --bad-soft:rgba(255,90,82,.14); --gift:#d68bff; --gift-soft:rgba(214,139,255,.14);
-  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --f-head:"Onest","Golos Text",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  /* калькулятор — на токенах дизайн-системы экосистемы (pe-core.css): светлая/тёмная тема из шапки */
+  --bg:var(--pe-bg-2); --panel:var(--pe-card); --panel2:var(--pe-sunk); --sunk:var(--pe-sunk); --line:var(--pe-line); --line2:var(--pe-line);
+  --ink:var(--pe-ink); --muted:var(--pe-ink-2); --faint:var(--pe-ink-3);
+  --accent:var(--pe-accent); --accent-2:var(--pe-accent-ink); --accent-soft:var(--pe-accent-t);
+  --ok:var(--pe-ok); --ok-soft:var(--pe-ok-t); --warn:var(--pe-warn); --warn-soft:var(--pe-warn-t);
+  --bad:var(--pe-danger); --bad-soft:var(--pe-danger-t); --gift:#9B51E0; --gift-soft:rgba(155,81,224,.14);
+  --f-body:var(--pe-font);
+  --f-head:var(--pe-font);
+  --f-mono:var(--pe-mono);
 }
-:root[data-theme="light"]{
-  color-scheme:light;
-  --bg:#f1f3f6; --panel:#ffffff; --panel2:#f6f7f9; --sunk:#e9ecf1; --line:#dde2e8; --line2:#c8cfd8;
-  --ink:#141920; --muted:#58616e; --faint:#8b94a1;
-  --accent:#0a6fd6; --accent-2:#0a6fd6; --accent-soft:#e3effc;
-  --ok:#14804f; --ok-soft:#e0f4ea; --warn:#9a5b00; --warn-soft:#fcf0d9;
-  --bad:#b3261e; --bad-soft:#fbe4e2; --gift:#8a3bc0; --gift-soft:#f3e6fb;
-}
+html[data-pe-theme="dark"]{ --gift:#d68bff; }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:400 14.5px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
@@ -73,12 +66,15 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 /* ---------- пресеты ---------- */
 .presets{padding:14px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
-.pre{position:relative;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-height:86px}
-.pre:hover{border-color:var(--accent)}
-.pre.on{border-color:var(--accent);background:var(--accent-soft)}
+.pre{position:relative;text-align:left;border:1px solid color-mix(in srgb,var(--pc,var(--line)) 28%,var(--line));border-left:4px solid var(--pc,var(--accent));background:color-mix(in srgb,var(--pc,transparent) 9%,var(--panel2));border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-height:86px}
+.pre:hover{border-color:var(--pc,var(--accent));background:color-mix(in srgb,var(--pc,transparent) 15%,var(--panel2))}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--panel);background:var(--pc);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.sw.on{box-shadow:0 0 0 2px var(--ink)}
+.pre.on{border-color:var(--pc,var(--accent));box-shadow:inset 0 0 0 1px var(--pc,var(--accent));background:color-mix(in srgb,var(--pc,var(--accent)) 18%,var(--panel2))}
 .pre b{font:600 14px/1.25 var(--f-head)}
 .pre small{color:var(--muted);font-size:12px;line-height:1.35}
-.pre .pp{margin-top:auto;font:700 14px/1 var(--f-head);color:var(--accent-2)}
+.pre .pp{margin-top:auto;font:700 14px/1 var(--f-head);color:var(--pc,var(--accent-2))}
 .params{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
 .stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--panel2);height:36px;overflow:hidden}
 .stepper span{padding:0 10px;font-size:12.5px;color:var(--muted);white-space:nowrap}
@@ -329,6 +325,12 @@ body{padding-top:var(--pe-nav-h,0px)}
 .aside{top:calc(76px + var(--pe-nav-h,0px));max-height:calc(100vh - 92px - var(--pe-nav-h,0px))}
 .back{z-index:950}
 .toasts{z-index:960}
+
+/* перетаскивание строк прайса и сборок */
+.le td.dh{ width:22px; padding:0 2px; text-align:center; }
+.pi .pe-drag-handle{ font-style:normal; opacity:.5; margin-right:4px; }
+.pi:hover .pe-drag-handle{ opacity:1; }
+#bTheme{display:none!important}
 </style>
 </head>
 <body>
@@ -973,9 +975,13 @@ function renderSummary(){
 }
 function payStages(){ return (R.total && R.total<=C.org.fullBelow) ? [100] : C.org.pay; }
 
+/* цвета готовых сборок: у каждой свой, меняется в админке калькулятора (поле col) */
+var PCOLORS=[['blue','#2A8CFF','Синий'],['green','#1FA971','Зелёный'],['violet','#8B5CF6','Фиолетовый'],['amber','#E59A00','Янтарный'],
+  ['pink','#E4488C','Розовый'],['teal','#0EA5B7','Бирюзовый'],['coral','#F2613F','Коралловый'],['slate','#64748B','Серый']];
+function pcolHex(p, i){ var k=p.col; for(var j=0;j<PCOLORS.length;j++) if(PCOLORS[j][0]===k) return PCOLORS[j][1]; return PCOLORS[(i||0)%PCOLORS.length][1]; }
 function renderPresets(){
-  $('presets').innerHTML = C.presets.map(function(p){
-    return '<button class="pre'+(S.preset===p.id?' on':'')+'" data-preset="'+esc(p.id)+'"><b>'+esc(p.n)+'</b><small>'+esc(p.d)+(p.blocks?' · '+p.blocks+' бл.':'')+(p.pages?' + '+p.pages+' стр.':'')+'</small><span class="pp">≈ '+kmoney(presetCalc(p,C,S.rate).sum)+'</span></button>'; }).join('');
+  $('presets').innerHTML = C.presets.map(function(p,i){
+    return '<button class="pre'+(S.preset===p.id?' on':'')+'" style="--pc:'+pcolHex(p,i)+'" data-preset="'+esc(p.id)+'"><b>'+esc(p.n)+'</b><small>'+esc(p.d)+(p.blocks?' · '+p.blocks+' бл.':'')+(p.pages?' + '+p.pages+' стр.':'')+'</small><span class="pp">≈ '+kmoney(presetCalc(p,C,S.rate).sum)+'</span></button>'; }).join('');
 }
 function renderSide(){
   $('urg').innerHTML=C.urgency.map(function(u){ return '<button data-urg="'+esc(u.id)+'" class="'+(S.urg===u.id?'on'+(u.pct?'':' z'):'')+'"><b>'+esc(u.n)+'</b>'+esc(u.s)+'</button>'; }).join('');
@@ -1194,7 +1200,7 @@ $('bTxt').addEventListener('click', function(){ if(!R.rows.length) return toast(
 $('bPrint').addEventListener('click', function(){ if(!R.rows.length) return toast('Смета пустая'); titleBak=document.title; document.title=baseName(); window.print(); setTimeout(function(){ if(titleBak!=null){ document.title=titleBak; titleBak=null; } }, 1000); });
 $('mGo').addEventListener('click', function(){ $('est').scrollIntoView({ behavior:'smooth' }); });
 $('bTheme').addEventListener('click', function(){ ME.theme=ME.theme==='light'?'dark':'light'; applyTheme(); saveMe(); });
-function applyTheme(){ if(ME.theme==='light') document.documentElement.setAttribute('data-theme','light'); else document.documentElement.removeAttribute('data-theme'); }
+function applyTheme(){ /* тема — общая для экосистемы, см. переключатель в шапке */ }
 $('bNew').addEventListener('click', function(){ snapshot(); S=defState(); rebuildAll(); toast('Новая смета', 'Отменить', restoreUndo); });
 $('bAsPreset').addEventListener('click', function(){
   if(!Object.keys(S.sel).length) return toast('Сначала отметьте позиции');
@@ -1290,10 +1296,10 @@ function LE(host, arr, cols, o){
   }
   function vis(it){ return !o.filter || o.filter(it); }
   function draw(){
-    var h='<table class="le"><thead><tr>'+cols.map(function(c){ return '<th'+(c.w?' style="width:'+c.w+'"':'')+'>'+esc(c.l)+'</th>'; }).join('')+'<th></th></tr></thead><tbody>';
+    var mv=o.move!==false;
+    var h='<table class="le"><thead><tr>'+(mv?'<th style="width:22px"></th>':'')+cols.map(function(c){ return '<th'+(c.w?' style="width:'+c.w+'"':'')+'>'+esc(c.l)+'</th>'; }).join('')+'<th></th></tr></thead><tbody>';
     arr.forEach(function(it,i){ if(!vis(it)) return;
-      h+='<tr>'+cols.map(function(c){ return '<td>'+cell(c,it,i)+'</td>'; }).join('')+'<td class="act">'+
-        (o.move!==false?'<button data-a="up" data-i="'+i+'" title="Выше">↑</button><button data-a="dn" data-i="'+i+'" title="Ниже">↓</button>':'')+
+      h+='<tr data-id="'+i+'">'+(mv?'<td class="dh"><span class="pe-drag-handle" title="Перетащите, чтобы поменять порядок">⠿</span></td>':'')+cols.map(function(c){ return '<td>'+cell(c,it,i)+'</td>'; }).join('')+'<td class="act">'+
         (o.del!==false?'<button data-a="del" data-i="'+i+'" title="Удалить">✕</button>':'')+'</td></tr>'; });
     h+='</tbody></table>'+(o.add?'<button class="btn sm" data-a="add">'+esc(o.addLabel||'+ Добавить')+'</button>':'');
     host.innerHTML=h;
@@ -1314,8 +1320,17 @@ function LE(host, arr, cols, o){
     if(a==='del'){ var why=o.canDel && o.canDel(arr[i]); if(why){ alert(why); return; }
       if(o.confirmDel && !confirm(o.confirmDel(arr[i]))) return;
       var gone=arr.splice(i,1)[0]; if(o.onDel) o.onDel(gone); setDirty(true); draw(); if(o.onChange) o.onChange(); return; }
-    var d=a==='up'?-1:1, j=i+d; while(j>=0 && j<arr.length && !vis(arr[j])) j+=d;
-    if(j<0 || j>=arr.length) return; var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; setDirty(true); draw(); if(o.onChange) o.onChange(); };
+  };
+  /* порядок строк — перетаскиванием за ⠿ (общий механизм экосистемы; без неё — как было, без перестановки) */
+  if(o.move!==false && window.PE && PE.sortable && !host.__sortable){
+    host.__sortable=true;
+    PE.sortable(host, { item:'tr[data-id]', handle:'.pe-drag-handle', onDrop:function(ids){
+      var pos=[]; arr.forEach(function(it,k){ if(vis(it)) pos.push(k); });
+      var moved=ids.map(function(x){ return arr[+x]; });
+      pos.forEach(function(k,n){ arr[k]=moved[n]; });
+      setDirty(true); draw(); if(o.onChange) o.onChange();
+    } });
+  }
   draw();
   return { draw:draw };
 }
@@ -1363,7 +1378,14 @@ function admPresets(B){
   B.innerHTML='<p class="hint">Готовые сборки — кнопки над прайсом. «блоки» и «стр.» значат, что количество равно числу блоков или страниц сборки. Быстрый способ: соберите смету руками и нажмите «Из текущей сметы».</p>'+
     '<div class="pgrid2"><div><div class="plist" id="aPL"></div><div class="row2" style="margin-top:8px"><button class="btn sm" id="aPNew">+ Пустая</button><button class="btn sm" id="aPFrom">+ Из текущей сметы</button></div></div><div id="aPE"></div></div>';
   function list(){
-    $('aPL').innerHTML=D.presets.map(function(p,i){ return '<button class="pi'+(i===aPreset?' on':'')+'" data-pi="'+i+'"><span>'+esc(p.n||'Без названия')+'</span><small>'+kmoney(presetCalc(p,D,S.rate).sum)+'</small></button>'; }).join('') || '<span class="hint">Сборок нет.</span>';
+    $('aPL').innerHTML=D.presets.map(function(p,i){ return '<button class="pi'+(i===aPreset?' on':'')+'" data-pi="'+i+'" data-id="'+i+'"><i class="pe-drag-handle" title="Перетащите, чтобы поменять порядок">⠿</i><span>'+esc(p.n||'Без названия')+'</span><small>'+kmoney(presetCalc(p,D,S.rate).sum)+'</small></button>'; }).join('') || '<span class="hint">Сборок нет.</span>';
+  }
+  if(window.PE && PE.sortable && !$('aPL').__sortable){
+    $('aPL').__sortable=true;
+    PE.sortable($('aPL'), { item:'.pi[data-id]', handle:'.pe-drag-handle', onDrop:function(ids){
+      var cur=D.presets[aPreset]; D.presets=ids.map(function(x){ return D.presets[+x]; }); aPreset=Math.max(0, D.presets.indexOf(cur));
+      setDirty(true); list(); edit();
+    } });
   }
   $('aPL').onclick=function(e){ var b=e.target.closest('[data-pi]'); if(!b) return; aPreset=+b.dataset.pi; list(); edit(); };
   $('aPNew').onclick=function(){ D.presets.push({ id:rid('p'), n:'Новая сборка', d:'', blocks:10, pages:0, items:{} }); aPreset=D.presets.length-1; setDirty(true); list(); edit(); };
@@ -1377,6 +1399,7 @@ function admPresets(B){
     var h='<div class="pedit"><div class="fgrid">'+
       '<label class="ff full">Название<input data-pf="n" value="'+esc(p.n)+'"></label>'+
       '<label class="ff full">Короткое описание на карточке<input data-pf="d" value="'+esc(p.d)+'"></label>'+
+      '<div class="ff full">Цвет карточки<div class="swatches">'+PCOLORS.map(function(c,ci){ var on=(p.col||PCOLORS[aPreset%PCOLORS.length][0])===c[0]; return '<button type="button" class="sw'+(on?' on':'')+'" data-pcol="'+c[0]+'" title="'+c[2]+'" aria-label="'+c[2]+'" style="--pc:'+c[1]+'"></button>'; }).join('')+'</div></div>'+
       '<label class="ff">Блоков<input type="number" min="0" data-pf="blocks" value="'+p.blocks+'"></label>'+
       '<label class="ff">Внутренних страниц<input type="number" min="0" data-pf="pages" value="'+p.pages+'"></label></div>'+
       '<h4 style="margin-top:14px">Состав · '+ids.length+' поз. · '+hrs(calc.hours)+' · ≈ '+money(calc.sum)+' <span class="hint">при ставке '+money(S.rate)+'/ч</span></h4>'+
@@ -1389,7 +1412,7 @@ function admPresets(B){
         '<td class="act"><button data-prm="'+esc(id)+'" title="Убрать">✕</button></td></tr>'; });
     h+='</tbody></table><div class="adder"><input list="aItemList" id="aPAdd" placeholder="Добавить позицию: начните вводить название"><button class="btn sm" id="aPAddB">Добавить</button></div>'+
       '<datalist id="aItemList">'+D.items.filter(function(it){ return p.items[it.id]==null; }).map(function(it){ return '<option value="'+esc(it.n)+'">'+esc(catNameIn(D,it.c))+'</option>'; }).join('')+'</datalist>'+
-      '<div class="row2" style="margin-top:14px"><button class="btn sm" data-pa="up">↑ Выше</button><button class="btn sm" data-pa="dn">↓ Ниже</button><button class="btn sm" data-pa="dup">Дублировать</button><button class="btn sm" data-pa="load">Открыть в смете</button><span class="sp"></span><button class="btn sm" data-pa="del" style="color:var(--bad)">Удалить сборку</button></div></div>';
+      '<div class="row2" style="margin-top:14px"><button class="btn sm" data-pa="dup">Дублировать</button><button class="btn sm" data-pa="load">Открыть в смете</button><span class="sp"></span><button class="btn sm" data-pa="del" style="color:var(--bad)">Удалить сборку</button></div></div>';
     host.innerHTML=h;
     host.oninput=function(e){ var t=e.target;
       if(t.dataset.pf){ var k=t.dataset.pf; p[k] = (k==='blocks'||k==='pages') ? Math.max(0,Math.round(num(t.value,0))) : t.value; setDirty(true); list(); if(k==='blocks'||k==='pages') refreshSums(); return; }
@@ -1397,6 +1420,7 @@ function admPresets(B){
     };
     host.onchange=function(e){ var t=e.target; if(t.dataset.pm){ var m=t.value, id=t.dataset.pm; p.items[id] = m==='n' ? (p.items[id]==='B'?p.blocks:p.items[id]==='P'?p.pages:p.items[id]) : m; setDirty(true); list(); edit(); } };
     host.onclick=function(e){ var t=e.target, b;
+      if((b=t.closest('[data-pcol]'))){ p.col=b.dataset.pcol; setDirty(true); list(); edit(); return; }
       if((b=t.closest('[data-prm]'))){ delete p.items[b.dataset.prm]; setDirty(true); list(); edit(); return; }
       if(t.id==='aPAddB'){ addItem(); return; }
       if((b=t.closest('[data-pa]'))){ var a=b.dataset.pa;
@@ -1522,6 +1546,7 @@ if(HAS_PE){
   PE.onReady(function(){
     /* править прайс — право «Калькулятор: прайс» из «Ролей и прав» экосистемы */
     setAdmin(PE.perm ? PE.perm('calc_edit') : PE.isAdmin());
+    if(PE.onEdit) PE.onEdit(function(){ if(ADMIN) openAdmin(); });
     var wantAdmin=/[?&]admin=1/.test(location.search);
     PE.fb('GET',DB_PATH).then(function(d){
       if(d && d.items){ C=normConfig(d); lset(KEY_CFG,C); rebuildAll(); }

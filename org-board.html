@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="org-board"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
 <style>
 :root{
   color-scheme:light;
@@ -910,7 +910,7 @@ function renderLeft(){
   if(leftTab==="flow"){
     h+='<p class="note">Путь клиента показывается под схемой на главной странице.</p>';
     if(!FL().length)h+='<p class="note">В этой схеме пути клиента нет. Добавьте шаги — и кнопка «Путь клиента» появится на схеме.</p>';
-    FL().forEach(function(f,k){h+='<div class="hrow"><div class="r"><b style="font-size:12px">Шаг '+(k+1)+'</b><span class="sp" style="flex:1"></span><button class="btn sm" data-act="flow-up" data-k="'+k+'">↑</button><button class="btn sm danger" data-act="flow-del" data-k="'+k+'">×</button></div>'+
+    FL().forEach(function(f,k){h+='<div class="hrow flowrow" data-id="'+k+'"><div class="r">'+(HAS_PE?'<span class="pe-drag-handle" title="Перетащите, чтобы поменять порядок">⠿</span>':'')+'<b style="font-size:12px">Шаг '+(k+1)+'</b><span class="sp" style="flex:1"></span>'+(HAS_PE?'':'<button class="btn sm" data-act="flow-up" data-k="'+k+'">↑</button>')+'<button class="btn sm danger" data-act="flow-del" data-k="'+k+'">×</button></div>'+
       '<input type="text" data-bind="flow:'+k+':t" value="'+esc(f.t)+'" aria-label="Название шага"><textarea data-bind="flow:'+k+':x" aria-label="Описание">'+esc(f.x)+'</textarea><div class="r"><label class="fld" style="flex-direction:row;align-items:center">Отдел <input type="text" style="width:60px" data-bind="flow:'+k+':d" value="'+esc(f.d)+'"></label><label class="fld" style="flex-direction:row;align-items:center">Цвет отделения <input type="text" style="width:48px" data-bind="flow:'+k+':v" data-num="1" value="'+esc(f.v)+'"></label></div></div>';});
     h+='<button class="btn sm" data-act="flow-add">+ Шаг</button>';
   }
@@ -995,7 +995,7 @@ function renderInsp(){
     var f=find(sel),n=f.node,b="node:"+n.id;
     x+='<div style="display:flex;justify-content:space-between;align-items:center"><h3>'+TYPES[n.type]+'</h3><button class="btn sm" data-act="deselect">Закрыть</button></div>';
     if(f.parent) x+='<div class="fld" style="flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--ink)">'+eyeBtn("offtoggle",n.id,null,null,!n.off)+(n.off?'Блок скрыт на схеме <small style="color:var(--faint);font-weight:500">— виден только в редакторе</small>':'Блок виден на схеме <small style="color:var(--faint);font-weight:500">— скройте, чтобы держать «на будущее»</small>')+'</div>';
-    x+='<div class="r" style="display:flex;flex-wrap:wrap;gap:6px">'+(f.parent?'<button class="btn sm" data-act="move-left" data-id="'+n.id+'" title="Левее или выше">← / ↑</button><button class="btn sm" data-act="move-right" data-id="'+n.id+'" title="Правее или ниже">→ / ↓</button><button class="btn sm" data-act="dup" data-id="'+n.id+'">Дублировать</button><button class="btn sm danger" data-act="del" data-id="'+n.id+'">Удалить</button>':'<span class="note">Верхний блок схемы</span>')+(n.children.length&&(f.parent||n.children.length===1)?'<button class="btn sm" data-act="unwrap" data-id="'+n.id+'" title="Блок исчезнет, его подчинённые встанут на его место">Убрать только этот блок</button>':'')+'</div>';
+    x+='<div class="r" style="display:flex;flex-wrap:wrap;gap:6px">'+(f.parent?'<span class="note" style="width:100%">Порядок — перетащите блок на схеме на соседний.</span><button class="btn sm" data-act="dup" data-id="'+n.id+'">Дублировать</button><button class="btn sm danger" data-act="del" data-id="'+n.id+'">Удалить</button>':'<span class="note">Верхний блок схемы</span>')+(n.children.length&&(f.parent||n.children.length===1)?'<button class="btn sm" data-act="unwrap" data-id="'+n.id+'" title="Блок исчезнет, его подчинённые встанут на его место">Убрать только этот блок</button>':'')+'</div>';
     if(n.type==="div"||n.type==="dept") x+='<div class="fgrid">'+fld("Номер",b+":num",n.num,{hint:n.type==="dept"&&NUMS[n.id]!=null?"сейчас авто: "+NUMS[n.id]:"крупно на схеме"})+fld("Надзаголовок",b+":label",n.label)+'</div>';
     else x+=fld("Надзаголовок",b+":label",n.label);
     x+=fld("Название",b+":title",n.title,{ph:hatOf(n)&&ownHat(n)?hatOf(n).name:""});
@@ -1506,6 +1506,9 @@ function boot(){
 if(HAS_PE){
   PE.onReady(function(){
     CAN_EDIT=!!(PE.perm?PE.perm("org_edit"):PE.isAdmin());
+    /* шаги пути клиента — перетаскиванием (общий механизм экосистемы) */
+    if(PE.sortable)PE.sortable(document.getElementById("app"),{item:".flowrow[data-id]",handle:".pe-drag-handle",enabled:function(){return mode==="edit"&&leftTab==="flow";},onDrop:function(ids){pushHist();var fl=FL(),nw=ids.map(function(x){return fl[+x];});fl.length=0;nw.forEach(function(x){fl.push(x);});save();renderLeft();renderChart();}});
+    if(PE.onEdit)PE.onEdit(function(){if(booted&&mode!=="edit")act("edit",document.body);});
     loadRemote().then(function(){
       peopleSig=JSON.stringify(ecoPeople());
       if(CAN_EDIT&&remoteReady&&/[?&]edit=1/.test(location.search))mode="edit";

@@ -53,6 +53,19 @@ var CFG = {
   else if(b){ CFG.ROOT='ecosystem-v2-'+b; CFG.MODE=b; }
 })();
 var NS = CFG.MOCK ? 'mock' : CFG.ROOT;
+/* ---------- тема: светлая / тёмная, одна на всю экосистему. Ставится до отрисовки
+   страницы (ядро подключено в <head>), поэтому без «мигания». Выбор — в браузере;
+   пока не выбрано — как в системе. Модули узнают о смене по событию 'pe-theme'. */
+var THEME_KEY='pe2_theme';
+function sysTheme(){ try{ return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }catch(e){ return 'light'; } }
+function curTheme(){ return nget(THEME_KEY) || sysTheme(); }
+function applyTheme(t){
+  document.documentElement.setAttribute('data-pe-theme', t);
+  try{ window.dispatchEvent(new CustomEvent('pe-theme', { detail:t })); }catch(e){}
+}
+function setTheme(t){ nset(THEME_KEY, t); applyTheme(t); if(typeof renderNav==='function' && revealed) renderNav(); }
+applyTheme(curTheme());
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ if(!nget(THEME_KEY)) applyTheme(sysTheme()); }); }catch(e){}
 CFG.AUTH = !!CFG.API_KEY && !CFG.MOCK;
 /* Все запросы к базе (и ядра, и старых модулей — глоссария, оргсхемы) идут через
    эту обёртку:
@@ -76,22 +89,22 @@ window.fetch=function(url, opts){
 var MODULES = [
   { id:'tasks', name:'Задачи', href:'tasks.html',
     desc:'Общая доска команды: канбан, календарь, повторы, учёт времени по этапам и отчёты.',
-    icon:'<rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/>' },
+    icon:'<rect x="3" y="3.5" width="5.2" height="17" rx="1.6" fill="currentColor" fill-opacity=".16"/><rect x="9.4" y="3.5" width="5.2" height="11.5" rx="1.6" fill="currentColor" fill-opacity=".16"/><rect x="15.8" y="3.5" width="5.2" height="7.5" rx="1.6" fill="currentColor" fill-opacity=".16"/><rect x="3" y="3.5" width="5.2" height="17" rx="1.6"/><rect x="9.4" y="3.5" width="5.2" height="11.5" rx="1.6"/><rect x="15.8" y="3.5" width="5.2" height="7.5" rx="1.6"/><path d="M4.8 7.2h1.6M11.2 7.2h1.6M17.6 7.2h1.6"/>', color:'#2A8CFF' },
   { id:'glossary', name:'Глоссарий', href:'glossary.html',
     desc:'Тренажёр терминов по дизайну, Tilda, Figma, копирайтингу и продажам — изучение, экзамен, разбор слабых мест.',
-    icon:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/>' },
+    icon:'<path d="M3.5 5.2c2.6-1.3 5.4-1.3 8.5.6v14c-3.1-1.9-5.9-1.9-8.5-.6z" fill="currentColor" fill-opacity=".16"/><path d="M20.5 5.2c-2.6-1.3-5.4-1.3-8.5.6v14c3.1-1.9 5.9-1.9 8.5-.6z" fill="currentColor" fill-opacity=".16"/><path d="M3.5 5.2c2.6-1.3 5.4-1.3 8.5.6v14c-3.1-1.9-5.9-1.9-8.5-.6zM20.5 5.2c-2.6-1.3-5.4-1.3-8.5.6v14c3.1-1.9 5.9-1.9 8.5-.6z"/><path d="M6 9.2c1.4-.4 2.8-.3 4 .3M6 12.4c1.4-.4 2.8-.3 4 .3M14 9.5c1.2-.6 2.6-.7 4-.3"/>', color:'#8B5CF6' },
   { id:'objections-raw', name:'Возражения Prime Era', href:'objections-raw.html',
     desc:'Полная база формулировок и тактик по возражениям студии — единый список с фильтрами.',
-    icon:'<path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/>' },
+    icon:'<path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" fill="currentColor" fill-opacity=".16"/><path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M17 9h3a2 2 0 0 1 2 2v5.5a2 2 0 0 1-2 2h-.5V21l-3-2.5H13a2 2 0 0 1-1.6-.8"/><path d="M9.5 8.2v3.2M9.5 13.4h.01"/>', color:'#F2613F' },
   { id:'org-board', name:'Оргсхема', href:'org-board.html',
     desc:'Оргсхема студии со шляпами: отделения, отделы, посты, ЦКП, статистики и обязанности. Люди — из экосистемы.',
-    icon:'<circle cx="12" cy="4.5" r="2.3"/><path d="M12 6.8v4"/><circle cx="5.5" cy="17.5" r="2.3"/><circle cx="12" cy="17.5" r="2.3"/><circle cx="18.5" cy="17.5" r="2.3"/><path d="M5.5 15.2v-2a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v2"/><path d="M12 11.2v2"/>' },
+    icon:'<rect x="8.5" y="2.8" width="7" height="5" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="2.5" y="16.2" width="6" height="5" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="9" y="16.2" width="6" height="5" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="15.5" y="16.2" width="6" height="5" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="8.5" y="2.8" width="7" height="5" rx="1.4"/><rect x="2.5" y="16.2" width="6" height="5" rx="1.4"/><rect x="9" y="16.2" width="6" height="5" rx="1.4"/><rect x="15.5" y="16.2" width="6" height="5" rx="1.4"/><path d="M12 7.8v4.4M5.5 16.2v-2a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v2M12 12.2v4"/>', color:'#0EA5B7' },
   { id:'sales-kb', name:'Продажи', href:'sales-kb.html',
     desc:'База знаний отдела продаж: восемь ступеней, тексты сообщений, созвоны, КП, возражения, CRM и управление отделом. Админ редактирует разделы и загружает файлы.',
-    icon:'<path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/>' },
+    icon:'<path d="M3 20.5h18" /><rect x="4" y="13" width="3.6" height="7.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="4" y="13" width="3.6" height="7.5" rx="1"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1"/><path d="M4.5 9.5l5-4 3.5 2.2L19 3.2M15.4 3.2H19v3.5"/>', color:'#1FA971' },
   { id:'calc', name:'Калькулятор', href:'calculator.html',
     desc:'Смета сайта: позиции, готовые сборки, срочность, скидки, итог в часах и рублях. Прайс общий для команды.',
-    icon:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>' }
+    icon:'<rect x="4.5" y="2.5" width="15" height="19" rx="2.6" fill="currentColor" fill-opacity=".16"/><rect x="4.5" y="2.5" width="15" height="19" rx="2.6"/><rect x="7.5" y="5.5" width="9" height="4" rx="1"/><path d="M8.2 13h.01M12 13h.01M15.8 13h.01M8.2 16.4h.01M12 16.4h.01M8.2 19h.01M12 19h.01"/><path d="M15.8 16.2v3"/>', color:'#E59A00' }
 ];
 /* исходные названия, описания и порядок модулей — владелец может переименовать
    модуль, поменять описание плашки, порядок и скрыть его из меню / с главной
@@ -804,6 +817,9 @@ function confirmBox(title, text, okLabel, danger){
   });
 }
 var ICON={
+  pencil:'<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
+  sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+  moon:'<path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8z"/>',
   lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
   user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/>',
   camera:'<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/>',
@@ -1262,10 +1278,12 @@ function renderNav(){
     var u=R.me(), guest=session && session.guest;
     var links=MODULES.filter(function(m){ return can(m.id) && (modConf(m.id).enabled || isAdmin()) && modConf(m.id).nav; });
     var h='<span data-pe2-logo></span>'+
-      '<nav class="pe2-nav-links"><a href="index.html" class="'+(MODULE==='home'?'on':'')+'">Главная</a>'+
+      '<nav class="pe2-nav-links">'+
       links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'">'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
       '<div class="pe2-nav-right">'+
       (CFG.MODE!=='live'?'<span class="pe2-testbadge" title="Данные идут не в рабочую базу">ТЕСТ · '+esc(CFG.MODE)+'</span>':'')+
+      editorBtn()+
+      '<button class="pe2-nav-icon" data-pe2-theme title="'+(curTheme()==='dark'?'Светлая тема':'Тёмная тема')+'" aria-label="Сменить тему">'+I(curTheme()==='dark'?'sun':'moon',17)+'</button>'+
       (isStaff()?'<a class="pe2-nav-admin'+(MODULE==='admin'?' on':'')+'" href="admin.html" title="Админ-панель">'+I('shield',15)+'<span>Админка</span>'+(pendingCount()?'<b>'+pendingCount()+'</b>':'')+'</a>':'')+
       (u?'<button class="pe2-nav-user" data-pe2-user>'+avatar(u,28)+'<span>'+esc(shortName(u))+'</span></button>'
         : guest?'<button class="pe2-nav-user" data-pe2-user><span class="pe2-av" style="width:28px;height:28px;background:#3A3A3E">'+I('user',14)+'</span><span>Гость</span></button>':'')+
@@ -1273,6 +1291,8 @@ function renderNav(){
     navEl.innerHTML=h;
     var slot=navEl.querySelector('[data-pe2-logo]'); if(slot) slot.parentNode.replaceChild(navLogo(), slot);
     navEl.onclick=function(e){
+      if(e.target.closest('[data-pe2-theme]')){ setTheme(curTheme()==='dark'?'light':'dark'); return; }
+      if(e.target.closest('[data-pe2-edit]')){ if(editFn) editFn(); else if(EDITORS[MODULE]) location.href=EDITORS[MODULE].url; return; }
       var b=e.target.closest('[data-pe2-user]'); if(!b) return;
       userMenu(b);
     };
@@ -1300,6 +1320,67 @@ function navLogo(){
   if(document.readyState==='complete') idle(loadCube, { timeout:2000 });
   else window.addEventListener('load', function(){ idle(loadCube, { timeout:2000 }); });
   return logoEl;
+}
+/* ---------- перетаскивание для списков (вместо стрелок «выше/ниже») ----------
+   PE.sortable(контейнер, { item:'селектор элемента', handle:'селектор ручки' (необязательно),
+     enabled:function(){…} (необязательно), onDrop:function(ids, movedId, el){…} })
+   ids — новый порядок элементов по их data-id. Работает мышью и пальцем, для строк
+   таблиц и для блоков. Клик без сдвига остаётся обычным кликом. */
+function sortable(box, o){
+  var drag=null, justDragged=false;
+  function items(){ return $$(o.item, box).filter(function(el){ return el.closest(o.item)===el; }); }
+  function clear(){ $$('.pe-drop-before,.pe-drop-after', box).forEach(function(el){ el.classList.remove('pe-drop-before','pe-drop-after'); }); }
+  box.addEventListener('pointerdown', function(e){
+    if(e.button!==0 || (o.enabled && !o.enabled())) return;
+    var h = o.handle ? e.target.closest(o.handle) : e.target;
+    if(!h || !box.contains(h)) return;
+    if(!o.handle && e.target.closest('input,textarea,select,button,[contenteditable]')) return;
+    var it=h.closest(o.item); if(!it || !box.contains(it)) return;
+    drag={ el:it, x:e.clientX, y:e.clientY, moved:false, over:null, after:false, id:e.pointerId };
+    if(o.handle) e.preventDefault();
+  });
+  document.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    if(!drag.moved){ if(Math.abs(e.clientY-drag.y)+Math.abs(e.clientX-drag.x)<5) return; drag.moved=true; drag.el.classList.add('pe-dragging'); document.body.style.userSelect='none'; }
+    e.preventDefault();
+    var under=document.elementFromPoint(e.clientX, e.clientY), t=under && under.closest(o.item);
+    clear(); drag.over=null;
+    if(t && t!==drag.el && box.contains(t) && items().indexOf(t)>=0){
+      var r=t.getBoundingClientRect(); drag.after = e.clientY > r.top + r.height/2; drag.over=t;
+      t.classList.add(drag.after?'pe-drop-after':'pe-drop-before');
+    }
+    /* у краёв окна прокручиваем */
+    if(e.clientY<60) window.scrollBy(0,-12); else if(e.clientY>window.innerHeight-60) window.scrollBy(0,12);
+  }, { passive:false });
+  function end(){
+    if(!drag) return;
+    var d=drag; drag=null; clear(); d.el.classList.remove('pe-dragging'); document.body.style.userSelect='';
+    if(!d.moved) return;
+    justDragged=true; setTimeout(function(){ justDragged=false; }, 50);
+    if(!d.over) return;
+    d.over.parentNode.insertBefore(d.el, d.after ? d.over.nextSibling : d.over);
+    var ids=items().map(function(el){ return el.getAttribute('data-id'); });
+    try{ o.onDrop(ids, d.el.getAttribute('data-id'), d.el); }catch(err){ if(window.console) console.error(err); }
+  }
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', end);
+  /* после перетаскивания не срабатывает клик по ссылке/кнопке под курсором */
+  box.addEventListener('click', function(e){ if(justDragged){ e.preventDefault(); e.stopPropagation(); } }, true);
+}
+
+/* карандаш в шапке: редактор текущего инструмента (для тех, у кого есть право).
+   Страница может сама открыть редактор на месте — PE.onEdit(fn); иначе переходим по ссылке. */
+var EDITORS={
+  'sales-kb':{ perm:'saleskb_edit', url:'sales-kb.html?edit=1', title:'Редактировать базу продаж' },
+  'calc':{ perm:'calc_edit', url:'calculator.html?admin=1', title:'Редактировать прайс калькулятора' },
+  'org-board':{ perm:'org_edit', url:'org-board.html?edit=1', title:'Редактировать оргсхему' },
+  'glossary':{ perm:'glossary_edit', url:'glossary.html?admin=1', title:'Панель глоссария' },
+  'home':{ perm:'modules', url:'admin.html#modules', title:'Настроить меню и плашки главной' }
+};
+var editFn=null;
+function editorBtn(){
+  var e=EDITORS[MODULE]; if(!e || !R.me() || !perm(e.perm)) return '';
+  return '<button class="pe2-nav-icon" data-pe2-edit title="'+esc(e.title)+'" aria-label="'+esc(e.title)+'">'+I('pencil',16)+'</button>';
 }
 var menuEl=null;
 function userMenu(anchor){
@@ -1424,7 +1505,7 @@ var PE = window.PE = {
   isAdmin:isAdmin, isOwner:isOwner, isStaff:isStaff, perm:perm, permsOf:permsOf, PERMS:PERMS, DEFAULT_PERMS:DEFAULT_PERMS, ROLE_ORDER:ROLE_ORDER, can:can, modConf:modConf, moduleById:moduleById,
   onReady:function(fn){ if(fired) fn(PE); else readyFns.push(fn); },
   onUsers:function(fn){ usersFns.push(fn); },
-  MODULE_DEFAULTS:MOD_DEF, reloadModules:function(){ return loadModulesMeta(); },
+  MODULE_DEFAULTS:MOD_DEF, sortable:sortable, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,
   requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,

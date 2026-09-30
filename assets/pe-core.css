@@ -3,16 +3,56 @@
    Классы с префиксом pe2- — чтобы не пересекаться со стилями модулей.
    ========================================================================= */
 :root{
+  /* ===== Дизайн-система Prime Era · экосистема =====
+     Основа — задачник (IBM Plex Mono, белая «бумага», пилюли, радиус 18) и сайт
+     prime-era.pro (белый, чёрный, моно, фирменный синий #008CFF).
+     Модули берут цвета ТОЛЬКО отсюда (var(--pe-…)) — тогда тёмная тема работает везде. */
+  --pe-bg:#FFFFFF;          /* фон страницы */
+  --pe-bg-2:#F6F6F7;        /* фон «рабочего стола», подложки */
+  --pe-card:#FFFFFF;        /* карточки, окна */
+  --pe-sunk:#F3F3F4;        /* утопленные области, колонки */
+  --pe-hover:#F1F1F3;
+  --pe-ink:#121212;         /* основной текст */
+  --pe-ink-2:#6E6E74;       /* второстепенный */
+  --pe-ink-3:#A6A6AC;       /* подписи, плейсхолдеры */
+  --pe-line:#E5E5E8;        /* рамки */
+  --pe-line-2:#EFEFF1;      /* тонкие разделители */
+  --pe-accent:#008CFF; --pe-accent-h:#0077DB; --pe-accent-t:#E8F3FF; --pe-accent-ink:#0062B8;
+  --pe-ok:#1A8A4B; --pe-ok-t:#E3F6E9;
+  --pe-warn:#B45309; --pe-warn-t:#FEF3E2;
+  --pe-danger:#D7372F; --pe-danger-t:#FDECEA;
+  --pe-shadow:0 1px 2px rgba(18,18,18,.04), 0 10px 30px rgba(18,18,18,.07);
+  --pe-shadow-lg:0 24px 70px rgba(18,18,18,.18);
+  --pe-r:18px; --pe-r-md:14px; --pe-r-sm:10px;
+  --pe-font:'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --pe-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --pe-nav-bg:rgba(255,255,255,.82);
   --pe-nav-h:0px;
-  --pe2-bg:#050506; --pe2-panel:#0E0E12; --pe2-line:rgba(255,255,255,.10);
-  --pe2-text:#F4F4F6; --pe2-soft:rgba(255,255,255,.62); --pe2-faint:rgba(255,255,255,.38);
-  --pe2-accent:#008CFF; --pe2-accent-2:#4DB2FF; --pe2-danger:#FF5A52; --pe2-ok:#2BC37A; --pe2-warn:#FFB020;
+  color-scheme:light;
+  /* старые имена (модули v2 первой волны) — указывают на новые токены */
+  --pe2-bg:#050506; --pe2-panel:#0E0E12; --pe2-line:var(--pe-line);
+  --pe2-text:var(--pe-ink); --pe2-soft:var(--pe-ink-2); --pe2-faint:var(--pe-ink-3);
+  --pe2-accent:var(--pe-accent); --pe2-accent-2:#4DB2FF; --pe2-danger:var(--pe-danger); --pe2-ok:var(--pe-ok); --pe2-warn:#FFB020;
+}
+html[data-pe-theme="dark"]{
+  --pe-bg:#0B0B0D; --pe-bg-2:#0B0B0D; --pe-card:#141417; --pe-sunk:#1A1A1E; --pe-hover:#1F1F24;
+  --pe-ink:#ECECEE; --pe-ink-2:#9C9CA4; --pe-ink-3:#65656C;
+  --pe-line:#2A2A30; --pe-line-2:#1F1F24;
+  --pe-accent:#2A9BFF; --pe-accent-h:#4DB2FF; --pe-accent-t:rgba(0,140,255,.16); --pe-accent-ink:#7CC4FF;
+  --pe-ok:#3BCB85; --pe-ok-t:rgba(59,203,133,.14);
+  --pe-warn:#FFB020; --pe-warn-t:rgba(255,176,32,.14);
+  --pe-danger:#FF6B63; --pe-danger-t:rgba(255,90,82,.14);
+  --pe-shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  --pe-shadow-lg:0 24px 70px rgba(0,0,0,.6);
+  --pe-nav-bg:rgba(11,11,13,.82);
+  color-scheme:dark;
 }
 html.pe2-has-nav{ --pe-nav-h:56px; --nav-h:56px; }
+html{ transition:background-color .2s; }
 
 /* пока ядро не решило, пускать ли — страницу не видно (без «мигания» чужих данных) */
 html.pe2-wait body > *:not(.pe2-gate):not(#pe2-toasts){ visibility:hidden !important; }
-html.pe2-wait body{ background:#050506; }
+html.pe2-wait body{ background:var(--pe-bg); }
 html.pe2-gated body{ overflow:hidden !important; }
 html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ visibility:hidden !important; }
 /* старые экраны входа v1 больше не нужны */
@@ -21,40 +61,42 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 /* ================= навигация ================= */
 .pe2-nav{
   position:fixed; top:0; left:0; right:0; height:56px; z-index:900;
-  display:flex; align-items:center; gap:14px; padding:0 18px;
-  background:rgba(8,8,11,.94); -webkit-backdrop-filter:blur(16px) saturate(140%); backdrop-filter:blur(16px) saturate(140%);
-  border-bottom:1px solid var(--pe2-line);
-  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  display:flex; align-items:center; gap:18px; padding:0 20px;
+  background:var(--pe-nav-bg); -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%);
+  border-bottom:1px solid var(--pe-line); color:var(--pe-ink);
+  font-family:var(--pe-mono);
 }
-.pe2-nav-logo{ --s:43px; display:flex; align-items:center; gap:9px; height:var(--s); flex:none; text-decoration:none; }
+.pe2-nav-logo{ --s:43px; display:flex; align-items:center; gap:9px; height:var(--s); flex:none; text-decoration:none; color:var(--pe-ink); }
 /* кубик: до загрузки three.js — статичная картинка, потом живой WebGL-кубик (assets/pe-logo3d.js) */
 .pe2-cube{ position:relative; width:var(--s); height:var(--s); flex:0 0 var(--s); background:url(logo-icon-ondark.png) center / 72% no-repeat; }
 .pe2-cube.pe2-cube-live{ background:none; }
-.pe2-logo-text{ font-family:'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size:14px; font-weight:500; color:#9297A1; white-space:nowrap; letter-spacing:.01em; }
-.pe2-logo-text b{ color:#fff; font-weight:600; }
-.pe2-nav-links{ display:flex; align-items:center; gap:2px; flex:1 1 auto; min-width:0; overflow-x:auto; scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
-          mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%); padding:0 8px; }
+.pe2-logo-text{ font-family:var(--pe-mono); font-size:14px; font-weight:500; color:var(--pe-ink-2); white-space:nowrap; letter-spacing:.01em; }
+.pe2-logo-text b{ color:var(--pe-ink); font-weight:600; }
+.pe2-nav-links{ display:flex; align-items:center; gap:2px; flex:1 1 auto; min-width:0; overflow-x:auto; scrollbar-width:none; padding:0 4px;
+  -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent 100%); mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent 100%); }
 .pe2-nav-links::-webkit-scrollbar{ display:none; }
 .pe2-nav-links a{
-  color:rgba(255,255,255,.62); text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;
-  padding:7px 11px; border-radius:999px; transition:color .15s, background .15s;
+  color:var(--pe-ink-2); text-decoration:none; font:600 11px var(--pe-mono); letter-spacing:.03em; text-transform:uppercase; white-space:nowrap;
+  padding:8px 11px; border-radius:999px; transition:color .15s, background .15s;
 }
-.pe2-nav-links a:hover{ color:#fff; background:rgba(255,255,255,.07); }
-.pe2-nav-links a.on{ color:#fff; background:rgba(0,140,255,.22); }
-.pe2-nav-right{ display:flex; align-items:center; gap:8px; flex:none; }
+.pe2-nav-links a:hover{ color:var(--pe-ink); background:var(--pe-hover); }
+.pe2-nav-links a.on{ color:var(--pe-accent-ink); background:var(--pe-accent-t); }
+.pe2-nav-right{ display:flex; align-items:center; gap:6px; flex:none; }
+.pe2-nav-icon{ width:34px; height:34px; border-radius:999px; border:1px solid transparent; background:transparent; color:var(--pe-ink-2); cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; transition:background .15s, color .15s, border-color .15s; }
+.pe2-nav-icon:hover{ background:var(--pe-hover); color:var(--pe-ink); }
 .pe2-nav-admin{
-  display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,.72); text-decoration:none;
-  font-size:12.5px; font-weight:600; padding:6px 11px; border:1px solid var(--pe2-line); border-radius:999px; transition:all .15s;
+  display:inline-flex; align-items:center; gap:7px; color:var(--pe-ink); text-decoration:none;
+  font:600 11.5px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; padding:7px 12px; border:1px solid var(--pe-line); border-radius:999px; transition:all .15s;
 }
-.pe2-nav-admin:hover, .pe2-nav-admin.on{ color:#fff; border-color:var(--pe2-accent); }
-.pe2-nav-admin b{ background:var(--pe2-danger); color:#fff; font-size:10.5px; min-width:18px; height:18px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; }
+.pe2-nav-admin:hover, .pe2-nav-admin.on{ border-color:var(--pe-accent); color:var(--pe-accent-ink); background:var(--pe-accent-t); }
+.pe2-nav-admin b{ background:var(--pe-danger); color:#fff; font-size:10.5px; min-width:18px; height:18px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px; }
 .pe2-nav-user{
-  display:inline-flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:#fff; cursor:pointer;
-  font:600 13px 'IBM Plex Sans',sans-serif; padding:3px 10px 3px 3px; border-radius:999px; transition:background .15s, border-color .15s;
+  display:inline-flex; align-items:center; gap:8px; background:none; border:1px solid transparent; color:var(--pe-ink); cursor:pointer;
+  font:600 12.5px var(--pe-mono); padding:3px 10px 3px 3px; border-radius:999px; transition:background .15s, border-color .15s;
 }
-.pe2-nav-user:hover{ background:rgba(255,255,255,.07); border-color:var(--pe2-line); }
-.pe2-testbadge{ font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; color:#1A1200; background:var(--pe2-warn); padding:4px 8px; border-radius:6px; }
+.pe2-nav-user:hover{ background:var(--pe-hover); }
+.pe2-testbadge{ font:700 10px var(--pe-mono); letter-spacing:.06em; color:#1A1200; background:#FFB020; padding:4px 8px; border-radius:6px; }
 @media(max-width:720px){
   .pe2-nav{ padding:0 10px; gap:6px; }
   .pe2-nav-logo{ --s:38px; }
@@ -75,18 +117,18 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 
 /* ================= меню пользователя ================= */
 .pe2-menu{
-  position:fixed; z-index:1200; min-width:250px; background:#131318; border:1px solid var(--pe2-line); border-radius:14px;
-  box-shadow:0 18px 50px rgba(0,0,0,.45); padding:6px; font-family:'IBM Plex Sans',sans-serif; animation:pe2pop .14s ease;
+  position:fixed; z-index:1200; min-width:250px; background:var(--pe-card); border:1px solid var(--pe-line); border-radius:var(--pe-r-md);
+  box-shadow:var(--pe-shadow-lg); padding:6px; font-family:var(--pe-font); color:var(--pe-ink); animation:pe2pop .14s ease;
 }
-.pe2-menu-head{ display:flex; gap:10px; align-items:center; padding:10px 10px 12px; border-bottom:1px solid var(--pe2-line); margin-bottom:4px; }
-.pe2-menu-head b{ display:block; color:#fff; font-size:14px; }
-.pe2-menu-head span{ color:var(--pe2-soft); font-size:12px; }
+.pe2-menu-head{ display:flex; gap:10px; align-items:center; padding:10px 10px 12px; border-bottom:1px solid var(--pe-line-2); margin-bottom:4px; }
+.pe2-menu-head b{ display:block; font-size:14px; }
+.pe2-menu-head span{ color:var(--pe-ink-2); font-size:12px; }
 .pe2-menu button, .pe2-menu a{
-  display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; color:rgba(255,255,255,.85);
-  font:500 13.5px 'IBM Plex Sans',sans-serif; padding:9px 10px; border-radius:9px; cursor:pointer; text-decoration:none; text-align:left;
+  display:flex; align-items:center; gap:10px; width:100%; background:none; border:none; color:var(--pe-ink);
+  font:500 13.5px var(--pe-font); padding:9px 10px; border-radius:9px; cursor:pointer; text-decoration:none; text-align:left;
 }
-.pe2-menu button:hover, .pe2-menu a:hover{ background:rgba(255,255,255,.07); color:#fff; }
-.pe2-menu .danger{ color:#FF8A84; }
+.pe2-menu button:hover, .pe2-menu a:hover{ background:var(--pe-hover); }
+.pe2-menu .danger{ color:var(--pe-danger); }
 @keyframes pe2pop{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:none; } }
 
 /* ================= экран входа ================= */
@@ -95,6 +137,9 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
     radial-gradient(900px 500px at 50% -10%, rgba(0,140,255,.16), transparent 60%), #050506;
   display:flex; justify-content:center; align-items:flex-start; padding:7vh 16px 40px;
   font-family:'IBM Plex Sans',system-ui,sans-serif; color:var(--pe2-text);
+  /* вход — всегда тёмный «фирменный» экран, независимо от темы */
+  --pe2-text:#F4F4F6; --pe2-soft:rgba(255,255,255,.62); --pe2-faint:rgba(255,255,255,.38); --pe2-line:rgba(255,255,255,.10); --pe2-accent:#008CFF;
+  color-scheme:dark;
 }
 .pe2-gate-box{ width:100%; max-width:400px; margin:auto 0; animation:pe2in .25s ease; }
 .pe2-gate-box.wide{ max-width:560px; }
@@ -179,46 +224,47 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 .pe2-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:6px; flex-wrap:wrap; }
 .pe2-actions.col{ flex-direction:column; }
 
-/* ================= модалки (светлые — поверх любых модулей) ================= */
-.pe2-modal-back{ position:fixed; inset:0; z-index:6000; background:rgba(5,5,8,.62); display:flex; align-items:flex-start; justify-content:center; padding:6vh 14px 30px; overflow-y:auto; animation:pe2fade .15s ease; }
+/* ================= модалки (по теме — поверх любых модулей) ================= */
+.pe2-modal-back{ position:fixed; inset:0; z-index:6000; background:rgba(8,8,12,.5); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); display:flex; align-items:flex-start; justify-content:center; padding:6vh 14px 30px; overflow-y:auto; animation:pe2fade .15s ease; }
 @keyframes pe2fade{ from{ opacity:0; } to{ opacity:1; } }
 .pe2-modal{
-  width:100%; max-width:440px; background:#fff; color:#121212; border-radius:18px; padding:22px 22px 18px; box-sizing:border-box;
-  box-shadow:0 30px 80px rgba(0,0,0,.35); font-family:'IBM Plex Sans',sans-serif; animation:pe2in .18s ease; margin:auto 0;
+  width:100%; max-width:440px; background:var(--pe-card); color:var(--pe-ink); border:1px solid var(--pe-line); border-radius:var(--pe-r); padding:22px 22px 18px; box-sizing:border-box;
+  box-shadow:var(--pe-shadow-lg); font-family:var(--pe-font); animation:pe2in .18s ease; margin:auto 0;
 }
 .pe2-modal.wide{ max-width:600px; }
-.pe2-modal h2{ margin:0 0 8px; font-size:19px; }
-.pe2-modal .pe2-muted{ color:#7A7A7A; }
-.pe2-modal .pe2-field > span, .pe2-modal .pe2-label{ color:#7A7A7A; }
-.pe2-modal .pe2-field input, .pe2-modal .pe2-field select, .pe2-modal .pe2-field textarea{ background:#fff; border-color:#DADADD; color:#121212; }
-.pe2-modal .pe2-field input:focus, .pe2-modal .pe2-field select:focus, .pe2-modal .pe2-field textarea:focus{ border-color:var(--pe2-accent); box-shadow:0 0 0 3px rgba(0,140,255,.15); }
-.pe2-modal .pe2-field small{ color:#9A9A9A; }
-.pe2-modal .pe2-field input[type="date"]{ color-scheme:light; }
-.pe2-modal .pe2-sep{ background:#EEE; }
-.pe2-modal .pe2-btn{ background:#fff; color:#121212; border-color:#DADADD; }
-.pe2-modal .pe2-btn:hover{ background:#F2F6FF; border-color:var(--pe2-accent); }
-.pe2-modal .pe2-btn.primary{ background:var(--pe2-accent); color:#fff; border-color:var(--pe2-accent); }
-.pe2-modal .pe2-btn.primary:hover{ background:#0077DB; }
-.pe2-modal .pe2-btn.danger{ background:#D7372F; color:#fff; border-color:#D7372F; }
-.pe2-modal .pe2-btn.ghost{ background:transparent; border-color:transparent; color:#7A7A7A; }
-.pe2-modal .pe2-btn.ghost:hover{ color:#121212; background:#F4F4F5; }
-.pe2-modal .pe2-btn.busy::after{ border-color:rgba(0,0,0,.2); border-top-color:#121212; }
+.pe2-modal h2{ margin:0 0 8px; font-size:19px; font-weight:600; letter-spacing:-.01em; }
+.pe2-modal .pe2-muted{ color:var(--pe-ink-2); }
+.pe2-modal .pe2-field > span, .pe2-modal .pe2-label{ color:var(--pe-ink-2); }
+.pe2-modal .pe2-field input, .pe2-modal .pe2-field select, .pe2-modal .pe2-field textarea{ background:var(--pe-card); border-color:var(--pe-line); color:var(--pe-ink); }
+.pe2-modal .pe2-field input:focus, .pe2-modal .pe2-field select:focus, .pe2-modal .pe2-field textarea:focus{ border-color:var(--pe-accent); box-shadow:0 0 0 3px var(--pe-accent-t); background:var(--pe-card); }
+.pe2-modal .pe2-field select option{ color:var(--pe-ink); background:var(--pe-card); }
+.pe2-modal .pe2-field small{ color:var(--pe-ink-3); }
+.pe2-modal .pe2-field input[type="date"]{ color-scheme:inherit; }
+.pe2-modal .pe2-sep{ background:var(--pe-line-2); }
+.pe2-modal .pe2-btn{ background:var(--pe-card); color:var(--pe-ink); border-color:var(--pe-line); font-family:var(--pe-mono); font-size:12.5px; letter-spacing:.03em; text-transform:uppercase; border-radius:999px; }
+.pe2-modal .pe2-btn:hover{ background:var(--pe-accent-t); border-color:var(--pe-accent); }
+.pe2-modal .pe2-btn.primary{ background:var(--pe-accent); color:#fff; border-color:var(--pe-accent); }
+.pe2-modal .pe2-btn.primary:hover{ background:var(--pe-accent-h); }
+.pe2-modal .pe2-btn.danger{ background:var(--pe-danger); color:#fff; border-color:var(--pe-danger); }
+.pe2-modal .pe2-btn.ghost{ background:transparent; border-color:transparent; color:var(--pe-ink-2); }
+.pe2-modal .pe2-btn.ghost:hover{ color:var(--pe-ink); background:var(--pe-hover); }
+.pe2-modal .pe2-btn.busy::after{ border-color:var(--pe-line); border-top-color:var(--pe-ink); }
 .pe2-modal .pe2-btn.primary.busy::after{ border-color:rgba(255,255,255,.4); border-top-color:#fff; }
-.pe2-modal .pe2-av-drop{ background:#F4F4F5; border-color:#CFCFD4; color:#9A9A9A; }
-.pe2-modal .pe2-av-side span{ color:#8A8A8A; }
-.pe2-modal .pe2-check{ border-color:#E4E4E7; }
-.pe2-modal .pe2-check:hover{ border-color:#C9C9CF; }
-.pe2-modal .pe2-check:has(input:checked){ background:#EEF6FF; border-color:var(--pe2-accent); }
-.pe2-modal .pe2-check .ic{ background:#E6F2FF; color:#0070D6; }
-.pe2-modal .pe2-check small{ color:#8A8A8A; }
-.pe2-modal .pe2-err{ background:#FDECEA; border-color:#F5C2BD; color:#A8322A; }
-.pe2-kv{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:13px; margin:0 0 14px; padding:10px 12px; background:#F6F6F7; border-radius:10px; }
-.pe2-kv span{ color:#8A8A8A; }
+.pe2-modal .pe2-av-drop{ background:var(--pe-sunk); border-color:var(--pe-line); color:var(--pe-ink-3); }
+.pe2-modal .pe2-av-side span{ color:var(--pe-ink-2); }
+.pe2-modal .pe2-check{ border-color:var(--pe-line); }
+.pe2-modal .pe2-check:hover{ border-color:var(--pe-ink-3); }
+.pe2-modal .pe2-check:has(input:checked){ background:var(--pe-accent-t); border-color:var(--pe-accent); }
+.pe2-modal .pe2-check .ic{ background:var(--pe-accent-t); color:var(--pe-accent-ink); }
+.pe2-modal .pe2-check small{ color:var(--pe-ink-2); }
+.pe2-modal .pe2-err{ background:var(--pe-danger-t); border-color:transparent; color:var(--pe-danger); }
+.pe2-kv{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:13px; margin:0 0 14px; padding:10px 12px; background:var(--pe-sunk); border-radius:10px; }
+.pe2-kv span{ color:var(--pe-ink-2); }
 
 /* ================= тосты ================= */
 #pe2-toasts{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:7000; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
-.pe2-toast{ background:#141418; color:#fff; font:500 13.5px 'IBM Plex Sans',sans-serif; padding:11px 16px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.1); animation:pe2in .2s ease; max-width:min(92vw,460px); transition:opacity .3s, transform .3s; }
-.pe2-toast.err{ background:#3A0F0C; border-color:#7A2A24; }
+.pe2-toast{ background:var(--pe-ink); color:var(--pe-bg); font:500 13.5px var(--pe-font); padding:11px 16px; border-radius:12px; box-shadow:var(--pe-shadow-lg); animation:pe2in .2s ease; max-width:min(560px, calc(100vw - 32px)); text-align:center; transition:opacity .3s, transform .3s; }
+.pe2-toast.err{ background:var(--pe-danger); color:#fff; }
 .pe2-toast.out{ opacity:0; transform:translateY(6px); }
 
 @media (prefers-reduced-motion: reduce){ .pe2-gate-box, .pe2-modal, .pe2-menu, .pe2-toast{ animation:none; } }
@@ -234,5 +280,27 @@ html:not(.pe2-can-glossary_edit) .pe2-need-glossary_edit, html:not(.pe2-can-task
 .pe2-crop-ring{ position:absolute; inset:0; border-radius:50%; pointer-events:none; box-shadow:0 0 0 999px rgba(0,0,0,.55); border:2px solid rgba(255,255,255,.9); }
 .pe2-crop-ctl{ display:flex; align-items:center; gap:10px; max-width:320px; margin:0 auto 8px; }
 .pe2-crop-ctl input[type=range]{ flex:1; accent-color:var(--pe2-accent); }
-.pe2-crop-b{ width:34px; height:34px; flex:none; border-radius:10px; border:1px solid #DADADD; background:#fff; color:#121212; font:600 18px 'IBM Plex Sans',sans-serif; cursor:pointer; line-height:1; }
-.pe2-crop-b:hover{ border-color:var(--pe2-accent); background:#F2F8FF; }
+.pe2-crop-b{ width:34px; height:34px; flex:none; border-radius:10px; border:1px solid var(--pe-line); background:var(--pe-card); color:var(--pe-ink); font:600 18px 'IBM Plex Sans',sans-serif; cursor:pointer; line-height:1; }
+.pe2-crop-b:hover{ border-color:var(--pe-accent); background:var(--pe-accent-t); }
+
+/* ================= общие компоненты дизайн-системы (для модулей) ================= */
+.pe-h{ font:600 11px var(--pe-mono); letter-spacing:.12em; text-transform:uppercase; color:var(--pe-ink-3); margin:0 0 12px; }
+.pe-card{ background:var(--pe-card); border:1px solid var(--pe-line); border-radius:var(--pe-r); }
+.pe-btn{ display:inline-flex; align-items:center; justify-content:center; gap:7px; border:1px solid var(--pe-line); background:var(--pe-card); color:var(--pe-ink);
+  padding:8px 15px; border-radius:999px; font:600 11.5px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; cursor:pointer; text-decoration:none; white-space:nowrap;
+  transition:background .12s, border-color .12s, color .12s; }
+.pe-btn:hover{ background:var(--pe-accent-t); border-color:var(--pe-accent); }
+.pe-btn.primary{ background:var(--pe-accent); border-color:var(--pe-accent); color:#fff; }
+.pe-btn.primary:hover{ background:var(--pe-accent-h); border-color:var(--pe-accent-h); }
+.pe-btn.ghost{ border-color:transparent; background:transparent; color:var(--pe-ink-2); }
+.pe-btn.ghost:hover{ background:var(--pe-hover); color:var(--pe-ink); }
+.pe-btn.sm{ padding:5px 11px; font-size:10.5px; }
+.pe-chip{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--pe-line); background:var(--pe-card); color:var(--pe-ink-2); border-radius:999px; padding:4px 10px; font:500 11.5px var(--pe-mono); white-space:nowrap; }
+/* перетаскивание: общий вид для всех списков, где порядок меняют мышью */
+.pe-drag-handle{ cursor:grab; color:var(--pe-ink-3); display:inline-flex; align-items:center; justify-content:center; width:22px; flex:none; user-select:none; }
+.pe-drag-handle:hover{ color:var(--pe-ink); }
+.pe-dragging{ opacity:.45; }
+.pe-drop-before{ box-shadow:inset 0 3px 0 0 var(--pe-accent) !important; }
+.pe-drop-after{ box-shadow:inset 0 -3px 0 0 var(--pe-accent) !important; }
+tr.pe-drop-before > td{ box-shadow:inset 0 3px 0 0 var(--pe-accent) !important; }
+tr.pe-drop-after > td{ box-shadow:inset 0 -3px 0 0 var(--pe-accent) !important; }

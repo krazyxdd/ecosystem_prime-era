@@ -5,131 +5,242 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="home"></script>
 <style>
-  html,body{ margin:0; background:#050506; color:#fff; font-family:'IBM Plex Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
-  .grid-lines{ position:fixed; inset:0 24px; display:flex; justify-content:space-between; pointer-events:none; z-index:0; }
-  .grid-lines i{ width:1px; height:100%; background:rgba(255,255,255,.06); }
-  .grid-lines i:nth-child(even){ background:rgba(0,140,255,.12); }
-  .page{ position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:calc(var(--pe-nav-h) + 48px) 20px 60px; }
-  @media(max-width:600px){ .page{ padding-top:calc(var(--pe-nav-h) + 28px); } .grid-lines{ inset:0 10px; } }
+  html,body{ margin:0; background:var(--pe-bg-2); color:var(--pe-ink); font-family:var(--pe-font); -webkit-font-smoothing:antialiased; }
+  .page{ max-width:1200px; margin:0 auto; padding:calc(var(--pe-nav-h) + 40px) 28px 60px; }
+  @media(max-width:700px){ .page{ padding:calc(var(--pe-nav-h) + 22px) 14px 40px; } }
 
-  .hello{ display:flex; align-items:center; gap:16px; margin-bottom:34px; }
-  .hello .pe2-av{ box-shadow:0 0 0 3px rgba(255,255,255,.08); }
-  .hello h1{ margin:0; font-size:clamp(22px,3.6vw,32px); font-weight:700; letter-spacing:-.01em; line-height:1.2; }
-  .hello h1 span{ color:#4DB2FF; }
-  .hello p{ margin:6px 0 0; font:500 12px 'IBM Plex Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.42); }
+  /* приветствие */
+  .hero{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:28px; }
+  .hero .date{ font:600 11px var(--pe-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--pe-ink-3); margin-bottom:10px; }
+  .hero h1{ margin:0; font:300 clamp(30px,4.4vw,46px)/1.08 var(--pe-font); letter-spacing:-.02em; }
+  .hero h1 b{ font-weight:500; }
+  .hero .sub{ margin-top:10px; font:500 12px var(--pe-mono); letter-spacing:.04em; color:var(--pe-ink-2); }
+  .hero-acts{ display:flex; gap:8px; flex-wrap:wrap; }
 
-  .banner{ display:flex; gap:14px; align-items:center; background:rgba(255,176,32,.1); border:1px solid rgba(255,176,32,.35); border-radius:14px; padding:14px 16px; margin-bottom:22px; font-size:14px; line-height:1.5; color:#FFE3AE; }
-  .banner a, .banner button{ margin-left:auto; flex:none; }
-  .banner.info{ background:rgba(0,140,255,.1); border-color:rgba(0,140,255,.35); color:#CFE8FF; }
-  @media(max-width:600px){ .banner{ flex-direction:column; align-items:flex-start; } .banner a, .banner button{ margin-left:0; } }
+  /* виджеты */
+  /* раскладка: задачи (шире) + команда рядом, изменения — строкой ниже; без пустых дыр */
+  .desk{ display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; margin-bottom:36px; align-items:start; }
+  @media(max-width:640px){ .desk{ grid-template-columns:1fr; } }
+  .w{ background:var(--pe-card); border:1px solid var(--pe-line); border-radius:var(--pe-r); padding:18px 18px 16px; display:flex; flex-direction:column; min-height:180px; }
+  .w.full{ grid-column:1 / -1; min-height:0; }
+  .desk > .w{ align-self:stretch; }
+  .w-h{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .w-h h2{ margin:0; font:600 11px var(--pe-mono); letter-spacing:.12em; text-transform:uppercase; color:var(--pe-ink-2); flex:1; }
+  .w-h a{ font:600 11px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; color:var(--pe-accent); text-decoration:none; }
+  .w-h a:hover{ text-decoration:underline; }
+  .w-empty{ margin:auto 0; color:var(--pe-ink-3); font-size:13.5px; line-height:1.5; }
 
-  .section-h{ font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.4); margin:0 0 14px; }
-  .tools{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:38px; }
-  @media(max-width:880px){ .tools{ grid-template-columns:1fr 1fr; } }
-  @media(max-width:560px){ .tools{ grid-template-columns:1fr; } }
-  .tool{
-    position:relative; display:flex; flex-direction:column; gap:12px; padding:22px 20px 20px; border-radius:18px; text-decoration:none;
-    background:#FBFBFC; color:#0A0A0B; border:1px solid rgba(228,228,230,.7); overflow:hidden; isolation:isolate; min-height:190px;
-    transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
-  }
-  a.tool:hover{ transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.25); }
-  a.tool:focus-visible{ outline:3px solid #4DB2FF; outline-offset:3px; }
-  .tool .ic{ width:38px; height:38px; border-radius:10px; background:#008CFF; color:#fff; display:flex; align-items:center; justify-content:center; }
-  .tool h2{ margin:0; font-size:17px; font-weight:600; }
-  .tool p{ margin:0; font-size:13.5px; line-height:1.55; color:#6B6B70; }
-  .tool .go{ margin-top:auto; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.05em; text-transform:uppercase; color:#008CFF; display:flex; align-items:center; gap:8px; }
-  .tool.locked{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.1); color:#fff; }
-  .tool.locked .ic{ background:rgba(255,255,255,.1); color:rgba(255,255,255,.7); }
-  .tool.locked p{ color:rgba(255,255,255,.5); }
-  .tool.locked .go{ color:rgba(255,255,255,.55); }
-  .tool .lock-badge{ position:absolute; top:16px; right:16px; color:rgba(255,255,255,.45); }
-  .tool .req-btn{ align-self:flex-start; margin-top:auto; font:600 13px 'IBM Plex Sans',sans-serif; background:#fff; color:#0A0A0B; border:none; border-radius:999px; padding:8px 14px; cursor:pointer; }
-  .tool .req-btn:hover{ background:#DCEEFF; }
-  .tool .sent{ margin-top:auto; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.05em; text-transform:uppercase; color:#FFB020; display:flex; gap:7px; align-items:center; }
-  .tool .off-badge{ position:absolute; top:14px; right:14px; font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; background:#F2F2F3; color:#8A8A8F; padding:4px 7px; border-radius:6px; }
-  .tool .guest-badge{ position:absolute; top:14px; right:14px; font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; background:#E6F4EC; color:#1A8A4B; padding:4px 7px; border-radius:6px; }
+  .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .kpi{ border-radius:var(--pe-r-md); background:var(--pe-sunk); padding:12px 14px; text-decoration:none; color:inherit; transition:background .15s; }
+  .kpi:hover{ background:var(--pe-hover); }
+  .kpi b{ display:block; font:500 28px/1 var(--pe-font); letter-spacing:-.02em; }
+  .kpi span{ display:block; margin-top:6px; font:600 10.5px var(--pe-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--pe-ink-2); }
+  .kpi.bad b{ color:var(--pe-danger); } .kpi.acc b{ color:var(--pe-accent); }
 
-  .team{ display:flex; flex-wrap:wrap; gap:10px; }
-  .mate{ display:flex; align-items:center; gap:10px; padding:8px 14px 8px 8px; border:1px solid rgba(255,255,255,.1); border-radius:999px; background:rgba(255,255,255,.03); }
-  .mate b{ display:block; font-size:13.5px; font-weight:600; }
-  .mate span{ display:block; font-size:12px; color:rgba(255,255,255,.45); }
-  .mate .on{ width:8px; height:8px; border-radius:50%; background:#2BC37A; margin-left:4px; box-shadow:0 0 0 3px rgba(43,195,122,.18); }
-  .foot{ margin-top:48px; text-align:center; font:500 11.5px 'IBM Plex Mono',monospace; color:rgba(255,255,255,.28); }
+  .tl{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .tl a{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:9px 4px; border-top:1px solid var(--pe-line-2); text-decoration:none; color:var(--pe-ink); border-radius:8px; }
+  .tl li:first-child a{ border-top:none; }
+  .tl a:hover{ background:var(--pe-hover); }
+  .tl .num{ font:500 11.5px var(--pe-mono); color:var(--pe-ink-3); min-width:34px; }
+  .tl .t{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .due{ font:600 10.5px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; padding:3px 8px; border-radius:999px; background:var(--pe-sunk); color:var(--pe-ink-2); white-space:nowrap; }
+  .due.over{ background:var(--pe-danger-t); color:var(--pe-danger); }
+  .due.today{ background:var(--pe-accent-t); color:var(--pe-accent-ink); }
+
+  .big{ font:300 44px/1 var(--pe-font); letter-spacing:-.03em; margin:0 0 12px; }
+  .big.hot{ color:var(--pe-danger); }
+  .who-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+  .who-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; }
+  .who-row span{ color:var(--pe-ink-2); font-size:12px; margin-left:auto; font-family:var(--pe-mono); }
+
+  .team{ display:flex; flex-direction:column; gap:10px; }
+  .mate{ display:flex; align-items:center; gap:10px; }
+  .mate .av{ position:relative; }
+  .mate .dot{ position:absolute; right:-1px; bottom:-1px; width:10px; height:10px; border-radius:50%; background:var(--pe-ok); border:2px solid var(--pe-card); }
+  .mate b{ display:block; font-size:13.5px; font-weight:500; }
+  .mate small{ display:block; font:500 11px var(--pe-mono); color:var(--pe-ink-3); }
+
+  .log{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .log li{ display:grid; grid-template-columns:auto 1fr; gap:10px; font-size:13px; line-height:1.4; }
+  .log time{ font:500 11px var(--pe-mono); color:var(--pe-ink-3); min-width:52px; padding-top:1px; }
+  .log b{ font-weight:500; }
+  .log span{ color:var(--pe-ink-2); }
+
+  /* инструменты */
+  .tools{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+  @media(max-width:980px){ .tools{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(max-width:520px){ .tools{ grid-template-columns:1fr; } }
+  .tool{ position:relative; display:flex; flex-direction:column; gap:10px; padding:16px; border-radius:var(--pe-r); background:var(--pe-card); border:1px solid var(--pe-line);
+    text-decoration:none; color:var(--pe-ink); transition:border-color .15s, transform .15s, box-shadow .15s; min-height:132px; }
+  a.tool:hover{ border-color:var(--mc, var(--pe-accent)); box-shadow:var(--pe-shadow); transform:translateY(-2px); }
+  a.tool:focus-visible{ outline:2px solid var(--pe-accent); outline-offset:2px; }
+  .tool .ic{ width:40px; height:40px; border-radius:12px; background:color-mix(in srgb, var(--mc, var(--pe-accent)) 14%, transparent); color:var(--mc, var(--pe-accent)); display:flex; align-items:center; justify-content:center; }
+  .tool h3 .sl{ color:var(--mc, var(--pe-ink-3)); font-weight:400; }
+  .tool h3{ margin:0; font:700 14px var(--pe-mono); letter-spacing:.02em; text-transform:uppercase; }
+  .tool p{ margin:0; font-size:12.5px; line-height:1.45; color:var(--pe-ink-2); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .tool .badge{ position:absolute; top:14px; right:14px; font:700 9.5px var(--pe-mono); letter-spacing:.06em; text-transform:uppercase; padding:3px 7px; border-radius:6px; background:var(--pe-sunk); color:var(--pe-ink-2); }
+  .tool.locked{ background:transparent; border-style:dashed; }
+  .tool.locked .ic{ background:var(--pe-sunk); color:var(--pe-ink-3); }
+  .tool .req{ margin-top:auto; align-self:flex-start; }
+  .tool .sent{ margin-top:auto; font:600 10.5px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; color:var(--pe-warn); }
+
+  .notice{ display:flex; align-items:center; gap:10px; margin:-14px 0 22px; padding:9px 14px; border-radius:999px; background:var(--pe-card); border:1px solid var(--pe-line);
+    text-decoration:none; color:var(--pe-ink); font-size:13px; width:max-content; max-width:100%; transition:border-color .15s; }
+  .notice:hover{ border-color:var(--pe-accent); }
+  .notice i{ width:8px; height:8px; border-radius:50%; background:var(--pe-danger); flex:none; box-shadow:0 0 0 4px var(--pe-danger-t); }
+  .notice span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .notice em{ font:600 10.5px var(--pe-mono); font-style:normal; letter-spacing:.04em; text-transform:uppercase; color:var(--pe-accent); flex:none; }
+  .banner{ display:flex; gap:14px; align-items:center; background:var(--pe-accent-t); border-radius:var(--pe-r-md); padding:14px 16px; margin-bottom:22px; font-size:14px; line-height:1.5; color:var(--pe-ink); }
+  .banner .pe-btn{ margin-left:auto; flex:none; }
+  @media(max-width:600px){ .banner{ flex-direction:column; align-items:flex-start; } .banner .pe-btn{ margin-left:0; } }
+  .foot{ margin-top:40px; text-align:center; font:500 11px var(--pe-mono); letter-spacing:.06em; color:var(--pe-ink-3); }
 </style>
 </head>
 <body>
-<div class="grid-lines"><i></i><i></i><i></i><i></i></div>
 <main class="page" id="page"></main>
 <script>
 PE.onReady(function(){
-  var esc=PE.esc;
+  var esc=PE.esc, page=document.getElementById('page');
+  var TASKS=null, AUDIT=null;
+  var TCACHE='pe-home-tasks-cache';   // «…-cache» — хранится в браузере, в облако не уходит
+
   function greet(){ var h=new Date().getHours(); return h<5?'Доброй ночи':h<12?'Доброе утро':h<18?'Добрый день':'Добрый вечер'; }
-  function lockedCard(m){
+  function plural(n,a,b,c){ var m=n%10,h=n%100; if(m===1&&h!==11) return a; if(m>=2&&m<=4&&(h<10||h>=20)) return b; return c; }
+  function icon(m, s){ return '<svg width="'+(s||20)+'" height="'+(s||20)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg>'; }
+  function arr(x){ if(!x) return []; if(Array.isArray(x)) return x.filter(function(v){ return v!=null; }); return Object.keys(x).map(function(k){ return x[k]; }); }
+  function pad(n){ return (n<10?'0':'')+n; }
+  function dayKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function fmtDue(k){ var p=k.split('-'), d=new Date(+p[0], +p[1]-1, +p[2]); return d.toLocaleDateString('ru-RU',{ day:'numeric', month:'short' }).replace('.',''); }
+
+  /* ---------- данные ---------- */
+  function loadTasks(){
+    if(!PE.can('tasks')) return;
+    try{ TASKS=JSON.parse(localStorage.getItem(TCACHE)||'null'); }catch(e){}
+    PE.fb('GET','tasks/items').then(function(d){
+      var list=arr(d).map(function(t){ return { id:t.id, num:t.num, title:t.title, status:t.status||(t.done?'done':'new'), end:t.end||t.start||'', a:arr(t.assignees), p:t.parent||null }; });
+      TASKS=list; try{ localStorage.setItem(TCACHE, JSON.stringify(list)); }catch(e){}
+      render();
+    }).catch(function(){});
+  }
+  function loadAudit(){
+    if(!PE.perm('audit')) return;
+    var q = PE.CFG.MOCK ? PE.fb('GET','audit')
+      : fetch(PE.CFG.FB+'/'+PE.CFG.ROOT+'/audit.json?orderBy=%22at%22&limitToLast=12').then(function(r){ return r.ok?r.json():null; });
+    q.then(function(d){ AUDIT=Object.keys(d||{}).map(function(k){ return d[k]; }).sort(function(a,b){ return b.at-a.at; }).slice(0,6); render(); }).catch(function(){});
+  }
+
+  /* ---------- виджеты ---------- */
+  function wTasks(u){
+    var h='<section class="w"><div class="w-h"><h2>Мои задачи</h2><a href="tasks.html">Доска →</a></div>';
+    if(!TASKS) return h+'<div class="w-empty">Загружаю задачи…</div></section>';
+    var today=dayKey(new Date());
+    var mine=TASKS.filter(function(t){ return t.a.indexOf(u.id)>=0 && t.status!=='done' && t.status!=='postponed'; });
+    var over=mine.filter(function(t){ return t.end && t.end<today; }), tod=mine.filter(function(t){ return t.end===today; }), prog=mine.filter(function(t){ return t.status==='progress'; });
+    h+='<div class="kpis"><a class="kpi'+(over.length?' bad':'')+'" href="tasks.html"><b>'+over.length+'</b><span>просрочено</span></a>'+
+      '<a class="kpi acc" href="tasks.html"><b>'+tod.length+'</b><span>на сегодня</span></a>'+
+      '<a class="kpi" href="tasks.html"><b>'+prog.length+'</b><span>в работе</span></a></div>';
+    var list=mine.slice().sort(function(a,b){ return (a.end||'9999')<(b.end||'9999')?-1:(a.end||'9999')>(b.end||'9999')?1:0; }).slice(0,6);
+    if(!list.length) return h+'<div class="w-empty">Открытых задач нет — отличный момент взять новую.</div></section>';
+    h+='<ul class="tl">'+list.map(function(t){
+      var cls=!t.end?'':t.end<today?'over':t.end===today?'today':'';
+      var lab=!t.end?'без срока':t.end<today?'просрочено · '+fmtDue(t.end):t.end===today?'сегодня':fmtDue(t.end);
+      return '<li><a href="tasks.html#task-'+esc(t.id)+'"><span class="num">#'+esc(t.num||'')+'</span><span class="t">'+esc(t.title||'Без названия')+'</span><span class="due '+cls+'">'+esc(lab)+'</span></a></li>';
+    }).join('')+'</ul></section>';
+    return h;
+  }
+  /* заявки — не карточка, а тонкая полоска над приветствием, только когда они есть */
+  function reqNotice(){
+    var R=PE.requests||{}, reqs=Object.keys(R).map(function(k){ return R[k]; }).filter(function(r){ return r && r.status==='new'; });
+    var pend=Object.keys(PE.users).map(function(k){ return PE.users[k]; }).filter(function(u){ return u.status==='pending'; });
+    var items=pend.map(function(u){ return esc(PE.fullName(u))+' — регистрация'; })
+      .concat(reqs.map(function(r){ var u=r.uid&&PE.userById(r.uid); return esc(u?PE.fullName(u):(r.name||'Гость'))+' — '+(r.type==='guest'?'гость':'доступ'); }));
+    if(!items.length) return '';
+    return '<a class="notice" href="admin.html"><i></i><span><b>'+items.length+' '+plural(items.length,'заявка','заявки','заявок')+'</b> · '+items.slice(0,2).join(', ')+(items.length>2?' и ещё '+(items.length-2):'')+'</span><em>Открыть →</em></a>';
+  }
+  function wTeam(u, alone){
+    var mates=PE.team().filter(function(x){ return x.id!==u.id; });
+    var online=mates.filter(function(x){ return x.lastSeen && Date.now()-x.lastSeen<10*60000; });
+    var h='<section class="w'+(alone?' full':'')+'"><div class="w-h"><h2>Команда</h2><span class="pe-chip">'+online.length+' в сети</span></div>';
+    if(!mates.length) return h+'<div class="w-empty">Пока вы здесь один.</div></section>';
+    mates.sort(function(a,b){ return (b.lastSeen||0)-(a.lastSeen||0); });
+    return h+'<div class="team">'+mates.slice(0,8).map(function(x){
+      var on=x.lastSeen && Date.now()-x.lastSeen<10*60000;
+      return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':('был(а) '+PE.relTime(x.lastSeen)))+'</small></div></div>';
+    }).join('')+'</div></section>';
+  }
+  var ACT={ login:'вошёл(ла)', 'saleskb.edit':'правка раздела продаж', 'saleskb.delete':'удалён раздел продаж', 'saleskb.tree':'правка схемы продаж', 'saleskb.file':'файлы продаж',
+    'calc.config':'правка прайса', 'org.save':'правка оргсхемы', approve:'одобрил(а) регистрацию', create:'создан аккаунт', edit:'правка профиля/доступа', module:'настройки модулей', perms:'права ролей', grant:'выдан доступ', revoke:'закрыт доступ' };
+  function wLog(){
+    var h='<section class="w full"><div class="w-h"><h2>Последние изменения</h2><a href="admin.html#log">Журнал →</a></div>';
+    if(!AUDIT) return h+'<div class="w-empty">Загружаю журнал…</div></section>';
+    var list=AUDIT.filter(function(e){ return e.action!=='login'; });
+    if(!list.length) return h+'<div class="w-empty">Изменений пока не было.</div></section>';
+    return h+'<ul class="log">'+list.map(function(e){
+      var w=PE.userById(e.by), d=new Date(e.at);
+      var t=(Date.now()-e.at<86400000) ? d.toLocaleTimeString('ru-RU',{ hour:'2-digit', minute:'2-digit' }) : d.toLocaleDateString('ru-RU',{ day:'numeric', month:'short' });
+      return '<li><time>'+esc(t)+'</time><div><b>'+esc(w?PE.shortName(w):(e.byName||'—'))+'</b> <span>'+esc(ACT[e.action]||e.action)+(e.details?' — '+esc(String(e.details).slice(0,90)):'')+'</span></div></li>';
+    }).join('')+'</ul></section>';
+  }
+
+  /* ---------- инструменты ---------- */
+  function lockedTool(m){
     var sent=PE.myOpenRequest(m.id);
     var g=PE.isGuest ? PE.guestRequests().filter(function(r){ return r.modules && r.modules.indexOf(m.id)>=0; }).sort(function(a,b){ return b.at-a.at; })[0] : null;
-    var status = g && g.status==='approved' ? '<span class="sent" style="color:#2BC37A">✓ Одобрено — владелец пришлёт логин и пароль</span>'
-      : g && g.status==='rejected' ? '<span class="sent" style="color:#FF8A84">Заявку отклонили</span>' : '';
-    return '<div class="tool locked"><span class="lock-badge">'+PE.icon('lock',16)+'</span>'+
-      '<div class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg></div>'+
-      '<h2>'+esc(m.name)+'</h2><p>'+esc(m.desc)+'</p>'+
-      (sent ? '<span class="sent">'+PE.icon('clock',13)+'Запрос отправлен — ждёт решения</span>' : status && g.status==='approved' ? status : (status?status.replace('margin-top:auto','')+' ':'')+'<button class="req-btn" data-req="'+m.id+'">Запросить доступ</button>')+'</div>';
+    var st = g && g.status==='approved' ? '<span class="sent" style="color:var(--pe-ok)">Одобрено — пришлют логин</span>'
+      : g && g.status==='rejected' ? '<span class="sent" style="color:var(--pe-danger)">Заявку отклонили</span>' : '';
+    return '<div class="tool locked"><span class="badge">'+PE.icon('lock',11)+'</span><div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p>'+
+      (sent ? '<span class="sent">Запрос отправлен</span>' : st && g.status==='approved' ? st : (st||'')+'<button class="pe-btn sm req" data-req="'+m.id+'">Запросить доступ</button>')+'</div>';
   }
-  function render(){
-    var u=PE.user, guest=PE.isGuest, admin=PE.isAdmin();
-    var h='';
-    if(u){
-      h+='<div class="hello">'+PE.avatar(u,58)+'<div><h1>'+greet()+', <span>'+esc(u.first)+'</span></h1><p>'+esc(u.position||PE.ROLE_NAMES[u.role])+' · Prime Era Ecosystem</p></div></div>';
-    } else {
-      h+='<div class="hello"><div><h1>Экосистема <span>инструментов</span> студии</h1><p>Гостевой просмотр'+(PE.session.guestName?' · '+esc(PE.session.guestName):'')+'</p></div></div>';
-      h+='<div class="banner info"><span>Вы в гостевом режиме. Инструменты с замком доступны по запросу — владелец рассмотрит заявку. Работаете в студии? Зарегистрируйтесь, чтобы появились аватарка, задачи и личный прогресс.</span><button class="pe2-btn sm primary" data-register>Зарегистрироваться</button></div>';
-    }
-    if(PE.pendingCount()){
-      h+='<div class="banner"><span><b>'+PE.pendingCount()+'</b> '+plural(PE.pendingCount(),'заявка ждёт','заявки ждут','заявок ждут')+' вашего решения.</span><a class="pe2-btn sm" href="admin.html">Открыть админку</a></div>';
-    }
-    var open=[], locked=[];
+  function toolsHtml(){
+    var admin=PE.isAdmin(), open=[], locked=[];
     PE.MODULES.forEach(function(m){
-      var conf=PE.modConf(m.id);
-      if(!conf.enabled && !admin) return;
-      if(!conf.home) return;   /* плашку скрыли с главной в админке → «Модули» */
+      var c=PE.modConf(m.id);
+      if(!c.enabled && !admin) return;
+      if(!c.home) return;                     // плашку скрыли с главной в админке → «Модули»
       (PE.can(m.id) ? open : locked).push(m);
     });
-    h+='<div class="section-h">'+(open.length?'Ваши инструменты':'Инструменты')+'</div><div class="tools">';
-    h+=open.map(function(m){
-      var conf=PE.modConf(m.id);
-      return '<a class="tool" href="'+m.href+'">'+(!conf.enabled?'<span class="off-badge">выключен</span>':guest?'<span class="guest-badge">для гостей</span>':'')+
-        '<div class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg></div>'+
-        '<h2>'+esc(m.name)+'</h2><p>'+esc(m.desc)+'</p><span class="go">Открыть →</span></a>';
-    }).join('');
-    h+=locked.map(lockedCard).join('');
-    if(!open.length && !locked.length) h+='<div class="banner info">Пока ни один модуль не включён.</div>';
-    h+='</div>';
-
-    if(u){
-      var mates=PE.team().filter(function(x){ return x.id!==u.id; });
-      if(mates.length){
-        h+='<div class="section-h">Команда</div><div class="team">'+mates.map(function(x){
-          var online=x.lastSeen && Date.now()-x.lastSeen<10*60000;
-          return '<div class="mate" title="'+esc(online?'Был(а) в экосистеме недавно':'Последний визит: '+PE.relTime(x.lastSeen))+'">'+PE.avatar(x,36)+'<div><b>'+esc(PE.fullName(x))+'</b><span>'+esc(x.position||PE.ROLE_NAMES[x.role])+'</span></div>'+(online?'<i class="on"></i>':'')+'</div>';
-        }).join('')+'</div>';
-      }
-    }
-    h+='<div class="foot">PRIME ERA — студия веб-дизайна · экосистема v2</div>';
-    document.getElementById('page').innerHTML=h;
+    if(!open.length && !locked.length) return '<div class="banner">Пока ни один модуль не включён.</div>';
+    return '<div class="pe-h">'+(open.length?'Инструменты':'Инструменты студии')+'</div><div class="tools">'+
+      open.map(function(m){ var c=PE.modConf(m.id);
+        return '<a class="tool" href="'+m.href+'" style="--mc:'+(m.color||'var(--pe-accent)')+'">'+(!c.enabled?'<span class="badge">выключен</span>':PE.isGuest?'<span class="badge">для гостей</span>':'')+'<div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p></a>';
+      }).join('')+locked.map(lockedTool).join('')+'</div>';
   }
-  function plural(n,a,b,c){ var m=n%10,h=n%100; if(m===1&&h!==11) return a; if(m>=2&&m<=4&&(h<10||h>=20)) return b; return c; }
-  document.getElementById('page').addEventListener('click', function(e){
+
+  function render(){
+    var u=PE.user, h='';
+    var date=new Date().toLocaleDateString('ru-RU',{ weekday:'long', day:'numeric', month:'long' });
+    if(u){
+      if(PE.isStaff() && PE.perm('requests')) h+=reqNotice();
+      h+='<div class="hero"><div><div class="date">'+esc(date)+'</div><h1>'+greet()+', <b>'+esc(u.first)+'</b></h1><div class="sub">'+esc(u.position||PE.ROLE_NAMES[u.role])+' · P\\E ecosystem</div></div>'+
+        '</div>';
+      h+='<div class="desk">';
+      if(PE.can('tasks')) h+=wTasks(u);
+      h+=wTeam(u, !PE.can('tasks'));
+      if(PE.perm('audit')) h+=wLog();
+      h+='</div>';
+    } else {
+      h+='<div class="hero"><div><div class="date">'+esc(date)+'</div><h1>Экосистема <b>Prime Era</b></h1><div class="sub">Гостевой просмотр'+(PE.session.guestName?' · '+esc(PE.session.guestName):'')+'</div></div></div>';
+      h+='<div class="banner"><span>Вы в гостевом режиме. Инструменты с замком открываются по запросу. Работаете в студии? Зарегистрируйтесь — владелец одобрит аккаунт.</span><button class="pe-btn" data-register>Регистрация</button></div>';
+    }
+    h+=toolsHtml();
+    h+='<div class="foot">PRIME ERA · студия веб-дизайна · P\\E ecosystem</div>';
+    page.innerHTML=h;
+  }
+
+  page.addEventListener('click', function(e){
     var b=e.target.closest('[data-req]'); if(b){ PE.requestAccess([b.dataset.req]); return; }
     if(e.target.closest('[data-register]')){ localStorage.removeItem('pe2_session_'+(PE.CFG.MOCK?'mock':PE.CFG.ROOT)); location.hash='register'; location.reload(); }
   });
   PE.onRequestSent=render;
   PE.onUsers(render);
   if(PE.isGuest) PE.refreshGuestRequests().then(render);
-  render();
+  render(); loadTasks(); loadAudit();
 });
 </script>
 </body>

@@ -5,28 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Глоссарий — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
-<link rel="stylesheet" href="assets/shell.css">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="glossary"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="glossary"></script>
 <style>
 :root {
-        --green: #0A0A0B;
-        --green-dark: #000000;
-        --gold: #008CFF;
-        --gold-light: #E8F4FF;
-        --bg: #FBFBFC;
-        --card: #FBFBFC;
-        --text: #0A0A0B;
-        --text2: #6B6B70;
-        --border: #E4E4E6;
-        --danger: #B3413A;
-        --danger-bg: #FBEAE8;
-        --success: #2F6B3E;
-        --success-bg: #E7F2E9;
-        --icon-bg: #E8F4FF;
-        --banner-text: #005FB8;
-        --info-bg: #E8F4FF;
+        --green: var(--pe-ink);
+        --green-dark: var(--pe-ink);
+        --gold: var(--pe-accent);
+        --gold-light: var(--pe-accent-t);
+        --bg: var(--pe-bg-2);
+        --card: var(--pe-card);
+        --text: var(--pe-ink);
+        --text2: var(--pe-ink-2);
+        --border: var(--pe-line);
+        --danger: var(--pe-danger);
+        --danger-bg: var(--pe-danger-t);
+        --success: var(--pe-ok);
+        --success-bg: var(--pe-ok-t);
+        --icon-bg: var(--pe-accent-t);
+        --banner-text: var(--pe-accent-ink);
+        --info-bg: var(--pe-accent-t);
     }#page-glossary * {
         box-sizing: border-box;
     }#page-glossary .card, #page-glossary .menu-tile,
@@ -675,6 +674,10 @@
             grid-template-columns: 1fr 1fr;
         }
     }
+
+/* экосистема: фон страницы и отступ под общее меню (раньше это давал shell.css v1) */
+html,body{ background:var(--pe-bg-2); }
+body{ margin:0; }
 </style>
 </head>
 <body>
@@ -2001,6 +2004,7 @@
     };
     /* ссылка из админки экосистемы: glossary.html?admin=1 — сразу открыть панель
        (вызывается и после загрузки, и после подстановки пользователя — побеждает последний) */
+    if (window.PE && PE.onEdit) PE.onEdit(function(){ goAdminLogin(); });
     function peAutoAdmin() {
         if (window.PE && /[?&]admin=1/.test(location.search)) PE.onReady(function(){ if (PE.perm('glossary_edit')) goAdminLogin(); });
     }

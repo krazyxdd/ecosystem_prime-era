@@ -5,46 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Продажи · база знаний</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="sales-kb"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="sales-kb"></script>
 <meta name="description" content="База знаний отдела продаж Prime Era: восемь ступеней Сизова с инструментами Прайм, тексты, созвоны, КП, возражения, CRM и управление отделом.">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
 <style>
 :root{
-  --paper:#f1f3f6; --surface:#ffffff; --sunk:#e8ecf1; --ink:#151a21; --muted:#586272; --line:#d9dfe6;
-  --accent:#2446b8; --accent-soft:#e4e9fb;
-  --bubble:#e6f3fd; --bubble-ink:#0f2a3d; --field:rgba(36,70,184,.14);
+  /* база продаж — на токенах дизайн-системы экосистемы (pe-core.css); тема — из шапки.
+     Смысловые цвета меток ([канон], [вывод], [Прайм] …) — свои, со своей тёмной парой. */
+  --paper:var(--pe-bg-2); --surface:var(--pe-card); --sunk:var(--pe-sunk); --ink:var(--pe-ink); --muted:var(--pe-ink-2); --line:var(--pe-line);
+  --accent:var(--pe-accent); --accent-soft:var(--pe-accent-t);
+  --bubble:#e6f3fd; --bubble-ink:#0f2a3d; --field:rgba(0,140,255,.14);
   --canon:#17744b; --canon-bg:#e1f3ea;
-  --derive:#2446b8; --derive-bg:#e4e9fb;
+  --derive:#1f5fc4; --derive-bg:#e4eefb;
   --outside:#955600; --outside-bg:#fbefd9;
   --prime:#7a3fb0; --prime-bg:#f1e7fa;
   --wait:#b8430c; --wait-bg:#fdebe1;
   --bad:#a3262a; --bad-bg:#fbe5e5;
-  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --f-head:"Onest","Golos Text",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --f-body:var(--pe-font);
+  --f-head:var(--pe-font);
+  --f-mono:var(--pe-mono);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --paper:#0e1217; --surface:#161b22; --sunk:#1c222b; --ink:#e5e9ef; --muted:#9aa4b2; --line:#29313b;
-    --accent:#86a0ff; --accent-soft:#1f2848;
-    --bubble:#16324a; --bubble-ink:#dcecf9; --field:rgba(134,160,255,.2);
-    --canon:#6fd3a2; --canon-bg:#15301f;
-    --derive:#95abff; --derive-bg:#1d2544;
-    --outside:#f0b458; --outside-bg:#33260f;
-    --prime:#cfa2f5; --prime-bg:#2c1c3b;
-    --wait:#ff9a66; --wait-bg:#3a2014;
-    --bad:#ff8f8f; --bad-bg:#3a1719;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --paper:#0e1217; --surface:#161b22; --sunk:#1c222b; --ink:#e5e9ef; --muted:#9aa4b2; --line:#29313b;
-  --accent:#86a0ff; --accent-soft:#1f2848;
-  --bubble:#16324a; --bubble-ink:#dcecf9; --field:rgba(134,160,255,.2);
+html[data-pe-theme="dark"]{
+  --bubble:#16324a; --bubble-ink:#dcecf9; --field:rgba(42,155,255,.2);
   --canon:#6fd3a2; --canon-bg:#15301f;
-  --derive:#95abff; --derive-bg:#1d2544;
+  --derive:#8fbcff; --derive-bg:#1a2944;
   --outside:#f0b458; --outside-bg:#33260f;
   --prime:#cfa2f5; --prime-bg:#2c1c3b;
   --wait:#ff9a66; --wait-bg:#3a2014;
@@ -493,6 +478,11 @@ body.kt-lock{overflow:hidden}
 @media (max-width:640px){.sec-files{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}.sf-chip{min-height:112px}}
 .kb-toast{z-index:10001}
 @media (prefers-reduced-motion:reduce){.qc{transition:none}.qc:hover{transform:none}}
+
+/* редактор: разделы в оглавлении перетаскиваются мышью */
+.kb-editing .toc a.toc-drag{ cursor:grab; }
+.kb-editing .toc a.toc-drag::before{ content:"⠿"; opacity:.35; margin-right:4px; font-size:12px; }
+.kb-editing .toc a.toc-drag:hover::before{ opacity:1; }
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -5044,7 +5034,7 @@ function buildToc(){
   h+='<a href="#files" class="top-l"><span class="n">⎘</span>Файлы и документы</a>';
   order.forEach(function(id){
     var p=info[id].part; if(p!==last){ h+='<div class="grp">'+esc(p)+'</div>'; last=p; }
-    h+='<a href="#'+id+'"><span class="n">'+esc(secNums[id])+'</span>'+esc(info[id].title)+'</a>';
+    h+='<a href="#'+id+'"'+(editing?' data-id="'+id+'" draggable="false" class="toc-drag" title="Перетащите, чтобы поменять порядок"':'')+'><span class="n">'+esc(secNums[id])+'</span>'+esc(info[id].title)+'</a>';
   });
   if(editing){
     h+='<div class="adm-toc"><button type="button" data-adm="add">+ Добавить раздел</button>';
@@ -5238,8 +5228,6 @@ function adminBar(id,i){
   var b=document.createElement('div'); b.className='adm-bar';
   b.innerHTML='<b>Админ</b>'+
     '<button type="button" data-adm="edit" data-id="'+id+'">Редактировать</button>'+
-    '<button type="button" data-adm="up" data-id="'+id+'"'+(i===0?' disabled':'')+'>↑ Выше</button>'+
-    '<button type="button" data-adm="down" data-id="'+id+'"'+(i===order.length-1?' disabled':'')+'>↓ Ниже</button>'+
     '<button type="button" data-adm="hist" data-id="'+id+'">История</button>'+
     '<button type="button" data-adm="attach" data-id="'+id+'">Прикрепить файл</button>'+
     '<button type="button" data-adm="tree" data-id="'+id+'">+ Схема</button>'+
@@ -5251,7 +5239,6 @@ document.addEventListener('click',function(e){
   var b=e.target.closest && e.target.closest('[data-adm]'); if(!b || !isAdm) return;
   var a=b.getAttribute('data-adm'), id=b.getAttribute('data-id');
   if(a==='edit') openEditor(id);
-  else if(a==='up'||a==='down') move(id,a==='up'?-1:1);
   else if(a==='del') delSection(id);
   else if(a==='hist') showHistory(id);
   else if(a==='reset') resetSection(id);
@@ -5368,6 +5355,29 @@ function addSection(){
     saveSection(id,{ title:title, part:part, order:ord, num:d.el.querySelector('#nsNum').value.trim(), html:'<p class="intro">Коротко: зачем этот раздел и когда он нужен.</p><p>Текст раздела.</p>' })
       .then(function(){ render(); location.hash='#'+id; setTimeout(function(){ openEditor(id); },50); }).catch(fail);
   };
+}
+/* порядок разделов: в редакторе разделы перетаскиваются в оглавлении слева.
+   Раздел, перенесённый под заголовок другой части, переходит в эту часть. */
+function reorderFromToc(){
+  var nav=document.getElementById('toc'), part=null, seq=[], patch={}, changed=0;
+  [].slice.call(nav.children).forEach(function(el){
+    if(el.classList.contains('grp')) part=el.textContent;
+    else if(el.getAttribute('data-id')) seq.push({ id:el.getAttribute('data-id'), part:part });
+  });
+  seq.forEach(function(x, i){
+    var s=model[x.id]; if(!s) return;
+    var ord=(i+1)*10;
+    if(s.order!==ord){ patch[x.id+'/order']=ord; changed++; }
+    if(x.part && s.part!==x.part){ patch[x.id+'/part']=x.part; changed++; }
+  });
+  if(!changed){ render(); return; }
+  seed().then(function(){ return PE.fb('PATCH',DB+'/sections',patch); }).then(function(){
+    seq.forEach(function(x, i){ var s=model[x.id]; if(s){ s.order=(i+1)*10; if(x.part) s.part=x.part; } });
+    render(); toast('Порядок разделов сохранён');
+  }).catch(function(){ fail(); render(); });
+}
+if(window.PE && PE.sortable){
+  PE.sortable(document.getElementById('toc'), { item:'a[data-id]', enabled:function(){ return editing && isAdm && !editingId; }, onDrop:reorderFromToc });
 }
 function move(id,dir){
   var s=sortedSections(), i=s.map(function(x){ return x.id; }).indexOf(id), j=i+dir; if(j<0||j>=s.length) return;
@@ -5844,6 +5854,7 @@ window.addEventListener('load',function(){ setTimeout(function(){ window.scrollT
 var wantTest=false; try{ wantTest=!REAL_PE && localStorage.getItem(TEST_FLAG)==='1'; }catch(e){}
 if(wantTest) enterTest();
 /* ссылка из админки экосистемы: sales-kb.html?edit=1 — сразу включить редактор */
+if(window.PE && PE.onEdit) PE.onEdit(function(){ if(isAdm && editBtn && !editing) editBtn.click(); else if(editing) toast('Редактор уже включён'); });
 function autoEdit(){ if(isAdm && !editing && editBtn && /[?&]edit=1/.test(location.search)) editBtn.click(); }
 if(REAL_PE){
   PE.onReady(function(){

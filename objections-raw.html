@@ -5,21 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Возражения Prime Era — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010017">
-<link rel="stylesheet" href="assets/shell.css">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010017">
-<script src="assets/pe-core.js?v=202610010017" data-module="objections-raw"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
+<script src="assets/pe-core.js?v=202610010244" data-module="objections-raw"></script>
 <style>
   :root{
-    --ink: #0A0A0B;
-    --ink-soft: #3A3A3E;
-    --ink-faint: #6B6B70;
-    --bg: #FBFBFC;
-    --bg-off: #FAFAFA;
-    --line: rgba(228,228,230,0.7);
-    --line-soft: rgba(238,238,239,0.6);
-    --accent: #008CFF;
-    --accent-dim: rgba(232,244,255,0.85);
+    --ink: var(--pe-ink);
+    --ink-soft: var(--pe-ink-2);
+    --ink-faint: var(--pe-ink-3);
+    --bg: var(--pe-bg-2);
+    --bg-off: var(--pe-sunk);
+    --line: var(--pe-line);
+    --line-soft: var(--pe-line-2);
+    --accent: var(--pe-accent);
+    --accent-dim: var(--pe-accent-t);
     --radius: 16px;
     --radius-sm: 10px;
   }
@@ -661,6 +660,10 @@
     padding:9px 16px;
     margin-bottom:18px;
   }
+
+/* экосистема: фон страницы и отступ под общее меню (раньше это давал shell.css v1) */
+html,body{ background:var(--pe-bg-2); }
+body{ margin:0; }
 </style>
 <style>
   #page-primera-raw{ max-width:920px; margin:0 auto; padding:calc(var(--nav-h) + 28px) 24px 90px; }
