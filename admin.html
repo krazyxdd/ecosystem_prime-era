@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ-панель — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010256">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010256">
-<script src="assets/pe-core.js?v=202610010256" data-module="admin"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010302">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010302">
+<script src="assets/pe-core.js?v=202610010302" data-module="admin"></script>
 <style>
   :root{ --ink:var(--pe-ink); --soft:var(--pe-ink-2); --faint:var(--pe-ink-3); --line:var(--pe-line); --bg:var(--pe-bg-2); --card:var(--pe-card); --accent:var(--pe-accent); --accent-t:var(--pe-accent-t); --danger:var(--pe-danger); --ok:var(--pe-ok); --warn:var(--pe-warn); }
   *{ box-sizing:border-box; }
@@ -120,8 +120,12 @@
   .tool .recent{ border-top:1px solid var(--pe-line-2); padding-top:8px; font-size:12.5px; color:var(--soft); line-height:1.55; }
   .tool .recent div{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .acc-icons{ display:flex; gap:4px; flex-wrap:wrap; }
-  .acc-icons i{ width:24px; height:24px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-t); color:var(--pe-accent-ink); }
-  .acc-icons i.no{ background:var(--pe-sunk); color:var(--pe-ink-3); }
+  .acc-icons i, .acc-tg{ width:26px; height:26px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; border:1px solid transparent;
+    background:color-mix(in srgb, var(--mc, var(--pe-accent)) 16%, transparent); color:var(--mc, var(--pe-accent)); padding:0; }
+  .acc-icons i.no, .acc-tg.no{ background:var(--pe-sunk); color:var(--pe-ink-3); }
+  .acc-tg{ cursor:pointer; transition:transform .12s, border-color .12s; }
+  .acc-tg:hover{ border-color:var(--mc, var(--pe-accent)); transform:translateY(-1px); }
+  .acc-hint{ font-size:12.5px; color:var(--pe-ink-3); margin:-4px 0 10px; }
   .acc-all{ font-size:12.5px; color:var(--soft); }
   .muted{ color:var(--faint); font-size:13px; }
   .table-wrap{ overflow-x:auto; }
@@ -213,7 +217,7 @@ function roleField(cur){
 function roleSort(a,b){ var o=PE.ROLE_ORDER; return ((o[a.role]!=null?o[a.role]:9)-(o[b.role]!=null?o[b.role]:9)) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); }
 function tabsList(){
   var pu=pendingUsers(), rq=openRequests(), all=usersList().filter(function(u){ return u.status!=='deleted'; });
-  return [['requests','Заявки',pu.length+rq.length,false,P('requests')],['users','Пользователи',all.length,true,true],['access','Доступ к модулям',0,false,P('requests')],
+  return [['requests','Заявки',pu.length+rq.length,false,P('requests')],['users','Пользователи',all.length,true,true],
     ['modules','Модули',0,false,P('modules')],['tools','Инструменты',0,false,true],['roles','Роли и права',0,false,true],['log','Журнал',0,false,P('audit')]].filter(function(t){ return t[4]; });
 }
 function plural(n,a,b,c){ var x=n%10,h=n%100; if(x===1&&h!==11) return a; if(x>=2&&x<=4&&(h<10||h>=20)) return b; return c; }
@@ -325,6 +329,7 @@ function usersHtml(){
       return '<button class="chip'+(stFilter===f[0]?' on':'')+'" data-st="'+f[0]+'">'+f[1]+' <span style="opacity:.6">'+(counts[f[0]]||0)+'</span></button>';
     }).join('')+'<span class="grow"></span>'+(!P('users_accounts')?'':'<button class="btn primary" data-add-user>'+'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить пользователя</button>')+'</div>';
   if(!rows.length) return h+'<div class="card"><div class="empty"><b>Никого не найдено</b>Измените поиск или фильтр.</div></div>';
+  if(P('requests')) h+='<p class="acc-hint">Доступ к модулям — значки в строке человека: нажмите, чтобы открыть или закрыть модуль.</p>';
   h+='<div class="card table-wrap"><table class="users"><thead><tr><th>Сотрудник</th><th>Должность</th><th>Контакт</th><th>Роль</th><th>Доступ</th><th>Статус</th><th>Был(а)</th></tr></thead><tbody>';
   rows.forEach(function(u){
     var adminAll=PE.isAdmin(u);
@@ -332,7 +337,12 @@ function usersHtml(){
       '<td data-l="Должность">'+(u.position?esc(u.position):'<span class="muted">—</span>')+'</td>'+
       '<td data-l="Контакт">'+(u.contact||u.email?esc(u.contact||'')+(u.contact&&u.email?'<br>':'')+'<span class="muted">'+esc(u.email||'')+'</span>':'<span class="muted">—</span>')+'</td>'+
       '<td data-l="Роль"><span class="role '+esc(u.role)+'">'+esc(PE.ROLE_NAMES[u.role]||u.role)+'</span></td>'+
-      '<td data-l="Доступ">'+(adminAll?'<span class="acc-all">Все модули</span>':'<div class="acc-icons">'+M.map(function(m){ var on=u.access&&u.access[m.id]; return '<i class="'+(on?'':'no')+'" title="'+esc(m.name)+(on?' — есть доступ':' — нет доступа')+'">'+modIcon(m,12)+'</i>'; }).join('')+'</div>')+'</td>'+
+      '<td data-l="Доступ">'+(adminAll?'<span class="acc-all">Все модули</span>':'<div class="acc-icons">'+M.map(function(m){
+        var on=u.access&&u.access[m.id], ed=canManage(u) && P('requests') && u.status!=='deleted';
+        var tip=esc(m.name)+(on?' — есть доступ':' — нет доступа')+(ed?(on?'. Нажмите, чтобы закрыть':'. Нажмите, чтобы открыть'):'');
+        return ed ? '<button type="button" class="acc-tg'+(on?'':' no')+'" data-acc-tg="'+u.id+'|'+m.id+'" style="--mc:'+(m.color||'var(--pe-accent)')+'" title="'+tip+'" aria-label="'+tip+'" aria-pressed="'+!!on+'">'+modIcon(m,13)+'</button>'
+                  : '<i class="'+(on?'':'no')+'" style="--mc:'+(m.color||'var(--pe-accent)')+'" title="'+tip+'">'+modIcon(m,12)+'</i>';
+      }).join('')+'</div>')+'</td>'+
       '<td data-l="Статус">'+statusHtml(u)+'</td>'+
       '<td data-l="Был(а)" class="muted" title="'+esc(PE.fmtDate(u.lastSeen))+'">'+esc(PE.relTime(u.lastSeen))+'</td></tr>';
   });
@@ -561,9 +571,9 @@ function rolesHtml(){
     '<div class="card"><h3>Владелец</h3><p>Может всё. Только он меняет права ролей на этой странице и назначает администраторов.</p></div>'+
     '<div class="card"><h3>Администратор</h3><p>Всё, что не выключено ниже. Управляет сотрудниками и модераторами, назначает модераторов.</p></div>'+
     '<div class="card"><h3>Модератор</h3><p>Только то, что включено ниже. Работает только с обычными сотрудниками, не создаёт аккаунты и не сбрасывает пароли.</p></div>'+
-    '<div class="card"><h3>Сотрудник</h3><p>Модули из «Доступа к модулям». Права редактора в инструментах можно выдать и сотрудникам.</p></div></div>';
+    '<div class="card"><h3>Сотрудник</h3><p>Модули, открытые ему значками во вкладке «Пользователи». Права редактора в инструментах можно выдать и сотрудникам.</p></div></div>';
   h+='<div class="note-box">'+(owner?'Переключатель меняет право сразу для всех людей в этой роли.':'Права ролей меняет только владелец. Здесь видно, что можно вам и другим ролям.')+
-    ' Модулям, которые открыты сотруднику, это не мешает: права решают, кто <b>редактирует</b> и управляет, а открывает модуль доступ из вкладки «Доступ к модулям».</div>';
+    ' Модулям, которые открыты сотруднику, это не мешает: права решают, кто <b>редактирует</b> и управляет, а открывает модуль доступ — значки модулей в строке человека во вкладке «Пользователи».</div>';
   h+='<div class="card table-wrap"><table class="perms"><thead><tr><th>Право</th><th>Владелец</th>'+ROLE_COLS.map(function(r){ return '<th>'+esc(PE.ROLE_NAMES[r])+'</th>'; }).join('')+'</tr></thead><tbody>';
   var grp='';
   PE.PERMS.forEach(function(p){
@@ -581,7 +591,8 @@ function rolesHtml(){
     var ed=canManage(u) && PE.isAdmin();
     var sel=ed ? '<select class="role-sel" data-role-of="'+u.id+'" aria-label="Роль — '+esc(PE.fullName(u))+'">'+['member','moderator'].concat(PE.isOwner()?['admin']:[]).map(function(r){ return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+esc(PE.ROLE_NAMES[r])+'</option>'; }).join('')+'</select>'
       : '<span class="role '+esc(u.role)+'">'+esc(PE.ROLE_NAMES[u.role]||u.role)+'</span>';
-    return '<div class="pr"><div class="who">'+PE.avatar(u,30)+'<div><b>'+esc(PE.fullName(u))+'</b><span>@'+esc(u.login)+'</span></div></div>'+sel+'</div>';
+    var eye=PE.isOwner() && u.id!==me().id && u.status==='active' ? '<button class="btn sm ghost" data-preview="'+u.id+'" title="Открыть экосистему с правами этого человека (данные — ваши)">👁 Глазами</button>' : '';
+    return '<div class="pr"><div class="who">'+PE.avatar(u,30)+'<div><b>'+esc(PE.fullName(u))+'</b><span>@'+esc(u.login)+'</span></div></div>'+eye+sel+'</div>';
   }).join('')+'</div>';
   return h;
 }
@@ -672,7 +683,17 @@ app.addEventListener('click', function(e){
   if((b=e.target.closest('[data-st]'))){ stFilter=b.dataset.st; renderPane(); return; }
   if(e.target.closest('[data-add-user]')){ addUserModal(); return; }
   if((b=e.target.closest('[data-backup]'))){ backup(b); return; }
+  if((b=e.target.closest('[data-preview]'))){ PE.setPreview(b.dataset.preview); location.href='index.html'; return; }
   if((b=e.target.closest('[data-mod-edit]'))){ if(P('modules')) moduleEditModal(modById(b.dataset.modEdit)); return; }
+  if((b=e.target.closest('[data-acc-tg]'))){
+    var ap=b.dataset.accTg.split('|'), au=PE.userById(ap[0]), am=modById(ap[1]), on=!(au.access&&au.access[ap[1]]);
+    if(!au || !am || !canManage(au) || !P('requests')) return;
+    b.disabled=true;
+    setAccess(au, ap[1], on).then(function(){ au.access=au.access||{}; if(on) au.access[ap[1]]=true; else delete au.access[ap[1]];
+      audit(on?'grant':'revoke', au.id, am.name+' — '+PE.fullName(au)); PE.toast((on?'Открыт':'Закрыт')+' «'+am.name+'» для '+PE.shortName(au)); renderPane(); })
+      .catch(function(){ b.disabled=false; fail(); });
+    return;
+  }
   if((b=e.target.closest('tr[data-user]'))){ userModal(PE.userById(b.dataset.user)); return; }
   if((b=e.target.closest('[data-approve-user]'))){ approveUserModal(PE.userById(b.dataset.approveUser)); return; }
   if((b=e.target.closest('[data-reject-user]'))){ t=PE.userById(b.dataset.rejectUser);

@@ -612,13 +612,25 @@ function fullName(u){ if(!u) return 'Неизвестный'; return ((u.first||
 function shortName(u){ if(!u) return '?'; return u.first || u.login || '?'; }
 function initials(u){ if(!u) return '?'; return ((u.first||'').charAt(0)+(u.last||'').charAt(0)).toUpperCase() || (u.login||'?').charAt(0).toUpperCase(); }
 function userById(id){ return R.users[id] || null; }
-function isOwner(u){ u=u||R.me(); return !!(u && u.role==='owner'); }
-function isAdmin(u){ u=u||R.me(); return !!(u && (u.role==='owner' || u.role==='admin') && u.status==='active'); }
+/* «Посмотреть глазами»: владелец временно видит меню, права и кнопки выбранного
+   человека (только интерфейс, данные и права в базе — свои). Живёт в пределах вкладки;
+   в админке не действует — чтобы из неё всегда можно было выйти. */
+var PREVIEW_KEY='pe2_preview_'+NS;
+function previewId(){ try{ return sessionStorage.getItem(PREVIEW_KEY)||''; }catch(e){ return ''; } }
+function setPreview(id){ try{ if(id) sessionStorage.setItem(PREVIEW_KEY, id); else sessionStorage.removeItem(PREVIEW_KEY); }catch(e){} }
+function previewUser(){
+  var me=R.me(), id=previewId();
+  if(!id || !me || me.role!=='owner' || MODULE==='admin') return null;
+  return R.users[id] || null;
+}
+function rightsUser(){ return previewUser() || R.me(); }
+function isOwner(u){ u=u||rightsUser(); return !!(u && u.role==='owner'); }
+function isAdmin(u){ u=u||rightsUser(); return !!(u && (u.role==='owner' || u.role==='admin') && u.status==='active'); }
 function permById(id){ for(var i=0;i<PERMS.length;i++) if(PERMS[i].id===id) return PERMS[i]; return null; }
 function permsOf(role){ var p=R.perms && R.perms[role]; return p || (R.perms ? {} : (DEFAULT_PERMS[role]||{})); }
 /* есть ли у пользователя право (см. PERMS) */
 function perm(id, u){
-  u=u||R.me(); if(!u || u.status!=='active') return false;
+  u=u||rightsUser(); if(!u || u.status!=='active') return false;
   if(u.role==='owner') return true;
   var d=permById(id), role=u.role in DEFAULT_PERMS ? u.role : 'member';
   if(d && d.only && d.only.indexOf(role)<0) return false;
@@ -627,7 +639,7 @@ function perm(id, u){
   return role==='admin' ? v!==false : v===true;
 }
 /* «персонал»: видит админку (владелец, админ, модератор с правом panel) */
-function isStaff(u){ u=u||R.me(); return isAdmin(u) || !!(u && u.role==='moderator' && perm('panel', u)); }
+function isStaff(u){ u=u||rightsUser(); return isAdmin(u) || !!(u && u.role==='moderator' && perm('panel', u)); }
 function modConf(id){ var c=R.modules[id]||{}; return { enabled:c.enabled!==false, guest:!!c.guest, byDefault:c.byDefault!=null ? !!c.byDefault : (id==='tasks' || id==='glossary' || id==='org-board'), nav:c.nav!==false, home:c.home!==false }; }
 /* применяет к MODULES названия, описания и порядок из настроек модулей */
 function applyModuleCfg(){
@@ -640,7 +652,7 @@ function can(moduleId, u){
   if(moduleId==='admin') return isStaff(u);
   var m=moduleById(moduleId); if(!m) return true;   // неизвестный модуль — не блокируем
   if(session && session.guest && !u) return modConf(moduleId).enabled && modConf(moduleId).guest;
-  u=u||R.me(); if(!u || u.status!=='active') return false;
+  u=u||rightsUser(); if(!u || u.status!=='active') return false;
   if(isAdmin(u)) return true;
   if(!modConf(moduleId).enabled) return false;
   return !!(u.access && u.access[moduleId]);
@@ -1282,6 +1294,7 @@ function renderNav(){
       links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'">'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
       '<div class="pe2-nav-right">'+
       (CFG.MODE!=='live'?'<span class="pe2-testbadge" title="Данные идут не в рабочую базу">ТЕСТ · '+esc(CFG.MODE)+'</span>':'')+
+      (previewUser()?'<button class="pe2-preview" data-pe2-preview-off title="Вы смотрите экосистему с правами этого человека. Данные — ваши.">👁 Глазами: '+esc(shortName(previewUser()))+' · '+esc(ROLE_NAMES[previewUser().role]||'')+' <b>выйти</b></button>':'')+
       editorBtn()+
       '<button class="pe2-nav-icon" data-pe2-theme title="'+(curTheme()==='dark'?'Светлая тема':'Тёмная тема')+'" aria-label="Сменить тему">'+I(curTheme()==='dark'?'sun':'moon',17)+'</button>'+
       (isStaff()?'<a class="pe2-nav-admin'+(MODULE==='admin'?' on':'')+'" href="admin.html" title="Админ-панель">'+I('shield',15)+'<span>Админка</span>'+(pendingCount()?'<b>'+pendingCount()+'</b>':'')+'</a>':'')+
@@ -1291,6 +1304,7 @@ function renderNav(){
     navEl.innerHTML=h;
     var slot=navEl.querySelector('[data-pe2-logo]'); if(slot) slot.parentNode.replaceChild(navLogo(), slot);
     navEl.onclick=function(e){
+      if(e.target.closest('[data-pe2-preview-off]')){ setPreview(''); location.href='admin.html#roles'; return; }
       if(e.target.closest('[data-pe2-theme]')){ setTheme(curTheme()==='dark'?'light':'dark'); return; }
       if(e.target.closest('[data-pe2-edit]')){ if(editFn) editFn(); else if(EDITORS[MODULE]) location.href=EDITORS[MODULE].url; return; }
       var b=e.target.closest('[data-pe2-user]'); if(!b) return;
@@ -1505,7 +1519,7 @@ var PE = window.PE = {
   isAdmin:isAdmin, isOwner:isOwner, isStaff:isStaff, perm:perm, permsOf:permsOf, PERMS:PERMS, DEFAULT_PERMS:DEFAULT_PERMS, ROLE_ORDER:ROLE_ORDER, can:can, modConf:modConf, moduleById:moduleById,
   onReady:function(fn){ if(fired) fn(PE); else readyFns.push(fn); },
   onUsers:function(fn){ usersFns.push(fn); },
-  MODULE_DEFAULTS:MOD_DEF, sortable:sortable, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
+  MODULE_DEFAULTS:MOD_DEF, sortable:sortable, setPreview:setPreview, previewUser:previewUser, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,
   requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,
