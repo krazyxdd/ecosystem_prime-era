@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260930a">
-<script src="assets/pe-core.js?v=20260930a" data-module="admin"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=20260930b">
+<script src="assets/pe-core.js?v=20260930b" data-module="admin"></script>
 <style>
   :root{ --ink:#121212; --soft:#6F6F75; --faint:#A3A3A8; --line:#E6E6E9; --bg:#F5F5F7; --card:#fff; --accent:#008CFF; --accent-t:#E8F3FF; --danger:#D7372F; --ok:#1A8A4B; --warn:#B45309; }
   *{ box-sizing:border-box; }
@@ -151,14 +151,18 @@
   .link-btn:hover{ text-decoration:underline; }
 
   /* модули */
-  .mod-row{ display:grid; grid-template-columns:auto 1fr repeat(3, 150px); gap:14px; align-items:center; padding:16px 18px; border-bottom:1px solid #F0F0F2; }
+  .mod-row{ display:grid; grid-template-columns:auto 1fr repeat(3, 130px) auto; gap:14px; align-items:center; padding:16px 18px; border-bottom:1px solid #F0F0F2; }
   .mod-row:last-child{ border-bottom:none; }
   .mod-row .ic{ width:40px; height:40px; border-radius:11px; background:var(--accent-t); color:#0070D6; display:flex; align-items:center; justify-content:center; }
   .mod-row h3{ margin:0 0 3px; font-size:15px; }
   .mod-row p{ margin:0; color:var(--soft); font-size:13px; line-height:1.45; }
   .mod-row label{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--soft); cursor:pointer; }
   .mod-head{ padding:10px 18px; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); border-bottom:1px solid var(--line); }
-  @media(max-width:860px){ .mod-row{ grid-template-columns:auto 1fr; } .mod-row label{ grid-column:2; } .mod-head{ display:none; } }
+  @media(max-width:860px){ .mod-row{ grid-template-columns:auto 1fr; } .mod-row label, .mod-row .mod-acts{ grid-column:2; } .mod-head{ display:none; } }
+  .mod-acts{ display:flex; gap:4px; align-items:center; }
+  .mod-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .mod-tags span{ font-size:11.5px; color:var(--warn); background:#FFF6E6; border-radius:6px; padding:2px 7px; }
+  .btn.ico{ padding:6px 8px; }
 
   /* журнал */
   .log-row{ display:grid; grid-template-columns:150px 1fr; gap:14px; padding:10px 16px; border-bottom:1px solid #F0F0F2; font-size:13.5px; }
@@ -485,15 +489,49 @@ function setAccess(u, mid, on){
 
 /* ---------------- модули ---------------- */
 function modulesHtml(){
-  var h='<div class="card"><div class="mod-row mod-head"><span></span><span>Модуль</span><span>Включён</span><span>Для гостей</span><span>Новым — сразу</span></div>';
-  M.forEach(function(m){
-    var c=PE.modConf(m.id);
-    h+='<div class="mod-row"><div class="ic">'+modIcon(m,18)+'</div><div><h3>'+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p></div>'+
+  var h='<p class="muted" style="margin:0 0 12px">Название и описание — это пункт меню и плашка на главной. «Изменить» — переименовать, поменять описание, скрыть из меню или с главной; стрелки — порядок в меню и на главной.</p>';
+  h+='<div class="card"><div class="mod-row mod-head"><span></span><span>Модуль</span><span>Включён</span><span>Для гостей</span><span>Новым — сразу</span><span></span></div>';
+  M.forEach(function(m, i){
+    var c=PE.modConf(m.id), d=PE.MODULE_DEFAULTS[m.id]||{};
+    var tags=(!c.nav?'<span>скрыт в меню</span>':'')+(!c.home?'<span>скрыт на главной</span>':'')+(m.name!==d.name?'<span style="color:var(--soft);background:#F3F3F5">было: '+esc(d.name)+'</span>':'');
+    h+='<div class="mod-row"><div class="ic">'+modIcon(m,18)+'</div><div><h3>'+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p>'+(tags?'<div class="mod-tags">'+tags+'</div>':'')+'</div>'+
       '<label title="Выключенный модуль не виден сотрудникам и гостям"><input type="checkbox" class="tgl" data-mod="'+m.id+'|enabled"'+(c.enabled?' checked':'')+'>Включён</label>'+
       '<label title="Гости смогут открыть модуль без заявки"><input type="checkbox" class="tgl" data-mod="'+m.id+'|guest"'+(c.guest?' checked':'')+'>Гостям</label>'+
-      '<label title="Галочка «нужен доступ» будет стоять по умолчанию при регистрации и создании аккаунта"><input type="checkbox" class="tgl" data-mod="'+m.id+'|byDefault"'+(c.byDefault?' checked':'')+'>По умолчанию</label></div>';
+      '<label title="Галочка «нужен доступ» будет стоять по умолчанию при регистрации и создании аккаунта"><input type="checkbox" class="tgl" data-mod="'+m.id+'|byDefault"'+(c.byDefault?' checked':'')+'>По умолчанию</label>'+
+      '<div class="mod-acts"><button class="btn sm ico" data-mod-move="'+m.id+'|-1" title="Выше в меню и на главной" aria-label="Выше"'+(i===0?' disabled':'')+'>↑</button><button class="btn sm ico" data-mod-move="'+m.id+'|1" title="Ниже в меню и на главной" aria-label="Ниже"'+(i===M.length-1?' disabled':'')+'>↓</button><button class="btn sm" data-mod-edit="'+m.id+'">Изменить</button></div></div>';
   });
   return h+'</div><p class="muted" style="margin-top:12px">«По умолчанию» только предлагает модуль в форме — доступ всё равно выдаётся при одобрении.</p>';
+}
+
+/* редактирование пункта меню и плашки главной */
+function moduleEditModal(m){
+  var c=PE.modConf(m.id), d=PE.MODULE_DEFAULTS[m.id]||{ name:m.name, desc:m.desc };
+  var md=PE.modal('<h2>'+esc(m.name)+'</h2><p class="pe2-muted">Как модуль называется в меню и что написано на его плашке на главной.</p><form>'+
+    PE.field('Название','<input name="title" maxlength="40" value="'+esc(m.name)+'" placeholder="'+esc(d.name)+'">','Исходное: '+d.name)+
+    PE.field('Описание на плашке','<textarea name="desc" rows="3" maxlength="300" placeholder="'+esc(d.desc)+'">'+esc(m.desc)+'</textarea>')+
+    '<label class="pe2-check" style="margin:6px 0"><input type="checkbox" name="nav"'+(c.nav?' checked':'')+'><span><b>Показывать в меню</b><small>Пункт в верхнем меню экосистемы</small></span></label>'+
+    '<label class="pe2-check" style="margin:6px 0"><input type="checkbox" name="home"'+(c.home?' checked':'')+'><span><b>Показывать плашку на главной</b><small>Скрытый модуль по-прежнему открывается по ссылке, доступ не меняется</small></span></label>'+
+    '<div class="pe2-actions"><button type="button" class="pe2-btn" data-reset>Вернуть исходные</button><span style="flex:1"></span><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Сохранить</button></div></form>', { wide:true });
+  var f=md.el.querySelector('form'), F=function(n){ return f.querySelector('[name="'+n+'"]'); };
+  md.el.querySelector('[data-reset]').onclick=function(){ F('title').value=d.name; F('desc').value=d.desc; F('nav').checked=true; F('home').checked=true; };
+  f.onsubmit=function(e){
+    e.preventDefault();
+    var t=F('title').value.trim(), ds=F('desc').value.trim();
+    var patch={ title:(t && t!==d.name)?t:null, desc:(ds && ds!==d.desc)?ds:null, nav:F('nav').checked?null:false, home:F('home').checked?null:false };
+    PE.fb('PATCH','modules/'+m.id, patch).then(function(){
+      audit('module','', (t||d.name)+': название, описание, показ в меню и на главной');
+      md.close(); PE.toast('Сохранено — меню и главная обновятся у всех');
+      return PE.reloadModules();
+    }).then(function(){ render(); }).catch(fail);
+  };
+}
+function moveModule(id, dir){
+  var ids=M.map(function(x){ return x.id; }), i=ids.indexOf(id), j=i+dir;
+  if(i<0 || j<0 || j>=ids.length) return;
+  ids.splice(j, 0, ids.splice(i, 1)[0]);
+  Promise.all(ids.map(function(x, k){ return PE.fb('PATCH','modules/'+x, { order:k }); }))
+    .then(function(){ audit('module','', 'порядок модулей: '+ids.map(function(x){ return modById(x).name; }).join(', ')); return PE.reloadModules(); })
+    .then(function(){ render(); }).catch(fail);
 }
 
 /* ---------------- журнал ---------------- */
@@ -590,6 +628,8 @@ app.addEventListener('click', function(e){
   if((b=e.target.closest('[data-tab]'))){ tab=b.dataset.tab; history.replaceState(null,'','#'+tab); render(); return; }
   if((b=e.target.closest('[data-st]'))){ stFilter=b.dataset.st; renderPane(); return; }
   if(e.target.closest('[data-add-user]')){ addUserModal(); return; }
+  if((b=e.target.closest('[data-mod-edit]'))){ if(P('modules')) moduleEditModal(modById(b.dataset.modEdit)); return; }
+  if((b=e.target.closest('[data-mod-move]'))){ if(P('modules')){ var mv=b.dataset.modMove.split('|'); b.disabled=true; moveModule(mv[0], +mv[1]); } return; }
   if((b=e.target.closest('tr[data-user]'))){ userModal(PE.userById(b.dataset.user)); return; }
   if((b=e.target.closest('[data-approve-user]'))){ approveUserModal(PE.userById(b.dataset.approveUser)); return; }
   if((b=e.target.closest('[data-reject-user]'))){ t=PE.userById(b.dataset.rejectUser);

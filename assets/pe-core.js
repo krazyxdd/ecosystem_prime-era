@@ -100,6 +100,11 @@ var MODULES = [
     desc:'Система продаж Prime Era — методология, техники и разбор возражений.',
     icon:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M8 7h8M8 11h6"/>' }
 ];
+/* исходные названия, описания и порядок модулей — владелец может переименовать
+   модуль, поменять описание плашки, порядок и скрыть его из меню / с главной
+   (админка → «Модули»); это хранится в modules/{id}: title, desc, order, nav, home */
+var MOD_DEF = {};
+MODULES.forEach(function(m, i){ MOD_DEF[m.id]={ name:m.name, desc:m.desc, i:i }; });
 var LEGACY_NAMES = ['Саша','Андрей','Лина','Лиана'];
 var COLORS = ['#2563EB','#059669','#D97706','#DB2777','#7C3AED','#0891B2','#DC2626','#65A30D','#EA580C','#475569','#0D9488','#9333EA'];
 var ROLE_NAMES = { owner:'Владелец', admin:'Администратор', moderator:'Модератор', member:'Сотрудник' };
@@ -547,7 +552,7 @@ var R = {
   users:{}, modules:{}, meta:null, perms:null, requests:{}, loaded:false, requestsLoaded:false,
   me:function(){ return session && session.uid ? (R.users[session.uid]||null) : null; }
 };
-(function(){ var c=njson(CACHE_KEY, null); if(c){ R.users=c.users||{}; R.modules=c.modules||{}; R.meta=c.meta||null; R.perms=c.perms||null; R.requests=c.requests||{}; } })();
+(function(){ var c=njson(CACHE_KEY, null); if(c){ R.users=c.users||{}; R.modules=c.modules||{}; R.meta=c.meta||null; R.perms=c.perms||null; R.requests=c.requests||{}; } applyModuleCfg(); })();
 function saveCache(){ nset(CACHE_KEY, JSON.stringify({ users:R.users, modules:R.modules, meta:R.meta, perms:R.perms, requests:isStaff()?R.requests:{} })); }
 
 function fullName(u){ if(!u) return 'Неизвестный'; return ((u.first||'')+' '+(u.last||'')).trim() || u.login || 'Без имени'; }
@@ -570,7 +575,13 @@ function perm(id, u){
 }
 /* «персонал»: видит админку (владелец, админ, модератор с правом panel) */
 function isStaff(u){ u=u||R.me(); return isAdmin(u) || !!(u && u.role==='moderator' && perm('panel', u)); }
-function modConf(id){ var c=R.modules[id]||{}; return { enabled:c.enabled!==false, guest:!!c.guest, byDefault:c.byDefault!=null ? !!c.byDefault : (id==='tasks' || id==='glossary' || id==='org-board') }; }
+function modConf(id){ var c=R.modules[id]||{}; return { enabled:c.enabled!==false, guest:!!c.guest, byDefault:c.byDefault!=null ? !!c.byDefault : (id==='tasks' || id==='glossary' || id==='org-board'), nav:c.nav!==false, home:c.home!==false }; }
+/* применяет к MODULES названия, описания и порядок из настроек модулей */
+function applyModuleCfg(){
+  MODULES.forEach(function(m){ var c=R.modules[m.id]||{}, d=MOD_DEF[m.id]; m.name=c.title||d.name; m.desc=c.desc||d.desc; });
+  function ord(m){ var c=R.modules[m.id]||{}; return typeof c.order==='number' ? c.order : MOD_DEF[m.id].i; }
+  MODULES.sort(function(a,b){ return (ord(a)-ord(b)) || (MOD_DEF[a.id].i-MOD_DEF[b.id].i); });
+}
 function can(moduleId, u){
   if(moduleId==='home') return true;
   if(moduleId==='admin') return isStaff(u);
@@ -1220,8 +1231,8 @@ function renderNav(){
       document.documentElement.classList.add('pe2-has-nav');
     }
     var u=R.me(), guest=session && session.guest;
-    var links=MODULES.filter(function(m){ return can(m.id) && (modConf(m.id).enabled || isAdmin()); });
-    var h='<a class="pe2-nav-logo" href="index.html" title="Главная экосистемы"><img src="assets/logo-full-ondark.png" alt="Prime Era"></a>'+
+    var links=MODULES.filter(function(m){ return can(m.id) && (modConf(m.id).enabled || isAdmin()) && modConf(m.id).nav; });
+    var h='<span data-pe2-logo></span>'+
       '<nav class="pe2-nav-links"><a href="index.html" class="'+(MODULE==='home'?'on':'')+'">Главная</a>'+
       links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'">'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
       '<div class="pe2-nav-right">'+
@@ -1231,11 +1242,30 @@ function renderNav(){
         : guest?'<button class="pe2-nav-user" data-pe2-user><span class="pe2-av" style="width:28px;height:28px;background:#3A3A3E">'+I('user',14)+'</span><span>Гость</span></button>':'')+
       '</div>';
     navEl.innerHTML=h;
+    var slot=navEl.querySelector('[data-pe2-logo]'); if(slot) slot.parentNode.replaceChild(navLogo(), slot);
     navEl.onclick=function(e){
       var b=e.target.closest('[data-pe2-user]'); if(!b) return;
       userMenu(b);
     };
   });
+}
+/* логотип в меню: живой 3D-кубик + «PRIME ERA / студия веб-дизайна». Элемент
+   создаётся один раз и переносится при каждой перерисовке меню, чтобы кубик
+   не пересоздавался. Пока three.js грузится (или если не загрузился) — статичная картинка. */
+var logoEl=null;
+function navLogo(){
+  if(logoEl) return logoEl;
+  logoEl=document.createElement('a'); logoEl.className='pe2-nav-logo'; logoEl.href='index.html';
+  logoEl.title='Главная экосистемы'; logoEl.setAttribute('aria-label','Prime Era — на главную экосистемы');
+  var tag='студия веб-дизайна'.split('').map(function(ch){ return '<span>'+(ch===' '?'&nbsp;':esc(ch))+'</span>'; }).join('');
+  logoEl.innerHTML='<span class="pe2-cube" aria-hidden="true"></span><span class="pe2-logo-text" aria-hidden="true"><span class="pe2-logo-word">PRIME ERA</span><span class="pe2-logo-tag">'+tag+'</span></span>';
+  window.__peLogoHost=logoEl.firstChild;
+  try{
+    var sc=document.createElement('script'); sc.type='module';
+    sc.src=(SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/pe-core\.js/, 'pe-logo3d.js') : 'assets/pe-logo3d.js');
+    document.head.appendChild(sc);
+  }catch(e){}
+  return logoEl;
 }
 var menuEl=null;
 function userMenu(anchor){
@@ -1302,7 +1332,7 @@ function loadModulesMeta(){
   var gp=fb('GET','perms').catch(function(){ return R.perms; });
   return Promise.all([fb('GET','modules'), fb('GET','meta'), gp]).then(function(r){
     var changed=JSON.stringify(r[0]||{})!==JSON.stringify(R.modules) || JSON.stringify(r[2]||null)!==JSON.stringify(R.perms);
-    R.modules=r[0]||{}; R.meta=r[1]||null; R.perms=r[2]||null; gotModules=true; gotMeta=true; maybeLoaded();
+    R.modules=r[0]||{}; R.meta=r[1]||null; R.perms=r[2]||null; applyModuleCfg(); gotModules=true; gotMeta=true; maybeLoaded();
     if(changed && revealed){ renderNav(); notifyUsers(); }
   }).catch(function(){});
 }
@@ -1359,6 +1389,7 @@ var PE = window.PE = {
   isAdmin:isAdmin, isOwner:isOwner, isStaff:isStaff, perm:perm, permsOf:permsOf, PERMS:PERMS, DEFAULT_PERMS:DEFAULT_PERMS, ROLE_ORDER:ROLE_ORDER, can:can, modConf:modConf, moduleById:moduleById,
   onReady:function(fn){ if(fired) fn(PE); else readyFns.push(fn); },
   onUsers:function(fn){ usersFns.push(fn); },
+  MODULE_DEFAULTS:MOD_DEF, reloadModules:function(){ return loadModulesMeta(); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,
   requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,

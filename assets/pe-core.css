@@ -8,7 +8,7 @@
   --pe2-text:#F4F4F6; --pe2-soft:rgba(255,255,255,.62); --pe2-faint:rgba(255,255,255,.38);
   --pe2-accent:#008CFF; --pe2-accent-2:#4DB2FF; --pe2-danger:#FF5A52; --pe2-ok:#2BC37A; --pe2-warn:#FFB020;
 }
-html.pe2-has-nav{ --pe-nav-h:56px; --nav-h:56px; }
+html.pe2-has-nav{ --pe-nav-h:76px; --nav-h:76px; }
 
 /* пока ядро не решило, пускать ли — страницу не видно (без «мигания» чужих данных) */
 html.pe2-wait body > *:not(.pe2-gate):not(#pe2-toasts){ visibility:hidden !important; }
@@ -20,14 +20,20 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 
 /* ================= навигация ================= */
 .pe2-nav{
-  position:fixed; top:0; left:0; right:0; height:56px; z-index:900;
+  position:fixed; top:0; left:0; right:0; height:76px; z-index:900;
   display:flex; align-items:center; gap:14px; padding:0 18px;
   background:rgba(8,8,11,.94); -webkit-backdrop-filter:blur(16px) saturate(140%); backdrop-filter:blur(16px) saturate(140%);
   border-bottom:1px solid var(--pe2-line);
   font-family:'IBM Plex Sans',system-ui,sans-serif;
 }
-.pe2-nav-logo{ display:flex; align-items:center; flex:none; }
-.pe2-nav-logo img{ height:19px; width:auto; display:block; }
+.pe2-nav-logo{ --s:64px; display:flex; align-items:center; gap:calc(var(--s) * .22); height:var(--s); flex:none; text-decoration:none; }
+/* кубик: до загрузки three.js — статичная картинка, потом живой WebGL-кубик (assets/pe-logo3d.js) */
+.pe2-cube{ position:relative; width:var(--s); height:var(--s); flex:0 0 var(--s); background:url(logo-icon-ondark.png) center / 72% no-repeat; }
+.pe2-cube.pe2-cube-live{ background:none; }
+.pe2-logo-text{ display:flex; flex-direction:column; justify-content:center; gap:calc(var(--s) * .12); white-space:nowrap; }
+.pe2-logo-word{ font-family:'IBM Plex Mono', ui-monospace, Menlo, monospace; font-weight:600; font-size:calc(var(--s) * .58); line-height:.9; color:#fff; letter-spacing:calc(var(--s) * .006); }
+.pe2-logo-tag{ display:flex; justify-content:space-between; align-self:stretch; font-family:'IBM Plex Mono', ui-monospace, Menlo, monospace; font-weight:500; font-size:calc(var(--s) * .185); line-height:1; color:#9297A1; }
+@media(max-width:1180px){ .pe2-logo-text{ display:none; } }
 .pe2-nav-links{ display:flex; align-items:center; gap:2px; flex:1 1 auto; min-width:0; overflow-x:auto; scrollbar-width:none;
   -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
           mask-image:linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%); padding:0 8px; }
@@ -52,8 +58,9 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 .pe2-nav-user:hover{ background:rgba(255,255,255,.07); border-color:var(--pe2-line); }
 .pe2-testbadge{ font:700 10px 'IBM Plex Mono',monospace; letter-spacing:.06em; color:#1A1200; background:var(--pe2-warn); padding:4px 8px; border-radius:6px; }
 @media(max-width:720px){
-  .pe2-nav{ padding:0 10px; gap:6px; }
-  .pe2-nav-logo img{ height:15px; }
+  html.pe2-has-nav{ --pe-nav-h:60px; --nav-h:60px; }
+  .pe2-nav{ padding:0 10px; gap:6px; height:60px; }
+  .pe2-nav-logo{ --s:46px; }
   .pe2-nav-admin span, .pe2-nav-user > span:not(.pe2-av){ display:none; }
   .pe2-nav-admin{ padding:6px 8px; }
   .pe2-nav-user{ padding:3px; }
