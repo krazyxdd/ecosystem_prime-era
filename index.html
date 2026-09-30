@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010244">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010244">
-<script src="assets/pe-core.js?v=202610010244" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010248">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010248">
+<script src="assets/pe-core.js?v=202610010248" data-module="home"></script>
 <style>
   /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
@@ -150,7 +150,7 @@ PE.onReady(function(){
     h+='<ul class="tl">'+list.map(function(t){
       var cls=!t.end?'':t.end<today?'over':t.end===today?'today':'';
       var lab=!t.end?'без срока':t.end<today?'просрочено · '+fmtDue(t.end):t.end===today?'сегодня':fmtDue(t.end);
-      return '<li><a href="tasks.html#task-'+esc(t.id)+'"><span class="num">#'+esc(t.num||'')+'</span><span class="t">'+esc(t.title||'Без названия')+'</span><span class="due '+cls+'">'+esc(lab)+'</span></a></li>';
+      return '<li><a href="tasks.html'+(t.num?'#task-'+esc(t.num):'')+'"><span class="num">#'+esc(t.num||'')+'</span><span class="t">'+esc(t.title||'Без названия')+'</span><span class="due '+cls+'">'+esc(lab)+'</span></a></li>';
     }).join('')+'</ul></section>';
     return h;
   }
@@ -171,7 +171,7 @@ PE.onReady(function(){
     mates.sort(function(a,b){ return (b.lastSeen||0)-(a.lastSeen||0); });
     return h+'<div class="team">'+mates.slice(0,8).map(function(x){
       var on=x.lastSeen && Date.now()-x.lastSeen<10*60000;
-      return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':('был(а) '+PE.relTime(x.lastSeen)))+'</small></div></div>';
+      return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':x.lastSeen?('был(а) '+PE.relTime(x.lastSeen)):'ещё не заходил(а)')+'</small></div></div>';
     }).join('')+'</div></section>';
   }
   var ACT={ login:'вошёл(ла)', 'saleskb.edit':'правка раздела продаж', 'saleskb.delete':'удалён раздел продаж', 'saleskb.tree':'правка схемы продаж', 'saleskb.file':'файлы продаж',
