@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010248">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010248">
-<script src="assets/pe-core.js?v=202610010248" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010256">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010256">
+<script src="assets/pe-core.js?v=202610010256" data-module="home"></script>
 <style>
   /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
@@ -123,7 +123,7 @@ PE.onReady(function(){
     if(!PE.can('tasks')) return;
     try{ TASKS=JSON.parse(localStorage.getItem(TCACHE)||'null'); }catch(e){}
     PE.fb('GET','tasks/items').then(function(d){
-      var list=arr(d).map(function(t){ return { id:t.id, num:t.num, title:t.title, status:t.status||(t.done?'done':'new'), end:t.end||t.start||'', a:arr(t.assignees), p:t.parent||null }; });
+      var list=arr(d).map(function(t){ return { id:t.id, num:t.num, title:t.title, status:t.status||(t.done?'done':'new'), end:t.end||t.start||'', a:arr(t.assignees), p:t.parent||null, db:t.doneBy||null }; });
       TASKS=list; try{ localStorage.setItem(TCACHE, JSON.stringify(list)); }catch(e){}
       render();
     }).catch(function(){});
@@ -140,7 +140,7 @@ PE.onReady(function(){
     var h='<section class="w"><div class="w-h"><h2>Мои задачи</h2><a href="tasks.html">Доска →</a></div>';
     if(!TASKS) return h+'<div class="w-empty">Загружаю задачи…</div></section>';
     var today=dayKey(new Date());
-    var mine=TASKS.filter(function(t){ return t.a.indexOf(u.id)>=0 && t.status!=='done' && t.status!=='postponed'; });
+    var mine=TASKS.filter(function(t){ return t.a.indexOf(u.id)>=0 && t.status!=='done' && t.status!=='postponed' && !(t.db && t.db[u.id]); });   // свою часть уже сделал — не показываем
     var over=mine.filter(function(t){ return t.end && t.end<today; }), tod=mine.filter(function(t){ return t.end===today; }), prog=mine.filter(function(t){ return t.status==='progress'; });
     h+='<div class="kpis"><a class="kpi'+(over.length?' bad':'')+'" href="tasks.html"><b>'+over.length+'</b><span>просрочено</span></a>'+
       '<a class="kpi acc" href="tasks.html"><b>'+tod.length+'</b><span>на сегодня</span></a>'+

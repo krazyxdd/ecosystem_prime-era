@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Задачи</title>
-<link rel="stylesheet" href="assets/fonts.css?v=202610010248">
+<link rel="stylesheet" href="assets/fonts.css?v=202610010256">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010248">
-<script src="assets/pe-core.js?v=202610010248" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010256">
+<script src="assets/pe-core.js?v=202610010256" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -826,6 +826,14 @@
   /* тёмная тема: у каждой колонки свой тон — от цвета её точки (статуса) */
   html[data-pe-theme="dark"] .col{ background:color-mix(in srgb, var(--col-dot, var(--pe-ink-3)) 17%, var(--pe-sunk)); box-shadow:inset 0 3px 0 0 color-mix(in srgb, var(--col-dot, var(--pe-ink-3)) 75%, transparent); }
   html[data-pe-theme="dark"] .col-count{ background:var(--pe-card); }
+
+  /* режим «Команда»: группы внутри колонки человека */
+  .tm-grp{ display:flex; align-items:center; gap:8px; width:100%; margin:10px 0 6px; padding:0 2px; font:700 .64rem var(--pe-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); background:none; border:none; text-align:left; }
+  .tm-grp:first-child{ margin-top:2px; }
+  .tm-grp.bad{ color:var(--danger); }
+  .tm-grp.ok{ color:var(--ok); }
+  .tm-grp-btn{ cursor:pointer; }
+  .tm-grp-btn span{ margin-left:auto; font-weight:600; color:var(--ink-faint); text-transform:none; letter-spacing:0; }
 </style>
 </head>
 <body>
@@ -1107,6 +1115,13 @@ function merge3(base, local, remote){
       out[k]=mapToList(res);
       return;
     }
+    if(k==='doneBy'){   /* отметки исполнителей — по каждому человеку отдельно, чтобы не терять одновременные */
+      var Bd=(base&&base.doneBy)||{}, Ld=local.doneBy||{}, Rd=remote.doneBy||{}, us={}, rd={};
+      [Bd,Ld,Rd].forEach(function(o){ Object.keys(o).forEach(function(i){ us[i]=1; }); });
+      Object.keys(us).forEach(function(i){ var v=(sig(Rd[i])!==sig(Bd[i]) && sig(Ld[i])===sig(Bd[i])) ? Rd[i] : Ld[i]; if(v) rd[i]=v; });
+      if(Object.keys(rd).length) out.doneBy=rd; else delete out.doneBy;
+      return;
+    }
     var b=sig(base&&base[k]), l=sig(local[k]), r=sig(remote[k]);
     if(r!==b && l===b){ if(remote[k]===undefined || remote[k]===null) delete out[k]; else out[k]=clone(remote[k]); }
   });
@@ -1123,6 +1138,10 @@ function diffOps(base, cur){
       Object.keys(ids).forEach(function(i){ if(sig(B[i])!==sig(C[i])) ops[k+'/'+i]= C[i] ? (canon(C[i].files?Object.assign({}, C[i], { files:stripFiles(C[i].files) }):C[i])||null) : null; });
       return;
     }
+    if(k==='doneBy'){ var Bd=base.doneBy||{}, Cd=cur.doneBy||{}, us={};
+      [Bd,Cd].forEach(function(o){ Object.keys(o).forEach(function(i){ us[i]=1; }); });
+      Object.keys(us).forEach(function(i){ if(sig(Bd[i])!==sig(Cd[i])) ops['doneBy/'+i]=Cd[i]||null; });
+      return; }
     if(sig(base[k])!==sig(cur[k])){ var v=k==='files' ? canon(stripFiles(cur[k])) : canon(cur[k]); ops[k]= v===undefined ? null : v; }
   });
   return ops;
@@ -1495,6 +1514,13 @@ function tagColor(name){
 function allTags(){ var m={}; Object.keys(state.tagColors).forEach(function(k){ m[k]=1; }); state.tasks.forEach(function(t){ t.tags.forEach(function(g){ m[g]=1; }); }); return Object.keys(m).sort(); }
 function children(id){ return state.tasks.filter(function(t){ return t.parent===id; }); }
 function isDone(t){ return t.status==='done'; }
+/* задача на нескольких исполнителей: каждый отмечает свою часть (doneBy[uid]=время),
+   задача закрывается, когда отметились все */
+function isMulti(t){ return t.assignees && t.assignees.length>1; }
+function doneFor(t, uid){ return isDone(t) || !!(t.doneBy && t.doneBy[uid]); }
+function doneAtFor(t, uid){ return isDone(t) ? (t.doneAt||0) : ((t.doneBy && t.doneBy[uid]) || 0); }
+function doneCount(t){ return t.assignees.filter(function(a){ return t.doneBy && t.doneBy[a]; }).length; }
+function mineDone(t){ return !isDone(t) && isMulti(t) && !!(t.doneBy && t.doneBy[ME]); }
 function minOrder(){ return state.tasks.reduce(function(m,t){ return Math.min(m,t.order); }, 0); }
 function maxOrder(){ return state.tasks.reduce(function(m,t){ return Math.max(m,t.order); }, 0); }
 
@@ -1544,7 +1570,7 @@ function setStatus(t, status, silent){
   if(t.status===status) return;
   var from=t.status;
   if(status==='done'){ t.prevStatus = from; t.doneAt=Date.now(); if(state.timer && state.timer.taskId===t.id) stopTimer(); if(t.recur && !t.recurNext && t!==draft) spawnNext(t); }
-  else if(from==='done'){ t.doneAt=null; }
+  else if(from==='done'){ t.doneAt=null; t.doneBy=null; }
   if(from==='postponed' && status!=='postponed'){ if(t.postpone) log(t,'text',{ text:'Возвращена из отложенных' }); t.postpone=null; }
   t.status=status; t.done = status==='done';
   if(!silent) log(t,'status',{ from:from, to:status });
@@ -1553,6 +1579,22 @@ function setStatus(t, status, silent){
 function complete(t){
   var snap=snapshot();
   var msg;
+  /* исполнитель задачи на нескольких людей отмечает только свою часть (повторно — снимает) */
+  if(isMulti(t) && t.assignees.indexOf(ME)>=0 && t.status!=='done' && t.status!=='review'){
+    t.doneBy=Object.assign({}, t.doneBy||{});
+    if(t.doneBy[ME]){ delete t.doneBy[ME]; if(!Object.keys(t.doneBy).length) t.doneBy=null; log(t,'text',{ text:member(ME).full+': отметка «сделал(а)» снята' }); msg='Ваша отметка снята'; }
+    else {
+      t.doneBy[ME]=Date.now(); log(t,'text',{ text:member(ME).full+' сделал(а) свою часть' });
+      var left=t.assignees.filter(function(a){ return !t.doneBy[a]; });
+      if(!left.length){
+        if(t.requireReview && t.reporter!==ME){ setStatus(t,'review'); msg='Все исполнители сделали — отправлено на проверку: '+member(t.reporter).full; }
+        else { setStatus(t,'done'); t.order=minOrder()-1; msg='Все исполнители сделали — задача завершена'+spawnNote(); }
+      } else msg='Отмечено: вы сделали. Ждём: '+left.map(function(a){ return member(a).short||member(a).full; }).join(', ');
+    }
+    persist(); if(openId===t.id) renderDrawer();
+    toast(msg, 'Отменить', function(){ restore(snap); });
+    return;
+  }
   if(t.requireReview && t.reporter!==ME && t.status!=='review'){
     setStatus(t,'review'); msg='Отправлено на проверку: '+member(t.reporter).full;
   } else {
@@ -2046,8 +2088,8 @@ function cardHtml(t, c){
   var subs=children(t.id), subsDone=subs.filter(isDone).length;
   var parent=t.parent ? task(t.parent) : null;
   var blocked=isBlocked(t);
-  var h='<article class="card'+(isDone(t)?' is-done':'')+(ds==='overdue'?' is-overdue':'')+(isRunning(t)?' is-running':isPaused(t)?' is-paused':'')+(search && matchesSearch(t, search.trim()) && search.trim().length>1?' is-hit':'')+'" draggable="true" data-id="'+t.id+'" tabindex="0">';
-  h+='<button class="card-check" data-check="'+t.id+'" title="'+(isDone(t)?'Вернуть в работу':(t.requireReview&&t.reporter!==ME?'Выполнить и отправить на проверку':'Отметить выполненной'))+'">'+I(isDone(t)?'back':'check',13,2.4)+'</button>';
+  var h='<article class="card'+(isDone(t)||mineDone(t)?' is-done':'')+(ds==='overdue'?' is-overdue':'')+(isRunning(t)?' is-running':isPaused(t)?' is-paused':'')+(search && matchesSearch(t, search.trim()) && search.trim().length>1?' is-hit':'')+'" draggable="true" data-id="'+t.id+'" tabindex="0">';
+  h+='<button class="card-check" data-check="'+t.id+'" title="'+(isDone(t)?'Вернуть в работу':mineDone(t)?'Снять мою отметку «сделал(а)»':(isMulti(t)&&t.assignees.indexOf(ME)>=0?'Отметить: я сделал(а) свою часть':t.requireReview&&t.reporter!==ME?'Выполнить и отправить на проверку':'Отметить выполненной'))+'">'+I(isDone(t)||mineDone(t)?'back':'check',13,2.4)+'</button>';
   if(!isDone(t)) h+='<button class="card-play'+(isRunning(t)?' on':'')+'" data-tplay="'+t.id+'" title="'+(isRunning(t)?'Пауза':isPaused(t)?'Продолжить таймер':'Запустить таймер')+'">'+I(isRunning(t)?'pause':'play',11,2)+'</button>';
   if(F.parent && parent) h+='<div class="card-parent">↑ #'+parent.num+' '+esc(parent.title)+'</div>';
   h+='<div class="card-title">'+(t.urgent?'<span class="urg" title="Срочная">'+I('urgent',14,2)+'</span>':'')+(blocked?'<span style="color:var(--warn);margin-top:2px" title="Ждёт другую задачу">'+I('block',13,2)+'</span>':'')+'<span>'+esc(t.title||'Без названия')+'</span></div>';
@@ -2061,6 +2103,7 @@ function cardHtml(t, c){
   if(F.comments && t.comments.length) foot+='<span class="m" title="Комментарии">'+I('chat',12)+t.comments.length+'</span>';
   if(F.checklist && cl.length) foot+='<span class="m'+(clDone===cl.length?' full':'')+'" title="Чек-лист">'+I('list',12)+clDone+'/'+cl.length+'</span>';
   if(F.subtasks && subs.length) foot+='<span class="m'+(subsDone===subs.length?' full':'')+'" title="Подзадачи">'+I('sub',12)+subsDone+'/'+subs.length+'</span>';
+  if(isMulti(t) && !isDone(t)){ var dn=doneCount(t); foot+='<span class="m'+(dn?' full':'')+'" title="Сделали свою часть: '+esc(t.assignees.filter(function(a){ return t.doneBy&&t.doneBy[a]; }).map(function(a){ return member(a).full; }).join(', ')||'пока никто')+'">'+I('check',12)+dn+'/'+t.assignees.length+'</span>'; }
   if(F.files && t.files.length) foot+='<span class="m" title="Вложения">'+I('clip',12)+t.files.length+'</span>';
   if(F.recur && t.recur) foot+='<span class="m" title="'+esc(recurText(t.recur))+'">'+I('repeat',12)+'</span>';
   if(isRunning(t)) foot+='<span class="m live-rec" title="Идёт запись: '+esc(state.timer.stage)+'"><span class="rec-dot"></span><span data-live-card>'+fmtClock(sessionMs())+'</span></span>';
@@ -4228,11 +4271,13 @@ function teamSort(a,b){
 }
 function teamCard(t, pid){
   var c=col(t.status), ds=dueState(t);
-  return '<div class="tm-card'+(ds==='overdue'?' overdue':'')+(isDone(t)?' done':'')+'" draggable="'+(isDone(t)?'false':'true')+'" data-tm-id="'+t.id+'" data-tm-from="'+esc(pid)+'">'+
+  var dn=doneFor(t, pid);
+  return '<div class="tm-card'+(ds==='overdue'&&!dn?' overdue':'')+(dn?' done':'')+'" draggable="'+(dn?'false':'true')+'" data-tm-id="'+t.id+'" data-tm-from="'+esc(pid)+'">'+
     '<div class="tt">'+(t.urgent?'<span style="color:var(--danger-bright);display:inline-flex">'+I('urgent',13,2)+'</span>':'')+'<span>'+esc(t.title||'Без названия')+'</span></div>'+
     '<div class="mt"><span class="st"><i style="background:'+colDot(c)+'"></i>'+esc(c.name)+'</span>'+
       ((t.start||t.end)?'<span class="date-chip '+(ds==='overdue'?'overdue':ds==='today'?'today':ds==='soon'?'soon':'')+'">'+esc(dateLabel(t))+'</span>':'')+
       (t.reporter && t.reporter!==pid?'<span title="Постановщик">от '+esc(member(t.reporter).short||member(t.reporter).full)+'</span>':'')+
+      (isMulti(t) && !isDone(t)?'<span title="Сделали свою часть">✓ '+doneCount(t)+'/'+t.assignees.length+'</span>':'')+
       (isRunning(t)||(state.timers[pid]&&state.timers[pid].taskId===t.id&&state.timers[pid].since)?'<span style="color:var(--ok);font-weight:700">● идёт таймер</span>':'')+
     '</div></div>';
 }
@@ -4247,8 +4292,8 @@ function renderTeam(){
   if(none.length) cols.push({ m:{ id:'_none', full:'Без исполнителя', short:'—', color:'#ABABAB', role:'Задачи, которые никому не назначены' }, list:none });
   var tot={ open:0, over:0, review:0, ms:0 };
   var html=cols.map(function(cl){
-    var m=cl.m, pid=m.id, open=cl.list.filter(function(t){ return !isDone(t); }).sort(teamSort);
-    var doneWeek=cl.list.filter(function(t){ return isDone(t) && (t.doneAt||0)>=weekAgo; }).sort(function(a,b){ return (b.doneAt||0)-(a.doneAt||0); });
+    var m=cl.m, pid=m.id, open=cl.list.filter(function(t){ return !doneFor(t, pid); }).sort(teamSort);
+    var doneWeek=cl.list.filter(function(t){ return doneFor(t, pid) && doneAtFor(t, pid)>=weekAgo; }).sort(function(a,b){ return doneAtFor(b,pid)-doneAtFor(a,pid); });
     var over=open.filter(function(t){ return dueState(t)==='overdue'; }).length;
     var rev=open.filter(function(t){ return t.status==='review'; }).length;
     var prog=open.filter(function(t){ return t.status==='progress'; }).length;
@@ -4270,10 +4315,14 @@ function renderTeam(){
         (pid!=='_none'?'<span title="Записано времени за эту неделю'+(plan?' · план открытых задач: '+fmtMin(plan):'')+'">неделя '+fmtDur(ms)+'</span>':'')+
         (runT && !tm.paused?'<span class="run" title="Сейчас работает над: '+esc(runT.title)+'">● '+esc(runT.title.length>22?runT.title.slice(0,22)+'…':runT.title)+'</span>':'')+
       '</div><div class="tm-body">';
-    h+= open.length ? open.map(function(t){ return teamCard(t, pid); }).join('') : '<div class="tm-empty">Открытых задач нет</div>';
+    /* группы: просрочено → в работе → завершены (за 7 дней, свёрнуто) */
+    var overL=open.filter(function(t){ return dueState(t)==='overdue'; }), workL=open.filter(function(t){ return dueState(t)!=='overdue'; });
+    if(!open.length) h+='<div class="tm-empty">Открытых задач нет</div>';
+    if(overL.length) h+='<div class="tm-grp bad">Просрочено · '+overL.length+'</div>'+overL.map(function(t){ return teamCard(t, pid); }).join('');
+    if(workL.length) h+='<div class="tm-grp">В работе · '+workL.length+'</div>'+workL.map(function(t){ return teamCard(t, pid); }).join('');
     if(doneWeek.length){
       var sd=!!teamView.showDone[pid];
-      h+='<button class="tm-more" data-tm-done="'+esc(pid)+'">'+(sd?'Скрыть':'Показать')+' выполненные за 7 дней ('+doneWeek.length+')</button>';
+      h+='<button class="tm-grp tm-grp-btn ok" data-tm-done="'+esc(pid)+'">Завершены за 7 дней · '+doneWeek.length+' <span>'+(sd?'скрыть':'показать')+'</span></button>';
       if(sd) h+=doneWeek.map(function(t){ return teamCard(t, pid); }).join('');
     }
     return h+'</div></section>';
