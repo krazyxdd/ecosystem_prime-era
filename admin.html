@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260927d">
-<script src="assets/pe-core.js?v=20260927d" data-module="admin"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=20260930a">
+<script src="assets/pe-core.js?v=20260930a" data-module="admin"></script>
 <style>
   :root{ --ink:#121212; --soft:#6F6F75; --faint:#A3A3A8; --line:#E6E6E9; --bg:#F5F5F7; --card:#fff; --accent:#008CFF; --accent-t:#E8F3FF; --danger:#D7372F; --ok:#1A8A4B; --warn:#B45309; }
   *{ box-sizing:border-box; }
@@ -86,7 +86,41 @@
   .st i{ width:8px; height:8px; border-radius:50%; }
   .st.active i{ background:var(--ok); } .st.pending i{ background:#F59E0B; } .st.blocked i{ background:var(--danger); } .st.rejected i, .st.deleted i{ background:#B5B5BA; }
   .role{ font-size:12.5px; color:var(--soft); white-space:nowrap; }
-  .role.owner{ color:#8A5A00; font-weight:600; } .role.admin{ color:#0062B8; font-weight:600; }
+  .role.owner{ color:#8A5A00; font-weight:600; } .role.admin{ color:#0062B8; font-weight:600; } .role.moderator{ color:#6D3FC0; font-weight:600; }
+
+  /* роли и права */
+  .roles-intro{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px; }
+  .roles-intro .card{ padding:14px 16px; }
+  .roles-intro h3{ margin:0 0 4px; font-size:14px; }
+  .roles-intro p{ margin:0; color:var(--soft); font-size:12.5px; line-height:1.5; }
+  @media(max-width:900px){ .roles-intro{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:560px){ .roles-intro{ grid-template-columns:1fr; } }
+  table.perms{ width:100%; border-collapse:collapse; }
+  table.perms th, table.perms td{ padding:11px 14px; border-bottom:1px solid #F0F0F2; text-align:center; vertical-align:middle; }
+  table.perms th:first-child, table.perms td:first-child{ text-align:left; }
+  table.perms thead th{ font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); white-space:nowrap; }
+  table.perms td b{ display:block; font-weight:600; font-size:13.5px; }
+  table.perms td small{ display:block; color:var(--soft); font-size:12.5px; margin-top:2px; line-height:1.45; }
+  table.perms tr.grp td{ background:#FAFAFB; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--soft); padding:8px 14px; }
+  .perm-na{ color:#C5C5CA; font-size:12px; }
+  .note-box{ background:#F2F8FF; border:1px solid #CFE6FF; border-radius:12px; padding:11px 14px; font-size:13px; line-height:1.55; color:#234; margin:0 0 14px; }
+  .role-sel{ border:1px solid var(--line); border-radius:9px; padding:6px 8px; font-size:13px; background:#fff; }
+  .people-roles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:0; }
+  .people-roles .pr{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #F0F0F2; }
+  .people-roles .pr .who{ flex:1; }
+
+  /* инструменты */
+  .tools{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px; }
+  .tool{ padding:18px; display:flex; flex-direction:column; gap:10px; }
+  .tool-h{ display:flex; gap:12px; align-items:center; }
+  .tool-h .ic{ width:40px; height:40px; border-radius:11px; background:var(--accent-t); color:#0070D6; display:flex; align-items:center; justify-content:center; flex:none; }
+  .tool h3{ margin:0; font-size:15px; }
+  .tool p{ margin:0; color:var(--soft); font-size:13px; line-height:1.5; }
+  .tool .who-can{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:12.5px; color:var(--soft); }
+  .tool .who-can span.r{ border:1px solid var(--line); border-radius:999px; padding:2px 9px; background:#fff; color:var(--ink); }
+  .tool .acts{ display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; }
+  .tool .recent{ border-top:1px solid #F0F0F2; padding-top:8px; font-size:12.5px; color:var(--soft); line-height:1.55; }
+  .tool .recent div{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .acc-icons{ display:flex; gap:4px; flex-wrap:wrap; }
   .acc-icons i{ width:24px; height:24px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-t); color:#0070D6; }
   .acc-icons i.no{ background:#F3F3F5; color:#C5C5CA; }
@@ -155,12 +189,29 @@ function modIcon(m, s){ return '<svg width="'+(s||13)+'" height="'+(s||13)+'" vi
 function modById(id){ return PE.moduleById(id); }
 function usersList(){ return Object.keys(PE.users).map(function(k){ return PE.users[k]; }); }
 function me(){ return PE.user; }
+function P(id){ return PE.perm(id); }
+/* с кем можно работать: не с собой и не с владельцем; с админами — только владелец;
+   модератор — только с сотрудниками */
 function canManage(u){
   var m=me(); if(!u || !m) return false;
   if(u.id===m.id) return false;
   if(u.role==='owner') return false;
   if(u.role==='admin' && !PE.isOwner()) return false;
+  if(!PE.isAdmin() && u.role!=='member') return false;
   return true;
+}
+/* роль выдаёт владелец (любую) и администратор (сотрудник / модератор) */
+function roleField(cur){
+  if(!PE.isAdmin()) return '';
+  var o=[['member','Сотрудник — модули, которые ему открыты'],['moderator','Модератор — часть функций админки (см. «Роли и права»)']];
+  if(PE.isOwner()) o.push(['admin','Администратор — управляет пользователями и модулями']);
+  return PE.field('Роль','<select name="role">'+o.map(function(x){ return '<option value="'+x[0]+'"'+((cur||'member')===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select>');
+}
+function roleSort(a,b){ var o=PE.ROLE_ORDER; return ((o[a.role]!=null?o[a.role]:9)-(o[b.role]!=null?o[b.role]:9)) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); }
+function tabsList(){
+  var pu=pendingUsers(), rq=openRequests(), all=usersList().filter(function(u){ return u.status!=='deleted'; });
+  return [['requests','Заявки',pu.length+rq.length,false,P('requests')],['users','Пользователи',all.length,true,true],['access','Доступ к модулям',0,false,P('requests')],
+    ['modules','Модули',0,false,P('modules')],['tools','Инструменты',0,false,true],['roles','Роли и права',0,false,true],['log','Журнал',0,false,P('audit')]].filter(function(t){ return t[4]; });
 }
 function plural(n,a,b,c){ var x=n%10,h=n%100; if(x===1&&h!==11) return a; if(x>=2&&x<=4&&(h<10||h>=20)) return b; return c; }
 function openRequests(){
@@ -179,7 +230,8 @@ function render(){
     '<div class="stats"><div class="stat"><b>'+active+'</b><span>активных</span></div>'+
     '<div class="stat'+((pu.length+rq.length)?' hot':'')+'"><b>'+(pu.length+rq.length)+'</b><span>ждут решения</span></div>'+
     '<div class="stat"><b>'+M.filter(function(m){ return PE.modConf(m.id).enabled; }).length+' / '+M.length+'</b><span>модулей включено</span></div></div></div>';
-  h+='<div class="tabs">'+[['requests','Заявки',pu.length+rq.length],['users','Пользователи',all.length,true],['access','Доступ к модулям'],['modules','Модули'],['log','Журнал']].map(function(t){
+  var tl=tabsList(); if(!tl.some(function(t){ return t[0]===tab; })) tab=tl[0][0];
+  h+='<div class="tabs">'+tl.map(function(t){
     return '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'">'+t[1]+(t[2]?'<span class="n'+(t[3]?' grey':'')+'">'+t[2]+'</span>':'')+'</button>';
   }).join('')+'</div>';
   h+='<div id="pane"></div>';
@@ -192,6 +244,8 @@ function renderPane(){
   else if(tab==='users') el.innerHTML=usersHtml();
   else if(tab==='access') el.innerHTML=matrixHtml();
   else if(tab==='modules') el.innerHTML=modulesHtml();
+  else if(tab==='roles') el.innerHTML=rolesHtml();
+  else if(tab==='tools'){ el.innerHTML=toolsHtml(null); if(P('audit')) loadAudit().then(function(list){ if(tab==='tools') el.innerHTML=toolsHtml(list); }); }
   else if(tab==='log'){ el.innerHTML='<div class="card"><div class="empty">Загружаю журнал…</div></div>'; loadAudit().then(function(list){ if(tab==='log') el.innerHTML=logHtml(list); }); }
   var s=document.getElementById('u-search'); if(s && document.activeElement!==s && q){ /* сохраняем фокус при перерисовке */ }
 }
@@ -216,7 +270,7 @@ function requestsHtml(){
       '<div><h3>'+esc(u?PE.fullName(u):(r.name||'Гость'))+'<span class="kind '+(isGuest?'gst':'acc')+'">'+(isGuest?'гость':'доступ')+'</span></h3>'+
       '<div class="meta">'+(isGuest?'Контакт: <b>'+esc(r.contact||'—')+'</b>':esc(u&&u.position||''))+' · '+esc(PE.relTime(r.at))+'</div>'+
       (r.comment?'<div class="comment">'+esc(r.comment)+'</div>':'')+modPills(r.modules)+'</div>'+
-      '<div class="acts">'+(isGuest?'<button class="btn ok" data-guest-create="'+r.id+'">Создать аккаунт…</button>':'<button class="btn ok" data-approve-req="'+r.id+'">Выдать доступ</button>')+
+      '<div class="acts">'+(isGuest?(P('users_accounts')?'<button class="btn ok" data-guest-create="'+r.id+'">Создать аккаунт…</button>':'<span class="muted" style="max-width:170px">Аккаунт гостю создаёт администратор</span>'):'<button class="btn ok" data-approve-req="'+r.id+'">Выдать доступ</button>')+
       '<button class="btn danger-t" data-reject-req="'+r.id+'">Отклонить</button></div></div>';
   });
   return h+'</div>';
@@ -225,7 +279,7 @@ function approveUserModal(u){
   var sel=Object.assign({}, u.requested||{});
   var m=PE.modal('<div class="u-head">'+PE.avatar(u,56)+'<div><h2>'+esc(PE.fullName(u))+'</h2><span>'+esc(u.position||'')+(u.contact?' · '+esc(u.contact):'')+'</span></div></div>'+
     '<form><div class="pe2-label">Открыть модули</div>'+PE.modulesChecklist('mods', sel)+
-    (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member">Сотрудник</option><option value="admin">Администратор — может управлять пользователями</option></select>'):'')+
+    roleField('member')+
     '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Одобрить</button></div></form>', { wide:true });
   m.el.querySelector('form').onsubmit=function(e){
     e.preventDefault();
@@ -261,11 +315,11 @@ function usersHtml(){
     if(stFilter==='all' ? u.status==='deleted' : u.status!==stFilter) return false;
     if(!ql) return true;
     return [u.first,u.last,u.login,u.position,u.contact,u.email].join(' ').toLowerCase().indexOf(ql)>=0;
-  }).sort(function(a,b){ var o={ owner:0, admin:1, member:2 }; return (o[a.role]-o[b.role]) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); });
+  }).sort(roleSort);
   var h='<div class="toolbar"><input class="search" id="u-search" placeholder="Поиск: имя, логин, контакт…" value="'+esc(q)+'">'+
     [['all','Все'],['active','Активные'],['pending','Ждут'],['blocked','Заблокированы'],['rejected','Отклонены'],['deleted','Удалённые']].filter(function(f){ return f[0]==='all'||f[0]==='active'||counts[f[0]]; }).map(function(f){
       return '<button class="chip'+(stFilter===f[0]?' on':'')+'" data-st="'+f[0]+'">'+f[1]+' <span style="opacity:.6">'+(counts[f[0]]||0)+'</span></button>';
-    }).join('')+'<span class="grow"></span><button class="btn primary" data-add-user>'+'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить пользователя</button></div>';
+    }).join('')+'<span class="grow"></span>'+(!P('users_accounts')?'':'<button class="btn primary" data-add-user>'+'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить пользователя</button>')+'</div>';
   if(!rows.length) return h+'<div class="card"><div class="empty"><b>Никого не найдено</b>Измените поиск или фильтр.</div></div>';
   h+='<div class="card table-wrap"><table class="users"><thead><tr><th>Сотрудник</th><th>Должность</th><th>Контакт</th><th>Роль</th><th>Доступ</th><th>Статус</th><th>Был(а)</th></tr></thead><tbody>';
   rows.forEach(function(u){
@@ -283,7 +337,7 @@ function usersHtml(){
 
 function userModal(u){
   var manage=canManage(u), self=u.id===me().id;
-  var editable=manage || self;
+  var editable=(manage && P('users_edit')) || self, accessEd=manage && P('requests'), roleEd=manage && PE.isAdmin();
   var h='<div class="u-head">'+PE.avatar(u,60)+'<div><h2>'+esc(PE.fullName(u))+'</h2><span>@'+esc(u.login)+' · '+esc(PE.ROLE_NAMES[u.role])+' · '+statusHtml(u)+'</span></div></div>';
   h+='<div class="pe2-kv"><span>Зарегистрирован(а)</span><b>'+esc(PE.fmtDate(u.createdAt))+'</b>'+
     (u.approvedAt?'<span>Одобрен(а)</span><b>'+esc(PE.fmtDate(u.approvedAt))+(u.approvedBy&&PE.userById(u.approvedBy)?' · '+esc(PE.fullName(PE.userById(u.approvedBy))):'')+'</b>':'')+
@@ -295,20 +349,17 @@ function userModal(u){
   if(editable){
     h+='<div class="sec-t">Профиль</div>'+PE.profileFields(u, {});
   }
+  if(accessEd && !PE.isAdmin(u)) h+='<div class="sec-t">Доступ к модулям</div>'+PE.modulesChecklist('mods', u.access||{});
+  if(roleEd) h+=roleField(u.role);
+  if(PE.isAdmin(u)) h+='<div class="pe2-muted" style="margin:8px 0 14px">'+(u.role==='owner'?'Владелец':'Администратор')+' видит все модули.</div>';
+  h+='<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Закрыть</button>'+(editable||accessEd||roleEd?'<button type="submit" class="pe2-btn primary">Сохранить</button>':'')+'</div>';
   if(manage){
-    h+='<div class="sec-t">Доступ к модулям</div>'+PE.modulesChecklist('mods', u.access||{});
-    h+='<div class="pe2-grid2">'+
-      (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member"'+(u.role==='member'?' selected':'')+'>Сотрудник</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Администратор</option></select>','Администратор видит админку и управляет сотрудниками'):'')+
-    '</div>';
-  } else if(PE.isAdmin(u)) h+='<div class="pe2-muted" style="margin:8px 0 14px">'+(u.role==='owner'?'Владелец':'Администратор')+' видит все модули.</div>';
-  h+='<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Закрыть</button>'+(editable?'<button type="submit" class="pe2-btn primary">Сохранить</button>':'')+'</div>';
-  if(manage){
-    h+='<div class="danger-zone">'+
-      (u.status==='pending'?'<button type="button" class="btn ok sm" data-x="approve">Одобрить…</button>':'')+
-      '<button type="button" class="btn sm" data-x="reset">Сбросить пароль</button>'+
-      (u.status==='blocked'?'<button type="button" class="btn sm" data-x="unblock">Разблокировать</button>':u.status==='active'?'<button type="button" class="btn sm danger-t" data-x="block">Заблокировать</button>':'')+
-      (u.status==='rejected'||u.status==='deleted'?'<button type="button" class="btn sm" data-x="restore">Восстановить как активного</button>':'')+
-      (u.status!=='deleted'?'<button type="button" class="btn sm danger-t" data-x="delete">Удалить</button>':'')+'</div>';
+    var dz=(u.status==='pending'&&P('requests')?'<button type="button" class="btn ok sm" data-x="approve">Одобрить…</button>':'')+
+      (P('users_accounts')&&u.status!=='deleted'?'<button type="button" class="btn sm" data-x="reset">Сбросить пароль</button>':'')+
+      (!P('users_block')?'':u.status==='blocked'?'<button type="button" class="btn sm" data-x="unblock">Разблокировать</button>':u.status==='active'?'<button type="button" class="btn sm danger-t" data-x="block">Заблокировать</button>':'')+
+      ((u.status==='rejected'&&P('requests'))||(u.status==='deleted'&&P('users_accounts'))?'<button type="button" class="btn sm" data-x="restore">Восстановить как активного</button>':'')+
+      (u.status!=='deleted'&&P('users_accounts')?'<button type="button" class="btn sm danger-t" data-x="delete">Удалить</button>':'');
+    if(dz) h+='<div class="danger-zone">'+dz+'</div>';
   }
   h+='</form>';
   var m=PE.modal(h, { wide:true });
@@ -322,13 +373,16 @@ function userModal(u){
       if(!p.first || !p.last){ var er=form.querySelector('[data-err]'); er.textContent='Имя и фамилия обязательны'; er.style.display='block'; return; }
       Object.assign(patch, p);
     }
-    if(manage){
+    if(accessEd && form.querySelector('input[name="mods"]')){
       var acc={}; form.querySelectorAll('input[name="mods"]:checked').forEach(function(c){ acc[c.value]=true; });
+      /* выключенные модули в списке не показываются — сохраняем их доступ как был */
+      Object.keys(u.access||{}).forEach(function(k){ if(u.access[k] && !PE.modConf(k).enabled) acc[k]=true; });
       patch.access=acc;
-      var r=form.querySelector('[name="role"]'); if(r) patch.role=r.value;
     }
+    var r=roleEd && form.querySelector('[name="role"]'); if(r && r.value!==u.role) patch.role=r.value;
+    if(!Object.keys(patch).length){ m.close(); return; }
     PE.fb('PATCH','users/'+u.id, patch).then(function(){
-      audit('edit', u.id, PE.fullName(Object.assign({}, u, patch))+(manage?': доступ — '+(Object.keys(patch.access).map(function(k){ return modById(k).name; }).join(', ')||'нет'):''));
+      audit('edit', u.id, PE.fullName(Object.assign({}, u, patch))+(patch.access?': доступ — '+(Object.keys(patch.access).map(function(k){ return modById(k)?modById(k).name:k; }).join(', ')||'нет'):'')+(patch.role?': роль — '+(PE.ROLE_NAMES[patch.role]||patch.role):''));
       m.close(); PE.toast('Сохранено');
     }).catch(fail);
   };
@@ -372,7 +426,7 @@ function addUserModal(prefill, fromRequest){
     '<div class="pe2-grid2">'+PE.field('Логин *','<input name="login" required maxlength="32" autocapitalize="off" spellcheck="false">','Буквы, цифры, _ и -')+
       PE.field('Временный пароль','<input name="pass" value="'+tmp+'" required minlength="6">','Можно заменить на свой')+'</div>'+
     '<div class="pe2-label">Доступ к модулям</div>'+PE.modulesChecklist('mods', def)+
-    (PE.isOwner()?PE.field('Роль','<select name="role"><option value="member">Сотрудник</option><option value="admin">Администратор</option></select>'):'')+
+    roleField('member')+
     '<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Создать</button></div></form>', { wide:true });
   PE.bindAvatarPicker(m.el);
   var form=m.el.querySelector('form'), err=form.querySelector('[data-err]');
@@ -412,7 +466,7 @@ function translit(s){
 /* ---------------- матрица доступа ---------------- */
 function matrixHtml(){
   var list=usersList().filter(function(u){ return u.status==='active' || u.status==='pending' || u.status==='blocked'; })
-    .sort(function(a,b){ var o={ owner:0, admin:1, member:2 }; return (o[a.role]-o[b.role]) || PE.fullName(a).localeCompare(PE.fullName(b),'ru'); });
+    .sort(roleSort);
   var h='<p class="muted" style="margin:0 0 12px">Переключатель = доступ к модулю. Изменения применяются сразу — у человека модуль откроется или закроется без перезагрузки. Владелец и администраторы видят всё.</p>';
   h+='<div class="card table-wrap"><table class="matrix"><thead><tr><th>Сотрудник</th>'+M.map(function(m){
     var conf=PE.modConf(m.id);
@@ -443,7 +497,10 @@ function modulesHtml(){
 }
 
 /* ---------------- журнал ---------------- */
-var ACT={ login:['вошёл','вошла'], register:['зарегистрировался','зарегистрировалась'], setup:['создал экосистему','создала экосистему'], approve:['одобрил','одобрила'], reject:['отклонил регистрацию','отклонила регистрацию'], create:['создал аккаунт','создала аккаунт'], edit:['изменил профиль / доступ','изменила профиль / доступ'], block:['заблокировал','заблокировала'], unblock:['разблокировал','разблокировала'], delete:['удалил','удалила'], restore:['восстановил','восстановила'], 'reset-pass':['сбросил пароль','сбросила пароль'], grant:['выдал доступ','выдала доступ'], revoke:['закрыл доступ','закрыла доступ'], 'req-approve':['одобрил запрос','одобрила запрос'], 'req-reject':['отклонил запрос','отклонила запрос'], module:['изменил модуль','изменила модуль'] };
+var ACT={ login:['вошёл','вошла'], register:['зарегистрировался','зарегистрировалась'], setup:['создал экосистему','создала экосистему'], approve:['одобрил','одобрила'], reject:['отклонил регистрацию','отклонила регистрацию'], create:['создал аккаунт','создала аккаунт'], edit:['изменил профиль / доступ','изменила профиль / доступ'], block:['заблокировал','заблокировала'], unblock:['разблокировал','разблокировала'], delete:['удалил','удалила'], restore:['восстановил','восстановила'], 'reset-pass':['сбросил пароль','сбросила пароль'], grant:['выдал доступ','выдала доступ'], revoke:['закрыл доступ','закрыла доступ'], 'req-approve':['одобрил запрос','одобрила запрос'], 'req-reject':['отклонил запрос','отклонила запрос'], module:['изменил модуль','изменила модуль'],
+  perms:['изменил права ролей','изменила права ролей'], 'saleskb.edit':['изменил раздел базы продаж','изменила раздел базы продаж'], 'saleskb.delete':['удалил раздел базы продаж','удалила раздел базы продаж'],
+  'saleskb.tree':['изменил схему в базе продаж','изменила схему в базе продаж'], 'saleskb.file':['изменил файлы базы продаж','изменила файлы базы продаж'],
+  'calc.config':['изменил прайс калькулятора','изменила прайс калькулятора'], 'org.save':['изменил оргсхему','изменила оргсхему'] };
 function act(e, who){ var a=ACT[e.action]; if(!a) return e.action; return a[who && who.gender==='f' ? 1 : 0]; }
 function loadAudit(){
   if(auditCache) return Promise.resolve(auditCache);
@@ -457,6 +514,73 @@ function logHtml(list){
     var who=PE.userById(e.by);
     return '<div class="log-row"><time>'+esc(PE.fmtDate(e.at))+'</time><div><b>'+esc(who?PE.fullName(who):(e.byName||'—'))+'</b> '+esc(act(e, who))+(e.details?' — '+esc(e.details):'')+'</div></div>';
   }).join('')+'</div>';
+}
+
+/* ---------------- роли и права ---------------- */
+var ROLE_COLS=['admin','moderator','member'];
+function rolesHtml(){
+  var owner=PE.isOwner();
+  var h='<div class="roles-intro">'+
+    '<div class="card"><h3>Владелец</h3><p>Может всё. Только он меняет права ролей на этой странице и назначает администраторов.</p></div>'+
+    '<div class="card"><h3>Администратор</h3><p>Всё, что не выключено ниже. Управляет сотрудниками и модераторами, назначает модераторов.</p></div>'+
+    '<div class="card"><h3>Модератор</h3><p>Только то, что включено ниже. Работает только с обычными сотрудниками, не создаёт аккаунты и не сбрасывает пароли.</p></div>'+
+    '<div class="card"><h3>Сотрудник</h3><p>Модули из «Доступа к модулям». Права редактора в инструментах можно выдать и сотрудникам.</p></div></div>';
+  h+='<div class="note-box">'+(owner?'Переключатель меняет право сразу для всех людей в этой роли.':'Права ролей меняет только владелец. Здесь видно, что можно вам и другим ролям.')+
+    ' Модулям, которые открыты сотруднику, это не мешает: права решают, кто <b>редактирует</b> и управляет, а открывает модуль доступ из вкладки «Доступ к модулям».</div>';
+  h+='<div class="card table-wrap"><table class="perms"><thead><tr><th>Право</th><th>Владелец</th>'+ROLE_COLS.map(function(r){ return '<th>'+esc(PE.ROLE_NAMES[r])+'</th>'; }).join('')+'</tr></thead><tbody>';
+  var grp='';
+  PE.PERMS.forEach(function(p){
+    if(p.group!==grp){ grp=p.group; h+='<tr class="grp"><td colspan="'+(ROLE_COLS.length+2)+'">'+esc(grp)+'</td></tr>'; }
+    h+='<tr><td><b>'+esc(p.name)+'</b><small>'+esc(p.desc)+'</small></td><td><input type="checkbox" class="tgl" checked disabled aria-label="Владелец — '+esc(p.name)+'"></td>'+
+      ROLE_COLS.map(function(r){
+        if(p.only && p.only.indexOf(r)<0) return '<td><span class="perm-na" title="Для этой роли недоступно">—</span></td>';
+        var lock=p.lock && p.lock.indexOf(r)>=0, v=PE.permsOf(r)[p.id], on=lock || (r==='admin' ? v!==false : v===true);
+        return '<td><input type="checkbox" class="tgl" data-perm="'+r+'|'+p.id+'"'+(on?' checked':'')+(lock||!owner?' disabled':'')+' title="'+esc(PE.ROLE_NAMES[r]+' — '+p.name)+(lock?' (всегда)':'')+'" aria-label="'+esc(PE.ROLE_NAMES[r]+' — '+p.name)+'"></td>';
+      }).join('')+'</tr>';
+  });
+  h+='</tbody></table></div>';
+  var people=usersList().filter(function(u){ return u.status==='active' || u.status==='blocked'; }).sort(roleSort);
+  h+='<h3 style="margin:24px 0 10px;font-size:16px">Кто в какой роли</h3><div class="card people-roles">'+people.map(function(u){
+    var ed=canManage(u) && PE.isAdmin();
+    var sel=ed ? '<select class="role-sel" data-role-of="'+u.id+'" aria-label="Роль — '+esc(PE.fullName(u))+'">'+['member','moderator'].concat(PE.isOwner()?['admin']:[]).map(function(r){ return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+esc(PE.ROLE_NAMES[r])+'</option>'; }).join('')+'</select>'
+      : '<span class="role '+esc(u.role)+'">'+esc(PE.ROLE_NAMES[u.role]||u.role)+'</span>';
+    return '<div class="pr"><div class="who">'+PE.avatar(u,30)+'<div><b>'+esc(PE.fullName(u))+'</b><span>@'+esc(u.login)+'</span></div></div>'+sel+'</div>';
+  }).join('')+'</div>';
+  return h;
+}
+/* права по умолчанию записываются в базу при первом заходе владельца — чтобы правила базы и интерфейс видели одно и то же */
+function seedPerms(){
+  if(!PE.isOwner() || PE.perms) return;
+  PE.fb('GET','perms').then(function(cur){
+    if(cur){ PE.setPerms(cur); return; }
+    var d={ moderator:PE.DEFAULT_PERMS.moderator };
+    return PE.fb('PUT','perms', d).then(function(){ PE.setPerms(d); if(tab==='roles') renderPane(); });
+  }).catch(function(){});
+}
+
+/* ---------------- инструменты ---------------- */
+var TOOLS=[
+  { mod:'sales-kb', perm:'saleskb_edit', name:'Продажи — база знаний', what:'Разделы, плейбуки-схемы, файлы к разделам, история версий.', edit:'sales-kb.html?edit=1', act:'saleskb.' },
+  { mod:'calc', perm:'calc_edit', name:'Калькулятор сметы', what:'Прайс: позиции и цены, готовые сборки, срочность, надбавки, скидки. Меняется сразу у всей команды.', edit:'calculator.html?admin=1', act:'calc.' },
+  { mod:'org-board', perm:'org_edit', name:'Оргсхема', what:'Отделения, отделы и посты, библиотека шляп, расстановка сотрудников экосистемы по постам.', edit:'org-board.html?edit=1', act:'org.' },
+  { mod:'glossary', perm:'glossary_edit', name:'Глоссарий', what:'Свои термины, картинки к терминам, результаты сотрудников.', edit:'glossary.html?admin=1', act:'' },
+  { mod:'tasks', perm:'tasks_all', name:'Задачи — режим руководителя', what:'Все задачи команды, вид «Команда», отчёты по времени коллег.', edit:'tasks.html', act:'' }
+];
+function toolsHtml(list){
+  var h='<p class="muted" style="margin:0 0 12px">Редакторы инструментов экосистемы. Кто может править — задаётся во вкладке «Роли и права».</p><div class="tools">';
+  TOOLS.forEach(function(t){
+    var m=modById(t.mod); if(!m) return;
+    var roles=['owner'].concat(ROLE_COLS.filter(function(r){ var d=null; PE.PERMS.forEach(function(x){ if(x.id===t.perm) d=x; }); if(d && d.only && d.only.indexOf(r)<0) return false; var v=PE.permsOf(r)[t.perm]; return r==='admin' ? v!==false : v===true; }));
+    var mine=P(t.perm), open=PE.can(t.mod);
+    h+='<div class="card tool"><div class="tool-h"><div class="ic">'+modIcon(m,18)+'</div><div><h3>'+esc(t.name)+'</h3>'+(!PE.modConf(t.mod).enabled?'<small class="muted">модуль выключен</small>':'')+'</div></div><p>'+esc(t.what)+'</p>'+
+      '<div class="who-can">Править могут: '+roles.map(function(r){ return '<span class="r">'+esc(PE.ROLE_NAMES[r])+'</span>'; }).join('')+'</div>';
+    if(list && t.act){
+      var rec=list.filter(function(e){ return e.action && e.action.indexOf(t.act)===0; }).slice(0,3);
+      h+='<div class="recent">'+(rec.length?rec.map(function(e){ var w=PE.userById(e.by); return '<div>'+esc(PE.relTime(e.at))+' · '+esc(w?PE.shortName(w):(e.byName||'—'))+(e.details?' — '+esc(e.details):'')+'</div>'; }).join(''):'Правок ещё не было')+'</div>';
+    }
+    h+='<div class="acts">'+(mine&&open?'<a class="btn primary sm" href="'+t.edit+'">Открыть редактор</a>':'')+(open?'<a class="btn sm" href="'+m.href+'">Открыть модуль</a>':'<span class="muted">Модуль вам не открыт</span>')+'</div></div>';
+  });
+  return h+'</div>';
 }
 
 /* ---------------- события ---------------- */
@@ -493,6 +617,23 @@ app.addEventListener('change', function(e){
     var p=t.dataset.acc.split('|'), u=PE.userById(p[0]), mm=modById(p[1]);
     setAccess(u, p[1], t.checked).then(function(){ audit(t.checked?'grant':'revoke', u.id, mm.name+' — '+PE.fullName(u)); PE.toast((t.checked?'Открыт':'Закрыт')+' «'+mm.name+'» для '+PE.shortName(u)); }).catch(function(){ t.checked=!t.checked; fail(); });
   }
+  if(t.dataset.perm){
+    var pp=t.dataset.perm.split('|'), role=pp[0], pid=pp[1], pdef=null; PE.PERMS.forEach(function(x){ if(x.id===pid) pdef=x; });
+    if(!PE.isOwner() || !pdef){ t.checked=!t.checked; return; }
+    var cur=JSON.parse(JSON.stringify(PE.perms||{ moderator:PE.DEFAULT_PERMS.moderator })), o2={}; o2[pid]=t.checked;
+    /* если права ещё не записаны в базу — сначала записываем умолчания, чтобы не потерять их */
+    (PE.perms ? Promise.resolve() : PE.fb('PATCH','perms', { moderator:PE.DEFAULT_PERMS.moderator })).then(function(){ return PE.fb('PATCH','perms/'+role, o2); }).then(function(){
+      cur[role]=Object.assign({}, cur[role]||{}, o2); PE.setPerms(cur);
+      audit('perms','', PE.ROLE_NAMES[role]+': «'+pdef.name+'» — '+(t.checked?'можно':'нельзя'));
+      PE.toast(PE.ROLE_NAMES[role]+': «'+pdef.name+'» — '+(t.checked?'можно':'нельзя'));
+    }).catch(function(){ t.checked=!t.checked; fail(); });
+  }
+  if(t.dataset.roleOf){
+    var tu=PE.userById(t.dataset.roleOf), nr=t.value;
+    if(!tu || !canManage(tu) || !PE.isAdmin() || (nr==='admin' && !PE.isOwner())){ t.value=tu?tu.role:''; return; }
+    PE.fb('PATCH','users/'+tu.id,{ role:nr }).then(function(){ audit('edit', tu.id, PE.fullName(tu)+': роль — '+PE.ROLE_NAMES[nr]); PE.toast(PE.fullName(tu)+' — '+PE.ROLE_NAMES[nr]); })
+      .catch(function(){ t.value=tu.role; fail(); });
+  }
   if(t.dataset.mod){
     var q2=t.dataset.mod.split('|'), o={}; o[q2[1]]=t.checked;
     PE.fb('PATCH','modules/'+q2[0], o).then(function(){ audit('module','', modById(q2[0]).name+': '+({ enabled:'включён', guest:'для гостей', byDefault:'по умолчанию' })[q2[1]]+' — '+(t.checked?'да':'нет')); }).catch(function(){ t.checked=!t.checked; fail(); });
@@ -505,6 +646,7 @@ app.addEventListener('input', function(e){
 var rT=null;
 PE.onUsers(function(){ clearTimeout(rT); rT=setTimeout(function(){ if(document.activeElement && document.activeElement.id==='u-search') renderPane(); else render(); }, 60); });
 render();
+seedPerms();
 });
 </script>
 </body>

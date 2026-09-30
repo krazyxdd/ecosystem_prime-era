@@ -88,15 +88,45 @@ var MODULES = [
     desc:'Полная база формулировок и тактик по возражениям студии — единый список с фильтрами.',
     icon:'<path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/>' },
   { id:'org-board', name:'Оргсхема', href:'org-board.html',
-    desc:'Организационная структура студии — отделы, сотрудники, зоны ответственности. Редактирует администратор.',
+    desc:'Оргсхема студии со шляпами: отделения, отделы, посты, ЦКП, статистики и обязанности. Люди — из экосистемы.',
     icon:'<circle cx="12" cy="4.5" r="2.3"/><path d="M12 6.8v4"/><circle cx="5.5" cy="17.5" r="2.3"/><circle cx="12" cy="17.5" r="2.3"/><circle cx="18.5" cy="17.5" r="2.3"/><path d="M5.5 15.2v-2a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v2"/><path d="M12 11.2v2"/>' },
+  { id:'sales-kb', name:'Продажи', href:'sales-kb.html',
+    desc:'База знаний отдела продаж: восемь ступеней, тексты сообщений, созвоны, КП, возражения, CRM и управление отделом. Админ редактирует разделы и загружает файлы.',
+    icon:'<path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/>' },
+  { id:'calc', name:'Калькулятор', href:'calculator.html',
+    desc:'Смета сайта: позиции, готовые сборки, срочность, скидки, итог в часах и рублях. Прайс общий для команды.',
+    icon:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>' },
   { id:'prime-sales', name:'База знаний', href:'prime-sales.html',
     desc:'Система продаж Prime Era — методология, техники и разбор возражений.',
     icon:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M8 7h8M8 11h6"/>' }
 ];
 var LEGACY_NAMES = ['Саша','Андрей','Лина','Лиана'];
 var COLORS = ['#2563EB','#059669','#D97706','#DB2777','#7C3AED','#0891B2','#DC2626','#65A30D','#EA580C','#475569','#0D9488','#9333EA'];
-var ROLE_NAMES = { owner:'Владелец', admin:'Администратор', member:'Сотрудник' };
+var ROLE_NAMES = { owner:'Владелец', admin:'Администратор', moderator:'Модератор', member:'Сотрудник' };
+var ROLE_ORDER = { owner:0, admin:1, moderator:2, member:3 };
+/* Права ролей. Хранятся в базе: perms/{admin|moderator|member}/{id}: true|false.
+   Владелец может всё. У администратора право есть, пока его явно не выключили (false);
+   у модератора и сотрудника — только если включено (true). Так же считают правила базы.
+   only — для каких ролей право вообще можно включить. lock — нельзя выключить. */
+var PERMS = [
+  { id:'panel', group:'Админка', name:'Открывать админку', desc:'Видит админ-панель и список пользователей.', only:['admin','moderator'], lock:['admin'] },
+  { id:'requests', group:'Админка', name:'Заявки и доступ к модулям', desc:'Одобряет регистрации и запросы, открывает и закрывает модули сотрудникам.', only:['admin','moderator'] },
+  { id:'users_edit', group:'Админка', name:'Правка профилей', desc:'Меняет имя, должность, контакты и фото сотрудников.', only:['admin','moderator'] },
+  { id:'users_block', group:'Админка', name:'Блокировка', desc:'Блокирует и разблокирует сотрудников.', only:['admin','moderator'] },
+  { id:'users_accounts', group:'Админка', name:'Учётные записи', desc:'Создаёт аккаунты, сбрасывает пароли, удаляет и восстанавливает пользователей.', only:['admin'] },
+  { id:'modules', group:'Админка', name:'Настройки модулей', desc:'Включает и выключает модули, открывает их гостям.', only:['admin','moderator'] },
+  { id:'audit', group:'Админка', name:'Журнал действий', desc:'Видит журнал: входы, заявки, изменения.', only:['admin','moderator'] },
+  { id:'saleskb_edit', group:'Инструменты', name:'Продажи: редактор', desc:'Правит разделы базы продаж, схемы-плейбуки, загружает файлы.' },
+  { id:'calc_edit', group:'Инструменты', name:'Калькулятор: прайс', desc:'Меняет позиции, цены, сборки, надбавки и скидки для всей команды.' },
+  { id:'org_edit', group:'Инструменты', name:'Оргсхема: редактор', desc:'Меняет оргсхему, шляпы и расстановку людей по постам.' },
+  { id:'glossary_edit', group:'Инструменты', name:'Глоссарий: панель', desc:'Открывает панель глоссария: свои термины, картинки, результаты.' },
+  { id:'tasks_all', group:'Инструменты', name:'Задачи: режим руководителя', desc:'Видит все задачи и режим «Команда», отчёты по коллегам, удаляет чужие задачи.' }
+];
+var DEFAULT_PERMS = {
+  admin:{},
+  moderator:{ panel:true, requests:true, users_edit:true, audit:true, saleskb_edit:true, calc_edit:true, org_edit:true, glossary_edit:true, tasks_all:true },
+  member:{}
+};
 var STATUS_NAMES = { pending:'Ждёт одобрения', active:'Активен', blocked:'Заблокирован', rejected:'Отклонён' };
 
 function moduleById(id){ for(var i=0;i<MODULES.length;i++) if(MODULES[i].id===id) return MODULES[i]; return null; }
@@ -514,11 +544,11 @@ window.peGenderTransform=function(text){
    ========================================================================= */
 var CACHE_KEY='pe2_cache_'+NS;
 var R = {
-  users:{}, modules:{}, meta:null, requests:{}, loaded:false, requestsLoaded:false,
+  users:{}, modules:{}, meta:null, perms:null, requests:{}, loaded:false, requestsLoaded:false,
   me:function(){ return session && session.uid ? (R.users[session.uid]||null) : null; }
 };
-(function(){ var c=njson(CACHE_KEY, null); if(c){ R.users=c.users||{}; R.modules=c.modules||{}; R.meta=c.meta||null; R.requests=c.requests||{}; } })();
-function saveCache(){ nset(CACHE_KEY, JSON.stringify({ users:R.users, modules:R.modules, meta:R.meta, requests:isAdmin()?R.requests:{} })); }
+(function(){ var c=njson(CACHE_KEY, null); if(c){ R.users=c.users||{}; R.modules=c.modules||{}; R.meta=c.meta||null; R.perms=c.perms||null; R.requests=c.requests||{}; } })();
+function saveCache(){ nset(CACHE_KEY, JSON.stringify({ users:R.users, modules:R.modules, meta:R.meta, perms:R.perms, requests:isStaff()?R.requests:{} })); }
 
 function fullName(u){ if(!u) return 'Неизвестный'; return ((u.first||'')+' '+(u.last||'')).trim() || u.login || 'Без имени'; }
 function shortName(u){ if(!u) return '?'; return u.first || u.login || '?'; }
@@ -526,10 +556,24 @@ function initials(u){ if(!u) return '?'; return ((u.first||'').charAt(0)+(u.last
 function userById(id){ return R.users[id] || null; }
 function isOwner(u){ u=u||R.me(); return !!(u && u.role==='owner'); }
 function isAdmin(u){ u=u||R.me(); return !!(u && (u.role==='owner' || u.role==='admin') && u.status==='active'); }
+function permById(id){ for(var i=0;i<PERMS.length;i++) if(PERMS[i].id===id) return PERMS[i]; return null; }
+function permsOf(role){ var p=R.perms && R.perms[role]; return p || (R.perms ? {} : (DEFAULT_PERMS[role]||{})); }
+/* есть ли у пользователя право (см. PERMS) */
+function perm(id, u){
+  u=u||R.me(); if(!u || u.status!=='active') return false;
+  if(u.role==='owner') return true;
+  var d=permById(id), role=u.role in DEFAULT_PERMS ? u.role : 'member';
+  if(d && d.only && d.only.indexOf(role)<0) return false;
+  if(d && d.lock && d.lock.indexOf(role)>=0) return true;
+  var v=permsOf(role)[id];
+  return role==='admin' ? v!==false : v===true;
+}
+/* «персонал»: видит админку (владелец, админ, модератор с правом panel) */
+function isStaff(u){ u=u||R.me(); return isAdmin(u) || !!(u && u.role==='moderator' && perm('panel', u)); }
 function modConf(id){ var c=R.modules[id]||{}; return { enabled:c.enabled!==false, guest:!!c.guest, byDefault:c.byDefault!=null ? !!c.byDefault : (id==='tasks' || id==='glossary' || id==='org-board') }; }
 function can(moduleId, u){
   if(moduleId==='home') return true;
-  if(moduleId==='admin') return isAdmin(u);
+  if(moduleId==='admin') return isStaff(u);
   var m=moduleById(moduleId); if(!m) return true;   // неизвестный модуль — не блокируем
   if(session && session.guest && !u) return modConf(moduleId).enabled && modConf(moduleId).guest;
   u=u||R.me(); if(!u || u.status!=='active') return false;
@@ -659,6 +703,8 @@ function evaluate(){
   }
   onBody(function(){
     document.documentElement.classList.toggle('pe2-admin', isAdmin());
+    document.documentElement.classList.toggle('pe2-staff', isStaff());
+    PERMS.forEach(function(p){ document.documentElement.classList.toggle('pe2-can-'+p.id, perm(p.id)); });
     if(d==='ok'){
       closeGate();
       document.documentElement.classList.remove('pe2-wait');
@@ -876,7 +922,7 @@ function deniedHtml(){
   var disabled=m && !modConf(m.id).enabled;
   var sent=myOpenRequest(MODULE);
   return gateShell('<div class="pe2-lock">'+I('lock',30)+'</div><h1 class="pe2-gate-h">Нет доступа к «'+esc(name)+'»</h1>'+
-    '<p class="pe2-gate-p">'+(disabled?'Модуль временно выключен владельцем.':MODULE==='admin'?'Эта страница только для владельца и администраторов.':sent?'Запрос уже отправлен — владелец его рассмотрит. Страница откроется сама, когда доступ выдадут.':'Попросите владельца открыть этот модуль — запрос уйдёт в админ-панель.')+'</p>'+
+    '<p class="pe2-gate-p">'+(disabled?'Модуль временно выключен владельцем.':MODULE==='admin'?'Эта страница только для владельца, администраторов и модераторов.':sent?'Запрос уже отправлен — владелец его рассмотрит. Страница откроется сама, когда доступ выдадут.':'Попросите владельца открыть этот модуль — запрос уйдёт в админ-панель.')+'</p>'+
     '<div class="pe2-actions col">'+(!disabled && MODULE!=='admin' && !sent?'<button class="pe2-btn primary block" data-request="'+esc(MODULE)+'">Запросить доступ</button>':'')+
     '<a class="pe2-btn block" href="index.html">'+I('home',15)+' На главную</a></div>');
 }
@@ -1159,7 +1205,7 @@ function openProfile(){
    ========================================================================= */
 var navEl=null;
 function pendingCount(){
-  if(!isAdmin()) return 0;
+  if(!isStaff() || !perm('requests')) return 0;
   var n=0;
   Object.keys(R.users).forEach(function(k){ if(R.users[k].status==='pending') n++; });
   Object.keys(R.requests||{}).forEach(function(k){ var r=R.requests[k]; if(r && r.status==='new') n++; });
@@ -1180,7 +1226,7 @@ function renderNav(){
       links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'">'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
       '<div class="pe2-nav-right">'+
       (CFG.MODE!=='live'?'<span class="pe2-testbadge" title="Данные идут не в рабочую базу">ТЕСТ · '+esc(CFG.MODE)+'</span>':'')+
-      (isAdmin()?'<a class="pe2-nav-admin'+(MODULE==='admin'?' on':'')+'" href="admin.html" title="Админ-панель">'+I('shield',15)+'<span>Админка</span>'+(pendingCount()?'<b>'+pendingCount()+'</b>':'')+'</a>':'')+
+      (isStaff()?'<a class="pe2-nav-admin'+(MODULE==='admin'?' on':'')+'" href="admin.html" title="Админ-панель">'+I('shield',15)+'<span>Админка</span>'+(pendingCount()?'<b>'+pendingCount()+'</b>':'')+'</a>':'')+
       (u?'<button class="pe2-nav-user" data-pe2-user>'+avatar(u,28)+'<span>'+esc(shortName(u))+'</span></button>'
         : guest?'<button class="pe2-nav-user" data-pe2-user><span class="pe2-av" style="width:28px;height:28px;background:#3A3A3E">'+I('user',14)+'</span><span>Гость</span></button>':'')+
       '</div>';
@@ -1199,7 +1245,7 @@ function userMenu(anchor){
   menuEl.innerHTML = u
     ? '<div class="pe2-menu-head">'+avatar(u,40)+'<div><b>'+esc(fullName(u))+'</b><span>'+esc(u.position||ROLE_NAMES[u.role]||'')+'</span></div></div>'+
       '<button data-a="profile">'+I('user',15)+'Мой профиль</button>'+
-      (isAdmin()?'<a href="admin.html">'+I('shield',15)+'Админ-панель</a>':'')+
+      (isStaff()?'<a href="admin.html">'+I('shield',15)+'Админ-панель</a>':'')+
       '<button data-a="request">'+I('lock',15)+'Запросить доступ…</button>'+
       '<button data-a="logout" class="danger">'+I('out',15)+'Выйти</button>'
     : '<div class="pe2-menu-head"><span class="pe2-av" style="width:40px;height:40px;background:#3A3A3E">'+I('user',18)+'</span><div><b>Гость'+(guest&&session.guestName?' · '+esc(session.guestName):'')+'</b><span>Ограниченный просмотр</span></div></div>'+
@@ -1253,9 +1299,10 @@ if(session && session.uid){
    минимум: пользователи (+ заявки у админа) и данные модуля. Настройки модулей
    и meta меняются редко — читаем их запросом и обновляем раз в минуту / при фокусе. */
 function loadModulesMeta(){
-  return Promise.all([fb('GET','modules'), fb('GET','meta')]).then(function(r){
-    var changed=JSON.stringify(r[0]||{})!==JSON.stringify(R.modules);
-    R.modules=r[0]||{}; R.meta=r[1]||null; gotModules=true; gotMeta=true; maybeLoaded();
+  var gp=fb('GET','perms').catch(function(){ return R.perms; });
+  return Promise.all([fb('GET','modules'), fb('GET','meta'), gp]).then(function(r){
+    var changed=JSON.stringify(r[0]||{})!==JSON.stringify(R.modules) || JSON.stringify(r[2]||null)!==JSON.stringify(R.perms);
+    R.modules=r[0]||{}; R.meta=r[1]||null; R.perms=r[2]||null; gotModules=true; gotMeta=true; maybeLoaded();
     if(changed && revealed){ renderNav(); notifyUsers(); }
   }).catch(function(){});
 }
@@ -1265,11 +1312,11 @@ window.addEventListener('focus', loadModulesMeta);
 
 var adminStream=null;
 function watchRequests(force){
-  if(adminStream || (!force && !isAdmin())) return;
-  adminStream=stream('requests', function(tree){ R.requests=tree||{}; R.requestsLoaded=true; if(isAdmin()) saveCache(); renderNav(); usersFns.forEach(function(fn){ try{ fn(R.users); }catch(e){} }); }, null, { poll:15000 });
+  if(adminStream || (!force && !(isStaff() && perm('requests')))) return;
+  adminStream=stream('requests', function(tree){ R.requests=tree||{}; R.requestsLoaded=true; if(isStaff()) saveCache(); renderNav(); usersFns.forEach(function(fn){ try{ fn(R.users); }catch(e){} }); }, null, { poll:15000 });
 }
 /* админ по прошлому входу — заявки начинаем грузить сразу, не дожидаясь проверки */
-if(session && session.cache && (session.cache.role==='owner' || session.cache.role==='admin')) watchRequests(true);
+if(session && session.cache && (session.cache.role==='owner' || session.cache.role==='admin' || session.cache.role==='moderator')) watchRequests(true);
 
 /* быстрый старт из кэша: если по кэшу всё ок — показываем страницу сразу,
    а сеть потом подтвердит (или закроет доступ, если его отозвали) */
@@ -1306,8 +1353,10 @@ var PE = window.PE = {
   get requestsLoaded(){ return R.requestsLoaded; },
   get modules(){ return R.modules; },
   get meta(){ return R.meta; },
+  get perms(){ return R.perms; },
+  setPerms:function(p){ R.perms=p; saveCache(); evaluate(); renderNav(); notifyUsers(); },
   userById:userById, team:team, fullName:fullName, shortName:shortName, initials:initials, avatar:avatar,
-  isAdmin:isAdmin, isOwner:isOwner, can:can, modConf:modConf, moduleById:moduleById,
+  isAdmin:isAdmin, isOwner:isOwner, isStaff:isStaff, perm:perm, permsOf:permsOf, PERMS:PERMS, DEFAULT_PERMS:DEFAULT_PERMS, ROLE_ORDER:ROLE_ORDER, can:can, modConf:modConf, moduleById:moduleById,
   onReady:function(fn){ if(fired) fn(PE); else readyFns.push(fn); },
   onUsers:function(fn){ usersFns.push(fn); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,

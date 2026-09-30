@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260927d">
-<script src="assets/pe-core.js?v=20260927d" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=20260930a">
+<script src="assets/pe-core.js?v=20260930a" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -836,7 +836,7 @@
       <button data-view="cal"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Календарь</button>
       <button data-view="time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M9.5 2.5h5"/></svg>Время</button>
       <button data-view="list"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg>Список</button>
-      <button data-view="team" class="pe2-admin-only" title="Режим руководителя: задачи всех сотрудников"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8" r="2.6"/><circle cx="16" cy="9" r="2.2"/><path d="M3.5 18.2c.6-2.8 2.6-4.4 5-4.4s4.4 1.6 5 4.4"/><path d="M14.3 14.3c1.9.3 3.3 1.7 3.8 3.9"/></svg>Команда</button>
+      <button data-view="team" class="pe2-need-tasks_all" title="Режим руководителя: задачи всех сотрудников"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8" r="2.6"/><circle cx="16" cy="9" r="2.2"/><path d="M3.5 18.2c.6-2.8 2.6-4.4 5-4.4s4.4 1.6 5 4.4"/><path d="M14.3 14.3c1.9.3 3.3 1.7 3.8 3.9"/></svg>Команда</button>
     </div>
   </div>
 
@@ -884,7 +884,7 @@ PE.onReady(function(){
 
 var STORAGE_KEY = 'task-board-v2';   /* личное: вид, фильтры, уведомления — у каждого своё */
 var ME = PE.user.id;                  /* id пользователя из экосистемы */
-var IS_ADMIN = PE.isAdmin();
+var IS_ADMIN = PE.perm('tasks_all');   /* режим руководителя — право из «Ролей и прав» */
 /* команда — все, у кого есть доступ к «Задачам»; имена, должности и аватарки — из профилей */
 var TEAM = [], MENTION_RE = /(?!)/g;
 function reEsc(x){ return String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
@@ -4394,7 +4394,7 @@ function init(){
   var qv=location.search.match(/[?&]view=(board|cal|time|list)/); if(qv){ state.settings.view=qv[1]; try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
   startSync();
   /* изменились люди (новый сотрудник, аватарка, отозван доступ) — обновляем команду */
-  PE.onUsers(function(){ IS_ADMIN=PE.isAdmin(); buildTeam(); renderMain(); if(openId && !draft){ Sync.drawerStale=true; refreshDrawerIfSafe(); } });
+  PE.onUsers(function(){ IS_ADMIN=PE.perm('tasks_all'); buildTeam(); renderMain(); if(openId && !draft){ Sync.drawerStale=true; refreshDrawerIfSafe(); } });
   renderMain();
   bindDnD();
   bindListDnD();

@@ -220,6 +220,7 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 
 /* элементы только для владельца и администраторов (кнопки редактирования в модулях) */
 html:not(.pe2-admin) .pe2-admin-only{ display:none !important; }
+html:not(.pe2-can-glossary_edit) .pe2-need-glossary_edit, html:not(.pe2-can-tasks_all) .pe2-need-tasks_all{ display:none !important; }
 
 /* ================= редактор кадра аватарки ================= */
 .pe2-crop{ position:relative; width:280px; height:280px; margin:6px auto 14px; border-radius:16px; overflow:hidden; background:#1c1f25; cursor:grab; touch-action:none; user-select:none; }

@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/shell.css">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260927d">
-<script src="assets/pe-core.js?v=20260927d" data-module="glossary"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=20260930a">
+<script src="assets/pe-core.js?v=20260930a" data-module="glossary"></script>
 <style>
 :root {
         --green: #0A0A0B;
@@ -720,7 +720,7 @@
                 <div id="prevNames"></div>
             </div>
             <div style="margin-top:14px;text-align:center;">
-                <button class="ghost pe2-admin-only" onclick="goAdminLogin()">Панель администратора</button>
+                <button class="ghost pe2-need-glossary_edit" onclick="goAdminLogin()">Панель администратора</button>
             </div>
         </div>
 
@@ -747,7 +747,7 @@
                     <div class="ttl">Все слова</div>
                     <div class="desc">Полный список терминов — списком. По клику показывается определение и примеры</div>
                 </div>
-                <div class="menu-tile pe2-admin-only" style="--tile-accent:#6B7280; grid-column:1 / -1;" onclick="goAdminLogin()">
+                <div class="menu-tile pe2-need-glossary_edit" style="--tile-accent:#6B7280; grid-column:1 / -1;" onclick="goAdminLogin()">
                     <div class="ttl">Панель администратора</div>
                     <div class="desc">Редактирование: добавление терминов и картинок, аналитика по сотрудникам. Видно только администраторам</div>
                 </div>
@@ -1999,7 +1999,13 @@
             await saveData(USERS_KEY, users);
         }
         goDashboard();
+        peAutoAdmin();
     };
+    /* ссылка из админки экосистемы: glossary.html?admin=1 — сразу открыть панель
+       (вызывается и после загрузки, и после подстановки пользователя — побеждает последний) */
+    function peAutoAdmin() {
+        if (window.PE && /[?&]admin=1/.test(location.search)) PE.onReady(function(){ if (PE.perm('glossary_edit')) goAdminLogin(); });
+    }
 
     // ---------- STUDY ----------
     function goStudySetup() {
@@ -2446,11 +2452,11 @@
 
     // ---------- ADMIN ----------
     function goAdminLogin() {
-        if (window.PE && PE.isAdmin()) { isAdmin = true; goAdminDashboard(); return; }
-        if (window.PE) PE.toast('Панель глоссария доступна только администраторам экосистемы', 'err');
+        if (window.PE && PE.perm('glossary_edit')) { isAdmin = true; goAdminDashboard(); return; }
+        if (window.PE) PE.toast('Панель глоссария открыта тем, кому это разрешено в «Ролях и правах»', 'err');
     }
     function adminLogin() {
-        if (window.PE && PE.isAdmin()) {
+        if (window.PE && PE.perm('glossary_edit')) {
             isAdmin = true;
             goAdminDashboard();
         } else {
@@ -2712,6 +2718,7 @@
             $("storageModeNote").innerHTML = "<b>Локальный режим</b>История сохраняется только в этом браузере.";
         }
         renderPrevNames();
+        peAutoAdmin();
     }
     initApp();
 </script>

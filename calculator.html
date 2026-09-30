@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор сметы</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/pe-core.css?v=20260930a">
+<script src="assets/pe-core.js?v=20260930a" data-module="calc"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Onest:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#08090c; --panel:#111318; --panel2:#171a21; --sunk:#0c0e12; --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --ink:#f2f4f7; --muted:rgba(242,244,247,.62); --faint:rgba(242,244,247,.38);
+  --accent:#1a8fff; --accent-2:#5cb3ff; --accent-soft:rgba(26,143,255,.14);
+  --ok:#2bc37a; --ok-soft:rgba(43,195,122,.14); --warn:#ffb020; --warn-soft:rgba(255,176,32,.14);
+  --bad:#ff5a52; --bad-soft:rgba(255,90,82,.14); --gift:#d68bff; --gift-soft:rgba(214,139,255,.14);
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-head:"Onest","Golos Text",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f1f3f6; --panel:#ffffff; --panel2:#f6f7f9; --sunk:#e9ecf1; --line:#dde2e8; --line2:#c8cfd8;
+  --ink:#141920; --muted:#58616e; --faint:#8b94a1;
+  --accent:#0a6fd6; --accent-2:#0a6fd6; --accent-soft:#e3effc;
+  --ok:#14804f; --ok-soft:#e0f4ea; --warn:#9a5b00; --warn-soft:#fcf0d9;
+  --bad:#b3261e; --bad-soft:#fbe4e2; --gift:#8a3bc0; --gift-soft:#f3e6fb;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 14.5px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+/* ---------- шапка ---------- */
+.top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1480px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;margin-right:8px;white-space:nowrap}
+.brand-ico{width:34px;height:34px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;
+  background:linear-gradient(145deg,var(--accent-2),var(--accent) 60%);box-shadow:0 6px 18px -6px color-mix(in srgb,var(--accent) 70%,transparent),inset 0 1px 0 rgba(255,255,255,.25)}
+.brand-ico svg{width:18px;height:18px}
+.brand-t{font:800 19px/1 var(--f-head);letter-spacing:-.025em}
+.brand-t em{font-style:normal;background:linear-gradient(90deg,var(--accent-2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.field{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0 10px;height:38px}
+.field label{font-size:12px;color:var(--muted);white-space:nowrap}
+.field input{background:none;border:0;outline:0;min-width:0;height:100%}
+.field.rate{border-color:var(--accent);background:var(--accent-soft)}
+.field.rate input{width:78px;font:700 18px/1 var(--f-head);text-align:right}
+.field.rate span{font-weight:600;color:var(--accent-2)}
+.field.proj input{width:130px}
+.sp{flex:1}
+.btn{height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-weight:500}
+.btn:hover{border-color:var(--line2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{height:30px;padding:0 10px;font-size:13px;border-radius:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.ico{width:38px;padding:0;justify-content:center}
+
+/* ---------- раскладка ---------- */
+.wrap{max-width:1480px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.main{min-width:0}
+.aside{position:sticky;top:76px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 92px);overflow:auto;padding-bottom:4px;scrollbar-width:thin}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.h2{font:700 13px/1 var(--f-head);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+
+/* ---------- пресеты ---------- */
+.presets{padding:14px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.pre{position:relative;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-height:86px}
+.pre:hover{border-color:var(--accent)}
+.pre.on{border-color:var(--accent);background:var(--accent-soft)}
+.pre b{font:600 14px/1.25 var(--f-head)}
+.pre small{color:var(--muted);font-size:12px;line-height:1.35}
+.pre .pp{margin-top:auto;font:700 14px/1 var(--f-head);color:var(--accent-2)}
+.params{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--panel2);height:36px;overflow:hidden}
+.stepper span{padding:0 10px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.stepper button{width:30px;height:100%;border:0;background:none;font-size:17px;color:var(--muted)}
+.stepper button:hover{color:var(--ink);background:var(--sunk)}
+.stepper input{width:42px;text-align:center;border:0;background:none;outline:0;font-weight:600;height:100%}
+.hint{font-size:12.5px;color:var(--faint)}
+
+/* ---------- панель фильтра ---------- */
+.tools{display:flex;gap:8px;align-items:center;margin:14px 0 10px;flex-wrap:wrap}
+.search{flex:1;min-width:200px}
+.search input{width:100%}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:5px 11px;border-radius:7px;font-size:13px;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--accent-soft);color:var(--ink);font-weight:600}
+
+/* ---------- прайс ---------- */
+.cat{margin-bottom:10px;overflow:hidden}
+.cat-h{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none}
+.cat-h:hover{background:var(--panel2)}
+.cat-h .chev{width:16px;height:16px;color:var(--faint);transition:transform .15s}
+.cat.closed .chev{transform:rotate(-90deg)}
+.cat-h b{font:600 15px/1.2 var(--f-head)}
+.cat-h .cnt{white-space:nowrap;font-size:12px;color:var(--muted);background:var(--sunk);padding:2px 8px;border-radius:20px}
+.cat-h .cnt.has{background:var(--accent-soft);color:var(--accent-2)}
+.cat-h .csum{margin-left:auto;font:600 14px/1 var(--f-head)}
+.cat-h .cadd{border:0;background:none;color:var(--muted);font-size:12.5px;padding:4px 6px;border-radius:6px}
+.cat-h .cadd:hover{color:var(--accent-2);background:var(--accent-soft)}
+.cat.closed .rows{display:none}
+.rows{border-top:1px solid var(--line)}
+.row,.rhead{display:grid;grid-template-columns:30px minmax(0,1fr) 50px 66px 118px 54px 82px 92px 32px;gap:8px;align-items:center;padding:6px 10px 6px 12px}
+.rhead{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);padding-top:8px;padding-bottom:4px}
+.rhead div:nth-child(n+3){text-align:right}
+.rhead div:nth-child(5){text-align:center}
+.row{border-top:1px solid var(--line);transition:background .1s}
+.row:hover{background:var(--panel2)}
+.row.off .nm,.row.off .u,.row.off .hrs,.row.off .pr,.row.off .sm{opacity:.55}
+.row.on{background:linear-gradient(90deg,var(--accent-soft),transparent 60%)}
+.row.gift{background:linear-gradient(90deg,var(--gift-soft),transparent 60%)}
+.row.hidden{display:none}
+.ck{display:flex;align-items:center;justify-content:center;height:100%;cursor:pointer}
+.ck input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;margin:0}
+.nm{min-width:0;cursor:pointer}
+.nm b{font-weight:500;display:block;line-height:1.3}
+.nm small{display:block;font-size:12px;color:var(--faint);line-height:1.35;margin-top:1px}
+.nm .tag{display:inline-block;font-size:10.5px;padding:0 6px;border-radius:5px;background:var(--sunk);color:var(--muted);margin-left:6px;vertical-align:1px;font-weight:500}
+.nm .tag.cu{background:var(--warn-soft);color:var(--warn)}
+.u{font-size:12.5px;color:var(--muted);text-align:right}
+.hin{width:100%;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);text-align:right;padding:0 8px;outline:0}
+.hin:focus{border-color:var(--accent)}
+.hin.ov{border-color:var(--warn);color:var(--warn)}
+.qty{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;background:var(--sunk);height:30px;overflow:hidden;position:relative}
+.qty button{width:26px;height:100%;border:0;background:none;color:var(--muted);font-size:16px;flex:none}
+.qty button:hover{background:var(--panel2);color:var(--ink)}
+.qty input{width:100%;min-width:0;border:0;background:none;text-align:center;outline:0;font-weight:600;height:100%}
+.qty.lnk{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.qty.lnk input{color:var(--accent-2)}
+.lk{position:absolute;right:26px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--accent-2);pointer-events:none;opacity:.8}
+.relink{border:0;background:none;padding:0;margin-left:4px;color:var(--accent-2);font-size:11px;text-decoration:underline;cursor:pointer}
+.hrs,.pr,.sm{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hrs{color:var(--muted);font-size:13px}
+.pr{font-size:13px;color:var(--muted)}
+.sm{font-weight:600}
+.row.gift .sm{color:var(--gift)}
+.gb{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:none;color:var(--faint);display:flex;align-items:center;justify-content:center;padding:0}
+.gb svg{width:16px;height:16px}
+.gb:hover{color:var(--gift);border-color:var(--line)}
+.row.gift .gb{color:var(--gift);background:var(--gift-soft)}
+.del{border:0;background:none;color:var(--faint);font-size:11px;padding:0;margin-left:6px;text-decoration:underline;cursor:pointer}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* ---------- боковая панель ---------- */
+.tot{padding:16px}
+.tot .big{font:800 34px/1.05 var(--f-head);letter-spacing:-.02em;margin:2px 0 6px}
+.tot .sub{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.kpi small{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.kpi b{font:700 16px/1.3 var(--f-head)}
+.lines{margin-top:12px;border-top:1px dashed var(--line2);padding-top:10px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.ln{display:flex;justify-content:gap;gap:10px}
+.ln span:first-child{flex:1;color:var(--muted)}
+.ln span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ln.plus span:last-child{color:var(--warn)}
+.ln.minus span:last-child{color:var(--ok)}
+.ln.gift span:last-child{color:var(--gift)}
+.ln.total{font-weight:700;font-size:14px;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
+.ln.total span:first-child{color:var(--ink)}
+.alert{margin-top:10px;padding:8px 10px;border-radius:9px;font-size:12.5px;line-height:1.4}
+.alert.warn{background:var(--warn-soft);color:var(--warn)}
+.alert.bad{background:var(--bad-soft);color:var(--bad)}
+.alert.ok{background:var(--ok-soft);color:var(--ok)}
+.box{padding:14px}
+.opt{display:flex;align-items:flex-start;gap:9px;padding:6px 4px;border-radius:8px;cursor:pointer;font-size:13.5px}
+.opt:hover{background:var(--panel2)}
+.opt input{width:16px;height:16px;margin:2px 0 0;accent-color:var(--accent);flex:none}
+.opt.dis input{accent-color:var(--ok)}
+.opt div{flex:1;min-width:0}
+.opt small{display:block;font-size:12px;color:var(--faint);line-height:1.35}
+.opt .pc{font:600 12.5px/1.6 var(--f-mono);white-space:nowrap;color:var(--warn)}
+.opt.dis .pc{color:var(--ok)}
+.opt .pc input.pcin{width:44px;height:24px;border:1px solid var(--line);border-radius:6px;background:var(--sunk);text-align:right;padding:0 4px;margin:0;accent-color:auto;font:inherit;color:inherit}
+.urg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px}
+.urg button{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:7px 4px;font-size:12px;line-height:1.25}
+.urg button b{display:block;font:600 13px/1.2 var(--f-head)}
+.urg button.on{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.urg button.on.z{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.row2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}
+.mini{display:flex;align-items:center;gap:6px;font-size:13px}
+.mini input{width:70px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);text-align:right;padding:0 8px;outline:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px dashed var(--line2);background:none;border-radius:20px;padding:4px 10px;font-size:12.5px;color:var(--muted)}
+.chip:hover{border-color:var(--gift);color:var(--gift)}
+.chip.on{border-style:solid;border-color:var(--gift);color:var(--gift);background:var(--gift-soft)}
+.pay{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.pay .ln span:first-child{color:var(--muted)}
+.roles{display:flex;flex-direction:column;gap:5px;font-size:12.5px}
+.rl{display:grid;grid-template-columns:100px 1fr 54px;gap:8px;align-items:center}
+.rl i{display:block;height:6px;border-radius:4px;background:var(--accent);min-width:2px}
+.rl span:last-child{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+details.box summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between}
+details.box summary::-webkit-details-marker{display:none}
+details.box summary .h2{margin:0}
+details.box summary em{font-style:normal;font-size:12.5px;color:var(--muted)}
+details.box[open] summary{margin-bottom:10px}
+select.sel{height:30px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);padding:0 8px}
+
+/* ---------- итоговая смета ---------- */
+.est{margin-top:18px;padding:16px}
+.est-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.est-h h2{font:700 20px/1.2 var(--f-head);margin:0 auto 0 0}
+.tbl-wrap{overflow-x:auto}
+table.et{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px}
+.et th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);text-align:left;font-weight:500;padding:8px;border-bottom:1px solid var(--line2)}
+.et td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.et .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.et tr.grp td{background:var(--panel2);font:600 13px/1.3 var(--f-head);color:var(--muted)}
+.et tr.gft td{color:var(--gift)}
+.et tr.mod td{color:var(--muted)}
+.et tr.fin td{font:800 17px/1.3 var(--f-head);border-bottom:0;padding-top:12px}
+.et td.n{color:var(--faint);width:34px}
+.note{width:100%;min-height:60px;margin-top:12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);padding:10px;outline:0;resize:vertical}
+
+/* ---------- модалки, тосты ---------- */
+.back{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;display:none;align-items:center;justify-content:center;padding:16px}
+.back.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:16px;width:min(620px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:20px}
+.modal h3{font:700 19px/1.2 var(--f-head);margin:0 0 14px;display:flex;align-items:center;justify-content:space-between}
+.modal .x{border:0;background:none;font-size:22px;color:var(--muted);line-height:1}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ff{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.ff input,.ff select{height:36px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);padding:0 10px;color:var(--ink);outline:0}
+.ff input:focus{border-color:var(--accent)}
+.ff.full{grid-column:1/-1}
+.sv{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+.sv div{flex:1;min-width:0}
+.sv small{color:var(--muted);display:block}
+.toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:13.5px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.toast button{border:0;background:none;color:var(--accent);font-weight:700;padding:0}
+.mbar{display:none}
+
+@media (max-width:1180px){
+  .wrap{grid-template-columns:1fr}
+  .aside{position:static;max-height:none;overflow:visible}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--panel);border-top:1px solid var(--line2);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));align-items:center;gap:12px}
+  .mbar b{font:800 20px/1 var(--f-head)}
+  .mbar small{color:var(--muted);font-size:12px;display:block}
+  body{padding-bottom:70px}
+}
+@media (max-width:760px){
+  .top{position:static}
+  .top-in{gap:8px}
+  .field.proj{flex:1 1 140px}
+  .field.proj input{width:110px}
+  .brand-t{font-size:17px}
+  .rhead{display:none}
+  .row{grid-template-columns:30px 1fr 60px 34px;grid-template-areas:"ck nm nm g" ". h q sm";row-gap:6px;padding:8px 10px}
+  .ck{grid-area:ck}.nm{grid-area:nm}.gb{grid-area:g}
+  .row .u,.row .hrs,.row .pr{display:none}
+  .row .hin{grid-area:h}
+  .row .qty{grid-area:q}
+  .row .sm{grid-area:sm;align-self:center}
+  .row{grid-template-columns:30px 70px 118px 1fr 34px;grid-template-areas:"ck nm nm nm g" ". h q sm sm"}
+  .cat-h .cadd{display:none}
+}
+@media print{
+  .top,.aside,.presets,.tools,#list,.mbar,.est-h .btn,.est-h .seg,.toasts{display:none!important}
+  body{background:#fff;color:#000}
+  .wrap{display:block;padding:0}
+  .card{border:0}
+  .et td,.et th{color:#000!important;border-color:#ccc}
+  .et tr.grp td{background:#f1f1f1}
+  .note{border:0;padding:0;background:none}
+}
+
+/* ---------- админка ---------- */
+.modal.wide{width:min(1180px,100%);padding:0;display:flex;flex-direction:column;max-height:calc(100vh - 32px);overflow:hidden}
+.adm-h{display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.adm-h h3{margin:0 auto 0 0}
+.adm-state{font-size:12.5px;color:var(--warn)}
+.adm-tabs{margin:12px 20px 0;flex-wrap:wrap}
+.adm-body{padding:16px 20px 24px;overflow:auto;flex:1}
+.adm-body h4{font:700 15px/1.3 var(--f-head);margin:18px 0 8px;display:flex;align-items:center;gap:10px}
+.adm-body h4:first-child{margin-top:0}
+.adm-body p.hint{margin:0 0 10px}
+table.le{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px}
+.le th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);text-align:left;font-weight:500;padding:4px 4px 6px}
+.le td{padding:3px 4px;vertical-align:middle;border-top:1px solid var(--line)}
+.le input[type=text],.le input[type=number],.le select{width:100%;height:30px;border:1px solid var(--line);border-radius:7px;background:var(--sunk);padding:0 8px;outline:0;min-width:0}
+.le input[type=number]{text-align:right}
+.le input:focus,.le select:focus{border-color:var(--accent)}
+.le input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.le td.act{white-space:nowrap;width:1%;text-align:right}
+.le td.act button{width:26px;height:26px;border:1px solid transparent;border-radius:6px;background:none;color:var(--muted);padding:0}
+.le td.act button:hover{border-color:var(--line);color:var(--ink)}
+.le td.act button[data-a=del]:hover{color:var(--bad)}
+.le .ro{color:var(--muted)}
+.scope{position:relative}
+.scope summary{list-style:none;height:30px;border:1px solid var(--line);border-radius:7px;background:var(--sunk);padding:0 8px;display:flex;align-items:center;cursor:pointer;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scope summary::-webkit-details-marker{display:none}
+.scope[open] .scope-pop{display:flex}
+.scope-pop{display:none;position:absolute;z-index:5;top:34px;left:0;min-width:240px;flex-direction:column;gap:2px;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.scope-pop label{display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 4px;border-radius:6px;cursor:pointer}
+.scope-pop label:hover{background:var(--panel2)}
+.pgrid2{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.plist{display:flex;flex-direction:column;gap:4px}
+.plist button.pi{text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:8px 10px;font-size:13.5px;display:flex;justify-content:space-between;gap:8px}
+.plist button.pi.on{border-color:var(--accent);background:var(--accent-soft)}
+.plist button.pi small{color:var(--muted);white-space:nowrap}
+.pedit{border:1px solid var(--line);border-radius:12px;padding:14px}
+.adder{display:flex;gap:8px;margin-top:8px}
+.adder input{flex:1;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);padding:0 10px;outline:0}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.gchips span{border:1px solid var(--gift);color:var(--gift);background:var(--gift-soft);border-radius:20px;padding:3px 6px 3px 10px;font-size:12.5px;display:inline-flex;gap:6px;align-items:center}
+.gchips button{border:0;background:none;color:inherit;padding:0 4px;font-size:14px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
+.lgrid label{display:grid;grid-template-columns:1fr 64px 64px;gap:6px;align-items:center;font-size:12.5px}
+.lgrid input{height:28px;border:1px solid var(--line);border-radius:7px;background:var(--sunk);text-align:right;padding:0 6px;outline:0;width:100%}
+.adm-only{display:none}
+html.is-admin .adm-only{display:inline-flex}
+.ai-note{margin:0 14px 10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:13px;line-height:1.45}
+@media (max-width:760px){ .pgrid2{grid-template-columns:1fr} .le{min-width:640px} .adm-body{overflow-x:auto} }
+
+/* ---------- внутри экосистемы: сверху фиксированное меню экосистемы ---------- */
+body{padding-top:var(--pe-nav-h,0px)}
+.top{top:var(--pe-nav-h,0px)}
+.aside{top:calc(76px + var(--pe-nav-h,0px));max-height:calc(100vh - 92px - var(--pe-nav-h,0px))}
+.back{z-index:950}
+.toasts{z-index:960}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="top-in">
+  <div class="brand"><span class="brand-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="3"/><path d="M8 7h8"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg></span><span class="brand-t">Калькулятор <em>сметы</em></span></div>
+  <div class="field rate" title="Стоимость часа работы студии. Все цены считаются от неё."><label for="rate">Час студии</label><input id="rate" type="number" min="0" step="100" inputmode="numeric"><span>₽</span></div>
+  <div class="field proj"><label for="proj">Проект</label><input id="proj" placeholder="Название"></div>
+  <div class="field proj"><label for="client">Клиент</label><input id="client" placeholder="Компания"></div>
+  <div class="sp"></div>
+  <button class="btn" id="bNew" title="Новая смета"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Новая</button>
+  <button class="btn" id="bSaved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Сметы</button>
+  <button class="btn pri" id="bSave">Сохранить</button>
+  <button class="btn adm-only" id="bAdmin" title="Прайс, сборки, надбавки, скидки, настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Админка</button>
+  <button class="btn ico" id="bTheme" title="Тема"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</div></header>
+
+<div class="wrap">
+<main class="main">
+
+  <section class="card presets">
+    <div class="h2" style="display:flex;align-items:center;gap:10px"><span style="flex:1">Готовые сборки — нажмите, галочки проставятся, дальше правьте руками</span><button class="btn sm adm-only" id="bAsPreset" title="Текущий набор позиций станет новой готовой сборкой">+ Смету в сборки</button></div>
+    <div class="pgrid" id="presets"></div>
+    <div class="params">
+      <div class="stepper" title="Все позиции с единицей «блок» считаются от этого числа"><span>Блоков на главной</span><button data-step="blocks" data-d="-1">−</button><input id="blocks" type="number" min="0" inputmode="numeric"><button data-step="blocks" data-d="1">+</button></div>
+      <div class="stepper" title="Все позиции с единицей «стр» считаются от этого числа"><span>Внутренних страниц</span><button data-step="pages" data-d="-1">−</button><input id="pages" type="number" min="0" inputmode="numeric"><button data-step="pages" data-d="1">+</button></div>
+      <span class="hint">Синие количества привязаны к этим числам. Измените вручную — привязка снимется, двойной клик вернёт.</span>
+    </div>
+  </section>
+
+  <div class="tools">
+    <div class="field search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--faint)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Поиск по прайсу  ( / )"></div>
+    <div class="seg" id="view"><button data-v="all" class="on">Весь прайс</button><button data-v="sel">Только выбранное</button></div>
+    <button class="btn sm" id="bFold">Свернуть всё</button>
+  </div>
+
+  <div id="list"></div>
+
+  <section class="card est" id="est">
+    <div class="est-h">
+      <h2>Смета</h2>
+      <div class="seg" id="estHours"><button data-v="1" class="on">С часами</button><button data-v="0">Без часов</button></div>
+      <button class="btn sm" id="bXls" title="Вставьте в Excel или Google Таблицы через Ctrl+V">Копировать для Excel</button>
+      <button class="btn sm" id="bCsv">Скачать CSV</button>
+      <button class="btn sm" id="bTxt" title="Короткий текст для мессенджера">Копировать текстом</button>
+      <button class="btn sm" id="bPrint">Печать / PDF</button>
+    </div>
+    <div class="tbl-wrap"><table class="et" id="estTable"></table></div>
+    <textarea class="note" id="note" placeholder="Комментарий к смете: что не входит, условия, сроки согласования…"></textarea>
+  </section>
+
+</main>
+
+<aside class="aside" id="aside">
+  <section class="card tot">
+    <div class="h2" style="margin-bottom:4px">Итого к оплате</div>
+    <div class="big num" id="tTotal">0 ₽</div>
+    <div class="sub" id="tSub"></div>
+    <div class="kpis">
+      <div class="kpi"><small>Часы</small><b class="num" id="kH">0</b></div>
+      <div class="kpi"><small>Срок</small><b class="num" id="kD">—</b></div>
+      <div class="kpi"><small>Позиций</small><b class="num" id="kN">0</b></div>
+    </div>
+    <div class="lines" id="tLines"></div>
+    <div id="tAlerts"></div>
+  </section>
+
+  <section class="card box">
+    <div class="h2">Срочность</div>
+    <div class="urg" id="urg"></div>
+    <div class="h2" style="margin-top:14px">Языки</div>
+    <div class="row2">
+      <div class="stepper"><span>Доп. языков</span><button data-step="lang" data-d="-1">−</button><input id="lang" type="number" min="0" inputmode="numeric"><button data-step="lang" data-d="1">+</button></div>
+    </div>
+    <label class="opt"><input type="checkbox" id="langTr"><div>Перевод делаем мы<small>Иначе клиент даёт готовые тексты, мы только вычитываем и верстаем</small></div></label>
+  </section>
+
+  <details class="card box" open>
+    <summary><span class="h2">Надбавки</span><em id="modsSum"></em></summary>
+    <div id="mods"></div>
+  </details>
+
+  <details class="card box" open>
+    <summary><span class="h2">Скидки</span><em id="discSum"></em></summary>
+    <div id="disc"></div>
+    <div class="row2" style="margin-top:8px">
+      <label class="mini">Своя скидка <input id="discPct" type="number" min="0" max="100" step="1"> %</label>
+      <label class="mini"><input id="discRub" type="number" min="0" step="1000" style="width:90px"> ₽</label>
+    </div>
+  </details>
+
+  <details class="card box" open>
+    <summary><span class="h2">Бонусы в подарок</span><em id="giftSum"></em></summary>
+    <div class="chips" id="gifts"></div>
+    <div class="hint" style="margin-top:8px">Любую позицию можно отдать в подарок кнопкой справа в строке: цена станет 0, а ценность покажется в смете.</div>
+  </details>
+
+  <details class="card box" open>
+    <summary><span class="h2">Оплата и округление</span></summary>
+    <div class="pay" id="pay"></div>
+    <div class="row2" style="margin-top:10px">
+      <label class="mini">Округлять до <select class="sel" id="round"><option value="0">без округления</option><option value="100">100 ₽</option><option value="1000">1 000 ₽</option><option value="5000">5 000 ₽</option><option value="10000">10 000 ₽</option></select></label>
+      <label class="mini">Дроби в Excel <select class="sel" id="dec"><option value=",">запятая</option><option value=".">точка</option></select></label>
+    </div>
+  </details>
+
+  <details class="card box">
+    <summary><span class="h2">Загрузка по ролям</span><em>часы</em></summary>
+    <div class="roles" id="roles"></div>
+  </details>
+</aside>
+</div>
+
+<div class="mbar" id="mbar"><div><small>Итого</small><b class="num" id="mTotal">0 ₽</b></div><div class="sp"></div><small id="mMeta"></small><button class="btn sm pri" id="mGo">Смета</button></div>
+
+<!-- админка -->
+<div class="back" id="mAdmin"><div class="modal wide">
+  <div class="adm-h"><h3>Админка калькулятора</h3><span class="adm-state" id="aState"></span><button class="btn sm" id="aCancel">Отменить правки</button><button class="btn sm pri" id="aSave">Сохранить</button><button class="x" id="aClose" title="Закрыть">×</button></div>
+  <div class="seg adm-tabs" id="aTabs">
+    <button data-t="items" class="on">Позиции прайса</button><button data-t="presets">Готовые сборки</button><button data-t="mods">Надбавки, скидки, подарки</button><button data-t="cats">Разделы</button><button data-t="org">Роли и общие</button><button data-t="data">Резерв и сброс</button>
+  </div>
+  <div class="adm-body" id="aBody"></div>
+</div></div>
+
+<div class="back" id="mSaved"><div class="modal">
+  <h3>Сохранённые сметы <button class="x" data-close>×</button></h3>
+  <div id="savedList"></div>
+</div></div>
+
+<div class="back" id="mCustom"><div class="modal">
+  <h3>Своя позиция <button class="x" data-close>×</button></h3>
+  <div class="fgrid">
+    <label class="ff full">Название<input id="cName" placeholder="Например: Разработка чат-бота"></label>
+    <label class="ff">Раздел<select id="cCat"></select></label>
+    <label class="ff">Единица<select id="cUnit"></select></label>
+    <label class="ff">Часов на единицу<input id="cH" type="number" min="0" step="0.25" value="1"></label>
+    <label class="ff">Роль<select id="cRole"></select></label>
+    <label class="ff full adm-only" style="flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" id="cKeep" style="height:auto;width:16px"> Добавить в прайс насовсем (появится у всех во всех сметах)</label>
+  </div>
+  <div class="row2" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>Отмена</button><button class="btn pri" id="cOk">Добавить</button></div>
+</div></div>
+
+<input type="file" id="fileIn" accept=".json" hidden>
+<div class="toasts" id="toasts"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   ЗАВОДСКОЙ ПРАЙС. Всё ниже правится в админке — здесь только
+   исходная версия, к которой можно вернуться кнопкой «Сброс».
+   Нормы — человеко-часы на единицу, откалиброваны под ставку
+   3000 ₽/ч и цены студии: лендинг на шаблонах ≈ 70 тыс.,
+   лендинг с индивидуальным дизайном ≈ 130 тыс.
+   ============================================================ */
+var UNITS = ['шт','блок','стр','час','мес'];
+var DEF_ROLES = [['pm','Менеджер'],['an','Маркетолог'],['cw','Копирайтер'],['ad','Арт-директор'],['ds','Дизайнер'],['dv','Верстальщик / разработчик']];
+var DEF_CATS = [
+  ['an','Аналитика и стратегия'], ['st','Структура и прототип'], ['tx','Тексты'],
+  ['cn','Концепция и арт-дирекшн'], ['des','Дизайн страниц и блоков'], ['gfx','Графика и контент'],
+  ['anim','Анимация и интерактив'], ['lay','Вёрстка и функционал на Tilda'],
+  ['ai','Сайт на коде с Claude'], ['seo','Запуск, SEO и аналитика'],
+  ['leg','Юридическое'], ['pm','Управление, правки, передача'], ['br','Брендинг и дополнительный дизайн']
+];
+/* [id, раздел, название, единица, часы, роль, пояснение] */
+var DEF_ITEMS = [
+  ['brief','an','Брифинг и созвон с клиентом','шт',1,'pm','Бриф, задачи, ЦА, конкуренты, ожидания'],
+  ['ca','an','Анализ конкурентов (до 5 сайтов)','шт',1.5,'an','Структура, офферы, цены, сильные и слабые места'],
+  ['ca_deep','an','Глубокий анализ конкурентов (до 10) и таблица УТП','шт',4,'an',''],
+  ['ta','an','Портрет ЦА и сегменты','шт',1.5,'an','Боли, возражения, критерии выбора'],
+  ['usp','an','УТП и оффер','шт',1.5,'an','Главное предложение и выгоды'],
+  ['cjm','an','Путь клиента (CJM)','шт',3,'an',''],
+  ['audit','an','Аудит текущего сайта','шт',2,'an','Первый экран, структура, конверсия, скорость'],
+  ['webvisor','an','Разбор Метрики и вебвизора','шт',2,'an','Где уходят, куда кликают, что не дочитывают'],
+  ['interview','an','Интервью с клиентами заказчика','шт',1.5,'an','Созвон и выжимка инсайтов'],
+  ['tz','an','Техническое задание','шт',2,'pm','Функции, интеграции, требования к страницам'],
+
+  ['struct','st','Смысловая структура лендинга','шт',1.5,'an','Порядок блоков и задача каждого'],
+  ['sitemap','st','Карта сайта (многостраничник)','шт',2,'an',''],
+  ['proto','st','Прототип блока, десктоп','блок',0.2,'ds','Wireframe в Figma'],
+  ['proto_mob','st','Прототип блока, мобильный','блок',0.15,'ds',''],
+  ['proto_page','st','Прототип внутренней страницы','стр',1,'ds',''],
+  ['proto_click','st','Кликабельный прототип','шт',2,'ds','Связанные экраны в Figma для согласования'],
+
+  ['copy','tx','Копирайтинг блока','блок',0.45,'cw','Заголовок, тексты, CTA'],
+  ['copy_b2b','tx','Экспертный / B2B-копирайтинг блока','блок',0.8,'cw','Вместо обычного: сложный продукт, цифры, кейсы, работа с экспертом'],
+  ['copy_edit','tx','Редактура текстов клиента','блок',0.2,'cw',''],
+  ['copy_page','tx','Тексты внутренней страницы','стр',1.5,'cw',''],
+  ['copy_heads','tx','Три варианта оффера для первого экрана','шт',1,'cw',''],
+  ['copy_seo','tx','SEO-статья до 4 000 знаков','шт',2,'cw',''],
+  ['copy_card','tx','Описание товара, услуги или кейса','шт',0.3,'cw',''],
+  ['copy_expert','tx','Интервью с экспертом для текстов','шт',1.5,'cw',''],
+  ['copy_meta','tx','Meta title и description','стр',0.1,'cw',''],
+
+  ['moodboard','cn','Мудборд и референсы','шт',1,'ad',''],
+  ['concept','cn','Дизайн-концепция: первый экран, 1 вариант','шт',3,'ad','Задаёт стиль всего сайта'],
+  ['concept_x','cn','Дополнительный вариант концепции','шт',2,'ad',''],
+  ['style','cn','Стайлгайд: цвета, шрифты, сетка','шт',1.5,'ds',''],
+  ['uikit','cn','UI-кит: кнопки, формы, карточки, состояния','шт',3,'ds',''],
+  ['adrev','cn','Арт-дирекшн: ревью дизайна','блок',0.1,'ad','Контроль качества каждого экрана'],
+
+  ['d_std','des','Дизайн блока из шаблонов Tilda','блок',0.35,'ds','Стандартные блоки, настройка стиля'],
+  ['d_hero','des','Индивидуальный первый экран','шт',2.5,'ds','Своя композиция в Zero Block'],
+  ['d_custom','des','Дизайн блока, индивидуальный','блок',0.8,'ds','Своя сетка и композиция в Figma'],
+  ['d_art','des','Дизайн блока, арт / wow','блок',1.5,'ds','Сложная композиция, нестандартная подача'],
+  ['d_hero_art','des','Wow-первый экран: 3D, коллаж, сложная композиция','шт',4,'ad',''],
+  ['d_mob','des','Мобильная версия дизайна','блок',0.2,'ds',''],
+  ['d_tab','des','Планшетная версия дизайна','блок',0.15,'ds',''],
+  ['d_hf','des','Шапка, меню и подвал','шт',1,'ds',''],
+  ['d_burger','des','Мобильное меню (бургер)','шт',0.5,'ds',''],
+  ['d_page','des','Внутренняя страница по шаблону главной','стр',2,'ds',''],
+  ['d_page_u','des','Уникальная внутренняя страница','стр',5,'ds',''],
+  ['d_popup','des','Попап / модальное окно','шт',0.5,'ds',''],
+  ['d_thanks','des','Страница «Спасибо» или 404','шт',0.5,'ds',''],
+  ['d_catalog','des','Каталог (листинг товаров)','шт',2,'ds',''],
+  ['d_card','des','Карточка товара или услуги','шт',1.5,'ds',''],
+  ['d_blog','des','Шаблон статьи блога','шт',2,'ds',''],
+  ['d_form','des','Сложная или многошаговая форма','шт',1,'ds',''],
+
+  ['g_stock','gfx','Подбор стоковых фото','шт',0.5,'ds',''],
+  ['g_photo','gfx','Обработка и ретушь фото','шт',0.2,'ds',''],
+  ['g_cut','gfx','Вырезка объекта','шт',0.15,'ds',''],
+  ['g_ai','gfx','Генерация изображения ИИ с доработкой','шт',0.5,'ds',''],
+  ['g_collage','gfx','Коллаж','шт',1.5,'ds',''],
+  ['g_mock','gfx','Мокап','шт',0.3,'ds',''],
+  ['g_icons','gfx','Набор иконок из библиотек (до 10)','шт',1,'ds',''],
+  ['g_icon','gfx','Авторская иконка','шт',0.4,'ds',''],
+  ['g_ill','gfx','Иллюстрация простая','шт',2.5,'ds',''],
+  ['g_ill_c','gfx','Иллюстрация сложная','шт',6,'ds',''],
+  ['g_3d','gfx','3D-объект или сцена','шт',6,'ds',''],
+  ['g_info','gfx','Инфографика или схема','шт',1.5,'ds',''],
+  ['g_video','gfx','Монтаж фонового видео до 30 с','шт',2,'ds',''],
+  ['g_fav','gfx','Фавикон и OG-картинка для соцсетей','шт',0.5,'ds',''],
+  ['g_ban','gfx','Баннер (адаптация под размер)','шт',0.4,'ds',''],
+
+  ['a_basic','anim','Анимация появления элементов','блок',0.1,'dv',''],
+  ['a_hover','anim','Ховеры и микроинтеракции','блок',0.2,'dv',''],
+  ['a_step','anim','Пошаговая анимация в Zero Block','блок',1,'dv',''],
+  ['a_scroll','anim','Сложная скролл-анимация или параллакс','блок',2,'dv',''],
+  ['a_lottie','anim','Lottie-анимация','шт',3,'ds',''],
+  ['a_slider','anim','Кастомный слайдер или карусель','шт',1,'dv',''],
+  ['a_tabs','anim','Табы, аккордеон, переключатели','шт',0.5,'dv',''],
+  ['a_quiz','anim','Квиз до 7 вопросов','шт',3,'dv',''],
+  ['a_calc','anim','Калькулятор стоимости на сайте','шт',4,'dv',''],
+  ['a_map','anim','Интерактивная карта или схема','шт',2,'dv',''],
+  ['a_pre','anim','Прелоадер или кастомный курсор','шт',1,'dv',''],
+  ['a_code','anim','Кастомный код JS / CSS','час',1,'dv','Нестандартная механика, почасово'],
+
+  ['v_std','lay','Сборка блока из шаблонов Tilda','блок',0.2,'dv',''],
+  ['v_zero','lay','Вёрстка блока в Zero Block с адаптивом','блок',0.7,'dv','5 разрешений: 1200, 960, 640, 480, 320'],
+  ['v_art','lay','Вёрстка сложного арт-блока','блок',1.2,'dv','Много слоёв, анимации, точный адаптив'],
+  ['v_hf','lay','Вёрстка шапки, меню и подвала','шт',0.7,'dv',''],
+  ['v_page','lay','Сборка внутренней страницы','стр',1.5,'dv',''],
+  ['v_popup','lay','Попап','шт',0.3,'dv',''],
+  ['v_forms','lay','Формы и приём заявок (почта, Telegram)','шт',0.5,'dv',''],
+  ['v_crm','lay','Интеграция с CRM (amoCRM, Битрикс24)','шт',1.5,'dv',''],
+  ['v_pay','lay','Приём оплаты (ЮKassa, CloudPayments)','шт',1.5,'dv',''],
+  ['v_store','lay','Каталог Tilda Store: настройка','шт',4,'dv','Фильтры, корзина, доставка'],
+  ['v_goods','lay','Заведение товара','шт',0.08,'dv',''],
+  ['v_blog','lay','Блог / поток статей','шт',1.5,'dv',''],
+  ['v_member','lay','Личный кабинет или закрытые страницы','шт',3,'dv',''],
+  ['v_speed','lay','Оптимизация скорости','шт',1.5,'dv','Сжатие картинок, lazy load, лишние скрипты'],
+  ['v_test','lay','Тестирование на устройствах и в браузерах','шт',1,'dv',''],
+
+  ['ai_setup','ai','Настройка проекта, репозитория и окружения','шт',1,'dv','Шаблон проекта, Git, структура файлов, инструкции для Claude'],
+  ['ai_system','ai','Дизайн-система в коде','шт',1.5,'dv','Цвета, шрифты, отступы, кнопки — один раз, дальше Claude собирает по ним'],
+  ['ai_block','ai','Блок кодом по готовому макету','блок',0.4,'dv','Claude собирает по макету из Figma, мы доводим до пикселя, адаптив включён'],
+  ['ai_block_free','ai','Блок кодом без макета: дизайн сразу в коде','блок',0.7,'ds','Дизайнер ведёт Claude по референсам и концепции первого экрана'],
+  ['ai_anim','ai','Анимации кодом (GSAP, скролл)','блок',0.3,'dv','Появления, параллакс, привязка к скроллу'],
+  ['ai_3d','ai','WebGL / Three.js-сцена','шт',5,'dv',''],
+  ['ai_review','ai','Ревью кода и доводка после ИИ','блок',0.15,'dv','Проверка каждого блока, ошибки, кроссбраузерность'],
+  ['ai_page','ai','Внутренняя страница кодом','стр',1.2,'dv',''],
+  ['ai_forms','ai','Формы и заявки через serverless','шт',1.5,'dv','В Telegram, на почту или в CRM без сторонних конструкторов'],
+  ['ai_cms','ai','Подключение CMS для правки контента','шт',4,'dv','Decap, Sanity или Google-таблица'],
+  ['ai_admin','ai','Простая админка для правки текстов','шт',5,'dv',''],
+  ['ai_i18n','ai','Мультиязычность в коде','шт',2,'dv','Переключатель, отдельные адреса, hreflang'],
+  ['ai_speed','ai','Скорость: Lighthouse 90+','шт',1.5,'dv',''],
+  ['ai_seo','ai','Техническое SEO в коде','шт',1,'dv','Meta, OG, sitemap, robots, микроразметка'],
+  ['ai_deploy','ai','Хостинг и деплой, домен, SSL','шт',1,'dv','Vercel, Netlify, GitHub Pages или свой сервер'],
+  ['ai_feature','ai','Своя функция: калькулятор, кабинет, API','час',1,'dv','Почасово'],
+  ['ai_handoff','ai','Передача кода, доступов и инструкции','шт',1,'pm',''],
+  ['ai_support','ai','Сопровождение и хостинг','мес',3,'dv','Обновления, мелкие правки, контроль работы'],
+
+  ['s_launch','seo','Домен, SSL, публикация','шт',0.5,'dv',''],
+  ['s_metrika','seo','Яндекс Метрика и цели','шт',1,'an',''],
+  ['s_gtm','seo','Google Analytics / Tag Manager','шт',0.7,'an',''],
+  ['s_pixel','seo','Пиксели VK и соцсетей','шт',0.5,'an',''],
+  ['s_utm','seo','UTM-разметка ссылок','шт',0.3,'an',''],
+  ['s_seo','seo','Базовая SEO-настройка','шт',1.5,'an','Meta, alt, sitemap, robots, ЧПУ'],
+  ['s_wm','seo','Яндекс Вебмастер / Search Console','шт',0.5,'an',''],
+  ['s_schema','seo','Микроразметка Schema.org','шт',1,'an',''],
+  ['s_ab','seo','A/B-тест первого экрана','шт',2,'an',''],
+  ['s_301','seo','Редиректы при переезде','шт',0.7,'dv',''],
+
+  ['l_pd','leg','Политика ПД и согласие (152-ФЗ)','шт',0.5,'pm','По шаблону, размещение, чекбоксы в формах'],
+  ['l_cookie','leg','Cookie-баннер','шт',0.3,'dv',''],
+  ['l_oferta','leg','Размещение оферты или договора','шт',0.5,'pm',''],
+
+  ['pm_h','pm','Ведение проекта','час',1,'pm','Планирование, коммуникация, контроль сроков'],
+  ['pm_meet','pm','Презентация этапа клиенту','шт',1,'pm',''],
+  ['rev_d','pm','Круг правок по дизайну','шт',2,'ds',''],
+  ['rev_v','pm','Круг правок по вёрстке','шт',1,'dv',''],
+  ['train','pm','Обучение клиента работе в Tilda','шт',1,'pm',''],
+  ['instr','pm','Видеоинструкция по редактированию','шт',1,'pm',''],
+  ['handoff','pm','Передача проекта и исходников Figma','шт',0.5,'pm',''],
+  ['support','pm','Поддержка после запуска','мес',4,'dv','До 4 часов работ в месяц'],
+
+  ['b_logo_s','br','Логотип шрифтовой','шт',5,'ad',''],
+  ['b_logo','br','Логотип, 3 концепции','шт',12,'ad',''],
+  ['b_book','br','Мини-брендбук','шт',8,'ad',''],
+  ['b_social','br','Оформление соцсетей','шт',3,'ds','Аватар, обложки, хайлайты'],
+  ['b_slide','br','Слайд презентации или КП','шт',0.7,'ds',''],
+  ['b_print','br','Макет для печати: визитка, листовка','шт',1.5,'ds','']
+];
+/* Сборки. B — количество = блоков, P — = страниц */
+var DEF_PRESETS = [
+  { id:'simple', n:'Простой сайт', d:'Короткий, стандартные блоки Tilda', blocks:6, pages:0, items:{
+    brief:1, struct:1, copy_edit:'B', d_std:'B', v_std:'B', g_photo:6, v_forms:1, s_launch:1, s_metrika:1, l_pd:1, rev_d:1, pm_h:1 }},
+  { id:'landing', n:'Лендинг на шаблонах', d:'Блоки Tilda + свой первый экран, тексты', blocks:10, pages:0, items:{
+    brief:1, struct:1, copy:'B', d_hero:1, d_std:'B', v_std:'B', v_zero:1, a_basic:'B', g_stock:1, g_photo:6,
+    v_forms:1, s_launch:1, s_metrika:1, l_pd:1, rev_d:1, pm_h:1.5 }},
+  { id:'custom', n:'Продающий лендинг с индивидуальным дизайном', d:'Анализ, смыслы, тексты, своя концепция, Zero Block', blocks:12, pages:0, items:{
+    brief:1, ca:1, struct:1, copy:'B', concept:1, d_custom:'B', d_mob:'B', v_zero:'B', a_basic:'B', g_photo:8,
+    v_forms:1, s_launch:1, s_metrika:1, g_fav:1, l_pd:1, rev_d:1, rev_v:1, pm_h:2, pm_meet:1 }},
+  { id:'art', n:'Арт-лендинг', d:'Wow-подача, сложная графика и анимации', blocks:12, pages:0, items:{
+    brief:1, ca:1, usp:1, struct:1, copy:'B', moodboard:1, concept:1, concept_x:1, adrev:'B',
+    d_hero_art:1, d_art:'B', d_mob:'B', g_ai:6, g_cut:6, g_collage:2, v_art:'B', a_step:3, a_scroll:1, a_pre:1,
+    v_forms:1, v_speed:1, v_test:1, s_launch:1, s_metrika:1, g_fav:1, l_pd:1, rev_d:2, rev_v:1, pm_h:3, pm_meet:2 }},
+  { id:'quiz', n:'Квиз-лендинг', d:'Короткий лендинг под рекламу + квиз', blocks:5, pages:0, items:{
+    brief:1, struct:1, copy:'B', copy_heads:1, d_hero:1, d_std:'B', v_std:'B', v_zero:1, a_quiz:1, v_forms:1, v_crm:1,
+    s_launch:1, s_metrika:1, s_pixel:1, s_utm:1, l_pd:1, rev_d:1, pm_h:1.5 }},
+  { id:'corp', n:'Корпоративный сайт', d:'Главная + внутренние страницы', blocks:10, pages:5, items:{
+    brief:1, ca:1, ta:1, sitemap:1, copy:'B', copy_page:'P', concept:1, uikit:1,
+    d_custom:'B', d_mob:'B', d_hf:1, d_page:'P', d_thanks:1, v_zero:'B', v_hf:1, v_page:'P', a_basic:'B', g_photo:15,
+    v_forms:1, v_crm:1, s_launch:1, s_metrika:1, s_seo:1, s_wm:1, copy_meta:'P', g_fav:1, l_pd:1, l_cookie:1,
+    rev_d:2, rev_v:1, instr:1, pm_h:4, pm_meet:2 }},
+  { id:'shop', n:'Интернет-магазин', d:'Главная + каталог Tilda Store до 50 товаров', blocks:8, pages:3, items:{
+    brief:1, ca:1, sitemap:1, copy:'B', copy_page:'P', concept:1, d_custom:'B', d_mob:'B', d_hf:1, d_page:'P',
+    d_catalog:1, d_card:1, d_thanks:1, v_zero:'B', v_hf:1, v_page:'P', v_store:1, v_goods:50, v_pay:1, v_forms:1,
+    g_photo:20, s_launch:1, s_metrika:1, s_seo:1, g_fav:1, l_pd:1, l_oferta:1, l_cookie:1, rev_d:1, rev_v:1, train:1, pm_h:3, pm_meet:1 }},
+  { id:'redesign', n:'Редизайн лендинга', d:'Аудит старого + новый дизайн на имеющихся текстах', blocks:10, pages:0, items:{
+    brief:1, audit:1, webvisor:1, struct:1, copy_edit:'B', concept:1, d_custom:'B', d_mob:'B', v_zero:'B', a_basic:'B',
+    s_launch:1, s_301:1, s_metrika:1, rev_d:1, rev_v:1, pm_h:2, pm_meet:1 }},
+  { id:'page', n:'Доп. страница к сайту', d:'Новая страница в готовом стиле', blocks:5, pages:0, items:{
+    brief:1, copy:'B', d_custom:'B', d_mob:'B', v_zero:'B', a_basic:'B', rev_d:1, pm_h:1 }},
+  { id:'ai_landing', n:'Лендинг на коде с Claude', d:'Без Tilda: свой код, скорость, полная свобода анимаций', blocks:10, pages:0, items:{
+    brief:1, ca:1, struct:1, copy:'B', concept:1, ai_setup:1, ai_system:1, ai_block_free:'B', ai_anim:'B', ai_review:'B',
+    ai_forms:1, ai_speed:1, ai_seo:1, ai_deploy:1, s_metrika:1, l_pd:1, rev_d:1, rev_v:1, ai_handoff:1, pm_h:2 }},
+  { id:'ai_site', n:'Сайт на коде с Claude', d:'Главная + страницы + CMS, код остаётся у клиента', blocks:10, pages:5, items:{
+    brief:1, ca:1, sitemap:1, copy:'B', copy_page:'P', concept:1, uikit:1, ai_setup:1, ai_system:1, ai_block_free:'B',
+    ai_page:'P', ai_anim:'B', ai_review:'B', ai_forms:1, ai_cms:1, ai_speed:1, ai_seo:1, ai_deploy:1, s_metrika:1,
+    copy_meta:'P', l_pd:1, l_cookie:1, rev_d:2, rev_v:1, ai_handoff:1, pm_h:4, pm_meet:2 }}
+];
+var DEF_URGENCY = [ ['u0','Обычно','в своём темпе',0,1], ['u30','Быстрее','+30%',30,1.3], ['u50','Срочно','+50%',50,1.6], ['u100','Горит','+100%',100,2] ];
+var DEF_MODS = [
+  ['niche','Сложная ниша','Медицина, право, финансы, технический B2B',15,['an','st','tx'],1],
+  ['many','Много согласующих','Решают 3 и больше человек: больше созвонов и правок',10,'all',1],
+  ['chaos','Нет брифа, материалы кусками','Собираем информацию сами',10,'all',1],
+  ['wide','Отдельная проработка 1920+ и планшета','Большие экраны и планшет рисуются отдельно',12,['des','lay','ai'],1],
+  ['adctrl','Премиум арт-дирекшн','Двойное ревью каждого экрана',10,['cn','des','gfx'],1],
+  ['risk','Резерв на непредвиденное','Неясные требования, новая для студии задача',10,'all',1],
+  ['nda','Без права показать в портфолио','NDA, кейс нельзя публиковать',10,'all',0],
+  ['post','Нестандартная схема оплаты','Постоплата, дробные платежи, отсрочка',10,'all',0],
+  ['guar','Расширенная гарантия 3 месяца','Бесплатно исправляем ошибки вёрстки 3 месяца',5,'all',0]
+];
+var DEF_DISC = [ ['regular','Постоянный клиент',10], ['bundle','Пакет из 2 и более проектов',15], ['prepay','100% предоплата',5],
+  ['ref','Пришёл по рекомендации или от партнёра',5], ['case','Кейс в портфолио + видеоотзыв',7], ['nko','НКО или социальный проект',10] ];
+var DEF_LANG = { base:{ des:10, lay:30, ai:25, seo:30, tx:10 }, tr:{ tx:60 } };
+var DEF_GIFTS = ['g_fav','s_metrika','l_pd','instr','train','rev_d','support','s_seo'];
+var DEF_ORG = { rate:3000, cost:0, margin:30, hpd:8, maxDisc:25, pay:[50,30,20], payNames:['Предоплата','После согласования дизайна','Перед запуском'], fullBelow:20000, minOrder:20000, round:1000 };
+
+function buildDefault(){
+  return {
+    v:2,
+    roles: DEF_ROLES.map(function(a){ return { id:a[0], n:a[1], k:1 }; }),
+    cats: DEF_CATS.map(function(a){ return { id:a[0], n:a[1] }; }),
+    items: DEF_ITEMS.map(function(a){ return { id:a[0], c:a[1], n:a[2], u:a[3], h:a[4], r:a[5], d:a[6]||'' }; }),
+    presets: clone(DEF_PRESETS),
+    urgency: DEF_URGENCY.map(function(a){ return { id:a[0], n:a[1], s:a[2], pct:a[3], k:a[4] }; }),
+    mods: DEF_MODS.map(function(a){ return { id:a[0], n:a[1], d:a[2], pct:a[3], scope:a[4], work:!!a[5] }; }),
+    discounts: DEF_DISC.map(function(a){ return { id:a[0], n:a[1], pct:a[2] }; }),
+    lang: clone(DEF_LANG), gifts: DEF_GIFTS.slice(), org: clone(DEF_ORG)
+  };
+}
+/* Firebase теряет пустые массивы и объекты — достраиваем недостающее */
+function normConfig(c){
+  var d=buildDefault(); if(!c || !c.items) return d;
+  ['roles','cats','items','presets','urgency','mods','discounts','gifts'].forEach(function(k){ c[k]=toArr(c[k]); });
+  c.lang=c.lang||{}; c.lang.base=c.lang.base||{}; c.lang.tr=c.lang.tr||{};
+  c.org=Object.assign({}, d.org, c.org||{}); c.org.pay=toArr(c.org.pay); if(!c.org.pay.length) c.org.pay=[100];
+  c.org.payNames=toArr(c.org.payNames);
+  c.presets.forEach(function(p){ p.items=p.items||{}; p.blocks=+p.blocks||0; p.pages=+p.pages||0; p.d=p.d||''; });
+  c.items.forEach(function(it){ it.d=it.d||''; it.h=+it.h||0; });
+  c.mods.forEach(function(m){ if(m.scope!=='all') m.scope=toArr(m.scope); if(m.scope!=='all' && !m.scope.length) m.scope='all'; m.work=!!m.work; m.d=m.d||''; });
+  c.urgency.forEach(function(u){ u.s=u.s||''; u.k=+u.k||1; u.pct=+u.pct||0; });
+  if(!c.urgency.length) c.urgency=d.urgency;
+  return c;
+}
+function toArr(x){ if(!x) return []; if(Array.isArray(x)) return x.filter(function(v){ return v!=null; }); return Object.keys(x).sort(function(a,b){ return a-b; }).map(function(k){ return x[k]; }); }
+
+/* ============================================================
+   ХРАНЕНИЕ. В экосистеме (есть window.PE) прайс лежит в Firebase
+   по пути calc/config и общий для всех, правит только админ.
+   Отдельно от экосистемы — в этом браузере, правит кто угодно.
+   ============================================================ */
+var HAS_PE = !!(window.PE && window.PE.fb);
+var ADMIN = !HAS_PE;
+var KEY_CFG='pe-calc:config', KEY_CUR='pe-calc:cur', KEY_ME='pe-calc:me', KEY_SAVED='pe-calc:saved', DB_PATH='calc/config';
+function lget(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function rid(p){ return p+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+
+var C = normConfig(lget(KEY_CFG,null));
+var ME = Object.assign({ theme:'dark', estHours:true, dec:',' }, lget(KEY_ME,{}));
+
+function defState(){ return { rate:C.org.rate, project:'', client:'', blocks:10, pages:0, sel:{}, custom:[], urg:(C.urgency[0]||{}).id, lang:0, langTr:false,
+  mods:{}, modPct:{}, disc:{}, discPct:0, discRub:0, round:C.org.round, preset:null, note:'' }; }
+var S = Object.assign(defState(), lget(KEY_CUR,{}));
+if(S.modPct==null) S.modPct={};
+var undo = null;
+
+function saveConfig(msg){
+  lset(KEY_CFG,C);
+  if(HAS_PE && ADMIN){
+    return PE.fb('PUT',DB_PATH,C).then(function(){ toast(msg||'Сохранено для всей команды'); if(PE.audit) PE.audit('calc.config','калькулятор','прайс изменён'); },
+      function(){ toast('Сохранилось только у вас: база не приняла запись. Проверьте правило для calc в Firebase.'); });
+  }
+  toast(msg||'Сохранено');
+  return Promise.resolve();
+}
+
+/* ============================================================
+   ИНДЕКС ПОЗИЦИЙ
+   ============================================================ */
+var I = {}, ORDER = [], ROLE = {};
+function buildIndex(){
+  I = {}; ORDER = []; ROLE = {};
+  C.roles.forEach(function(r){ ROLE[r.id]=r; });
+  var catOk={}; C.cats.forEach(function(c){ catOk[c.id]=1; });
+  function add(it, kind){ if(I[it.id]) return; var o=Object.assign({}, it, { kind:kind }); if(!catOk[o.c]) o.c=C.cats[0].id; I[o.id]=o; ORDER.push(o.id); }
+  C.items.forEach(function(it){ add(it,'base'); });
+  S.custom.forEach(function(a){ add(Array.isArray(a) ? { id:a[0], c:a[1], n:a[2], u:a[3], h:a[4], r:a[5], d:a[6]||'' } : a, 'est'); });
+  Object.keys(S.sel).forEach(function(id){ if(!I[id]) delete S.sel[id]; });
+  if(!C.urgency.some(function(u){ return u.id===S.urg; })) S.urg=C.urgency[0].id;
+}
+function baseH(id){ return +I[id].h||0; }
+function hOf(id){ var s=S.sel[id]; return (s && s.h!=null) ? s.h : baseH(id); }
+function linked(u){ return u==='блок' || u==='стр'; }
+function qOf(id){ var s=S.sel[id], it=I[id];
+  if(s && s.q!=null) return s.q;
+  if(it.u==='блок') return S.blocks; if(it.u==='стр') return S.pages; return 1; }
+function roleK(r){ var o=ROLE[r]; var k=o?+o.k:1; return isNaN(k)?1:k; }
+function roleName(r){ return ROLE[r] ? ROLE[r].n : ''; }
+function unitPrice(id){ return hOf(id)*S.rate*roleK(I[id].r); }
+function catName(id){ for(var i=0;i<C.cats.length;i++) if(C.cats[i].id===id) return C.cats[i].n; return id; }
+
+/* ============================================================
+   РАСЧЁТ
+   ============================================================ */
+function curUrg(){ return C.urgency.filter(function(x){ return x.id===S.urg; })[0]||C.urgency[0]; }
+function modPct(m){ return S.modPct[m.id]!=null ? S.modPct[m.id] : m.pct; }
+function calc(){
+  var R = { rows:[], cat:{}, catAll:{}, base:0, gift:0, hPaid:0, hGift:0, roles:{}, lines:[], extraH:0 };
+  ORDER.forEach(function(id){
+    var s=S.sel[id]; if(!s) return;
+    var it=I[id], q=qOf(id), h=hOf(id), hours=q*h, sum=hours*S.rate*roleK(it.r);
+    var row={ id:id, it:it, q:q, h:h, hours:hours, price:unitPrice(id), sum:sum, gift:!!s.gift };
+    R.rows.push(row);
+    R.catAll[it.c]=(R.catAll[it.c]||0)+sum;
+    R.roles[it.r]=(R.roles[it.r]||0)+hours;
+    if(row.gift){ R.gift+=sum; R.hGift+=hours; }
+    else { R.cat[it.c]=(R.cat[it.c]||0)+sum; R.base+=sum; R.hPaid+=hours; }
+  });
+  function scopeSum(scope){ if(scope==='all') return R.base; var t=0; scope.forEach(function(c){ t+=R.cat[c]||0; }); return t; }
+  var surch=0, u=curUrg();
+  if(u.pct){ var a=R.base*u.pct/100; surch+=a; R.lines.push({ t:'plus', n:'Срочность «'+u.n+'», +'+u.pct+'%', a:a }); }
+  if(S.lang>0){
+    var w=Object.assign({}, C.lang.base); if(S.langTr) Object.keys(C.lang.tr).forEach(function(c){ w[c]=(+w[c]||0)+(+C.lang.tr[c]||0); });
+    var la=0; Object.keys(w).forEach(function(c){ la+=(R.cat[c]||0)*(+w[c]||0)/100; }); la*=S.lang;
+    if(la){ surch+=la; R.extraH+=la/(S.rate||1);
+      R.lines.push({ t:'plus', n:'Доп. язык'+(S.lang>1?'и':'')+' ×'+S.lang+(S.langTr?' с переводом':''), a:la }); }
+  }
+  C.mods.forEach(function(m){ if(!S.mods[m.id]) return; var p=modPct(m), a=scopeSum(m.scope)*p/100; surch+=a; if(m.work) R.extraH+=a/(S.rate||1);
+    R.lines.push({ t:'plus', n:m.n+', +'+fmtN(p)+'%', a:a }); });
+  R.surch=surch; R.sub=R.base+surch;
+  var dp=0; C.discounts.forEach(function(d){ if(S.disc[d.id]) dp+=+d.pct||0; }); dp+=(+S.discPct||0);
+  R.discWanted=dp; R.discPct=Math.min(dp, C.org.maxDisc); R.capped=dp>C.org.maxDisc;
+  var da=R.sub*R.discPct/100 + (+S.discRub||0);
+  R.discAmt=da;
+  if(da>0) R.lines.push({ t:'minus', n:'Скидка'+(R.discPct?' '+fmtN(R.discPct)+'%':'')+((+S.discRub)?(R.discPct?' + ':' ')+money(+S.discRub):''), a:-da });
+  var raw=Math.max(0, R.sub-da), st=+S.round||0;
+  R.total = st ? Math.round(raw/st)*st : Math.round(raw);
+  R.roundAdj = R.total-raw;
+  if(st && Math.abs(R.roundAdj)>=1) R.lines.push({ t:'mod', n:'Округление', a:R.roundAdj });
+  R.hWork = R.hPaid+R.hGift+R.extraH;
+  R.days = R.hWork ? Math.ceil(R.hWork/(C.org.hpd||8)/(u.k||1)) : 0;
+  R.cost = (+C.org.cost||0)*R.hWork;
+  R.margin = R.total-R.cost; R.marginPct = R.total? R.margin/R.total*100 : 0;
+  R.u=u;
+  return R;
+}
+/* цена сборки по произвольному прайсу (нужно и админке, где правится черновик) */
+function presetCalc(p, cfg, rate){
+  var map={}, rk={}; cfg.items.forEach(function(it){ map[it.id]=it; }); cfg.roles.forEach(function(r){ rk[r.id]=+r.k||1; });
+  var t=0, h=0;
+  Object.keys(p.items).forEach(function(id){ var it=map[id]; if(!it) return; var q=p.items[id]; q=q==='B'?p.blocks : q==='P'?p.pages : +q;
+    h+=q*it.h; t+=q*it.h*rate*(rk[it.r]||1); });
+  return { sum:t, hours:h };
+}
+
+/* ============================================================
+   ФОРМАТ
+   ============================================================ */
+function fmtN(n){ return (Math.round(n*100)/100).toLocaleString('ru-RU'); }
+function money(n){ return Math.round(n).toLocaleString('ru-RU')+' ₽'; }
+function kmoney(n){ return n>=1000 ? (Math.round(n/1000)).toLocaleString('ru-RU')+' тыс. ₽' : money(n); }
+function hrs(n){ return fmtN(Math.round(n*10)/10)+' ч'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function plural(n,a,b,c){ n=Math.abs(n)%100; var m=n%10; if(n>10&&n<20) return c; if(m>1&&m<5) return b; if(m===1) return a; return c; }
+function $(id){ return document.getElementById(id); }
+function num(v, d){ v=String(v).replace(',','.'); var n=parseFloat(v); return isNaN(n)?d:n; }
+
+/* ============================================================
+   ПРАЙС НА ЭКРАНЕ
+   ============================================================ */
+var rowEls={}, catEls={}, closed={}, viewMode='all', query='';
+var ICO_GIFT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>';
+var CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+var AI_NOTE='Claude пишет код в разы быстрее, поэтому нормы здесь ниже, чем у вёрстки на Tilda. Продаём результат, а не часы: клиент получает собственный код без подписки на конструктор, высокую скорость загрузки и любые анимации. Дизайн, тексты и аналитику берите из соседних разделов, как обычно.';
+
+function renderList(){
+  var box=$('list'); box.innerHTML=''; rowEls={}; catEls={};
+  C.cats.forEach(function(c){
+    var ids=ORDER.filter(function(id){ return I[id].c===c.id; });
+    var el=document.createElement('section'); el.className='card cat'+(closed[c.id]?' closed':''); el.dataset.cat=c.id;
+    var h='<div class="cat-h" data-toggle="'+c.id+'">'+CHEV+'<b>'+esc(c.n)+'</b><span class="cnt"></span><button class="cadd" data-add="'+c.id+'">+ своя позиция</button><span class="csum num"></span></div>';
+    h+='<div class="rows">'+(c.id==='ai'?'<div class="ai-note" style="margin-top:10px">'+esc(AI_NOTE)+'</div>':'')+'<div class="rhead"><div></div><div>Позиция</div><div>Ед.</div><div>Ч / ед.</div><div>Кол-во</div><div>Часы</div><div>Цена ед.</div><div>Сумма</div><div></div></div>';
+    ids.forEach(function(id){ var it=I[id];
+      h+='<div class="row" data-id="'+id+'">'+
+        '<label class="ck"><input type="checkbox" aria-label="'+esc(it.n)+'"></label>'+
+        '<div class="nm" data-pick><b>'+esc(it.n)+(it.kind==='est'?'<span class="tag cu">в этой смете</span>':'')+'</b><small>'+esc(roleName(it.r))+(it.d?' · '+esc(it.d):'')+(it.kind==='est'?'<button class="del" data-del="'+id+'">удалить</button>':'')+'</small></div>'+
+        '<div class="u">'+esc(it.u)+'</div>'+
+        '<input class="hin num" type="number" min="0" step="0.05" inputmode="decimal" aria-label="Часов на единицу">'+
+        '<div class="qty"><button data-q="-1" tabindex="-1">−</button><input class="num" type="number" min="0" step="1" inputmode="decimal" aria-label="Количество"><button data-q="1" tabindex="-1">+</button></div>'+
+        '<div class="hrs"></div><div class="pr"></div><div class="sm"></div>'+
+        '<button class="gb" data-gift title="Отдать в подарок">'+ICO_GIFT+'</button></div>';
+    });
+    h+='</div>';
+    el.innerHTML=h; box.appendChild(el);
+    catEls[c.id]={ el:el, cnt:el.querySelector('.cnt'), sum:el.querySelector('.csum'), ids:ids };
+    el.querySelectorAll('.row').forEach(function(r){ var id=r.dataset.id;
+      rowEls[id]={ el:r, ck:r.querySelector('.ck input'), h:r.querySelector('.hin'), q:r.querySelector('.qty input'), qb:r.querySelector('.qty'),
+        hrs:r.querySelector('.hrs'), pr:r.querySelector('.pr'), sm:r.querySelector('.sm') }; });
+  });
+  var e=document.createElement('div'); e.className='card empty'; e.id='emptyMsg'; e.style.display='none'; box.appendChild(e);
+  applyFilter();
+}
+
+function applyFilter(){
+  var q=query.trim().toLowerCase(), shown=0;
+  C.cats.forEach(function(c){ var ce=catEls[c.id], vis=0;
+    ce.ids.forEach(function(id){ var it=I[id], ok=true;
+      if(viewMode==='sel' && !S.sel[id]) ok=false;
+      if(ok && q){ ok=(it.n+' '+it.d+' '+roleName(it.r)+' '+c.n).toLowerCase().indexOf(q)>=0; }
+      rowEls[id].el.classList.toggle('hidden',!ok); if(ok) vis++; });
+    ce.el.style.display = (vis || (!q && viewMode==='all')) ? '' : 'none';
+    if(q && vis) ce.el.classList.remove('closed'); else ce.el.classList.toggle('closed', !!closed[c.id]);
+    shown+=vis; });
+  var em=$('emptyMsg');
+  em.style.display = shown ? 'none' : '';
+  em.textContent = viewMode==='sel' && !q ? 'Пока ничего не выбрано. Нажмите на готовую сборку выше или отметьте позиции в прайсе.' : 'Ничего не нашлось.';
+}
+
+var R;
+function refresh(){
+  R=calc();
+  var ae=document.activeElement;
+  ORDER.forEach(function(id){ var e=rowEls[id]; if(!e) return; var s=S.sel[id], it=I[id];
+    var q=qOf(id), h=hOf(id), sum=q*h*S.rate*roleK(it.r);
+    e.el.classList.toggle('on', !!s && !s.gift); e.el.classList.toggle('off', !s); e.el.classList.toggle('gift', !!(s&&s.gift));
+    e.ck.checked=!!s;
+    if(ae!==e.h) e.h.value=fmtIn(h);
+    e.h.classList.toggle('ov', !!(s && s.h!=null && s.h!==baseH(id)));
+    e.h.title = (s && s.h!=null) ? 'Норма в прайсе: '+fmtN(baseH(id))+' ч. Двойной клик — вернуть.' : 'Норма часов на единицу';
+    if(ae!==e.q) e.q.value=fmtIn(q);
+    var isL = linked(it.u) && !(s && s.q!=null);
+    e.qb.classList.toggle('lnk', isL);
+    e.q.title = isL ? 'Привязано к числу '+(it.u==='блок'?'блоков':'страниц') : (linked(it.u)?'Двойной клик — снова привязать к числу '+(it.u==='блок'?'блоков':'страниц'):'');
+    e.hrs.textContent = s ? hrs(q*h) : fmtN(h)+' ч';
+    e.pr.textContent = money(unitPrice(id));
+    e.sm.textContent = s ? (s.gift ? '0 ₽' : money(sum)) : '';
+    e.sm.title = s && s.gift ? 'В подарок, ценность '+money(sum) : '';
+  });
+  C.cats.forEach(function(c){ var ce=catEls[c.id]; if(!ce) return;
+    var n=ce.ids.filter(function(id){ return S.sel[id]; }).length;
+    ce.cnt.textContent = n ? n+' из '+ce.ids.length : ce.ids.length+' поз.'; ce.cnt.classList.toggle('has', !!n);
+    ce.sum.textContent = R.catAll[c.id] ? money(R.cat[c.id]||0) : ''; });
+  renderSummary(); renderEstimate(); renderPresets();
+  save();
+}
+function fmtIn(n){ return String(Math.round(n*100)/100); }
+
+function renderSummary(){
+  $('tTotal').textContent=money(R.total);
+  $('mTotal').textContent=money(R.total);
+  $('mMeta').textContent=R.days ? '≈ '+R.days+' '+plural(R.days,'день','дня','дней') : '';
+  var sub=['работы '+money(R.base)];
+  if(R.surch) sub.push('надбавки +'+money(R.surch));
+  if(R.discAmt) sub.push('скидка −'+money(R.discAmt));
+  $('tSub').innerHTML=sub.map(function(s){ return '<span>'+s+'</span>'; }).join('');
+  $('kH').textContent=fmtN(Math.round(R.hWork*10)/10);
+  $('kD').textContent=R.days ? R.days+' дн.' : '—';
+  $('kN').textContent=R.rows.length;
+  var L='<div class="ln"><span>Работы по прайсу</span><span>'+money(R.base)+'</span></div>';
+  R.lines.forEach(function(l){ L+='<div class="ln '+l.t+'"><span>'+esc(l.n)+'</span><span>'+(l.a>0?'+':'−')+money(Math.abs(l.a))+'</span></div>'; });
+  if(R.gift) L+='<div class="ln gift"><span>В подарок (не входит в сумму)</span><span>'+money(R.gift)+'</span></div>';
+  L+='<div class="ln total"><span>К оплате</span><span>'+money(R.total)+'</span></div>';
+  $('tLines').innerHTML=L;
+  var A='', o=C.org;
+  if(R.capped) A+='<div class="alert warn">Скидки в сумме '+fmtN(R.discWanted)+'%, но потолок '+o.maxDisc+'% — применено '+o.maxDisc+'%.</div>';
+  if(R.rows.length && o.minOrder && R.total<o.minOrder) A+='<div class="alert warn">Меньше минимального заказа ('+money(o.minOrder)+').</div>';
+  if(+o.cost>0 && R.total){
+    var cls = R.margin<0 ? 'bad' : R.marginPct<o.margin ? 'warn' : 'ok';
+    A+='<div class="alert '+cls+'">Себестоимость '+money(R.cost)+' · маржа '+money(R.margin)+' ('+Math.round(R.marginPct)+'%)'+(cls==='bad'?' — в минус.':cls==='warn'?' — ниже '+o.margin+'%.':'')+'</div>';
+  }
+  if(R.u.pct && R.u.k>1) A+='<div class="alert warn">Срок сокращён в '+String(R.u.k).replace('.',',')+' раза за счёт переработок и параллельной работы.</div>';
+  $('tAlerts').innerHTML=A;
+  $('modsSum').textContent = R.surch ? '+'+money(R.surch) : '';
+  $('discSum').textContent = R.discAmt ? '−'+money(R.discAmt) : '';
+  $('giftSum').textContent = R.gift ? money(R.gift) : '';
+  var st=payStages(), P='', acc=0;
+  st.forEach(function(p,i){ var a = i===st.length-1 ? R.total-acc : Math.round(R.total*p/100); acc+=a;
+    P+='<div class="ln"><span>'+(st.length===1?'100% предоплата':p+'% · '+esc(o.payNames[i]||('Этап '+(i+1))))+'</span><span class="num">'+money(a)+'</span></div>'; });
+  $('pay').innerHTML=P;
+  var mx=0; C.roles.forEach(function(r){ mx=Math.max(mx,R.roles[r.id]||0); });
+  $('roles').innerHTML = R.rows.length ? C.roles.filter(function(r){ return R.roles[r.id]; }).map(function(r){
+    return '<div class="rl"><span>'+esc(r.n)+'</span><i style="width:'+Math.max(2,(R.roles[r.id]/mx)*100)+'%"></i><span>'+hrs(R.roles[r.id])+'</span></div>'; }).join('')
+    : '<span class="hint">Появится, когда выберете позиции.</span>';
+  $('gifts').querySelectorAll('.chip').forEach(function(ch){ var s=S.sel[ch.dataset.g]; ch.classList.toggle('on', !!(s&&s.gift)); });
+}
+function payStages(){ return (R.total && R.total<=C.org.fullBelow) ? [100] : C.org.pay; }
+
+function renderPresets(){
+  $('presets').innerHTML = C.presets.map(function(p){
+    return '<button class="pre'+(S.preset===p.id?' on':'')+'" data-preset="'+esc(p.id)+'"><b>'+esc(p.n)+'</b><small>'+esc(p.d)+(p.blocks?' · '+p.blocks+' бл.':'')+(p.pages?' + '+p.pages+' стр.':'')+'</small><span class="pp">≈ '+kmoney(presetCalc(p,C,S.rate).sum)+'</span></button>'; }).join('');
+}
+function renderSide(){
+  $('urg').innerHTML=C.urgency.map(function(u){ return '<button data-urg="'+esc(u.id)+'" class="'+(S.urg===u.id?'on'+(u.pct?'':' z'):'')+'"><b>'+esc(u.n)+'</b>'+esc(u.s)+'</button>'; }).join('');
+  $('urg').style.gridTemplateColumns='repeat('+Math.min(4,C.urgency.length)+',1fr)';
+  $('mods').innerHTML=C.mods.map(function(m){ var on=!!S.mods[m.id];
+    return '<label class="opt"><input type="checkbox" data-mod="'+esc(m.id)+'"'+(on?' checked':'')+'><div>'+esc(m.n)+'<small>'+esc(m.d)+(m.scope!=='all'?(m.d?' · ':'')+'от: '+m.scope.map(function(c){ return catName(c).toLowerCase(); }).join(', '):'')+'</small></div>'+
+      '<span class="pc">+<input class="pcin" type="number" min="0" max="300" data-modpct="'+esc(m.id)+'" value="'+modPct(m)+'">%</span></label>'; }).join('');
+  $('disc').innerHTML=C.discounts.map(function(d){ return '<label class="opt dis"><input type="checkbox" data-disc="'+esc(d.id)+'"'+(S.disc[d.id]?' checked':'')+'><div>'+esc(d.n)+'</div><span class="pc">−'+fmtN(d.pct)+'%</span></label>'; }).join('');
+  $('gifts').innerHTML=C.gifts.filter(function(id){ return I[id]; }).map(function(id){ return '<button class="chip" data-g="'+esc(id)+'">'+esc(I[id].n)+'</button>'; }).join('') || '<span class="hint">Список подарков настраивается в админке.</span>';
+}
+
+/* ============================================================
+   СМЕТА
+   ============================================================ */
+function estModel(){
+  var out=[], n=0;
+  C.cats.forEach(function(c){ var rows=R.rows.filter(function(r){ return r.it.c===c.id; }); if(!rows.length) return;
+    out.push({ k:'grp', name:c.n, sum:R.cat[c.id]||0 });
+    rows.forEach(function(r){ n++; out.push({ k:r.gift?'gift':'row', n:n, cat:c.n, name:r.it.n, u:r.it.u, q:r.q, hours:r.hours, price:r.price, sum:r.gift?0:r.sum, value:r.sum }); }); });
+  return out;
+}
+function renderEstimate(){
+  var t=$('estTable'), H=ME.estHours;
+  if(!R.rows.length){ t.innerHTML='<tr><td class="muted" style="padding:20px 8px">Здесь соберётся смета: позиции по разделам, надбавки, скидки и итог.</td></tr>'; return; }
+  var cols=H?7:6;
+  var h='<thead><tr><th>№</th><th>Позиция</th><th class="r">Ед.</th><th class="r">Кол-во</th>'+(H?'<th class="r">Часы</th>':'')+'<th class="r">Цена</th><th class="r">Сумма</th></tr></thead><tbody>';
+  estModel().forEach(function(m){
+    if(m.k==='grp'){ h+='<tr class="grp"><td colspan="'+(cols-1)+'">'+esc(m.name)+'</td><td class="r">'+money(m.sum)+'</td></tr>'; return; }
+    h+='<tr'+(m.k==='gift'?' class="gft"':'')+'><td class="n">'+m.n+'</td><td>'+esc(m.name)+(m.k==='gift'?' — в подарок':'')+'</td><td class="r">'+esc(m.u)+'</td><td class="r">'+fmtN(m.q)+'</td>'+
+      (H?'<td class="r">'+fmtN(Math.round(m.hours*10)/10)+'</td>':'')+'<td class="r">'+money(m.price)+'</td><td class="r">'+(m.k==='gift'?'0 ₽':money(m.sum))+'</td></tr>';
+  });
+  h+='<tr class="mod"><td></td><td colspan="'+(cols-2)+'"><b>Итого работы</b>'+(H?' · '+hrs(R.hPaid+R.hGift):'')+'</td><td class="r"><b>'+money(R.base)+'</b></td></tr>';
+  R.lines.forEach(function(l){ h+='<tr class="mod"><td></td><td colspan="'+(cols-2)+'">'+esc(l.n)+'</td><td class="r">'+(l.a>0?'+':'−')+money(Math.abs(l.a))+'</td></tr>'; });
+  if(R.gift) h+='<tr class="gft"><td></td><td colspan="'+(cols-2)+'">Бонусы в подарок, общая ценность</td><td class="r">'+money(R.gift)+'</td></tr>';
+  h+='<tr class="fin"><td></td><td colspan="'+(cols-2)+'">Итого к оплате'+(R.days?' <span class="muted" style="font:500 13px var(--f-body)">· срок ≈ '+R.days+' раб. '+plural(R.days,'день','дня','дней')+'</span>':'')+'</td><td class="r">'+money(R.total)+'</td></tr></tbody>';
+  t.innerHTML=h;
+}
+
+/* ============================================================
+   ЭКСПОРТ
+   ============================================================ */
+function numX(n, dec){ var s=String(Math.round(n*100)/100); return dec===',' ? s.replace('.',',') : s; }
+function tableRows(){
+  var H=ME.estHours, dec=ME.dec, rows=[];
+  rows.push(['Смета'+(S.project?': '+S.project:'')]);
+  if(S.client) rows.push(['Клиент', S.client]);
+  rows.push(['Дата', new Date().toLocaleDateString('ru-RU')]);
+  if(H) rows.push(['Стоимость часа, ₽', numX(S.rate,dec)]);
+  rows.push([]);
+  rows.push(['№','Раздел','Позиция','Ед.','Кол-во'].concat(H?['Часы']:[]).concat(['Цена, ₽','Сумма, ₽']));
+  estModel().forEach(function(m){ if(m.k==='grp') return;
+    rows.push([m.n, m.cat, m.name+(m.k==='gift'?' (в подарок)':''), m.u, numX(m.q,dec)].concat(H?[numX(Math.round(m.hours*10)/10,dec)]:[]).concat([numX(Math.round(m.price),dec), numX(Math.round(m.sum),dec)])); });
+  var pad=H?7:6;
+  function line(n,a){ var r=['', '', n]; while(r.length<pad) r.push(''); r.push(numX(Math.round(a),dec)); return r; }
+  rows.push([]);
+  rows.push(line('Итого работы', R.base));
+  R.lines.forEach(function(l){ rows.push(line(l.n, l.a)); });
+  if(R.gift) rows.push(line('Бонусы в подарок, ценность', R.gift));
+  rows.push(line('ИТОГО К ОПЛАТЕ', R.total));
+  if(R.days) rows.push(['', '', 'Срок, рабочих дней', R.days]);
+  if(S.note) { rows.push([]); rows.push(['Комментарий', S.note.replace(/\s*\n\s*/g,' ')]); }
+  return rows;
+}
+function toTSV(){ return tableRows().map(function(r){ return r.map(function(c){ return String(c).replace(/[\t\n]/g,' '); }).join('\t'); }).join('\r\n'); }
+function toCSV(){ return tableRows().map(function(r){ return r.map(function(c){ c=String(c); return /[;"\n]/.test(c) ? '"'+c.replace(/"/g,'""')+'"' : c; }).join(';'); }).join('\r\n'); }
+function toText(){
+  var t='Смета'+(S.project?' — '+S.project:'')+'\n\n';
+  C.cats.forEach(function(c){ if(!R.cat[c.id]) return; t+='• '+c.n+' — '+money(R.cat[c.id])+'\n'; });
+  R.lines.forEach(function(l){ t+='• '+l.n+': '+(l.a>0?'+':'−')+money(Math.abs(l.a))+'\n'; });
+  var g=R.rows.filter(function(r){ return r.gift; });
+  if(g.length) t+='\nВ подарок: '+g.map(function(r){ return r.it.n.toLowerCase(); }).join(', ')+' (ценность '+money(R.gift)+')\n';
+  t+='\nИтого: '+money(R.total);
+  if(R.days) t+='\nСрок: около '+R.days+' раб. '+plural(R.days,'дня','дней','дней');
+  t+='\nОплата: '+payStages().map(function(p){ return p+'%'; }).join(' / ');
+  return t;
+}
+function copy(text, msg){
+  function fb(){ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast(msg); }catch(e){ toast('Не удалось скопировать'); } ta.remove(); }
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function(){ toast(msg); }, fb); else fb();
+}
+function download(name, text, type){
+  var b=new Blob([text],{type:type}), a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+/* Имя для всех сохранений: «Смета Prime Era — Проект — Клиент — 2026-09-30 — 134 000 ₽» */
+function cleanName(s){ return String(s||'').replace(/[\\\/:*?"<>|\n\r\t]+/g,' ').replace(/\s+/g,' ').trim(); }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function baseName(){
+  var parts=['Смета Prime Era'], p=cleanName(S.project), c=cleanName(S.client);
+  if(p) parts.push(p); if(c && c!==p) parts.push(c);
+  parts.push(today());
+  if(R && R.total) parts.push(Math.round(R.total).toLocaleString('ru-RU').replace(/\s/g,' ')+' ₽');
+  return parts.join(' — ').slice(0,180);
+}
+function fileName(ext){ return baseName()+'.'+ext; }
+/* браузер берёт имя PDF из заголовка страницы — подменяем его на время печати (и по кнопке, и по Cmd+P) */
+var titleBak=null;
+window.addEventListener('beforeprint', function(){ if(titleBak==null){ titleBak=document.title; document.title=baseName(); } });
+window.addEventListener('afterprint', function(){ if(titleBak!=null){ document.title=titleBak; titleBak=null; } });
+
+/* ============================================================
+   ДЕЙСТВИЯ СО СМЕТОЙ
+   ============================================================ */
+function save(){ lset(KEY_CUR,S); }
+function saveMe(){ lset(KEY_ME,ME); }
+function snapshot(){ undo=clone(S); }
+function toast(msg, act, fn){
+  var t=document.createElement('div'); t.className='toast'; t.innerHTML='<span>'+esc(msg)+'</span>'+(act?'<button>'+esc(act)+'</button>':'');
+  if(act) t.querySelector('button').onclick=function(){ fn(); t.remove(); };
+  $('toasts').appendChild(t); setTimeout(function(){ t.remove(); }, act?6000:2600);
+}
+function rebuildAll(){ buildIndex(); syncInputs(); renderList(); refresh(); }
+function restoreUndo(){ if(!undo) return; S=undo; undo=null; rebuildAll(); toast('Вернул как было'); }
+
+function applyPreset(id){
+  var p=C.presets.filter(function(x){ return x.id===id; })[0]; if(!p) return;
+  var had=Object.keys(S.sel).length; snapshot();
+  S.sel={}; Object.keys(p.items).forEach(function(k){ if(!I[k]) return; var q=p.items[k]; S.sel[k]={ q:(q==='B'||q==='P')?null:+q, h:null, gift:false }; });
+  S.blocks=p.blocks; S.pages=p.pages; S.preset=p.id;
+  syncInputs(); applyFilter(); refresh();
+  toast('Сборка «'+p.n+'» — '+Object.keys(S.sel).length+' позиций', had?'Отменить':null, restoreUndo);
+}
+function toggle(id, on){
+  if(on==null) on=!S.sel[id];
+  if(on) S.sel[id]=S.sel[id]||{ q:null, h:null, gift:false }; else delete S.sel[id];
+  S.preset=null;
+}
+function setGift(id){ if(!S.sel[id]) S.sel[id]={ q:null, h:null, gift:true }; else S.sel[id].gift=!S.sel[id].gift; }
+function selToPresetItems(){
+  var items={};
+  Object.keys(S.sel).forEach(function(id){ var s=S.sel[id], it=I[id]; if(!it || it.kind==='est') return;
+    items[id] = s.q==null ? (it.u==='блок'?'B':it.u==='стр'?'P':1) : s.q; });
+  return items;
+}
+
+function syncInputs(){
+  $('rate').value=S.rate; $('proj').value=S.project; $('client').value=S.client;
+  $('blocks').value=S.blocks; $('pages').value=S.pages; $('lang').value=S.lang; $('langTr').checked=!!S.langTr;
+  $('discPct').value=S.discPct||''; $('discRub').value=S.discRub||''; $('round').value=String(S.round); $('note').value=S.note||'';
+  $('dec').value=ME.dec;
+  renderSide();
+}
+
+/* ---------- события сметы ---------- */
+$('rate').addEventListener('input', function(){ S.rate=Math.max(0,num(this.value,0)); refresh(); });
+$('proj').addEventListener('input', function(){ S.project=this.value; save(); });
+$('client').addEventListener('input', function(){ S.client=this.value; save(); });
+$('note').addEventListener('input', function(){ S.note=this.value; save(); });
+$('blocks').addEventListener('input', function(){ S.blocks=Math.max(0,Math.round(num(this.value,0))); refresh(); });
+$('pages').addEventListener('input', function(){ S.pages=Math.max(0,Math.round(num(this.value,0))); refresh(); });
+$('lang').addEventListener('input', function(){ S.lang=Math.max(0,Math.round(num(this.value,0))); refresh(); });
+$('langTr').addEventListener('change', function(){ S.langTr=this.checked; refresh(); });
+$('discPct').addEventListener('input', function(){ S.discPct=Math.max(0,num(this.value,0)); refresh(); });
+$('discRub').addEventListener('input', function(){ S.discRub=Math.max(0,num(this.value,0)); refresh(); });
+$('round').addEventListener('change', function(){ S.round=+this.value; refresh(); });
+$('dec').addEventListener('change', function(){ ME.dec=this.value; saveMe(); });
+
+document.addEventListener('click', function(e){
+  var t=e.target, b;
+  if(t.closest('#mAdmin')) return;
+  if((b=t.closest('[data-step]'))){ var f=b.dataset.step; S[f]=Math.max(0,(S[f]||0)+(+b.dataset.d)); $(f).value=S[f]; refresh(); return; }
+  if((b=t.closest('[data-preset]'))){ applyPreset(b.dataset.preset); return; }
+  if((b=t.closest('[data-urg]'))){ S.urg=b.dataset.urg; renderSide(); refresh(); return; }
+  if((b=t.closest('[data-g]'))){ var gid=b.dataset.g; if(S.sel[gid] && S.sel[gid].gift) delete S.sel[gid]; else { S.sel[gid]=S.sel[gid]||{ q:null, h:null, gift:true }; S.sel[gid].gift=true; } refresh(); return; }
+  if((b=t.closest('[data-add]'))){ e.stopPropagation(); openCustom(b.dataset.add); return; }
+  if((b=t.closest('[data-del]'))){ e.stopPropagation(); delCustom(b.dataset.del); return; }
+  if((b=t.closest('[data-toggle]'))){ if(t.closest('button')) return; var c=b.dataset.toggle; closed[c]=!closed[c]; catEls[c].el.classList.toggle('closed', closed[c]); return; }
+  if((b=t.closest('[data-close]')) || (t.classList.contains('back'))){ var m=t.closest('.back'); if(m) m.classList.remove('open'); return; }
+  var row=t.closest('.row'); if(!row) return; var id=row.dataset.id;
+  if(t.closest('[data-gift]')){ setGift(id); refresh(); return; }
+  if((b=t.closest('[data-q]'))){ var q=qOf(id)+(+b.dataset.q); if(q<=0){ toggle(id,false); } else { toggle(id,true); S.sel[id].q=q; } refresh(); return; }
+  if(t.closest('[data-pick]')){ toggle(id); refresh(); return; }
+});
+document.addEventListener('change', function(e){
+  var t=e.target; if(t.closest('#mAdmin')) return;
+  if(t.matches('.ck input')){ toggle(t.closest('.row').dataset.id, t.checked); refresh(); return; }
+  if(t.dataset.mod){ S.mods[t.dataset.mod]=t.checked; refresh(); return; }
+  if(t.dataset.disc){ S.disc[t.dataset.disc]=t.checked; refresh(); return; }
+});
+document.addEventListener('input', function(e){
+  var t=e.target; if(t.closest('#mAdmin')) return;
+  var row=t.closest('.row');
+  if(t.dataset.modpct){ var mid=t.dataset.modpct; S.modPct[mid]=Math.max(0,num(t.value,0)); S.mods[mid]=true; var cb=document.querySelector('[data-mod="'+mid+'"]'); if(cb) cb.checked=true; refresh(); return; }
+  if(!row) return; var id=row.dataset.id;
+  if(t.classList.contains('hin')){ var h=Math.max(0,num(t.value,NaN)); if(isNaN(h)) return; toggle(id,true); S.sel[id].h = (h===baseH(id))?null:h; refresh(); return; }
+  if(t.closest('.qty')){ var q=Math.max(0,num(t.value,NaN)); if(isNaN(q)) return; if(q===0){ toggle(id,false); } else { toggle(id,true); S.sel[id].q=q; } refresh(); return; }
+});
+document.addEventListener('dblclick', function(e){
+  var t=e.target, row=t.closest('.row'); if(!row) return; var id=row.dataset.id, s=S.sel[id]; if(!s) return;
+  if(t.classList.contains('hin') && s.h!=null){ s.h=null; refresh(); toast('Норма часов из прайса'); }
+  else if(t.closest('.qty') && s.q!=null && linked(I[id].u)){ s.q=null; refresh(); toast('Количество снова привязано к числу '+(I[id].u==='блок'?'блоков':'страниц')); }
+});
+document.addEventListener('focusout', function(e){ if(e.target.matches('.row .hin,.row .qty input')) refresh(); });
+
+$('q').addEventListener('input', function(){ query=this.value; applyFilter(); });
+document.addEventListener('keydown', function(e){
+  var tag=document.activeElement.tagName;
+  if(e.key==='/' && !/INPUT|TEXTAREA|SELECT/.test(tag)){ e.preventDefault(); $('q').focus(); }
+  if(e.key==='Escape'){
+    if($('mAdmin').classList.contains('open')){ closeAdmin(); return; }
+    document.querySelectorAll('.back.open').forEach(function(m){ m.classList.remove('open'); });
+    if(document.activeElement===$('q') && query){ $('q').value=''; query=''; applyFilter(); } }
+  if((e.metaKey||e.ctrlKey) && e.key==='z' && undo && !/INPUT|TEXTAREA/.test(tag) && !$('mAdmin').classList.contains('open')){ e.preventDefault(); restoreUndo(); }
+  if((e.metaKey||e.ctrlKey) && e.key==='s'){ e.preventDefault(); if($('mAdmin').classList.contains('open')) adminSave(); else saveEstimate(); }
+});
+$('view').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; viewMode=b.dataset.v;
+  this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); applyFilter(); });
+$('bFold').addEventListener('click', function(){ var any=C.cats.some(function(c){ return !closed[c.id]; });
+  C.cats.forEach(function(c){ closed[c.id]=any; }); this.textContent=any?'Развернуть всё':'Свернуть всё'; applyFilter(); });
+$('estHours').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; ME.estHours=b.dataset.v==='1'; saveMe();
+  this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); renderEstimate(); });
+$('bXls').addEventListener('click', function(){ if(!R.rows.length) return toast('Смета пустая'); copy(toTSV(), 'Скопировано — вставьте в Excel через Ctrl+V'); });
+$('bCsv').addEventListener('click', function(){ if(!R.rows.length) return toast('Смета пустая'); download(fileName('csv'), '﻿'+toCSV(), 'text/csv;charset=utf-8'); });
+$('bTxt').addEventListener('click', function(){ if(!R.rows.length) return toast('Смета пустая'); copy(toText(), 'Текст скопирован'); });
+$('bPrint').addEventListener('click', function(){ if(!R.rows.length) return toast('Смета пустая'); titleBak=document.title; document.title=baseName(); window.print(); setTimeout(function(){ if(titleBak!=null){ document.title=titleBak; titleBak=null; } }, 1000); });
+$('mGo').addEventListener('click', function(){ $('est').scrollIntoView({ behavior:'smooth' }); });
+$('bTheme').addEventListener('click', function(){ ME.theme=ME.theme==='light'?'dark':'light'; applyTheme(); saveMe(); });
+function applyTheme(){ if(ME.theme==='light') document.documentElement.setAttribute('data-theme','light'); else document.documentElement.removeAttribute('data-theme'); }
+$('bNew').addEventListener('click', function(){ snapshot(); S=defState(); rebuildAll(); toast('Новая смета', 'Отменить', restoreUndo); });
+$('bAsPreset').addEventListener('click', function(){
+  if(!Object.keys(S.sel).length) return toast('Сначала отметьте позиции');
+  var n=prompt('Название новой сборки', S.project||''); if(!n) return;
+  C.presets.push({ id:rid('p'), n:n.trim(), d:'', blocks:S.blocks, pages:S.pages, items:selToPresetItems() });
+  saveConfig('Сборка «'+n.trim()+'» добавлена'); renderPresets();
+});
+
+/* ---------- сохранённые сметы ---------- */
+function saveEstimate(){
+  var list=lget(KEY_SAVED,[]), name=S.project||S.client||('Смета '+new Date().toLocaleDateString('ru-RU'));
+  if(!S.id) S.id='e'+Date.now().toString(36);
+  var rec={ id:S.id, name:name+(S.client&&S.project?' · '+S.client:''), at:Date.now(), total:R.total, state:clone(S) };
+  var i=list.findIndex(function(x){ return x.id===S.id; }); if(i>=0) list[i]=rec; else list.unshift(rec);
+  lset(KEY_SAVED,list); save(); toast('Сохранено: '+rec.name);
+}
+$('bSave').addEventListener('click', saveEstimate);
+$('bSaved').addEventListener('click', function(){ renderSaved(); $('mSaved').classList.add('open'); });
+function renderSaved(){
+  var list=lget(KEY_SAVED,[]);
+  $('savedList').innerHTML = list.length ? list.map(function(r){
+    return '<div class="sv"><div><b>'+esc(r.name)+'</b><small>'+new Date(r.at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' · '+money(r.total)+'</small></div>'+
+      '<button class="btn sm" data-open="'+r.id+'">Открыть</button><button class="btn sm" data-dup="'+r.id+'">Копия</button><button class="btn sm" data-rm="'+r.id+'">Удалить</button></div>'; }).join('')
+    : '<p class="muted">Пока пусто. Кнопка «Сохранить» (или Ctrl+S) кладёт текущую смету сюда.</p>';
+}
+$('savedList').addEventListener('click', function(e){
+  var b=e.target.closest('button'); if(!b) return; var list=lget(KEY_SAVED,[]);
+  var id=b.dataset.open||b.dataset.dup||b.dataset.rm, rec=list.filter(function(x){ return x.id===id; })[0]; if(!rec) return;
+  if(b.dataset.rm){ if(!confirm('Удалить смету «'+rec.name+'»?')) return; lset(KEY_SAVED, list.filter(function(x){ return x.id!==id; })); renderSaved(); return; }
+  snapshot(); S=Object.assign(defState(), clone(rec.state)); if(!S.modPct) S.modPct={};
+  if(b.dataset.dup){ delete S.id; S.project=(S.project||'')+' (копия)'; }
+  rebuildAll(); $('mSaved').classList.remove('open'); toast(b.dataset.dup?'Открыта копия':'Открыта смета', 'Отменить', restoreUndo);
+});
+
+/* ---------- своя позиция ---------- */
+function optList(arr, cur){ return arr.map(function(o){ return '<option value="'+esc(o[0])+'"'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>'; }).join(''); }
+function catOpts(cur){ return optList(C.cats.map(function(c){ return [c.id,c.n]; }), cur); }
+function roleOpts(cur, cfg){ return optList((cfg||C).roles.map(function(r){ return [r.id,r.n]; }), cur); }
+function unitOpts(cur){ return optList(UNITS.map(function(u){ return [u,u]; }), cur); }
+function openCustom(cat){
+  $('cCat').innerHTML=catOpts(cat); $('cRole').innerHTML=roleOpts('ds'); $('cUnit').innerHTML=unitOpts('шт');
+  $('cName').value=''; $('cH').value=1; $('cKeep').checked=false; $('mCustom').classList.add('open'); setTimeout(function(){ $('cName').focus(); }, 30); }
+$('cOk').addEventListener('click', function(){
+  var n=$('cName').value.trim(); if(!n){ $('cName').focus(); return; }
+  var it={ id:rid('i'), c:$('cCat').value, n:n, u:$('cUnit').value, h:Math.max(0,num($('cH').value,1)), r:$('cRole').value, d:'' };
+  if(ADMIN && $('cKeep').checked){ C.items.push(it); saveConfig('Позиция добавлена в прайс'); } else S.custom.push(it);
+  buildIndex(); S.sel[it.id]={ q:null, h:null, gift:false }; closed[it.c]=false;
+  renderList(); refresh(); $('mCustom').classList.remove('open');
+});
+$('cName').addEventListener('keydown', function(e){ if(e.key==='Enter') $('cOk').click(); });
+function delCustom(id){
+  S.custom=S.custom.filter(function(a){ return (Array.isArray(a)?a[0]:a.id)!==id; });
+  delete S.sel[id]; buildIndex(); renderList(); refresh();
+}
+
+/* ============================================================
+   АДМИНКА. Правится черновик D; «Сохранить» делает его прайсом.
+   ============================================================ */
+var D=null, dirty=false, aTab='items', aPreset=0, aQuery='';
+function setDirty(v){ dirty=v; $('aState').textContent = v ? 'Есть несохранённые правки' : ''; }
+function openAdmin(){ if(!ADMIN) return; D=clone(C); setDirty(false); $('mAdmin').classList.add('open'); renderAdmin(); }
+function closeAdmin(){ if(dirty && !confirm('Закрыть без сохранения? Правки пропадут.')) return; $('mAdmin').classList.remove('open'); D=null; setDirty(false); }
+function adminSave(){
+  if(!D) return;
+  D=normConfig(D); C=D; D=clone(C);
+  saveConfig('Прайс сохранён'+(HAS_PE?' для всей команды':'')); setDirty(false);
+  rebuildAll(); renderAdmin();
+}
+$('bAdmin').addEventListener('click', openAdmin);
+$('aClose').addEventListener('click', closeAdmin);
+$('aCancel').addEventListener('click', function(){ if(!dirty) return; if(!confirm('Отменить все несохранённые правки?')) return; D=clone(C); setDirty(false); renderAdmin(); });
+$('aSave').addEventListener('click', adminSave);
+$('mAdmin').addEventListener('mousedown', function(e){ if(e.target===this) closeAdmin(); });
+$('aTabs').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; aTab=b.dataset.t;
+  this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); }); renderAdmin(); });
+
+/* Универсальный редактор списка: строки-объекты, колонки-поля, ↑ ↓ ✕, «+ добавить» */
+function LE(host, arr, cols, o){
+  o=o||{};
+  function cell(c, it, i){
+    var v=it[c.k], a=' data-i="'+i+'" data-k="'+c.k+'"';
+    if(c.t==='ro') return '<span class="ro">'+esc(typeof c.v==='function'?c.v(it):v)+'</span>';
+    if(c.t==='num') return '<input type="number" step="'+(c.step||'any')+'" min="0"'+a+' value="'+esc(v)+'">';
+    if(c.t==='chk') return '<input type="checkbox"'+a+(v?' checked':'')+'>';
+    if(c.t==='sel') return '<select'+a+'>'+optList(typeof c.opts==='function'?c.opts():c.opts, v)+'</select>';
+    if(c.t==='scope'){
+      var all=v==='all', lbl=all?'Вся смета':(v||[]).map(function(x){ return catNameIn(D,x); }).join(', ');
+      return '<details class="scope"><summary>'+esc(lbl||'—')+'</summary><div class="scope-pop">'+
+        '<label><input type="checkbox" data-scope="'+i+'" data-all="1"'+(all?' checked':'')+'> <b>Вся смета</b></label>'+
+        D.cats.map(function(cc){ return '<label><input type="checkbox" data-scope="'+i+'" data-cat="'+esc(cc.id)+'"'+(!all&&v.indexOf(cc.id)>=0?' checked':'')+'> '+esc(cc.n)+'</label>'; }).join('')+'</div></details>';
+    }
+    return '<input type="text"'+a+' value="'+esc(v)+'"'+(c.ph?' placeholder="'+esc(c.ph)+'"':'')+'>';
+  }
+  function vis(it){ return !o.filter || o.filter(it); }
+  function draw(){
+    var h='<table class="le"><thead><tr>'+cols.map(function(c){ return '<th'+(c.w?' style="width:'+c.w+'"':'')+'>'+esc(c.l)+'</th>'; }).join('')+'<th></th></tr></thead><tbody>';
+    arr.forEach(function(it,i){ if(!vis(it)) return;
+      h+='<tr>'+cols.map(function(c){ return '<td>'+cell(c,it,i)+'</td>'; }).join('')+'<td class="act">'+
+        (o.move!==false?'<button data-a="up" data-i="'+i+'" title="Выше">↑</button><button data-a="dn" data-i="'+i+'" title="Ниже">↓</button>':'')+
+        (o.del!==false?'<button data-a="del" data-i="'+i+'" title="Удалить">✕</button>':'')+'</td></tr>'; });
+    h+='</tbody></table>'+(o.add?'<button class="btn sm" data-a="add">'+esc(o.addLabel||'+ Добавить')+'</button>':'');
+    host.innerHTML=h;
+  }
+  host.oninput=function(e){ var t=e.target, i=+t.dataset.i, k=t.dataset.k; if(!k || isNaN(i)) return;
+    var c=cols.filter(function(x){ return x.k===k; })[0];
+    arr[i][k] = c.t==='num' ? Math.max(0,num(t.value,0)) : c.t==='chk' ? t.checked : t.value;
+    setDirty(true); if(c.redraw) o.redraw ? o.redraw() : draw(); else if(o.onChange) o.onChange(); };
+  host.onchange=function(e){ var t=e.target;
+    if(t.dataset.scope!=null){ var i=+t.dataset.scope, it=arr[i];
+      if(t.dataset.all){ it.scope = t.checked ? 'all' : []; }
+      else { var s = it.scope==='all' ? [] : it.scope.slice(); var p=s.indexOf(t.dataset.cat); if(t.checked && p<0) s.push(t.dataset.cat); if(!t.checked && p>=0) s.splice(p,1); it.scope = s.length ? s : 'all'; }
+      setDirty(true); var open=i; draw(); var d=host.querySelectorAll('details.scope')[visIndex(open)]; if(d) d.open=true; return; }
+    if(t.type==='checkbox' || t.tagName==='SELECT') host.oninput(e); };
+  function visIndex(i){ var n=0; for(var j=0;j<i;j++) if(vis(arr[j])) n++; return n; }
+  host.onclick=function(e){ var b=e.target.closest('[data-a]'); if(!b) return; var a=b.dataset.a, i=+b.dataset.i;
+    if(a==='add'){ arr.push(o.add()); setDirty(true); draw(); var ins=host.querySelectorAll('tr:last-child input[type=text]'); if(ins[0]) ins[0].focus(); if(o.onChange) o.onChange(); return; }
+    if(a==='del'){ var why=o.canDel && o.canDel(arr[i]); if(why){ alert(why); return; }
+      if(o.confirmDel && !confirm(o.confirmDel(arr[i]))) return;
+      var gone=arr.splice(i,1)[0]; if(o.onDel) o.onDel(gone); setDirty(true); draw(); if(o.onChange) o.onChange(); return; }
+    var d=a==='up'?-1:1, j=i+d; while(j>=0 && j<arr.length && !vis(arr[j])) j+=d;
+    if(j<0 || j>=arr.length) return; var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; setDirty(true); draw(); if(o.onChange) o.onChange(); };
+  draw();
+  return { draw:draw };
+}
+function catNameIn(cfg,id){ for(var i=0;i<cfg.cats.length;i++) if(cfg.cats[i].id===id) return cfg.cats[i].n; return id; }
+function itemNameIn(cfg,id){ for(var i=0;i<cfg.items.length;i++) if(cfg.items[i].id===id) return cfg.items[i].n; return null; }
+function dropItemRefs(id){ D.presets.forEach(function(p){ delete p.items[id]; }); D.gifts=D.gifts.filter(function(g){ return g!==id; }); }
+
+function renderAdmin(){
+  var B=$('aBody'); B.innerHTML='';
+  ({ items:admItems, presets:admPresets, mods:admMods, cats:admCats, org:admOrg, data:admData })[aTab](B);
+}
+
+/* --- позиции --- */
+function admItems(B){
+  B.innerHTML='<p class="hint">Название, единица, норма часов, роль и пояснение для каждой позиции. Цена = часы × ставка студии × коэффициент роли. Позицию можно перенести в другой раздел.</p>'+
+    '<div class="row2"><div class="field search" style="flex:1"><input id="aQ" placeholder="Найти позицию" value="'+esc(aQuery)+'"></div></div><div id="aItems"></div>';
+  var host=$('aItems');
+  $('aQ').oninput=function(){ aQuery=this.value; draw(); };
+  function draw(){
+    host.innerHTML='';
+    var q=aQuery.trim().toLowerCase();
+    D.cats.forEach(function(c){
+      var n=D.items.filter(function(it){ return it.c===c.id && (!q || (it.n+' '+it.d).toLowerCase().indexOf(q)>=0); }).length;
+      if(q && !n) return;
+      var sec=document.createElement('div'); sec.innerHTML='<h4>'+esc(c.n)+' <span class="hint">'+n+'</span></h4><div></div>'; host.appendChild(sec);
+      LE(sec.lastChild, D.items, [
+        { k:'n', l:'Название' },
+        { k:'u', l:'Ед.', t:'sel', opts:UNITS.map(function(u){ return [u,u]; }), w:'80px' },
+        { k:'h', l:'Часов', t:'num', step:0.05, w:'80px' },
+        { k:'r', l:'Роль', t:'sel', opts:function(){ return D.roles.map(function(r){ return [r.id,r.n]; }); }, w:'150px' },
+        { k:'c', l:'Раздел', t:'sel', opts:function(){ return D.cats.map(function(x){ return [x.id,x.n]; }); }, w:'170px', redraw:true },
+        { k:'d', l:'Пояснение', ph:'что входит' }
+      ], { filter:function(it){ return it.c===c.id && (!q || (it.n+' '+it.d).toLowerCase().indexOf(q)>=0); },
+           add:function(){ return { id:rid('i'), c:c.id, n:'', u:'шт', h:1, r:'ds', d:'' }; }, addLabel:'+ Позиция в «'+c.n+'»',
+           confirmDel:function(it){ return 'Удалить «'+(it.n||'без названия')+'»? Она пропадёт и из готовых сборок.'; },
+           onDel:function(it){ dropItemRefs(it.id); }, redraw:draw });
+    });
+  }
+  draw();
+}
+
+/* --- сборки --- */
+function admPresets(B){
+  if(aPreset>=D.presets.length) aPreset=Math.max(0,D.presets.length-1);
+  B.innerHTML='<p class="hint">Готовые сборки — кнопки над прайсом. «блоки» и «стр.» значат, что количество равно числу блоков или страниц сборки. Быстрый способ: соберите смету руками и нажмите «Из текущей сметы».</p>'+
+    '<div class="pgrid2"><div><div class="plist" id="aPL"></div><div class="row2" style="margin-top:8px"><button class="btn sm" id="aPNew">+ Пустая</button><button class="btn sm" id="aPFrom">+ Из текущей сметы</button></div></div><div id="aPE"></div></div>';
+  function list(){
+    $('aPL').innerHTML=D.presets.map(function(p,i){ return '<button class="pi'+(i===aPreset?' on':'')+'" data-pi="'+i+'"><span>'+esc(p.n||'Без названия')+'</span><small>'+kmoney(presetCalc(p,D,S.rate).sum)+'</small></button>'; }).join('') || '<span class="hint">Сборок нет.</span>';
+  }
+  $('aPL').onclick=function(e){ var b=e.target.closest('[data-pi]'); if(!b) return; aPreset=+b.dataset.pi; list(); edit(); };
+  $('aPNew').onclick=function(){ D.presets.push({ id:rid('p'), n:'Новая сборка', d:'', blocks:10, pages:0, items:{} }); aPreset=D.presets.length-1; setDirty(true); list(); edit(); };
+  $('aPFrom').onclick=function(){ if(!Object.keys(S.sel).length){ toast('В текущей смете ничего не отмечено'); return; }
+    D.presets.push({ id:rid('p'), n:S.project||'Сборка из сметы', d:'', blocks:S.blocks, pages:S.pages, items:selToPresetItems() }); aPreset=D.presets.length-1; setDirty(true); list(); edit(); };
+  function edit(){
+    var host=$('aPE'), p=D.presets[aPreset];
+    if(!p){ host.innerHTML=''; return; }
+    var calc=presetCalc(p,D,S.rate), map={}; D.items.forEach(function(it){ map[it.id]=it; });
+    var ids=D.items.map(function(it){ return it.id; }).filter(function(id){ return p.items[id]!=null; });
+    var h='<div class="pedit"><div class="fgrid">'+
+      '<label class="ff full">Название<input data-pf="n" value="'+esc(p.n)+'"></label>'+
+      '<label class="ff full">Короткое описание на карточке<input data-pf="d" value="'+esc(p.d)+'"></label>'+
+      '<label class="ff">Блоков<input type="number" min="0" data-pf="blocks" value="'+p.blocks+'"></label>'+
+      '<label class="ff">Внутренних страниц<input type="number" min="0" data-pf="pages" value="'+p.pages+'"></label></div>'+
+      '<h4 style="margin-top:14px">Состав · '+ids.length+' поз. · '+hrs(calc.hours)+' · ≈ '+money(calc.sum)+' <span class="hint">при ставке '+money(S.rate)+'/ч</span></h4>'+
+      '<table class="le"><thead><tr><th>Позиция</th><th style="width:120px">Количество</th><th style="width:80px"></th><th style="width:90px">Сумма</th><th></th></tr></thead><tbody>';
+    ids.forEach(function(id){ var it=map[id], q=p.items[id], mode=q==='B'?'B':q==='P'?'P':'n', qq=mode==='B'?p.blocks:mode==='P'?p.pages:+q;
+      h+='<tr><td>'+esc(it.n)+' <span class="hint">· '+esc(catNameIn(D,it.c))+'</span></td>'+
+        '<td><select data-pm="'+esc(id)+'">'+optList([['n','число'],['B','= блоков'],['P','= страниц']],mode)+'</select></td>'+
+        '<td><input type="number" min="0" step="any" data-pq="'+esc(id)+'" value="'+qq+'"'+(mode!=='n'?' disabled':'')+'></td>'+
+        '<td class="ro" style="text-align:right">'+money(qq*it.h*S.rate*((D.roles.filter(function(r){ return r.id===it.r; })[0]||{k:1}).k))+'</td>'+
+        '<td class="act"><button data-prm="'+esc(id)+'" title="Убрать">✕</button></td></tr>'; });
+    h+='</tbody></table><div class="adder"><input list="aItemList" id="aPAdd" placeholder="Добавить позицию: начните вводить название"><button class="btn sm" id="aPAddB">Добавить</button></div>'+
+      '<datalist id="aItemList">'+D.items.filter(function(it){ return p.items[it.id]==null; }).map(function(it){ return '<option value="'+esc(it.n)+'">'+esc(catNameIn(D,it.c))+'</option>'; }).join('')+'</datalist>'+
+      '<div class="row2" style="margin-top:14px"><button class="btn sm" data-pa="up">↑ Выше</button><button class="btn sm" data-pa="dn">↓ Ниже</button><button class="btn sm" data-pa="dup">Дублировать</button><button class="btn sm" data-pa="load">Открыть в смете</button><span class="sp"></span><button class="btn sm" data-pa="del" style="color:var(--bad)">Удалить сборку</button></div></div>';
+    host.innerHTML=h;
+    host.oninput=function(e){ var t=e.target;
+      if(t.dataset.pf){ var k=t.dataset.pf; p[k] = (k==='blocks'||k==='pages') ? Math.max(0,Math.round(num(t.value,0))) : t.value; setDirty(true); list(); if(k==='blocks'||k==='pages') refreshSums(); return; }
+      if(t.dataset.pq){ p.items[t.dataset.pq]=Math.max(0,num(t.value,0)); setDirty(true); list(); refreshSums(); }
+    };
+    host.onchange=function(e){ var t=e.target; if(t.dataset.pm){ var m=t.value, id=t.dataset.pm; p.items[id] = m==='n' ? (p.items[id]==='B'?p.blocks:p.items[id]==='P'?p.pages:p.items[id]) : m; setDirty(true); list(); edit(); } };
+    host.onclick=function(e){ var t=e.target, b;
+      if((b=t.closest('[data-prm]'))){ delete p.items[b.dataset.prm]; setDirty(true); list(); edit(); return; }
+      if(t.id==='aPAddB'){ addItem(); return; }
+      if((b=t.closest('[data-pa]'))){ var a=b.dataset.pa;
+        if(a==='del'){ if(!confirm('Удалить сборку «'+p.n+'»?')) return; D.presets.splice(aPreset,1); aPreset=Math.max(0,aPreset-1); }
+        else if(a==='dup'){ var c=clone(p); c.id=rid('p'); c.n=p.n+' (копия)'; D.presets.splice(aPreset+1,0,c); aPreset++; }
+        else if(a==='up' && aPreset>0){ D.presets.splice(aPreset-1,0,D.presets.splice(aPreset,1)[0]); aPreset--; }
+        else if(a==='dn' && aPreset<D.presets.length-1){ D.presets.splice(aPreset+1,0,D.presets.splice(aPreset,1)[0]); aPreset++; }
+        else if(a==='load'){ loadDraftPreset(p); return; }
+        else return;
+        setDirty(true); list(); edit(); }
+    };
+    $('aPAdd').onkeydown=function(e){ if(e.key==='Enter') addItem(); };
+    function addItem(){ var v=$('aPAdd').value.trim(); if(!v) return;
+      var it=D.items.filter(function(x){ return x.n===v; })[0] || D.items.filter(function(x){ return x.n.toLowerCase().indexOf(v.toLowerCase())>=0 && p.items[x.id]==null; })[0];
+      if(!it){ toast('Такой позиции нет в прайсе'); return; }
+      p.items[it.id] = it.u==='блок'?'B' : it.u==='стр'?'P' : 1; setDirty(true); list(); edit(); setTimeout(function(){ var a=$('aPAdd'); if(a) a.focus(); }, 0); }
+    function refreshSums(){ var c=presetCalc(p,D,S.rate); var h4=host.querySelector('h4'); if(h4) h4.firstChild.nodeValue='Состав · '+ids.length+' поз. · '+hrs(c.hours)+' · ≈ '+money(c.sum)+' '; }
+  }
+  list(); edit();
+}
+function loadDraftPreset(p){
+  if(dirty && !confirm('Открыть сборку в смете? Несохранённые правки прайса пока не применятся — сначала сохраните, если нужно.')) return;
+  var real=C.presets.filter(function(x){ return x.id===p.id; })[0];
+  if(real){ $('mAdmin').classList.remove('open'); D=null; setDirty(false); applyPreset(real.id); } else toast('Сначала сохраните сборку');
+}
+
+/* --- надбавки, скидки, подарки --- */
+function admMods(B){
+  B.innerHTML='<h4>Срочность</h4><p class="hint">Надбавка на всю смету; «ускорение» — во сколько раз быстрее выходит срок.</p><div id="aU"></div>'+
+    '<h4>Надбавки</h4><p class="hint">Процент считается от суммы выбранных разделов. «Доп. часы» — надбавка означает реальную работу и увеличивает срок.</p><div id="aM"></div>'+
+    '<h4>Скидки</h4><p class="hint">Потолок суммарной скидки — во вкладке «Роли и общие».</p><div id="aDi"></div>'+
+    '<h4>Дополнительные языки</h4><p class="hint">Сколько процентов от раздела добавляет каждый язык. Правая колонка — если перевод делаем мы.</p><div class="lgrid" id="aL"></div>'+
+    '<h4>Быстрые подарки</h4><p class="hint">Кнопки в блоке «Бонусы в подарок».</p><div class="gchips" id="aG"></div><div class="adder"><input list="aGList" id="aGAdd" placeholder="Добавить позицию в подарки"><button class="btn sm" id="aGAddB">Добавить</button></div><datalist id="aGList"></datalist>';
+  LE($('aU'), D.urgency, [ { k:'n', l:'Название', w:'30%' }, { k:'s', l:'Подпись', w:'30%' }, { k:'pct', l:'Надбавка, %', t:'num', w:'110px' }, { k:'k', l:'Ускорение, раз', t:'num', step:0.1, w:'120px' } ],
+    { add:function(){ return { id:rid('u'), n:'Новый уровень', s:'', pct:20, k:1.2 }; }, canDel:function(){ return D.urgency.length<2 ? 'Должен остаться хотя бы один уровень' : ''; } });
+  LE($('aM'), D.mods, [ { k:'n', l:'Название', w:'24%' }, { k:'d', l:'Пояснение' }, { k:'pct', l:'%', t:'num', w:'70px' }, { k:'scope', l:'От каких разделов', t:'scope', w:'190px' }, { k:'work', l:'Доп. часы', t:'chk', w:'70px' } ],
+    { add:function(){ return { id:rid('m'), n:'Новая надбавка', d:'', pct:10, scope:'all', work:false }; } });
+  LE($('aDi'), D.discounts, [ { k:'n', l:'Название' }, { k:'pct', l:'%', t:'num', w:'90px' } ], { add:function(){ return { id:rid('d'), n:'Новая скидка', pct:5 }; } });
+  $('aL').innerHTML='<label class="hint" style="font-size:11px"><span>РАЗДЕЛ</span><span>КЛИЕНТ</span><span>МЫ</span></label>'+D.cats.map(function(c){
+    return '<label><span>'+esc(c.n)+'</span><input type="number" min="0" data-lb="'+esc(c.id)+'" value="'+(D.lang.base[c.id]||0)+'"><input type="number" min="0" data-lt="'+esc(c.id)+'" value="'+(D.lang.tr[c.id]||0)+'"></label>'; }).join('');
+  $('aL').oninput=function(e){ var t=e.target, v=Math.max(0,num(t.value,0));
+    if(t.dataset.lb){ if(v) D.lang.base[t.dataset.lb]=v; else delete D.lang.base[t.dataset.lb]; }
+    if(t.dataset.lt){ if(v) D.lang.tr[t.dataset.lt]=v; else delete D.lang.tr[t.dataset.lt]; } setDirty(true); };
+  function gifts(){
+    $('aG').innerHTML=D.gifts.map(function(id,i){ var n=itemNameIn(D,id); return n?'<span>'+esc(n)+'<button data-gr="'+i+'" title="Убрать">×</button></span>':''; }).join('') || '<span class="hint">Пусто</span>';
+    $('aGList').innerHTML=D.items.filter(function(it){ return D.gifts.indexOf(it.id)<0; }).map(function(it){ return '<option value="'+esc(it.n)+'">'; }).join('');
+  }
+  $('aG').onclick=function(e){ var b=e.target.closest('[data-gr]'); if(!b) return; D.gifts.splice(+b.dataset.gr,1); setDirty(true); gifts(); };
+  function addG(){ var v=$('aGAdd').value.trim(), it=D.items.filter(function(x){ return x.n===v; })[0]; if(!it){ toast('Такой позиции нет'); return; } D.gifts.push(it.id); $('aGAdd').value=''; setDirty(true); gifts(); }
+  $('aGAddB').onclick=addG; $('aGAdd').onkeydown=function(e){ if(e.key==='Enter') addG(); };
+  gifts();
+}
+
+/* --- разделы --- */
+function admCats(B){
+  B.innerHTML='<p class="hint">Порядок разделов — это порядок в прайсе и в смете. Удалить можно только пустой раздел: сначала перенесите позиции.</p><div id="aC"></div>';
+  LE($('aC'), D.cats, [ { k:'n', l:'Название раздела' }, { k:'id', l:'Позиций', t:'ro', v:function(c){ return D.items.filter(function(it){ return it.c===c.id; }).length; }, w:'90px' } ],
+    { add:function(){ return { id:rid('c'), n:'Новый раздел' }; },
+      canDel:function(c){ var n=D.items.filter(function(it){ return it.c===c.id; }).length; return n ? 'В разделе '+n+' '+plural(n,'позиция','позиции','позиций')+'. Перенесите или удалите их во вкладке «Позиции прайса».' : (D.cats.length<2?'Должен остаться хотя бы один раздел':''); } });
+}
+
+/* --- роли и общие --- */
+function admOrg(B){
+  var o=D.org;
+  B.innerHTML='<h4>Общие настройки</h4><div class="fgrid" id="aO">'+
+    '<label class="ff">Час студии по умолчанию, ₽<input type="number" min="0" step="100" data-o="rate" value="'+o.rate+'"></label>'+
+    '<label class="ff">Округление по умолчанию<select data-o="round">'+optList([['0','без округления'],['100','100 ₽'],['1000','1 000 ₽'],['5000','5 000 ₽'],['10000','10 000 ₽']], String(o.round))+'</select></label>'+
+    '<label class="ff">Себестоимость часа, ₽ (0 — не показывать маржу)<input type="number" min="0" step="50" data-o="cost" value="'+o.cost+'"></label>'+
+    '<label class="ff">Минимальная маржа, %<input type="number" min="0" max="100" data-o="margin" value="'+o.margin+'"></label>'+
+    '<label class="ff">Часов работы команды в день на проект<input type="number" min="1" step="0.5" data-o="hpd" value="'+o.hpd+'"></label>'+
+    '<label class="ff">Потолок суммарной скидки, %<input type="number" min="0" max="100" data-o="maxDisc" value="'+o.maxDisc+'"></label>'+
+    '<label class="ff">Этапы оплаты, % через «/»<input data-o="pay" value="'+esc(o.pay.join('/'))+'"></label>'+
+    '<label class="ff">Названия этапов через «/»<input data-o="payNames" value="'+esc(o.payNames.join(' / '))+'"></label>'+
+    '<label class="ff">100% предоплата, если сумма до, ₽<input type="number" min="0" step="1000" data-o="fullBelow" value="'+o.fullBelow+'"></label>'+
+    '<label class="ff">Минимальный заказ, ₽<input type="number" min="0" step="1000" data-o="minOrder" value="'+o.minOrder+'"></label></div>'+
+    '<h4>Роли и коэффициенты ставки</h4><p class="hint">1 — час по ставке студии. 1,3 у арт-директора — его час на 30% дороже. Удалить можно роль, на которой нет позиций.</p><div id="aR"></div>';
+  $('aO').oninput=$('aO').onchange=function(e){ var t=e.target, k=t.dataset.o; if(!k) return;
+    if(k==='pay'){ var p=t.value.split(/[\/,;\s]+/).map(function(x){ return num(x,NaN); }).filter(function(x){ return x>0; }); if(!p.length) return; o.pay=p; }
+    else if(k==='payNames') o.payNames=t.value.split('/').map(function(s){ return s.trim(); });
+    else o[k]=Math.max(0,num(t.value,0));
+    setDirty(true); };
+  LE($('aR'), D.roles, [ { k:'n', l:'Роль' }, { k:'k', l:'Коэффициент', t:'num', step:0.05, w:'130px' }, { k:'id', l:'Позиций', t:'ro', v:function(r){ return D.items.filter(function(it){ return it.r===r.id; }).length; }, w:'90px' } ],
+    { add:function(){ return { id:rid('r'), n:'Новая роль', k:1 }; }, canDel:function(r){ var n=D.items.filter(function(it){ return it.r===r.id; }).length; return n?'На этой роли '+n+' '+plural(n,'позиция','позиции','позиций')+'. Сначала поменяйте им роль.':''; } });
+}
+
+/* --- резерв и сброс --- */
+function admData(B){
+  var ov=Object.keys(S.sel).filter(function(id){ return S.sel[id].h!=null && I[id].kind==='base'; }).length;
+  B.innerHTML='<h4>Нормы из текущей сметы</h4><p class="hint">Если в смете вы поправили часы в строках и это теперь норма — запишите их в прайс. Сейчас изменено: '+ov+'.</p>'+
+    '<button class="btn sm" id="aHours"'+(ov?'':' disabled')+'>Записать часы в черновик прайса</button>'+
+    '<h4>Резервная копия</h4><p class="hint">Файл с прайсом, сборками, надбавками и настройками. Удобно перед большими правками или для переноса.</p>'+
+    '<div class="row2"><button class="btn sm" id="aExp">Скачать прайс в файл</button><button class="btn sm" id="aImp">Загрузить прайс из файла</button><button class="btn sm" id="aExpAll">Скачать всё вместе со сметами</button></div>'+
+    '<h4>Сброс</h4><p class="hint">Вернуть заводской прайс из этого файла. Ваши сборки и правки пропадут — сначала скачайте копию.</p>'+
+    '<button class="btn sm" id="aReset" style="color:var(--bad)">Вернуть заводской прайс</button>'+
+    (HAS_PE?'<h4>Где хранится</h4><p class="hint">В базе экосистемы: calc/config. Читают все, у кого есть доступ к модулю, меняет только администратор.</p>':'<h4>Где хранится</h4><p class="hint">Сейчас — только в этом браузере. После подключения к экосистеме прайс будет общим для команды.</p>');
+  $('aHours').onclick=function(){ var n=0; Object.keys(S.sel).forEach(function(id){ var s=S.sel[id]; if(s.h==null) return;
+      D.items.forEach(function(it){ if(it.id===id){ it.h=s.h; n++; } }); });
+    setDirty(true); toast('В черновик записано норм: '+n+'. Нажмите «Сохранить».'); };
+  $('aExp').onclick=function(){ download('Прайс калькулятора Prime Era — '+today()+'.json', JSON.stringify(D,null,1), 'application/json'); };
+  $('aExpAll').onclick=function(){ download('Калькулятор Prime Era, полная копия — '+today()+'.json', JSON.stringify({ v:2, config:D, saved:lget(KEY_SAVED,[]), current:S }, null, 1), 'application/json'); };
+  $('aImp').onclick=function(){ $('fileIn').click(); };
+  $('aReset').onclick=function(){ if(!confirm('Вернуть заводской прайс? Черновик заменится, сохранится после «Сохранить».')) return; D=buildDefault(); setDirty(true); toast('Заводской прайс в черновике. Нажмите «Сохранить».'); };
+}
+$('fileIn').addEventListener('change', function(){
+  var f=this.files[0]; if(!f) return; var r=new FileReader();
+  r.onload=function(){ try{ var d=JSON.parse(r.result), cfg=d.config||d;
+      if(!cfg.items) throw 0;
+      D=normConfig(cfg); setDirty(true);
+      if(d.saved && confirm('В файле есть сохранённые сметы ('+d.saved.length+'). Заменить ими ваш список смет?')) lset(KEY_SAVED,d.saved);
+      renderAdmin(); toast('Прайс загружен в черновик. Нажмите «Сохранить».');
+    }catch(e){ toast('Файл не похож на прайс калькулятора'); } };
+  r.readAsText(f); this.value='';
+});
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+function setAdmin(v){ ADMIN=!!v; document.documentElement.classList.toggle('is-admin', ADMIN); }
+$('estHours').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', (x.dataset.v==='1')===!!ME.estHours); });
+setAdmin(ADMIN); applyTheme(); rebuildAll();
+
+if(HAS_PE){
+  PE.onReady(function(){
+    /* править прайс — право «Калькулятор: прайс» из «Ролей и прав» экосистемы */
+    setAdmin(PE.perm ? PE.perm('calc_edit') : PE.isAdmin());
+    var wantAdmin=/[?&]admin=1/.test(location.search);
+    PE.fb('GET',DB_PATH).then(function(d){
+      if(d && d.items){ C=normConfig(d); lset(KEY_CFG,C); rebuildAll(); }
+      if(wantAdmin && ADMIN) openAdmin();
+    }, function(){ if(wantAdmin && ADMIN) openAdmin(); });
+  });
+}
+window.__calc={ S:function(){ return S; }, R:function(){ return R; }, C:function(){ return C; }, presetCalc:presetCalc, apply:applyPreset };
+})();
+</script>
+</body>
+</html>
