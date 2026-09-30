@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010302">
-<script src="assets/pe-core.js?v=202610010302" data-module="org-board"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610010302">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010308">
+<script src="assets/pe-core.js?v=202610010308" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010308">
 <style>
 :root{
   color-scheme:light;
@@ -432,13 +432,23 @@ function mapPeopleToEco(st){
 function defaultState(){var st=JSON.parse(EMBED_TEXT);mapPeopleToEco(st);return st;}
 
 /* ---------- экосистема: хранение ---------- */
+/* кэш схемы в браузере («…-cache» — не уходит в облако): открываемся мгновенно,
+   а целиком схему качаем, только если её кто-то сохранил после нас */
+var OCACHE="pe-orgchart-cache", loadingRemote=false;
+function readCache(){try{var c=JSON.parse(localStorage.getItem(OCACHE)||"null");return c&&c.json?c:null;}catch(e){return null;}}
+function writeCache(at,json){try{localStorage.setItem(OCACHE,JSON.stringify({at:at,json:json}));}catch(e){}}
 function loadRemote(){
-  return Promise.all([PE.fb("GET","orgchart/doc"),PE.fb("GET","orgchart/rev")]).then(function(r){
-    var doc=r[0],rev=r[1]||{};
-    if(doc&&doc.json){S=JSON.parse(doc.json);baseAt=doc.at||0;lastJson=doc.json;baseBy=doc.by||"";baseByName=rev.byName||"";}
-    else{S=defaultState();baseAt=rev.at||0;lastJson=null;}
-    remoteReady=true;statusMsg="";
-  }).catch(function(){
+  var cache=readCache();loadingRemote=true;
+  return PE.fb("GET","orgchart/rev").then(function(rev){
+    rev=rev||{};
+    if(cache&&rev.at&&cache.at===rev.at){S=JSON.parse(cache.json);baseAt=rev.at;lastJson=cache.json;baseBy=rev.by||"";baseByName=rev.byName||"";return false;}
+    return PE.fb("GET","orgchart/doc").then(function(doc){
+      if(doc&&doc.json){S=JSON.parse(doc.json);baseAt=doc.at||0;lastJson=doc.json;baseBy=doc.by||"";baseByName=rev.byName||"";writeCache(baseAt,doc.json);}
+      else{S=defaultState();baseAt=rev.at||0;lastJson=null;}
+      return true;
+    });
+  }).then(function(changed){remoteReady=true;loadingRemote=false;statusMsg="";return changed;}).catch(function(){
+    loadingRemote=false;
     S=S||defaultState();remoteReady=false;statusMsg="Нет доступа к базе оргсхемы — показан шаблон";
     if(CAN_EDIT)PE.toast("Оргсхема показана из шаблона: нет доступа к базе (orgchart). Нужно опубликовать правила базы.","err");
   });
@@ -465,7 +475,7 @@ function saveRemote(force){
   }).then(function(){
     var at=Date.now(),u=PE.user||{};
     return PE.fb("PATCH","orgchart",{doc:{json:json,at:at,by:u.id||""},rev:{at:at,by:u.id||"",byName:PE.fullName(u)}}).then(function(){
-      baseAt=at;lastJson=json;baseBy=u.id||"";baseByName=PE.fullName(u);savedSeq=seq;
+      baseAt=at;lastJson=json;baseBy=u.id||"";baseByName=PE.fullName(u);savedSeq=seq;writeCache(at,json);
       if(!auditDone){auditDone=true;PE.audit("org.save","orgchart","оргсхема");}
     });
   }).then(function(){
@@ -488,7 +498,7 @@ function reloadRemote(){
   return PE.fb("GET","orgchart/rev").then(function(rev){
     return PE.fb("GET","orgchart/doc").then(function(doc){
       if(!doc||!doc.json)return false;
-      S=JSON.parse(doc.json);baseAt=doc.at||0;lastJson=doc.json;baseBy=doc.by||"";baseByName=(rev&&rev.byName)||"";snapDone=false;savedSeq=editSeq;
+      S=JSON.parse(doc.json);baseAt=doc.at||0;lastJson=doc.json;baseBy=doc.by||"";baseByName=(rev&&rev.byName)||"";snapDone=false;savedSeq=editSeq;writeCache(baseAt,doc.json);
       return true;
     });
   });
@@ -1359,7 +1369,7 @@ function openDownload(){
 function act(a,el){
   var d=el.dataset;
   switch(a){
-  case "edit": if(!CAN_EDIT)break;if(HAS_PE&&!remoteReady){PE.toast("Нет доступа к базе оргсхемы — правки не сохранятся. Нужно опубликовать правила базы.","err");break;}mode="edit";drawerId=null;render();setTimeout(fitWidth,30);break;
+  case "edit": if(!CAN_EDIT)break;if(HAS_PE&&!remoteReady){if(loadingRemote)PE.toast("Секунду — проверяю свежую версию схемы");else PE.toast("Нет доступа к базе оргсхемы — правки не сохранятся. Нужно опубликовать правила базы.","err");break;}mode="edit";drawerId=null;render();setTimeout(fitWidth,30);break;
   case "save-now": if(HAS_PE){if(!dirtyRemote()){setStatus("Изменений нет — всё сохранено");break;}saveRemote(false);}break;
   case "view": if(HAS_PE&&CAN_EDIT&&remoteReady&&dirtyRemote())saveRemote(false);mode="view";sel=null;selHat=null;selPerson=null;render();setTimeout(fitWidth,30);break;
   case "zin": zoomAt(1.2);break;
@@ -1509,10 +1519,14 @@ if(HAS_PE){
     /* шаги пути клиента — перетаскиванием (общий механизм экосистемы) */
     if(PE.sortable)PE.sortable(document.getElementById("app"),{item:".flowrow[data-id]",handle:".pe-drag-handle",enabled:function(){return mode==="edit"&&leftTab==="flow";},onDrop:function(ids){pushHist();var fl=FL(),nw=ids.map(function(x){return fl[+x];});fl.length=0;nw.forEach(function(x){fl.push(x);});save();renderLeft();renderChart();}});
     if(PE.onEdit)PE.onEdit(function(){if(booted&&mode!=="edit")act("edit",document.body);});
-    loadRemote().then(function(){
+    /* есть кэш — показываем сразу, пока база отвечает */
+    var c0=readCache();
+    if(c0){try{S=JSON.parse(c0.json);peopleSig=JSON.stringify(ecoPeople());boot();}catch(e){S=null;}}
+    loadRemote().then(function(changed){
       peopleSig=JSON.stringify(ecoPeople());
-      if(CAN_EDIT&&remoteReady&&/[?&]edit=1/.test(location.search))mode="edit";
-      boot();
+      var wantEdit=CAN_EDIT&&remoteReady&&/[?&]edit=1/.test(location.search);
+      if(!booted){if(wantEdit)mode="edit";boot();}
+      else{if(wantEdit&&mode!=="edit")mode="edit";if(changed!==false||wantEdit){render();setTimeout(fitWidth,30);}}
     });
     /* поменялись люди экосистемы (имя, фото, новые) — перерисовать */
     PE.onUsers(function(){

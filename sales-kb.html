@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Продажи · база знаний</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010302">
-<script src="assets/pe-core.js?v=202610010302" data-module="sales-kb"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010308">
+<script src="assets/pe-core.js?v=202610010308" data-module="sales-kb"></script>
 <meta name="description" content="База знаний отдела продаж Prime Era: восемь ступеней Сизова с инструментами Прайм, тексты, созвоны, КП, возражения, CRM и управление отделом.">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010302">
+<link rel="stylesheet" href="assets/fonts.css?v=202610010308">
 <style>
 :root{
   /* база продаж — на токенах дизайн-системы экосистемы (pe-core.css); тема — из шапки.
@@ -5856,11 +5856,28 @@ if(wantTest) enterTest();
 /* ссылка из админки экосистемы: sales-kb.html?edit=1 — сразу включить редактор */
 if(window.PE && PE.onEdit) PE.onEdit(function(){ if(isAdm && editBtn && !editing) editBtn.click(); else if(editing) toast('Редактор уже включён'); });
 function autoEdit(){ if(isAdm && !editing && editBtn && /[?&]edit=1/.test(location.search)) editBtn.click(); }
+/* скорость: разделы из базы кэшируются в браузере по метке saleskb/meta/rev —
+   при открытии запрашивается только метка, всё целиком — лишь если кто-то правил */
+var KBCACHE='pe-saleskb-cache';
+function kbLoad(){
+  var c=null; try{ c=JSON.parse(localStorage.getItem(KBCACHE)||'null'); }catch(e){}
+  return PE.fb('GET',DB+'/meta').then(function(meta){
+    var rev=(meta&&meta.rev)||0;
+    if(c && rev && c.rev===rev) return c.data;
+    return PE.fb('GET',DB).then(function(d){ try{ if(rev) localStorage.setItem(KBCACHE, JSON.stringify({ rev:rev, data:d })); }catch(e){} return d; });
+  });
+}
 if(REAL_PE){
+  /* любая запись в базу продаж обновляет метку версии — у остальных кэш обновится */
+  (function(){ var fb0=PE.fb;
+    PE.fb=function(m,path,body){ var r=fb0(m,path,body);
+      if(m!=='GET' && /^saleskb(\/|$)/.test(path) && !/^saleskb\/meta/.test(path)) r.then(function(){ fb0('PATCH','saleskb/meta',{ rev:Date.now() }).catch(function(){}); });
+      return r; };
+  })();
   PE.onReady(function(){
     isAdm=!!(PE.perm ? PE.perm('saleskb_edit') : PE.isAdmin());
     if(editBtn) editBtn.hidden=!isAdm;
-    PE.fb('GET',DB).then(function(d){
+    kbLoad().then(function(d){
       if(d && d.sections){ model={}; Object.keys(d.sections).forEach(function(k){ var s=d.sections[k]; if(s&&s.title){ s.id=k; model[k]=s; } }); source='db'; }
       files=(d && d.files) || {};
       mergeTrees(d && d.trees);
