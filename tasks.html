@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Задачи</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts.css?v=202610010006">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260930b">
-<script src="assets/pe-core.js?v=20260930b" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010006">
+<script src="assets/pe-core.js?v=202610010006" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -3590,29 +3589,6 @@ function bindTime(){
   });
 })();
 
-/* ---------- перенос данных из Хронометража (только чтение) ---------- */
-function importChrono(){
-  if(!IS_ADMIN){ toast('Перенос Хронометража делает администратор — один раз на всю команду'); return; }
-  var BASE=PE.CFG.FB+'/shared-time-tracker';
-  toast('Загружаю данные Хронометража…');
-  Promise.all([fetch(BASE+'/projects.json').then(function(r){ return r.json(); }), fetch(BASE+'/entries.json').then(function(r){ return r.json(); })]).then(function(res){
-    var projects=res[0]||{}, entries=res[1]||{}, byId={};
-    Object.keys(projects).forEach(function(k){ var p=projects[k]; if(p) byId[p.id]=p; });
-    var have={}; state.entries.forEach(function(e){ if(e.srcId) have[e.srcId]=1; });
-    var n=0;
-    Object.keys(entries).forEach(function(k){
-      var e=entries[k]; if(!e || have[e.id]) return;
-      var p=byId[e.projectId], d=parseKey(e.date||todayKey()); d.setHours(12);
-      var tag=p?p.name:'Без клиента';
-      if(p && !state.tagColors[tag]) state.tagColors[tag]=p.color||tagColor(tag);
-      state.entries.push({ id:uid('w'), srcId:e.id, taskId:null, title:'', tag:tag, owner:legacyUid(e.owner)||ME, stage:e.stage||'Работа', start:d.getTime(), end:d.getTime()+(e.seconds||0)*1000, seconds:Math.round(e.seconds||0), date:e.date||todayKey(), manual:true, note:'из Хронометража' });
-      n++;
-    });
-    save(); refreshTimeViews();
-    toast(n ? 'Перенесено записей: '+n+'. Они без задачи, но с клиентом — видны в отчёте «Время».' : 'Новых записей в Хронометраже нет');
-  }).catch(function(){ toast('Не удалось получить данные Хронометража — проверьте интернет'); });
-}
-
 /* ---------- демо-записи времени (последние 2 недели) ---------- */
 function makeDemoEntries(tasks){
   var P=demoPeople(), A=P[0], L=P[1], N=P[2];
@@ -3964,34 +3940,6 @@ function openDayList(anchor, dk){
   }, { width:300 });
 }
 
-/* ---------- перенос задач из старого планера (только чтение) ---------- */
-function importPlanner(){
-  var legacy=PE.user.legacyName, local=null;
-  try{ local=localStorage.getItem('month-planner-v4'); }catch(e){}
-  var src = local ? Promise.resolve(local)
-    : (legacy && !PE.CFG.MOCK) ? fetch(PE.CFG.FB+'/'+PE.CFG.LEGACY_ROOT+'/'+encodeURIComponent(legacy)+'.json').then(function(r){ return r.ok?r.json():null; }).then(function(d){ return d && d['pe_u_'+legacy+'__month-planner-v4']; })
-    : Promise.resolve(null);
-  toast('Ищу ваши задачи в Планировщике v1…');
-  src.then(function(raw){
-    if(!raw){ toast(legacy ? 'В Планировщике v1 у «'+legacy+'» задач не нашлось' : 'Не указано, кем вы были в экосистеме v1. Владелец может указать это в админке — в карточке пользователя.', null, null, 8000); return; }
-    var p; try{ p=typeof raw==='string'?JSON.parse(raw):raw; }catch(e){ toast('Не удалось прочитать данные планера'); return; }
-    var have={}; state.tasks.forEach(function(t){ if(t.srcId) have[t.srcId]=1; });
-    var n=0, snap=snapshot();
-    (p.tasks||[]).forEach(function(o){
-      if(!o) return; var src='v1:'+(legacy||ME)+':'+o.id;
-      if(have[src]) return;
-      var t=newTask({ title:o.title||'Без названия', description:o.description?'<p>'+esc(o.description).replace(/\n/g,'<br>')+'</p>':'',
-        start:o.start||'', end:o.end||o.start||'', time:o.time||'', timeEnd:o.timeEnd||'', category:o.category||'other',
-        tags:o.tag?[o.tag]:[], status:o.done?'done':'new', reporter:legacyUid(o.from)||ME, assignees:[ME] });
-      t.srcId=src; t.seriesId=o.seriesId||null;
-      addTask(t); if(o.done){ t.doneAt=Date.now(); }
-      n++;
-    });
-    Object.keys(p.tagColors||{}).forEach(function(k){ if(!state.tagColors[k]) state.tagColors[k]=p.tagColors[k]; });
-    save(); renderMain();
-    toast(n?'Перенесено из планера: '+n+' '+plural(n,'задача','задачи','задач')+' — теперь их видит команда':'Новых задач в планере нет', n?'Отменить':null, function(){ restore(snap); });
-  }).catch(function(){ toast('Не удалось получить данные Планировщика — проверьте интернет'); });
-}
 
 /* =====================================================================
    Фильтры, сохранённые фильтры, вид, колонки, «ещё»
@@ -4154,33 +4102,6 @@ function openMore(anchor){
     items.push({ label:'Удалить все задачи доски', icon:'trash', danger:true, action:wipeAll });
   }
   openMenu(anchor, items, { alignRight:true });
-}
-function importAllPlanners(){
-  if(!IS_ADMIN) return;
-  if(PE.CFG.MOCK){ toast('В тестовом режиме mock данных v1 нет'); return; }
-  toast('Загружаю Планировщики v1 всех сотрудников…');
-  Promise.all(PE.LEGACY_NAMES.map(function(name){
-    return fetch(PE.CFG.FB+'/'+PE.CFG.LEGACY_ROOT+'/'+encodeURIComponent(name)+'.json').then(function(r){ return r.ok?r.json():null; })
-      .then(function(d){ var raw=d && d['pe_u_'+name+'__month-planner-v4']; var p=null; try{ p=raw?JSON.parse(raw):null; }catch(e){} return { name:name, p:p }; })
-      .catch(function(){ return { name:name, p:null }; });
-  })).then(function(all){
-    var have={}; state.tasks.forEach(function(t){ if(t.srcId) have[t.srcId]=1; });
-    var snap=snapshot(), total=0, per=[];
-    all.forEach(function(x){
-      if(!x.p) return; var n=0, who=legacyUid(x.name);
-      (x.p.tasks||[]).forEach(function(o){
-        if(!o) return; var src='v1:'+x.name+':'+o.id; if(have[src]) return;
-        var t=newTask({ title:o.title||'Без названия', description:o.description?'<p>'+esc(o.description).replace(/\n/g,'<br>')+'</p>':'',
-          start:o.start||'', end:o.end||o.start||'', time:o.time||'', timeEnd:o.timeEnd||'', category:o.category||'other',
-          tags:o.tag?[o.tag]:[], status:o.done?'done':'new', reporter:legacyUid(o.from)||who, assignees:[who] });
-        t.srcId=src; t.seriesId=o.seriesId||null; addTask(t); if(o.done) t.doneAt=Date.now(); have[src]=1; n++;
-      });
-      Object.keys(x.p.tagColors||{}).forEach(function(k){ if(!state.tagColors[k]) state.tagColors[k]=x.p.tagColors[k]; });
-      if(n) per.push(x.name+' — '+n); total+=n;
-    });
-    persist();
-    toast(total ? 'Перенесено '+total+' '+plural(total,'задача','задачи','задач')+': '+per.join(', ')+'. Если человек ещё не связан с аккаунтом, задачи привяжутся, когда вы укажете «Имя в v1» в админке.' : 'Новых задач в Планировщиках v1 нет', total?'Отменить':null, function(){ restore(snap); }, 10000);
-  });
 }
 function loadDemo(){
   var d=makeDemo(), snap=snapshot(), off=state.seq;
@@ -4434,7 +4355,7 @@ function init(){
 
   $('#board').addEventListener('click', function(e){
     var el;
-    if((el=e.target.closest('[data-ob]'))){ var k=el.dataset.ob; if(k==='new') openNew(); else if(k==='planner') importPlanner(); else if(k==='allplanners') importAllPlanners(); else if(k==='chrono') importChrono(); else if(k==='demo') loadDemo(); return; }
+    if((el=e.target.closest('[data-ob]'))){ var k=el.dataset.ob; if(k==='new') openNew(); else if(k==='demo') loadDemo(); return; }
     if((el=e.target.closest('[data-check]'))){ e.stopPropagation(); var t=task(el.dataset.check); isDone(t) ? reopen(t) : complete(t); return; }
     if((el=e.target.closest('[data-tplay]'))){ e.stopPropagation(); var tp0=task(el.dataset.tplay); tAction(isRunning(tp0)?'pause':'play', tp0); return; }
     if((el=e.target.closest('[data-pp-add]'))){ e.stopPropagation(); var tp=task(el.dataset.ppAdd); askPostpone(tp, function(){ persist(); }, { edit:true }); return; }

@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ-панель — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260930b">
-<script src="assets/pe-core.js?v=20260930b" data-module="admin"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010006">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010006">
+<script src="assets/pe-core.js?v=202610010006" data-module="admin"></script>
 <style>
   :root{ --ink:#121212; --soft:#6F6F75; --faint:#A3A3A8; --line:#E6E6E9; --bg:#F5F5F7; --card:#fff; --accent:#008CFF; --accent-t:#E8F3FF; --danger:#D7372F; --ok:#1A8A4B; --warn:#B45309; }
   *{ box-sizing:border-box; }
@@ -230,7 +228,8 @@ function audit(action, target, details){ PE.audit(action, target, details); audi
 function render(){
   var pu=pendingUsers(), rq=openRequests(), all=usersList().filter(function(u){ return u.status!=='deleted'; });
   var active=all.filter(function(u){ return u.status==='active'; }).length;
-  var h='<div class="head"><div><h1>Админ-панель</h1><p>Пользователи, заявки и права доступа к модулям экосистемы.</p></div>'+
+  var h='<div class="head"><div><h1>Админ-панель</h1><p>Пользователи, заявки и права доступа к модулям экосистемы.'+
+    (PE.isOwner()?' <button class="link-btn" data-backup style="font-size:13px">Скачать резервную копию базы</button>':'')+'</p></div>'+
     '<div class="stats"><div class="stat"><b>'+active+'</b><span>активных</span></div>'+
     '<div class="stat'+((pu.length+rq.length)?' hot':'')+'"><b>'+(pu.length+rq.length)+'</b><span>ждут решения</span></div>'+
     '<div class="stat"><b>'+M.filter(function(m){ return PE.modConf(m.id).enabled; }).length+' / '+M.length+'</b><span>модулей включено</span></div></div></div>';
@@ -385,7 +384,7 @@ function userModal(u){
     }
     var r=roleEd && form.querySelector('[name="role"]'); if(r && r.value!==u.role) patch.role=r.value;
     if(!Object.keys(patch).length){ m.close(); return; }
-    PE.fb('PATCH','users/'+u.id, patch).then(function(){
+    PE.saveUser(u.id, patch).then(function(){
       audit('edit', u.id, PE.fullName(Object.assign({}, u, patch))+(patch.access?': доступ — '+(Object.keys(patch.access).map(function(k){ return modById(k)?modById(k).name:k; }).join(', ')||'нет'):'')+(patch.role?': роль — '+(PE.ROLE_NAMES[patch.role]||patch.role):''));
       m.close(); PE.toast('Сохранено');
     }).catch(fail);
@@ -454,7 +453,8 @@ function addUserModal(prefill, fromRequest){
       if(taken) throw new Error('Логин «'+login+'» уже занят');
       var u=Object.assign(p, { id:id, login:login, color:PE.COLORS[n%PE.COLORS.length], role:role, status:'active', access:acc, mustChangePass:true,
         createdAt:Date.now(), approvedAt:Date.now(), approvedBy:me().id, createdBy:me().id });
-      return PE.fb('PUT','users/'+id, u).then(function(){ return PE.setCredentials(u, pass); }).then(function(){ return u; });
+      var av=u.avatar; delete u.avatar;
+      return PE.fb('PUT','users/'+id, u).then(function(){ return av ? PE.saveUser(id, { avatar:av }) : null; }).then(function(){ return PE.setCredentials(u, pass); }).then(function(){ return u; });
     }).then(function(u){
       audit('create', id, PE.fullName(u)+(fromRequest?' (по заявке гостя)':''));
       var j = fromRequest ? resolveRequest(fromRequest, 'approved', { createdUid:id }) : Promise.resolve();
@@ -596,6 +596,44 @@ function seedPerms(){
   }).catch(function(){});
 }
 
+/* ---------------- обслуживание (только владелец) ---------------- */
+/* резервная копия: всё, что владелец может прочитать, одним JSON-файлом */
+function backup(btn){
+  var nodes=['meta','modules','perms','users','avatars','requests','audit','tasks','taskfiles','saleskb','saleskbhist','saleskbfiles','calc','orgchart'];
+  var roots=['pe_glossary_users_v1','pe_glossary_history_v1','pe_glossary_answers_v1','pe_glossary_customterms_v1','pe_glossary_termimages_v1'];
+  btn.disabled=true; btn.textContent='Собираю копию…';
+  var out={ at:new Date().toISOString(), root:PE.CFG.ROOT, data:{}, glossary:{} };
+  Promise.all(nodes.map(function(n){ return PE.fb('GET', n).then(function(d){ out.data[n]=d; }, function(){ out.data[n]='нет доступа'; }); }).concat(
+    roots.map(function(n){ return PE.CFG.MOCK ? null : fetch(PE.CFG.FB+'/'+n+'.json').then(function(r){ return r.ok?r.json():null; }).then(function(d){ out.glossary[n]=d; }, function(){}); })
+  )).then(function(){
+    var blob=new Blob([JSON.stringify(out)], { type:'application/json' }), a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='prime-era-backup-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+    btn.disabled=false; btn.textContent='Скачать резервную копию базы';
+    PE.toast('Резервная копия скачана ('+Math.round(blob.size/1024)+' КБ)');
+  });
+}
+/* журнал: записи старше 3 месяцев удаляются (раз в сутки, при заходе владельца) */
+function cleanAudit(){
+  if(!PE.isOwner()) return;
+  var mark='pe2_auditclean_'+PE.CFG.ROOT, last=0; try{ last=+localStorage.getItem(mark)||0; }catch(e){}
+  if(Date.now()-last<86400000) return;
+  var edge=Date.now()-90*86400000;
+  var q = PE.CFG.MOCK ? PE.fb('GET','audit')
+    : fetch(PE.CFG.FB+'/'+PE.CFG.ROOT+'/audit.json?orderBy=%22at%22&endAt='+edge+'&limitToFirst=500').then(function(r){ if(!r.ok) throw 0; return r.json(); });
+  q.then(function(d){
+    var del={}; Object.keys(d||{}).forEach(function(k){ if(d[k] && d[k].at<edge) del[k]=null; });
+    try{ localStorage.setItem(mark, String(Date.now())); }catch(e){}
+    if(Object.keys(del).length) return PE.fb('PATCH','audit', del);
+  }).catch(function(){});
+}
+/* фото профиля переезжают из записи пользователя в avatars/{id} (один раз) */
+function migrateAvatars(){
+  if(!PE.isOwner()) return;
+  var old=usersList().filter(function(u){ return u.avatar && !u.avatarAt; });
+  old.reduce(function(p, u){ return p.then(function(){ return PE.saveUser(u.id, { avatar:u.avatar, __force:1 }); }).catch(function(){}); }, Promise.resolve());
+}
+
 /* ---------------- инструменты ---------------- */
 var TOOLS=[
   { mod:'sales-kb', perm:'saleskb_edit', name:'Продажи — база знаний', what:'Разделы, плейбуки-схемы, файлы к разделам, история версий.', edit:'sales-kb.html?edit=1', act:'saleskb.' },
@@ -628,6 +666,7 @@ app.addEventListener('click', function(e){
   if((b=e.target.closest('[data-tab]'))){ tab=b.dataset.tab; history.replaceState(null,'','#'+tab); render(); return; }
   if((b=e.target.closest('[data-st]'))){ stFilter=b.dataset.st; renderPane(); return; }
   if(e.target.closest('[data-add-user]')){ addUserModal(); return; }
+  if((b=e.target.closest('[data-backup]'))){ backup(b); return; }
   if((b=e.target.closest('[data-mod-edit]'))){ if(P('modules')) moduleEditModal(modById(b.dataset.modEdit)); return; }
   if((b=e.target.closest('[data-mod-move]'))){ if(P('modules')){ var mv=b.dataset.modMove.split('|'); b.disabled=true; moveModule(mv[0], +mv[1]); } return; }
   if((b=e.target.closest('tr[data-user]'))){ userModal(PE.userById(b.dataset.user)); return; }
@@ -686,7 +725,7 @@ app.addEventListener('input', function(e){
 var rT=null;
 PE.onUsers(function(){ clearTimeout(rT); rT=setTimeout(function(){ if(document.activeElement && document.activeElement.id==='u-search') renderPane(); else render(); }, 60); });
 render();
-seedPerms();
+seedPerms(); cleanAudit(); migrateAvatars();
 });
 </script>
 </body>

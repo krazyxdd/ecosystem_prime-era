@@ -15,7 +15,7 @@
     glowEnabled: true,        // свечение изнутри: выключатель
     glow: 1,                  // яркость свечения изнутри: 1 — чистый цвет из colors.inside, меньше — темнее
     haloEnabled: true,       // мягкое цветное свечение позади куба — держит куб заметным на тёмном фоне
-    haloStrength: 0.38,        // сила свечения позади куба, 0-1
+    haloStrength: 0.19,        // сила свечения позади куба, 0-1 (владелец: в 2 раза слабее, чем в студии)
     plate: 0.13,              // толщина плиты (доля ребра)
     gap: 0.06,                 // зазор между плитами (доля ребра) — как в оригинальном SVG (~7%)
     glyphGlowEnabled: true,    // свечение (bloom) вокруг знаков P, E, X: выключатель
@@ -48,18 +48,11 @@
   const EDGE = 100;                  // ребро куба в единицах сцены
   const RELIEF = 2.3;                // высота знаков над гранью
 
-  const base = 'https://esm.sh/three@0.185.1';
-  const addons = base + '/examples/jsm/';
-  const [THREE, { SVGLoader }, { EffectComposer }, { RenderPass }, { UnrealBloomPass }, { ShaderPass }, { OutputPass }, { RoundedBoxGeometry }] = await Promise.all([
-    import(base),
-    import(addons + 'loaders/SVGLoader.js'),
-    import(addons + 'postprocessing/EffectComposer.js'),
-    import(addons + 'postprocessing/RenderPass.js'),
-    import(addons + 'postprocessing/UnrealBloomPass.js'),
-    import(addons + 'postprocessing/ShaderPass.js'),
-    import(addons + 'postprocessing/OutputPass.js'),
-    import(addons + 'geometries/RoundedBoxGeometry.js')
-  ]);
+  /* three.js — своя сборка только нужных частей (assets/vendor/three-cube.min.js,
+     three@0.185.1, собрана esbuild), без обращения к чужим серверам */
+  const lib = await import(new URL('vendor/three-cube.min.js', import.meta.url).href);
+  const THREE = lib;
+  const { SVGLoader, EffectComposer, RenderPass, UnrealBloomPass, ShaderPass, OutputPass, RoundedBoxGeometry } = lib;
 
   /* в экосистеме место под кубик создаёт ядро (pe-core.js) в меню и кладёт в window.__peLogoHost */
   const host = window.__peLogoHost || document.getElementById(CONFIG.container);
@@ -369,7 +362,13 @@
 
   const clock = new THREE.Clock();
   let idleT = 0;
-  renderer.setAnimationLoop(function () {
+  /* экономия батареи: в покое (лёгкое «дыхание») — 24 кадра в секунду,
+     при кувырке и движении мыши — полная частота; на скрытой вкладке — ничего */
+  let lastFrame = 0;
+  renderer.setAnimationLoop(function (time) {
+    const calm = !hovering && Math.abs(tiltTargetX - tiltX) + Math.abs(tiltTargetY - tiltY) < 0.002;
+    if (calm && time - lastFrame < 1000 / 24) return;
+    lastFrame = time;
     const dt = Math.min(0.05, clock.getDelta());
     idleT += dt;
 

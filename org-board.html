@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=20260930b">
-<script src="assets/pe-core.js?v=20260930b" data-module="org-board"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&amp;family=Prata&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610010006">
+<script src="assets/pe-core.js?v=202610010006" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610010006">
 <style>
 :root{
   color-scheme:light;
@@ -386,7 +384,7 @@ html.pe2-has-nav .drawer{top:calc(var(--tb,48px) + var(--pe-nav-h,0px))}
 var EMBED_TEXT=document.getElementById("pe-state").textContent;
 var EMBED=JSON.parse(EMBED_TEXT);
 var APP_SRC=document.getElementById("pe-app").textContent;
-var HEAD_HTML=document.head.outerHTML.replace(/<link[^>]*pe-core[^>]*>\s*/g,"").replace(/<script[^>]*pe-core[^>]*><\/script>\s*/g,"").replace(/<link[^>]*IBM\+Plex[^>]*>\s*/g,"");
+var HEAD_HTML=document.head.outerHTML.replace(/<link[^>]*pe-core[^>]*>\s*/g,"").replace(/<script[^>]*pe-core[^>]*><\/script>\s*/g,"").replace(/<link[^>]*IBM\+Plex[^>]*>\s*/g,"").replace(/<link[^>]*fonts\.css[^>]*>/,'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Prata&family=JetBrains+Mono:wght@500;700&display=swap">');
 /* В экосистеме (есть window.PE) схема общая: лежит в Firebase по пути orgchart,
    правит тот, у кого право «Оргсхема: редактор», люди — сотрудники экосистемы (id вида u:<userId>).
    Отдельным файлом (без PE) — как раньше, в этом браузере. */
@@ -408,8 +406,7 @@ var KEY="pe-orgeditor:"+EMBED.meta.docId;
 function save(){
   if(HAS_PE){
     if(!CAN_EDIT||!remoteReady||mode!=="edit") return;
-    editSeq++; clearTimeout(saveT); setStatus("Есть несохранённые правки…");
-    saveT=setTimeout(function(){saveRemote(false);},900);
+    editSeq++; setStatus("Есть несохранённые изменения — нажмите «Сохранить»");
     return;
   }
   clearTimeout(saveT);
@@ -824,14 +821,14 @@ function render(){
     h+='<header class="topbar"><span class="brand">'+esc(S.meta.title)+'</span>'+schemePicker()+''+zoomCtl+
       '<button class="btn sm" data-act="expand-all">Раскрыть все</button><button class="btn sm" data-act="collapse-all">Собрать все</button>'+
       '<span class="tgs">'+toggles()+'</span>'+
-      '<span class="sp"></span>'+(FL().length?'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button>':'')+'<button class="btn" data-act="dl">Скачать</button>'+(CAN_EDIT?'<button class="btn primary" data-act="edit">Редактировать</button>':'')+'</header>';
+      '<span class="sp"></span>'+(FL().length?'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button>':'')+(CAN_EDIT?'<button class="btn" data-act="dl">Скачать</button>':'')+(CAN_EDIT?'<button class="btn primary" data-act="edit">Редактировать</button>':'')+'</header>';
     h+='<div class="viewport" id="vp"><div class="stage" id="stage"><svg id="wires"></svg><div class="chart" id="chart"></div></div></div>';
     h+='<aside class="drawer" id="drawer" hidden></aside>';
   } else {
     h+='<header class="topbar"><button class="btn" data-act="view">← Просмотр</button>'+schemePicker()+''+zoomCtl+
       '<button class="btn sm" data-act="undo" title="Ctrl+Z">↶ Отменить</button><button class="btn sm" data-act="redo" title="Ctrl+Shift+Z">↷</button>'+
       '<span class="tgs">'+toggles()+'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button></span><span class="sp"></span><span class="status" id="status">'+esc(statusMsg)+'</span>'+
-      '<button class="btn sm" data-act="save-as">Сохранить как новую схему</button><button class="btn sm" data-act="menu">Файл…</button><button class="btn primary" data-act="dl">Скачать</button></header>';
+      '<button class="btn sm" data-act="save-as">Сохранить как новую схему</button><button class="btn sm" data-act="menu">Файл…</button><button class="btn" data-act="dl">Скачать</button>'+(HAS_PE?'<button class="btn primary" data-act="save-now" title="Ctrl+S">Сохранить</button>':'')+'</header>';
     h+='<div class="editor"><aside class="left" id="left"></aside><div class="viewport" id="vp"><div class="stage" id="stage"><svg id="wires"></svg><div class="chart" id="chart"></div></div></div><aside class="right" id="right"></aside></div>';
   }
   h+='<div class="modal" id="modal" hidden></div>';
@@ -1363,7 +1360,8 @@ function act(a,el){
   var d=el.dataset;
   switch(a){
   case "edit": if(!CAN_EDIT)break;if(HAS_PE&&!remoteReady){PE.toast("Нет доступа к базе оргсхемы — правки не сохранятся. Нужно опубликовать правила базы.","err");break;}mode="edit";drawerId=null;render();setTimeout(fitWidth,30);break;
-  case "view": mode="view";sel=null;selHat=null;selPerson=null;render();setTimeout(fitWidth,30);break;
+  case "save-now": if(HAS_PE){if(!dirtyRemote()){setStatus("Изменений нет — всё сохранено");break;}saveRemote(false);}break;
+  case "view": if(HAS_PE&&CAN_EDIT&&remoteReady&&dirtyRemote())saveRemote(false);mode="view";sel=null;selHat=null;selPerson=null;render();setTimeout(fitWidth,30);break;
   case "zin": zoomAt(1.2);break;
   case "zout": zoomAt(1/1.2);break;
   case "fit": fit();break;
@@ -1378,7 +1376,7 @@ function act(a,el){
   case "do-pdf": doPdf();break;
   case "modal-close": closeModal();break;
   case "download": case "dl-all": closeModal();exportHTML();break;
-  case "dl": openDownload();break;
+  case "dl": if(!CAN_EDIT)break;openDownload();break;
   case "spick": var sl=document.getElementById("spickList");if(sl.hidden){sl.innerHTML=schemeListHTML();sl.hidden=false;el.setAttribute("aria-expanded","true");var on=sl.querySelector(".on");if(on)on.scrollIntoView({block:"nearest"});}else closePick();break;
   case "spick-go": closePick();S.current=d.id;sel=null;selHat=null;selPerson=null;drawerId=null;save();render();setTimeout(fitWidth,30);break;
   case "dl-scheme": closeModal();exportScheme();break;
@@ -1458,6 +1456,7 @@ document.addEventListener("click",function(e){
   if(e.target.id==="modal") closeModal();
 });
 document.addEventListener("keydown",function(e){
+  if(HAS_PE&&mode==="edit"&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();if(dirtyRemote())saveRemote(false);else setStatus("Изменений нет — всё сохранено");return;}
   var inField=e.target.matches&&e.target.matches("input,textarea,select");
   if(e.key==="Escape"){closePick();closeModal();if(mode==="view")closeDrawer();}
   if(mode==="edit"&&!inField&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();if(e.shiftKey)redo();else undo();}

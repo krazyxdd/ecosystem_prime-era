@@ -34,7 +34,6 @@ function njson(k, def){ try{ var v=nget(k); return v ? JSON.parse(v) : def; }cat
 var CFG = {
   FB: 'https://prime-era-glossary-default-rtdb.firebaseio.com',
   ROOT: 'ecosystem-v2',
-  LEGACY_ROOT: 'ecosystem-state',
   /* Web API key проекта Firebase (Настройки проекта → Общие). Пока пусто — вход
      работает по-старому (хеш пароля в базе). С ключом — через Firebase Authentication,
      и база закрывается правилами безопасности (firebase-rules.json). */
@@ -81,9 +80,6 @@ var MODULES = [
   { id:'glossary', name:'Глоссарий', href:'glossary.html',
     desc:'Тренажёр терминов по дизайну, Tilda, Figma, копирайтингу и продажам — изучение, экзамен, разбор слабых мест.',
     icon:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/>' },
-  { id:'objections', name:'Возражения', href:'objections.html',
-    desc:'Что отвечать клиенту, когда он возражает — по категориям, с поиском и готовыми фразами.',
-    icon:'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>' },
   { id:'objections-raw', name:'Возражения Prime Era', href:'objections-raw.html',
     desc:'Полная база формулировок и тактик по возражениям студии — единый список с фильтрами.',
     icon:'<path d="M12 2l2.9 6.6 7.1.7-5.4 4.9 1.6 7-6.2-3.7-6.2 3.7 1.6-7-5.4-4.9 7.1-.7z"/>' },
@@ -95,17 +91,13 @@ var MODULES = [
     icon:'<path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/>' },
   { id:'calc', name:'Калькулятор', href:'calculator.html',
     desc:'Смета сайта: позиции, готовые сборки, срочность, скидки, итог в часах и рублях. Прайс общий для команды.',
-    icon:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>' },
-  { id:'prime-sales', name:'База знаний', href:'prime-sales.html',
-    desc:'Система продаж Prime Era — методология, техники и разбор возражений.',
-    icon:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M8 7h8M8 11h6"/>' }
+    icon:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>' }
 ];
 /* исходные названия, описания и порядок модулей — владелец может переименовать
    модуль, поменять описание плашки, порядок и скрыть его из меню / с главной
    (админка → «Модули»); это хранится в modules/{id}: title, desc, order, nav, home */
 var MOD_DEF = {};
 MODULES.forEach(function(m, i){ MOD_DEF[m.id]={ name:m.name, desc:m.desc, i:i }; });
-var LEGACY_NAMES = ['Саша','Андрей','Лина','Лиана'];
 var COLORS = ['#2563EB','#059669','#D97706','#DB2777','#7C3AED','#0891B2','#DC2626','#65A30D','#EA580C','#475569','#0D9488','#9333EA'];
 var ROLE_NAMES = { owner:'Владелец', admin:'Администратор', moderator:'Модератор', member:'Сотрудник' };
 var ROLE_ORDER = { owner:0, admin:1, moderator:2, member:3 };
@@ -465,8 +457,12 @@ function flushPush(keepalive){
 window.addEventListener('pagehide', function(){ flushPush(true); });
 window.addEventListener('online', function(){ flushPush(); });
 
+/* какие ключи страница прочитала до сверки с облаком: перезагружать страницу
+   нужно, только если изменился один из них */
+var readKeys={}, trackReads=true;
 SP.getItem=function(key){
   if(this!==window.localStorage || unscoped(String(key))) return NATIVE.get.call(this, key);
+  if(trackReads) readKeys[String(key)]=1;
   return NATIVE.get.call(this, SCOPE+key);
 };
 SP.setItem=function(key, val){
@@ -483,38 +479,36 @@ SP.removeItem=function(key){
 function pullState(){
   if(!SYNC_ON) return Promise.resolve(false);
   return fb('GET', 'state/'+session.uid).then(function(data){
-    if(!data || typeof data!=='object') return false;
+    trackReads=false;
+    if(!data || typeof data!=='object'){ dropDeadKeys(null); return false; }
     var changed=false;
     Object.keys(data).forEach(function(ek){
       var k=decKey(ek), rv=data[ek];
-      if(pending[k]) return;
-      var lv=nget(SCOPE+k);
-      if(rv===null){ if(lv!==null){ ndel(SCOPE+k); changed=true; } }
-      else if(typeof rv==='string' && rv!==lv){ nset(SCOPE+k, rv); changed=true; }
+      if(pending[k] || DEAD_KEYS.indexOf(k)>=0) return;
+      var lv=nget(SCOPE+k), diff=false;
+      if(rv===null){ if(lv!==null){ ndel(SCOPE+k); diff=true; } }
+      else if(typeof rv==='string' && rv!==lv){ nset(SCOPE+k, rv); diff=true; }
+      if(diff && readKeys[k]) changed=true;   // остальное тихо обновилось в браузере, без перезагрузки
     });
+    dropDeadKeys(data);
     if(Object.keys(pending).length) flushPush();
     return changed;
-  }).catch(function(){ return false; });
+  }).catch(function(){ trackReads=false; return false; });
 }
-/* перенос личных данных из v1 (ecosystem-state/<имя>) — один раз */
-function migrateLegacy(u){
-  if(!u || !u.legacyName || u.migratedAt || CFG.MOCK) return Promise.resolve(false);
-  var url=CFG.FB+'/'+CFG.LEGACY_ROOT+'/'+encodeURIComponent(u.legacyName)+'.json';
-  return fetch(url).then(function(r){ return r.ok ? r.json() : null; }).then(function(old){
-    var prefix='pe_u_'+u.legacyName+'__', patch={}, n=0;
-    Object.keys(old||{}).forEach(function(k){
-      if(typeof old[k]!=='string' || k.indexOf(prefix)!==0) return;
-      var key=k.slice(prefix.length);
-      if(nget(SCOPE+key)!==null) return;          // уже есть данные v2 — не затираем
-      nset(SCOPE+key, old[k]); patch[encKey(key)]=old[k]; n++;
-    });
-    var jobs=[fb('PATCH', 'users/'+u.id, { migratedAt:Date.now(), migratedKeys:n })];
-    if(n) jobs.push(fb('PATCH', 'state/'+u.id, patch));
-    return Promise.all(jobs).then(function(){ return n>0; });
-  }).catch(function(){ return false; });
+/* ключи первой версии экосистемы, которые больше не нужны: удаляются из
+   браузера и из облачной копии при первом открытии */
+var DEAD_KEYS=['orgboard-state-v2','month-planner-v4','planner-seeded','sitetime_tracker_v1'];
+function dropDeadKeys(remote){
+  if(!SYNC_ON) return;
+  var patch={}, any=false;
+  DEAD_KEYS.forEach(function(k){
+    if(nget(SCOPE+k)!==null){ ndel(SCOPE+k); }
+    if(remote && remote[encKey(k)]!=null){ patch[encKey(k)]=null; any=true; }
+  });
+  if(any) fb('PATCH', 'state/'+session.uid, patch).catch(function(){});
 }
 
-/* ---- совместимость со старыми модулями (глоссарий, возражения, база знаний) ---- */
+/* ---- совместимость со старыми модулями: имя для глоссария, род для «Возражений» ---- */
 function compatName(u){ return u.legacyName || (u.first+(u.last?' '+u.last:'')); }
 function writeCompat(){
   var c=session && session.cache;
@@ -527,8 +521,6 @@ function writeCompat(){
   } else { ndel('pe_logged_user'); ndel('pe_manager_gender'); }
 }
 writeCompat();
-window.peCurrentUser=function(){ return nget('pe_logged_user')||''; };
-window.PE_TEAM_USERS=LEGACY_NAMES.slice();
 var GENDER_MAP={ 'понял':'поняла','назвал':'назвала','отметил':'отметила','подготовил':'подготовила','сталкивался':'сталкивалась','позвонил':'позвонила','сделал':'сделала','хотел':'хотела','слышал':'слышала','подготовился':'подготовилась','связался':'связалась','рассчитал':'рассчитала','посчитал':'посчитала','думал':'думала','отправлял':'отправляла','написал':'написала','пометил':'пометила','согласен':'согласна','рад':'рада' };
 window.peGenderTransform=function(text){
   if(nget('pe_manager_gender')!=='female') return text;
@@ -553,7 +545,55 @@ var R = {
   me:function(){ return session && session.uid ? (R.users[session.uid]||null) : null; }
 };
 (function(){ var c=njson(CACHE_KEY, null); if(c){ R.users=c.users||{}; R.modules=c.modules||{}; R.meta=c.meta||null; R.perms=c.perms||null; R.requests=c.requests||{}; } applyModuleCfg(); })();
-function saveCache(){ nset(CACHE_KEY, JSON.stringify({ users:R.users, modules:R.modules, meta:R.meta, perms:R.perms, requests:isStaff()?R.requests:{} })); }
+function saveCache(){
+  /* фото в кэш списка не кладём — у них свой кэш (AV_KEY) */
+  var users={}; Object.keys(R.users).forEach(function(k){ var u=Object.assign({}, R.users[k]); delete u.avatar; users[k]=u; });
+  nset(CACHE_KEY, JSON.stringify({ users:users, modules:R.modules, meta:R.meta, perms:R.perms, requests:isStaff()?R.requests:{} }));
+}
+/* ---------- фото профиля: хранятся в avatars/{id} { v:dataURL, at }, в записи
+   пользователя — только avatarAt. Список пользователей опрашивается часто, а
+   фото скачивается один раз и лежит в кэше браузера, пока не сменится avatarAt. */
+var AV_KEY='pe2_av_'+NS, AV=njson(AV_KEY, {}) || {}, avLoading={};
+function saveAV(){ if(!nset(AV_KEY, JSON.stringify(AV))){ AV={}; ndel(AV_KEY); } }
+function attachAvatars(users){
+  var need=[];
+  Object.keys(users||{}).forEach(function(id){
+    var u=users[id]; if(!u) return;
+    if(u.avatar){ if(!AV[id] || AV[id].v!==u.avatar){ AV[id]={ at:u.avatarAt||0, v:u.avatar }; saveAV(); } return; }  // старый формат: фото прямо в записи
+    if(!u.avatarAt){ if(AV[id]){ delete AV[id]; saveAV(); } return; }
+    if(AV[id] && AV[id].at===u.avatarAt) u.avatar=AV[id].v;
+    else need.push(id);
+  });
+  need.forEach(function(id){
+    if(avLoading[id]) return; avLoading[id]=1;
+    fb('GET','avatars/'+id).then(function(a){
+      delete avLoading[id];
+      if(!a || !a.v) return;
+      AV[id]={ at:a.at, v:a.v }; saveAV();
+      if(R.users[id]){ R.users[id].avatar=a.v; notifyUsers(); if(revealed) renderNav(); }
+    }).catch(function(){ delete avLoading[id]; });
+  });
+}
+/* сохранить поля пользователя; фото (поле avatar) уходит в avatars/{id} */
+function saveUser(id, patch){
+  patch=Object.assign({}, patch);
+  var force=!!patch.__force; delete patch.__force;   // перенос старого фото: писать, даже если оно не менялось
+  if(!('avatar' in patch)) return fb('PATCH','users/'+id, patch);
+  var av=patch.avatar, at=Date.now(), cur=R.users[id];
+  delete patch.avatar;
+  var same=cur && (cur.avatar||'')===(av||'') && !force;
+  if(same) return Object.keys(patch).length ? fb('PATCH','users/'+id, patch) : Promise.resolve();
+  patch.avatar=null;                                 // старое поле убираем
+  patch.avatarAt=av ? at : null;
+  var j = av ? fb('PUT','avatars/'+id, { v:av, at:at }) : fb('DELETE','avatars/'+id);
+  return j.then(function(){ return fb('PATCH','users/'+id, patch); }).then(function(r){
+    if(av){ AV[id]={ at:at, v:av }; } else delete AV[id];
+    saveAV(); if(R.users[id]){ R.users[id].avatar=av||''; R.users[id].avatarAt=av?at:null; }
+    return r;
+  });
+}
+/* фото для списка из кэша — сразу, до первой загрузки с сервера */
+attachAvatars(R.users);
 
 function fullName(u){ if(!u) return 'Неизвестный'; return ((u.first||'')+' '+(u.last||'')).trim() || u.login || 'Без имени'; }
 function shortName(u){ if(!u) return '?'; return u.first || u.login || '?'; }
@@ -990,26 +1030,12 @@ function finishLogin(uidv, user, tok){
   if(user.status==='active') jobs.push(fb('POST','audit',{ at:Date.now(), by:uidv, byName:fullName(user), action:'login', target:uidv, details:'' }));
   return Promise.all(jobs).catch(function(){}).then(function(){ location.reload(); });
 }
-/* вход через Firebase Authentication. Если учётки в Firebase ещё нет, но есть
-   старый хеш пароля (аккаунты до перехода) — проверяем его, создаём учётку
-   с тем же паролем и удаляем хеш из базы. */
+/* вход через Firebase Authentication: логин → служебный email → токен → id пользователя */
 function doLoginAuth(form, login, pass){
-  var email;
   fb('GET', 'logins/'+encKey(login)).then(function(e){
-    email=e || authEmail(login);
-    return fbSignIn(email, pass).catch(function(err){
-      if(!/EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS|INVALID_PASSWORD/.test(err.code||'')) throw err;
-      return fb('GET', 'auth/'+encKey(login)).then(function(a){
-        if(!a || !a.hash || hashPass(pass, a.salt)!==a.hash) throw new Error('BAD');
-        return fbSignUp(email, pass).catch(function(e2){ if(/EMAIL_EXISTS/.test(e2.code||'')) throw new Error('BAD'); throw e2; }).then(function(tok){
-          saveSession({ tok:tok, at:Date.now() });
-          return fb('PUT', 'uidmap/'+tok.fbUid, a.uid)
-            .then(function(){ return e ? null : fb('PUT', 'logins/'+encKey(login), email); })
-            .then(function(){ return fb('PATCH', 'users/'+a.uid, { authUid:tok.fbUid }); })
-            .then(function(){ return fb('DELETE', 'auth/'+encKey(login)); })
-            .then(function(){ return tok; });
-        });
-      });
+    return fbSignIn(e || authEmail(login), pass).catch(function(err){
+      if(/EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS|INVALID_PASSWORD/.test(err.code||'')) throw new Error('BAD');
+      throw err;
     });
   }).then(function(tok){
     saveSession({ tok:tok, at:Date.now() });
@@ -1059,8 +1085,10 @@ function doRegister(form, isSetup){
     access:{}, requested:requested, comment:comment, createdAt:Date.now(), lastSeen:Date.now(), lastLogin:Date.now()
   });
   if(isSetup){ user.approvedAt=Date.now(); user.approvedBy=id;  }
+  var av=user.avatar; delete user.avatar; if(av) user.avatarAt=Date.now();
+  function putAvatar(){ return av ? fb('PUT','avatars/'+id, { v:av, at:user.avatarAt }).catch(function(){}) : null; }
   busy(form, true);
-  if(CFG.AUTH) return doRegisterAuth(form, isSetup, id, login, pass, user);
+  if(CFG.AUTH) return doRegisterAuth(form, isSetup, id, login, pass, user, putAvatar);
   var chain = isSetup
     ? tx('meta', function(cur){ if(cur && cur.ownerUid) return undefined; return { ownerUid:id, createdAt:Date.now(), version:2 }; }).then(function(r){ if(!r.committed) throw new Error('Владелец уже создан — обновите страницу и войдите.'); })
     : Promise.resolve();
@@ -1069,7 +1097,7 @@ function doRegister(form, isSetup){
   }).then(function(r){
     if(!r.committed) throw new Error('Такой логин уже занят — выберите другой');
     return fb('PUT', 'users/'+id, user);
-  }).then(function(){
+  }).then(putAvatar).then(function(){
     return fb('POST', 'audit', { at:Date.now(), by:id, byName:fullName(user), action:isSetup?'setup':'register', target:id, details:isSetup?'Создан аккаунт владельца':'Заявка на регистрацию' }).catch(function(){});
   }).then(function(){
     saveSession({ uid:id, at:Date.now(), cache:{ first:user.first, last:user.last, gender:user.gender, compat:compatName(user), role:user.role } });
@@ -1077,7 +1105,7 @@ function doRegister(form, isSetup){
   }).catch(function(err){ busy(form, false); formErr(form, err && err.message && !/^Firebase/.test(err.message) ? err.message : 'Нет связи с сервером. Попробуйте ещё раз.'); });
 }
 
-function doRegisterAuth(form, isSetup, id, login, pass, user){
+function doRegisterAuth(form, isSetup, id, login, pass, user, putAvatar){
   var acc;
   fb('GET', 'logins/'+encKey(login)).then(function(e){
     if(e) throw new Error('Такой логин уже занят — выберите другой');
@@ -1091,6 +1119,7 @@ function doRegisterAuth(form, isSetup, id, login, pass, user){
   }).then(function(){ return fb('PUT', 'users/'+id, user); })
     .then(function(){ return fb('PUT', 'uidmap/'+acc.fbUid, id); })
     .then(function(){ return fb('PUT', 'logins/'+encKey(login), acc.email); })
+    .then(putAvatar)
     .then(function(){ return fb('POST', 'audit', { at:Date.now(), by:id, byName:fullName(user), action:isSetup?'setup':'register', target:id, details:isSetup?'Создан аккаунт владельца':'Заявка на регистрацию' }).catch(function(){}); })
     .then(function(){
       saveSession({ uid:id, tok:session.tok, at:Date.now(), cache:{ first:user.first, last:user.last, gender:user.gender, compat:compatName(user), role:user.role } });
@@ -1205,7 +1234,7 @@ function openProfile(){
         var salt=makeSalt(); return fb('PUT', 'auth/'+encKey(u.login), { uid:u.id, salt:salt, hash:hashPass(newp, salt) });
       });
     }
-    chain.then(function(){ return fb('PATCH', 'users/'+u.id, p); }).then(function(){
+    chain.then(function(){ return saveUser(u.id, p); }).then(function(){
       Object.assign(u, p); saveCache(); notifyUsers(); renderNav(); mm.close(); toast('Профиль сохранён');
     }).catch(function(err){ busy(form,false); formErr(form, err && err.message && !/^Firebase/.test(err.message) ? err.message : 'Нет связи с сервером'); });
   });
@@ -1249,7 +1278,7 @@ function renderNav(){
     };
   });
 }
-/* логотип в меню: живой 3D-кубик + «PRIME ERA / студия веб-дизайна». Элемент
+/* логотип в меню: живой 3D-кубик + «P\E ecosystem». Элемент
    создаётся один раз и переносится при каждой перерисовке меню, чтобы кубик
    не пересоздавался. Пока three.js грузится (или если не загрузился) — статичная картинка. */
 var logoEl=null;
@@ -1257,14 +1286,19 @@ function navLogo(){
   if(logoEl) return logoEl;
   logoEl=document.createElement('a'); logoEl.className='pe2-nav-logo'; logoEl.href='index.html';
   logoEl.title='Главная экосистемы'; logoEl.setAttribute('aria-label','Prime Era — на главную экосистемы');
-  var tag='студия веб-дизайна'.split('').map(function(ch){ return '<span>'+(ch===' '?'&nbsp;':esc(ch))+'</span>'; }).join('');
-  logoEl.innerHTML='<span class="pe2-cube" aria-hidden="true"></span><span class="pe2-logo-text" aria-hidden="true"><span class="pe2-logo-word">PRIME ERA</span><span class="pe2-logo-tag">'+tag+'</span></span>';
+  logoEl.innerHTML='<span class="pe2-cube" aria-hidden="true"></span><span class="pe2-logo-text" aria-hidden="true"><b>P\\E</b> ecosystem</span>';
   window.__peLogoHost=logoEl.firstChild;
-  try{
-    var sc=document.createElement('script'); sc.type='module';
-    sc.src=(SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/pe-core\.js/, 'pe-logo3d.js') : 'assets/pe-logo3d.js');
-    document.head.appendChild(sc);
-  }catch(e){}
+  /* 3D грузим, когда страница уже открылась и браузер свободен, — не мешает загрузке модуля */
+  function loadCube(){
+    try{
+      var sc=document.createElement('script'); sc.type='module';
+      sc.src=(SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/pe-core\.js/, 'pe-logo3d.js') : 'assets/pe-logo3d.js');
+      document.head.appendChild(sc);
+    }catch(e){}
+  }
+  var idle=window.requestIdleCallback || function(f){ setTimeout(f, 300); };
+  if(document.readyState==='complete') idle(loadCube, { timeout:2000 });
+  else window.addEventListener('load', function(){ idle(loadCube, { timeout:2000 }); });
   return logoEl;
 }
 var menuEl=null;
@@ -1305,9 +1339,10 @@ function notifyUsers(){ usersFns.forEach(function(fn){ try{ fn(R.users); }catch(
 
 document.documentElement.classList.add('pe2-wait');
 (function injectFonts(){
-  if(document.querySelector('link[href*="IBM+Plex+Sans"]')) return;
+  /* шрифты — свои копии (assets/fonts.css), без обращения к Google */
+  if(document.querySelector('link[href*="fonts.css"]')) return;
   var l=document.createElement('link'); l.rel='stylesheet';
-  l.href='https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap';
+  l.href=(SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/pe-core\.js(\?.*)?$/, 'fonts.css') : 'assets/fonts.css');
   document.head.appendChild(l);
 })();
 
@@ -1316,7 +1351,7 @@ function maybeLoaded(){
   if(gotUsers && gotModules && gotMeta && !R.loaded){ R.loaded=true; }
   if(R.loaded){ saveCache(); evaluate(); }
 }
-function onUsersTree(tree){ R.users=tree||{}; gotUsers=true; maybeLoaded(); notifyUsers(); if(revealed) renderNav(); }
+function onUsersTree(tree){ R.users=tree||{}; attachAvatars(R.users); gotUsers=true; maybeLoaded(); notifyUsers(); if(revealed) renderNav(); }
 if(session && session.uid){
   /* список команды читают только активные; ожидающий или заблокированный видит свою запись */
   stream('users', onUsersTree, function(){
@@ -1361,9 +1396,9 @@ readyFns.push(function(){
     if(!u.lastSeen || Date.now()-u.lastSeen>5*60000) fb('PATCH', 'users/'+u.id, { lastSeen:Date.now() }).catch(function(){});
     var guard='pe2_pulled_'+NS+'_'+u.id+'_'+MODULE;
     var already=false; try{ already=sessionStorage.getItem(guard)==='1'; }catch(e){}
-    Promise.all([migrateLegacy(u), pullState()]).then(function(r){
-      if((r[0]||r[1]) && !already){ try{ sessionStorage.setItem(guard,'1'); }catch(e){} location.reload(); }
-      else { try{ sessionStorage.setItem(guard,'1'); }catch(e){} }
+    pullState().then(function(changed){
+      try{ sessionStorage.setItem(guard,'1'); }catch(e){}
+      if(changed && !already) location.reload();
     });
   }
 });
@@ -1373,7 +1408,7 @@ window.addEventListener('focus', function(){ if(session && session.guest) refres
    Публичный API
    ========================================================================= */
 var PE = window.PE = {
-  CFG:CFG, MODULES:MODULES, MODULE:MODULE, LEGACY_NAMES:LEGACY_NAMES, COLORS:COLORS, ROLE_NAMES:ROLE_NAMES, STATUS_NAMES:STATUS_NAMES,
+  CFG:CFG, MODULES:MODULES, MODULE:MODULE, COLORS:COLORS, ROLE_NAMES:ROLE_NAMES, STATUS_NAMES:STATUS_NAMES,
   fb:fb, tx:tx, stream:stream, audit:audit, encKey:encKey, decKey:decKey,
   get user(){ return R.me(); },
   get session(){ return session; },
@@ -1394,7 +1429,7 @@ var PE = window.PE = {
   requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,
   loginTaken:loginTaken, setCredentials:setCredentials, removeCredentials:removeCredentials, authEmail:authEmail,
-  processAvatar:processAvatar, bindAvatarPicker:bindAvatarPicker, profileFields:profileFields, readProfile:readProfile,
+  processAvatar:processAvatar, saveUser:saveUser, bindAvatarPicker:bindAvatarPicker, profileFields:profileFields, readProfile:readProfile,
   field:field, modulesChecklist:modulesChecklist, compatName:compatName, sha256:sha256,
   guestRequests:function(){ return njson('pe2_guestreqs_'+NS, []); },
   myOpenRequest:myOpenRequest, pendingCount:pendingCount, renderNav:renderNav
