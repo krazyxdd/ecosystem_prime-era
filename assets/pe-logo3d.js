@@ -15,7 +15,7 @@
     glowEnabled: true,        // свечение изнутри: выключатель
     glow: 1,                  // яркость свечения изнутри: 1 — чистый цвет из colors.inside, меньше — темнее
     haloEnabled: true,       // мягкое цветное свечение позади куба — держит куб заметным на тёмном фоне
-    haloStrength: 0.19,        // сила свечения позади куба, 0-1 (владелец: в 2 раза слабее, чем в студии)
+    haloStrength: 0.13,        // сила свечения позади куба, 0-1 (владелец: слабее, чем в студии; в светлой теме ореола нет)
     plate: 0.13,              // толщина плиты (доля ребра)
     gap: 0.06,                 // зазор между плитами (доля ребра) — как в оригинальном SVG (~7%)
     glyphGlowEnabled: true,    // свечение (bloom) вокруг знаков P, E, X: выключатель
@@ -369,7 +369,7 @@
      в тёмной — как в студии; в светлой — свечение букв слабее, заднего ореола нет,
      крестик чуть светлее */
   const CUBE_THEMES = {
-    dark:  { halo: true,  glyphGlow: CONFIG.glyphGlow,       x: CONFIG.colors.left },
+    dark:  { halo: true,  glyphGlow: CONFIG.glyphGlow * 0.75, x: CONFIG.colors.left },
     light: { halo: false, glyphGlow: CONFIG.glyphGlow * 0.5, x: '#4f9ad6' }
   };
   function applyCubeTheme() {
