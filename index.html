@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610010308">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610010308">
-<script src="assets/pe-core.js?v=202610010308" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610011010">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011010">
+<script src="assets/pe-core.js?v=202610011010" data-module="home"></script>
 <style>
   /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
@@ -18,6 +18,9 @@
   /* приветствие */
   .hero{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:28px; }
   .hero .date{ font:600 11px var(--pe-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--pe-ink-3); margin-bottom:10px; }
+  .hero-me{ display:flex; align-items:center; gap:20px; }
+  .hero-me .pe2-av{ box-shadow:0 0 0 4px var(--pe-card), 0 0 0 5px var(--pe-line); }
+  @media(max-width:600px){ .hero-me .pe2-av{ width:52px !important; height:52px !important; } }
   .hero h1{ margin:0; font:300 clamp(30px,4.4vw,46px)/1.08 var(--pe-font); letter-spacing:-.02em; }
   .hero h1 b{ font-weight:500; }
   .hero .sub{ margin-top:10px; font:500 12px var(--pe-mono); letter-spacing:.04em; color:var(--pe-ink-2); }
@@ -25,8 +28,10 @@
 
   /* виджеты */
   /* раскладка: задачи (шире) + команда рядом, изменения — строкой ниже; без пустых дыр */
-  .desk{ display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; margin-bottom:36px; align-items:start; }
-  @media(max-width:640px){ .desk{ grid-template-columns:1fr; } }
+  /* раскладка: задачи слева на всю высоту, справа узкая колонка — команда и журнал */
+  .desk{ display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px; margin-bottom:36px; align-items:start; }
+  .desk > .w.tasks{ grid-row:span 2; }
+  @media(max-width:860px){ .desk{ grid-template-columns:1fr; } .desk > .w.tasks{ grid-row:auto; } }
   .w{ background:var(--pe-card); border:1px solid var(--pe-line); border-radius:var(--pe-r); padding:18px 18px 16px; display:flex; flex-direction:column; min-height:180px; }
   .w.full{ grid-column:1 / -1; min-height:0; }
   .desk > .w{ align-self:stretch; }
@@ -67,7 +72,9 @@
   .mate small{ display:block; font:500 11px var(--pe-mono); color:var(--pe-ink-3); }
 
   .log{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
-  .log li{ display:grid; grid-template-columns:auto 1fr; gap:10px; font-size:13px; line-height:1.4; }
+  .log li{ display:grid; grid-template-columns:auto 1fr; gap:10px; font-size:12.5px; line-height:1.4; }
+  .log li > div{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .w.log-w, .desk > .w:not(.tasks){ min-height:0; }
   .log time{ font:500 11px var(--pe-mono); color:var(--pe-ink-3); min-width:52px; padding-top:1px; }
   .log b{ font-weight:500; }
   .log span{ color:var(--pe-ink-2); }
@@ -132,12 +139,12 @@ PE.onReady(function(){
     if(!PE.perm('audit')) return;
     var q = PE.CFG.MOCK ? PE.fb('GET','audit')
       : fetch(PE.CFG.FB+'/'+PE.CFG.ROOT+'/audit.json?orderBy=%22at%22&limitToLast=12').then(function(r){ return r.ok?r.json():null; });
-    q.then(function(d){ AUDIT=Object.keys(d||{}).map(function(k){ return d[k]; }).sort(function(a,b){ return b.at-a.at; }).slice(0,6); render(); }).catch(function(){});
+    q.then(function(d){ AUDIT=Object.keys(d||{}).map(function(k){ return d[k]; }).sort(function(a,b){ return b.at-a.at; }).slice(0,12); render(); }).catch(function(){});
   }
 
   /* ---------- виджеты ---------- */
   function wTasks(u){
-    var h='<section class="w"><div class="w-h"><h2>Мои задачи</h2><a href="tasks.html">Доска →</a></div>';
+    var h='<section class="w tasks"><div class="w-h"><h2>Мои задачи</h2><a href="tasks.html">Доска →</a></div>';
     if(!TASKS) return h+'<div class="w-empty">Загружаю задачи…</div></section>';
     var today=dayKey(new Date());
     var mine=TASKS.filter(function(t){ return t.a.indexOf(u.id)>=0 && t.status!=='done' && t.status!=='postponed' && !(t.db && t.db[u.id]); });   // свою часть уже сделал — не показываем
@@ -169,7 +176,7 @@ PE.onReady(function(){
     var h='<section class="w'+(alone?' full':'')+'"><div class="w-h"><h2>Команда</h2><span class="pe-chip">'+online.length+' в сети</span></div>';
     if(!mates.length) return h+'<div class="w-empty">Пока вы здесь один.</div></section>';
     mates.sort(function(a,b){ return (b.lastSeen||0)-(a.lastSeen||0); });
-    return h+'<div class="team">'+mates.slice(0,8).map(function(x){
+    return h+'<div class="team">'+mates.slice(0,6).map(function(x){
       var on=x.lastSeen && Date.now()-x.lastSeen<10*60000;
       return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':x.lastSeen?('был(а) '+PE.relTime(x.lastSeen)):'ещё не заходил(а)')+'</small></div></div>';
     }).join('')+'</div></section>';
@@ -177,9 +184,9 @@ PE.onReady(function(){
   var ACT={ login:'вошёл(ла)', 'saleskb.edit':'правка раздела продаж', 'saleskb.delete':'удалён раздел продаж', 'saleskb.tree':'правка схемы продаж', 'saleskb.file':'файлы продаж',
     'calc.config':'правка прайса', 'org.save':'правка оргсхемы', approve:'одобрил(а) регистрацию', create:'создан аккаунт', edit:'правка профиля/доступа', module:'настройки модулей', perms:'права ролей', grant:'выдан доступ', revoke:'закрыт доступ' };
   function wLog(){
-    var h='<section class="w full"><div class="w-h"><h2>Последние изменения</h2><a href="admin.html#log">Журнал →</a></div>';
+    var h='<section class="w log-w"><div class="w-h"><h2>Изменения</h2><a href="admin.html#log">Журнал →</a></div>';
     if(!AUDIT) return h+'<div class="w-empty">Загружаю журнал…</div></section>';
-    var list=AUDIT.filter(function(e){ return e.action!=='login'; });
+    var list=AUDIT.filter(function(e){ return e.action!=='login'; }).slice(0,4);
     if(!list.length) return h+'<div class="w-empty">Изменений пока не было.</div></section>';
     return h+'<ul class="log">'+list.map(function(e){
       var w=PE.userById(e.by), d=new Date(e.at);
@@ -217,7 +224,7 @@ PE.onReady(function(){
     var date=new Date().toLocaleDateString('ru-RU',{ weekday:'long', day:'numeric', month:'long' });
     if(u){
       if(PE.isStaff() && PE.perm('requests')) h+=reqNotice();
-      h+='<div class="hero"><div><div class="date">'+esc(date)+'</div><h1>'+greet()+', <b>'+esc(u.first)+'</b></h1><div class="sub">'+esc(u.position||PE.ROLE_NAMES[u.role])+' · P\\E ecosystem</div></div>'+
+      h+='<div class="hero"><div class="hero-me">'+PE.avatar(u,76)+'<div><div class="date">'+esc(date)+'</div><h1>'+greet()+', <b>'+esc(u.first)+'</b></h1><div class="sub">'+esc(u.position||PE.ROLE_NAMES[u.role])+' · P\\E ecosystem</div></div></div>'+
         '</div>';
       h+='<div class="desk">';
       if(PE.can('tasks')) h+=wTasks(u);
