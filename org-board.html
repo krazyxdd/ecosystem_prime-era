@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610011255">
-<script src="assets/pe-core.js?v=202610011255" data-module="org-board"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610011255">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011300">
+<script src="assets/pe-core.js?v=202610011300" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610011300">
 <style>
 :root{
   color-scheme:light;
@@ -520,6 +520,11 @@ function versionsModal(){
       '</div><button class="btn" data-act="modal-close">Закрыть</button>');
   }).catch(function(){openModal('<h3>Версии оргсхемы</h3><p class="note">Не удалось загрузить — нет связи с базой.</p><button class="btn" data-act="modal-close">Закрыть</button>');});
 }
+/* в просмотре вид меняется только у себя (раскрыть/свернуть, подробности); если он отличается
+   от сохранённого в базе — показываем кнопку «Как настроено» */
+var tplJson=null;
+function baseJson(){if(lastJson)return lastJson;if(!tplJson)tplJson=JSON.stringify(defaultState());return tplJson;}
+function syncResetView(){var b=document.getElementById("resetView");if(!b||!S)return;b.hidden=!(HAS_PE&&mode==="view"&&JSON.stringify(S)!==baseJson());}
 function setStatus(t){statusMsg=t;var el=document.getElementById("status");if(el)el.textContent=t;}
 
 /* ---------- utils ---------- */
@@ -699,7 +704,7 @@ function rPost(n,col,asCol){
 }
 function flowHTML(){return '<section class="flowbox"><h2>Путь клиента по оргсхеме</h2><p class="muted">Заказ проходит через отделы по кругу. Если статистика падает, ищите отдел, на котором поток застрял.</p><ol class="flow">'+
   FL().map(function(f,k){return '<li style="'+cvars(divColor(f.v))+'"><span class="fn">Шаг '+(k+1)+' · отдел '+esc(f.d)+'</span><b>'+esc(f.t)+'</b><span>'+esc(f.x)+'</span></li>';}).join("")+'</ol></section>';}
-function renderChart(){
+function renderChart(){syncResetView();
   calcNums();
   var chart=document.getElementById("chart"); if(!chart) return;
   var sc=sch();
@@ -831,7 +836,7 @@ function render(){
     h+='<header class="topbar"><span class="brand">'+esc(S.meta.title)+'</span>'+schemePicker()+''+zoomCtl+
       '<button class="btn sm" data-act="expand-all">Раскрыть все</button><button class="btn sm" data-act="collapse-all">Собрать все</button>'+
       '<span class="tgs">'+toggles()+'</span>'+
-      '<span class="sp"></span>'+(FL().length?'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button>':'')+(CAN_EDIT?'<button class="btn" data-act="dl">Скачать</button>':'')+(CAN_EDIT?'<button class="btn primary" data-act="edit">Редактировать</button>':'')+'</header>';
+      '<span class="sp"></span>'+(FL().length?'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button>':'')+(CAN_EDIT?'<button class="btn" data-act="dl">Скачать</button>':'')+(HAS_PE?'<button class="btn sm" data-act="reset-view" id="resetView" hidden title="Вернуть раскладку, которую настроил руководитель">↺ Как настроено</button>':'')+(CAN_EDIT?'<button class="btn primary" data-act="edit">Редактировать</button>':'')+'</header>';
     h+='<div class="viewport" id="vp"><div class="stage" id="stage"><svg id="wires"></svg><div class="chart" id="chart"></div></div></div>';
     h+='<aside class="drawer" id="drawer" hidden></aside>';
   } else {
@@ -1377,9 +1382,7 @@ function act(a,el){
   case "fit": fit();break;
   case "fitw": fitWidth();break;
   case "to-flow": if(!FL().length){if(!CAN_EDIT||(HAS_PE&&!remoteReady))break;leftTab="flow";if(mode!=="edit"){mode="edit";render();}else renderLeft();setStatus("Добавьте шаги пути клиента слева");break;}sch().showFlow=!sch().showFlow;save();el.classList.toggle("on",flowOn());renderChart();if(flowOn()){setTimeout(function(){var vp=document.getElementById("vp"),fb=document.querySelector("#chart .flowbox");if(vp&&fb){autoFit=false;Z.y=Math.min(0,vp.clientHeight-(fb.offsetTop+fb.offsetHeight+40)*Z.z);applyZ();}},60);}break;
-  case "split": var f=find(d.id);if(f){if(mode==="edit")pushHist();f.node.split=!f.node.split;
-    /* раскрыть в одну колонку бессмысленно: если все видимые отделы помечены «под предыдущим», снимаем пометки */
-    if(f.node.split&&f.node.type==="div"){var vk=(f.node.children||[]).filter(function(c){return !c.off;});if(vk.length>1&&vk.slice(1).every(function(c){return c.stackPrev;}))vk.forEach(function(c){delete c.stackPrev;});}save();renderChart();if(mode==="edit")renderInsp();}break;
+  case "split": var f=find(d.id);if(f){if(mode==="edit")pushHist();f.node.split=!f.node.split;save();renderChart();if(mode==="edit")renderInsp();}break;
   case "expand-all": case "collapse-all": walk(sch().root,function(n){if(n.type==="div")n.split=(a==="expand-all");});save();renderChart();break;
   case "toggle-stats": case "tg": var kk=d.k||"showStats";if(kk==="showNotes"){sch().showNotes=!notesOn();save();el.classList.toggle("on",notesOn());renderChart();break;}sch()[kk]=!sch()[kk];if(!sch()[kk]&&(kk==="showStats"||kk==="showDu")){var fk=kk==="showStats"?"xS":"xD";walk(sch().root,function(nn){delete nn[fk];});}save();document.querySelectorAll('[data-act="tg"][data-k="'+kk+'"]').forEach(function(b){b.classList.toggle("on",!!sch()[kk]);b.setAttribute("aria-pressed",!!sch()[kk]);});renderChart();break;
   case "close-drawer": closeDrawer();break;
@@ -1401,6 +1404,7 @@ function act(a,el){
   case "ver-restore": PE.fb("GET","orgchart/hist/"+d.id).then(function(v){if(!v||!v.json){setStatus("Версия не найдена");return;}pushHist();S=JSON.parse(v.json);sel=null;selHat=null;selPerson=null;closeModal();save();render();setTimeout(fitWidth,30);setStatus("Версия возвращена — можно отменить");}).catch(function(){setStatus("Не удалось загрузить версию");});break;
   case "cf-theirs": closeModal();reloadRemote().then(function(){hist=[];fut=[];sel=null;render();setTimeout(fitWidth,30);setStatus("Загружена свежая версия");}).catch(function(){setStatus("Нет связи с базой");});break;
   case "cf-mine": closeModal();saveRemote(true);break;
+  case "reset-view": S=JSON.parse(baseJson());drawerId=null;render();setTimeout(fitWidth,30);break;
   case "undo": undo();break;
   case "redo": redo();break;
   case "ltab": leftTab=d.t;renderLeft();break;
