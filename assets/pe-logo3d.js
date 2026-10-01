@@ -102,6 +102,7 @@
   const insideMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(CONFIG.colors.inside).multiplyScalar(Math.max(0, CONFIG.glow))
   });
+  const glyphMats = {};
   function glyphMaterial(hex) {
     return new THREE.MeshBasicMaterial({ color: new THREE.Color(hex) });
   }
@@ -216,6 +217,7 @@
     geo.computeVertexNormals();
 
     const material = glyphMaterial(CONFIG.colors[face]);
+    glyphMats[face] = material;
     const front = new THREE.Mesh(geo, material);
     rig.add(front);
     glyphMeshes.push(front);
@@ -232,7 +234,7 @@
      шага: 1) всё, что не знак, красим в чёрный и рендерим только это в
      отдельный буфер, размываем — получаем bloomTexture; 2) рендерим обычную
      сцену как есть — baseTexture; 3) шейдером складываем base + bloom. --- */
-  let bloomComposer = null, finalComposer = null, darkenNonBloomed = null, restoreMaterial = null;
+  let bloomComposer = null, finalComposer = null, darkenNonBloomed = null, restoreMaterial = null, bloomPass = null;
   if (CONFIG.glyphGlowEnabled && CONFIG.glyphGlow > 0) {
     const BLOOM_LAYER = 1;
     const bloomLayer = new THREE.Layers();
@@ -258,7 +260,8 @@
     bloomComposer = new EffectComposer(renderer, bloomTarget);
     bloomComposer.renderToScreen = false;
     bloomComposer.addPass(new RenderPass(scene, camera));
-    bloomComposer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), CONFIG.glyphGlow * 0.4, 0.15, 0.4));
+    bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), CONFIG.glyphGlow * 0.4, 0.15, 0.4);
+    bloomComposer.addPass(bloomPass);
 
     const mixPass = new ShaderPass(new THREE.ShaderMaterial({
       uniforms: { baseTexture: { value: null }, bloomTexture: { value: bloomComposer.renderTarget2.texture } },
@@ -362,6 +365,23 @@
 
   const clock = new THREE.Clock();
   let idleT = 0;
+  /* кубик под тему экосистемы (переключатель в шапке, событие 'pe-theme'):
+     в тёмной — как в студии; в светлой — свечение букв слабее, заднего ореола нет,
+     крестик чуть светлее */
+  const CUBE_THEMES = {
+    dark:  { halo: true,  glyphGlow: CONFIG.glyphGlow,       x: CONFIG.colors.left },
+    light: { halo: false, glyphGlow: CONFIG.glyphGlow * 0.5, x: '#4f9ad6' }
+  };
+  function applyCubeTheme() {
+    const t = document.documentElement.getAttribute('data-pe-theme') === 'light' ? 'light' : 'dark';
+    const c = CUBE_THEMES[t];
+    if (haloEl) haloEl.style.display = c.halo ? '' : 'none';
+    if (bloomPass) bloomPass.strength = c.glyphGlow * 0.4;
+    if (glyphMats.left) glyphMats.left.color.set(c.x);
+  }
+  applyCubeTheme();
+  window.addEventListener('pe-theme', applyCubeTheme);
+
   /* экономия батареи: в покое (лёгкое «дыхание») — 24 кадра в секунду,
      при кувырке и движении мыши — полная частота; на скрытой вкладке — ничего */
   let lastFrame = 0;
