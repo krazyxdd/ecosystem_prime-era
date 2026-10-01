@@ -370,7 +370,7 @@
      крестик чуть светлее */
   const CUBE_THEMES = {
     dark:  { halo: true,  glyphGlow: CONFIG.glyphGlow * 0.75, x: CONFIG.colors.left },
-    light: { halo: false, glyphGlow: CONFIG.glyphGlow * 0.5, x: '#4f9ad6' }
+    light: { halo: false, glyphGlow: CONFIG.glyphGlow * 0.25, x: '#4f9ad6' }
   };
   function applyCubeTheme() {
     const t = document.documentElement.getAttribute('data-pe-theme') === 'light' ? 'light' : 'dark';
