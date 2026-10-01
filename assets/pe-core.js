@@ -522,7 +522,7 @@ function dropDeadKeys(remote){
 }
 
 /* ---- совместимость со старыми модулями: имя для глоссария, род для «Возражений» ---- */
-function compatName(u){ return u.legacyName || (u.first+(u.last?' '+u.last:'')); }
+function compatName(u){ return u.first+(u.last?' '+u.last:''); }
 function writeCompat(){
   var c=session && session.cache;
   if(session && session.uid && c){

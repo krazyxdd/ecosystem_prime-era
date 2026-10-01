@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Задачи</title>
-<link rel="stylesheet" href="assets/fonts.css?v=202610011016">
+<link rel="stylesheet" href="assets/fonts.css?v=202610011023">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610011016">
-<script src="assets/pe-core.js?v=202610011016" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011023">
+<script src="assets/pe-core.js?v=202610011023" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -1297,7 +1297,6 @@ function onRemoteEntries(tree){
   state.entries.forEach(function(e, i){ idx[e.id]=i; });
   Object.keys(tree).forEach(function(id){
     var r=clone(tree[id]), b=Sync.base.entries[id], i=idx[id];
-    if(r.owner) r.owner=legacyUid(r.owner);
     if(b && sig(r)===sig(b)) return;
     if(i==null){ state.entries.push(r); }
     else if(!b || sig(state.entries[i])===sig(b)){ state.entries[i]=r; }
@@ -1401,12 +1400,6 @@ document.addEventListener('click', function(e){ var a=e.target.closest && e.targ
 /* ---------- права ---------- */
 function canDelete(t){ return IS_ADMIN || t.reporter===ME || (t.activity[0] && t.activity[0].author===ME); }
 function canEditEntry(e){ return IS_ADMIN || e.owner===ME; }
-function legacyUid(name){
-  if(!name) return name;
-  var ids=Object.keys(PE.users);
-  for(var i=0;i<ids.length;i++){ var u=PE.users[ids[i]]; if(u.legacyName===name) return u.id; }
-  return name;
-}
 
 /* ---------------- состояние ---------------- */
 var state = load();
@@ -1433,7 +1426,6 @@ function load(){
 }
 function hydrate(s){
   s.tasks = arr(s.tasks); s.entries = arr(s.entries);
-  s.entries.forEach(function(e){ if(e.owner) e.owner=legacyUid(e.owner); });
   if(s.columns) s.columns = arr(s.columns);
   if(s.positions) s.positions = arr(s.positions);
   if(s.savedFilters) s.savedFilters = arr(s.savedFilters);
@@ -1472,8 +1464,8 @@ function arr(v){
   return [];
 }
 function normalize(t){
-  t.assignees=arr(t.assignees).map(legacyUid); if(t.reporter) t.reporter=legacyUid(t.reporter);
-  t.auditors=arr(t.auditors).map(legacyUid); t.tags=arr(t.tags); t.checklist=arr(t.checklist);
+  t.assignees=arr(t.assignees);
+  t.auditors=arr(t.auditors); t.tags=arr(t.tags); t.checklist=arr(t.checklist);
   t.comments=arr(t.comments); t.activity=arr(t.activity); t.files=arr(t.files); t.links=arr(t.links);
   t.comments.forEach(function(c){ c.files=arr(c.files); });
   if(t.recur && t.recur.days) t.recur.days=arr(t.recur.days);
@@ -1499,12 +1491,12 @@ function col(id){ for(var i=0;i<state.columns.length;i++) if(state.columns[i].id
 function cat(id){ for(var i=0;i<CATEGORIES.length;i++) if(CATEGORIES[i].id===id) return CATEGORIES[i]; return CATEGORIES[CATEGORIES.length-1]; }
 function member(id){
   for(var i=0;i<TEAM.length;i++) if(TEAM[i].id===id) return TEAM[i];
-  var u=PE.userById(id) || PE.userById(legacyUid(id));   /* нет доступа к задачам / удалён / старое имя из v1 */
+  var u=PE.userById(id);   /* нет доступа к задачам или удалён */
   if(u) return { id:u.id, full:PE.fullName(u)+(u.status==='deleted'?' (удалён)':''), short:PE.shortName(u), tag:PE.shortName(u), color:u.color||'#9A9CA3', role:u.position||'', avatar:u.avatar||'' };
   return { id:id, full:id||'—', short:id||'—', tag:id||'', color:'#9A9CA3', role:'' };
 }
 /* «упомянул / упомянула» — по полу из профиля */
-function gv(id, m, f){ var u=PE.userById(id)||PE.userById(legacyUid(id)); return u && u.gender==='f' ? f : m; }
+function gv(id, m, f){ var u=PE.userById(id); return u && u.gender==='f' ? f : m; }
 function cp(c){ var P=state.settings.colPrefs||(state.settings.colPrefs={}); return P[c.id]||(P[c.id]={}); }   /* свёрнута/группировка/сортировка колонки — личная настройка */
 function colDot(c){ return c.dot || darken(c.color, .55); }
 function tagColor(name){
