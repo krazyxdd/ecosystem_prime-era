@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610011010">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610011010">
-<script src="assets/pe-core.js?v=202610011010" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610011016">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011016">
+<script src="assets/pe-core.js?v=202610011016" data-module="home"></script>
 <style>
   /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
@@ -201,7 +201,7 @@ PE.onReady(function(){
     var g=PE.isGuest ? PE.guestRequests().filter(function(r){ return r.modules && r.modules.indexOf(m.id)>=0; }).sort(function(a,b){ return b.at-a.at; })[0] : null;
     var st = g && g.status==='approved' ? '<span class="sent" style="color:var(--pe-ok)">Одобрено — пришлют логин</span>'
       : g && g.status==='rejected' ? '<span class="sent" style="color:var(--pe-danger)">Заявку отклонили</span>' : '';
-    return '<div class="tool locked"><span class="badge">'+PE.icon('lock',11)+'</span><div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p>'+
+    return '<div class="tool locked" data-id="'+m.id+'"><span class="badge">'+PE.icon('lock',11)+'</span><div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p>'+
       (sent ? '<span class="sent">Запрос отправлен</span>' : st && g.status==='approved' ? st : (st||'')+'<button class="pe-btn sm req" data-req="'+m.id+'">Запросить доступ</button>')+'</div>';
   }
   function toolsHtml(){
@@ -215,7 +215,7 @@ PE.onReady(function(){
     if(!open.length && !locked.length) return '<div class="banner">Пока ни один модуль не включён.</div>';
     return '<div class="pe-h">'+(open.length?'Инструменты':'Инструменты студии')+'</div><div class="tools">'+
       open.map(function(m){ var c=PE.modConf(m.id);
-        return '<a class="tool" href="'+m.href+'" style="--mc:'+(m.color||'var(--pe-accent)')+'">'+(!c.enabled?'<span class="badge">выключен</span>':PE.isGuest?'<span class="badge">для гостей</span>':'')+'<div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p></a>';
+        return '<a class="tool" href="'+m.href+'" data-id="'+m.id+'" draggable="false" style="--mc:'+(m.color||'var(--pe-accent)')+'">'+(!c.enabled?'<span class="badge">выключен</span>':PE.isGuest?'<span class="badge">для гостей</span>':'')+'<div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p></a>';
       }).join('')+locked.map(lockedTool).join('')+'</div>';
   }
 
@@ -244,6 +244,8 @@ PE.onReady(function(){
     var b=e.target.closest('[data-req]'); if(b){ PE.requestAccess([b.dataset.req]); return; }
     if(e.target.closest('[data-register]')){ localStorage.removeItem('pe2_session_'+(PE.CFG.MOCK?'mock':PE.CFG.ROOT)); location.hash='register'; location.reload(); }
   });
+  /* порядок плиток (он же порядок меню) — перетаскиванием, у кого есть право «Настройки модулей» */
+  PE.sortable(page, { item:'.tool[data-id]', axis:'x', enabled:function(){ return PE.perm('modules') && !PE.previewUser(); }, onDrop:function(ids){ PE.saveModuleOrder(ids); } });
   PE.onRequestSent=render;
   PE.onUsers(render);
   if(PE.isGuest) PE.refreshGuestRequests().then(render);

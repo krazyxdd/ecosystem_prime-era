@@ -1284,6 +1284,7 @@ function renderNav(){
   onBody(function(){
     if(!navEl){
       navEl=document.createElement('header'); navEl.className='pe2-nav';
+      sortable(navEl, { item:'.pe2-nav-links a[data-id]', axis:'x', enabled:canSortNav, onDrop:saveModuleOrder });
       document.body.insertBefore(navEl, document.body.firstChild);
       document.documentElement.classList.add('pe2-has-nav');
     }
@@ -1291,7 +1292,7 @@ function renderNav(){
     var links=MODULES.filter(function(m){ return can(m.id) && (modConf(m.id).enabled || isAdmin()) && modConf(m.id).nav; });
     var h='<span data-pe2-logo></span>'+
       '<nav class="pe2-nav-links">'+
-      links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'">'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
+      links.map(function(m){ return '<a href="'+m.href+'" class="'+(MODULE===m.id?'on':'')+'" data-id="'+m.id+'" draggable="false"'+(canSortNav()?' title="Перетащите, чтобы поменять порядок"':'')+'>'+esc(m.name)+'</a>'; }).join('')+'</nav>'+
       '<div class="pe2-nav-right">'+
       (CFG.MODE!=='live'?'<span class="pe2-testbadge" title="Данные идут не в рабочую базу">ТЕСТ · '+esc(CFG.MODE)+'</span>':'')+
       (previewUser()?'<button class="pe2-preview" data-pe2-preview-off title="Вы смотрите экосистему с правами этого человека. Данные — ваши.">👁 Глазами: '+esc(shortName(previewUser()))+' · '+esc(ROLE_NAMES[previewUser().role]||'')+' <b>выйти</b></button>':'')+
@@ -1343,7 +1344,7 @@ function navLogo(){
 function sortable(box, o){
   var drag=null, justDragged=false;
   function items(){ return $$(o.item, box).filter(function(el){ return el.closest(o.item)===el; }); }
-  function clear(){ $$('.pe-drop-before,.pe-drop-after', box).forEach(function(el){ el.classList.remove('pe-drop-before','pe-drop-after'); }); }
+  function clear(){ $$('.pe-drop-before,.pe-drop-after,.pe-drop-l,.pe-drop-r', box).forEach(function(el){ el.classList.remove('pe-drop-before','pe-drop-after','pe-drop-l','pe-drop-r'); }); }
   box.addEventListener('pointerdown', function(e){
     if(e.button!==0 || (o.enabled && !o.enabled())) return;
     var h = o.handle ? e.target.closest(o.handle) : e.target;
@@ -1360,8 +1361,9 @@ function sortable(box, o){
     var under=document.elementFromPoint(e.clientX, e.clientY), t=under && under.closest(o.item);
     clear(); drag.over=null;
     if(t && t!==drag.el && box.contains(t) && items().indexOf(t)>=0){
-      var r=t.getBoundingClientRect(); drag.after = e.clientY > r.top + r.height/2; drag.over=t;
-      t.classList.add(drag.after?'pe-drop-after':'pe-drop-before');
+      var r=t.getBoundingClientRect(), x=o.axis==='x'; drag.over=t;
+      drag.after = x ? e.clientX > r.left + r.width/2 : e.clientY > r.top + r.height/2;
+      t.classList.add(x ? (drag.after?'pe-drop-r':'pe-drop-l') : (drag.after?'pe-drop-after':'pe-drop-before'));
     }
     /* у краёв окна прокручиваем */
     if(e.clientY<60) window.scrollBy(0,-12); else if(e.clientY>window.innerHeight-60) window.scrollBy(0,12);
@@ -1382,6 +1384,18 @@ function sortable(box, o){
   box.addEventListener('click', function(e){ if(justDragged){ e.preventDefault(); e.stopPropagation(); } }, true);
 }
 
+/* порядок модулей — один на меню, главную и админку. ids — новый порядок видимой
+   части списка; невидимые модули остаются на своих местах. */
+function saveModuleOrder(ids){
+  var all=MODULES.map(function(m){ return m.id; }), pos=[];
+  all.forEach(function(id, k){ if(ids.indexOf(id)>=0) pos.push(k); });
+  var res=all.slice(); pos.forEach(function(k, n){ res[k]=ids[n]; });
+  return Promise.all(res.map(function(id, k){ return fb('PATCH','modules/'+id, { order:k }); }))
+    .then(function(){ audit('module','', 'порядок модулей: '+res.map(function(id){ return (moduleById(id)||{}).name||id; }).join(', ')); return loadModulesMeta(); })
+    .then(function(){ applyModuleCfg(); renderNav(); notifyUsers(); toast('Порядок сохранён — у всех в меню и на главной'); })
+    .catch(function(){ toast('Не удалось сохранить порядок','err'); renderNav(); notifyUsers(); });
+}
+
 /* карандаш в шапке: редактор текущего инструмента (для тех, у кого есть право).
    Страница может сама открыть редактор на месте — PE.onEdit(fn); иначе переходим по ссылке. */
 var EDITORS={
@@ -1392,6 +1406,7 @@ var EDITORS={
   'home':{ perm:'modules', url:'admin.html#modules', title:'Настроить меню и плашки главной' }
 };
 var editFn=null;
+function canSortNav(){ return !!R.me() && perm('modules') && !previewUser(); }
 function editorBtn(){
   var e=EDITORS[MODULE]; if(!e || !R.me() || !perm(e.perm)) return '';
   return '<button class="pe2-nav-icon" data-pe2-edit title="'+esc(e.title)+'" aria-label="'+esc(e.title)+'">'+I('pencil',16)+'</button>';
@@ -1519,7 +1534,7 @@ var PE = window.PE = {
   isAdmin:isAdmin, isOwner:isOwner, isStaff:isStaff, perm:perm, permsOf:permsOf, PERMS:PERMS, DEFAULT_PERMS:DEFAULT_PERMS, ROLE_ORDER:ROLE_ORDER, can:can, modConf:modConf, moduleById:moduleById,
   onReady:function(fn){ if(fired) fn(PE); else readyFns.push(fn); },
   onUsers:function(fn){ usersFns.push(fn); },
-  MODULE_DEFAULTS:MOD_DEF, sortable:sortable, setPreview:setPreview, previewUser:previewUser, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
+  MODULE_DEFAULTS:MOD_DEF, sortable:sortable, saveModuleOrder:saveModuleOrder, setPreview:setPreview, previewUser:previewUser, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,
   requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,

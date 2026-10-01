@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ-панель — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610011010">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610011010">
-<script src="assets/pe-core.js?v=202610011010" data-module="admin"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610011016">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011016">
+<script src="assets/pe-core.js?v=202610011016" data-module="admin"></script>
 <style>
   :root{ --ink:var(--pe-ink); --soft:var(--pe-ink-2); --faint:var(--pe-ink-3); --line:var(--pe-line); --bg:var(--pe-bg-2); --card:var(--pe-card); --accent:var(--pe-accent); --accent-t:var(--pe-accent-t); --danger:var(--pe-danger); --ok:var(--pe-ok); --warn:var(--pe-warn); }
   *{ box-sizing:border-box; }
@@ -162,7 +162,9 @@
   .mod-head{ padding:10px 18px; font:600 11px 'IBM Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); border-bottom:1px solid var(--line); }
   @media(max-width:860px){ .mod-row{ grid-template-columns:auto 1fr; } .mod-row label, .mod-row .mod-acts{ grid-column:2; } .mod-head{ display:none; } }
   .mod-acts{ display:flex; gap:4px; align-items:center; }
-  .mod-grip{ cursor:grab; } .mod-grip:active{ cursor:grabbing; }
+  .mod-row[data-id]{ cursor:grab; } .mod-row[data-id]:active{ cursor:grabbing; }
+  .mod-row[data-id] .ic::after{ content:"⠿"; position:absolute; left:-14px; color:var(--pe-ink-3); font-size:14px; }
+  .mod-row[data-id] .ic{ position:relative; }
   .mod-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   .mod-tags span{ font-size:11.5px; color:var(--warn); background:var(--pe-warn-t); border-radius:6px; padding:2px 7px; }
   .btn.ico{ padding:6px 8px; }
@@ -500,7 +502,7 @@ function setAccess(u, mid, on){
 
 /* ---------------- модули ---------------- */
 function modulesHtml(){
-  var h='<p class="muted" style="margin:0 0 12px">Название и описание — это пункт меню и плашка на главной. «Изменить» — переименовать, поменять описание, скрыть из меню или с главной. Порядок в меню и на главной — перетащите строку за значок.</p>';
+  var h='<p class="muted" style="margin:0 0 12px">Название и описание — это пункт меню и плашка на главной. «Изменить» — переименовать, поменять описание, скрыть из меню или с главной. Порядок в меню и на главной — перетащите строку мышью (или прямо пункты меню в шапке / плитки на главной).</p>';
   h+='<div class="card"><div class="mod-row mod-head"><span></span><span>Модуль</span><span>Включён</span><span>Для гостей</span><span>Новым — сразу</span><span></span></div>';
   M.forEach(function(m, i){
     var c=PE.modConf(m.id), d=PE.MODULE_DEFAULTS[m.id]||{};
@@ -749,7 +751,7 @@ app.addEventListener('input', function(e){
 /* живые обновления: перерисовываем, но не пока человек печатает в поиске */
 var rT=null;
 PE.onUsers(function(){ clearTimeout(rT); rT=setTimeout(function(){ if(document.activeElement && document.activeElement.id==='u-search') renderPane(); else render(); }, 60); });
-PE.sortable(document.getElementById('app'), { item:'.mod-row[data-id]', handle:'.mod-grip', enabled:function(){ return tab==='modules' && P('modules'); }, onDrop:saveModuleOrder });
+PE.sortable(document.getElementById('app'), { item:'.mod-row[data-id]', enabled:function(){ return tab==='modules' && P('modules'); }, onDrop:function(ids){ PE.saveModuleOrder(ids).then(render); } });
 render();
 seedPerms(); cleanAudit(); migrateAvatars();
 });
