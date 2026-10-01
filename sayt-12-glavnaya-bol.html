@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>12. Главная боль — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}.toc a{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 11px;text-decoration:none;color:var(--tx);background:var(--paper)}.toc a:hover{border-color:var(--acc)}
+.blk .card h2{margin-top:0}.blk .card h3{margin:22px 0 8px;font-size:17px}.blk .card p{margin:8px 0}.blk .card li{margin:5px 0}
+.blk .card code{font-size:.9em;background:var(--acc2);border-radius:5px;padding:1px 5px}
+.blk{padding:10px 0}.part{padding:40px 0 6px}.part h2.big{font-size:clamp(24px,3vw,34px);margin:6px 0 8px}
+.srcnote{font-size:13px;color:var(--mut);margin-top:12px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd on" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="on">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 12 · главная боль</div>
+  <h1>Главная боль и одна польза: как выбрать то, на чём держится сайт</h1>
+  <div class="lead"><p>Весь сайт держится на одной мысли. У Сизова это <strong>одна польза</strong> (профессионал продаёт на одной пользе). У Прайма — <strong>красная кнопка</strong>: главная потребность, ради которой человек платит. Владелец студии называет это <strong>главной болью</strong>. Это одно и то же, увиденное с двух сторон: боль — то, что у человека сейчас болит или чего он хочет; польза — как это выглядит, когда решено. На странице мы говорим пользой, а выбираем её по боли.</p>
+<p>Ошибка, которую этот файл закрывает: главную пользу выбирают по первой попавшейся строке брифа и крутят вокруг неё весь сайт. Получается правильная по форме страница о неважном. Поэтому выбор главной боли — <strong>отдельный шаг с решением человека</strong>, до любых текстов.</p>
+</div>
+  <div class="note" style="margin-top:14px">Этот модуль — человеческая версия справочника плагина «Продающий сайт» (версия 2.0). Плагин и методичка работают по одним правилам. Где написано «пользователь» — это тот, кто принимает решение по проекту: руководитель проекта или клиент.</div>
+  <div class="toc"><a href="#s1">Правило шага</a><a href="#s2">Критерий номер один</a><a href="#s3">Лестница: на каком уровне польза</a><a href="#s4">Где искать настоящую боль (по силе источника)</a><a href="#s5">Кандидаты: как собрать 4–6</a><a href="#s6">Как показать выбор пользователю</a><a href="#s7">Если ответа нет</a><a href="#s8">Как главная польза проходит через весь сайт</a><a href="#s9">Несколько групп клиентов</a><a href="#s10">Уроки прошлых прогонов</a></div>
+</div></section>
+<section class="blk" id="s1"><div class="wrap"><div class="card"><h2>Правило шага</h2><ol>
+<li>Главная боль выбирается <strong>до</strong> структуры и текстов. Без неё не пишется ни один экран, кроме технических.</li>
+<li>Выбор делает <strong>пользователь плагина</strong> (сотрудник студии или владелец бизнеса). Плагин готовит кандидатов с доказательствами и рекомендацию, задаёт вопрос (вопросом с готовыми вариантами) и ждёт ответа.</li>
+<li>Если у пользователя нет ответа — плагин <strong>сам исследует нишу</strong> (ниже, «Если ответа нет») и возвращается с кандидатами, подкреплёнными найденным. Не выбирает молча.</li>
+<li>Решение записывается в шапку работы: формулировка для посетителя, для какой группы, почему, чем докажем, что не обещаем.</li>
+<li>Если сессия без человека (по расписанию) — плагин выбирает сам по баллам ниже, пишет выбор и альтернативы первой строкой выдачи и помечает «подтвердить: главная польза».</li>
+</ol></div></div></section><section class="blk" id="s2"><div class="wrap"><div class="card"><h2>Критерий номер один</h2><p>Сайт существует, чтобы продавать. Поэтому главная боль — это <strong>то, за решение чего человек платит деньги</strong>, а не то, что красиво звучит или удобно показать. Проверка одним вопросом: «Если бы это решилось — человек заплатил бы именно за это?» Если ответ «ну, это приятно, но платят за другое» — это не главная боль, а довод.</p>
+</div></div></section><section class="blk" id="s3"><div class="wrap"><div class="card"><h2>Лестница: на каком уровне польза</h2><p>Каждого кандидата поднимай по лестнице, пока не упрёшься в то, ради чего всё затевается.</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Уровень</th>
+<th>Что это</th>
+<th>Пример для студии сайтов</th>
+<th>Пример для школы технологов</th>
+<th>Годится как главная?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Свойство</td>
+<td>Из чего сделано</td>
+<td>«Сайт на Tilda», «адаптив»</td>
+<td>«Программа ВГУИТ»</td>
+<td>Нет — это довод</td>
+</tr>
+<tr>
+<td>2. Процесс</td>
+<td>Как мы работаем</td>
+<td>«Тексты утверждаете до дизайна»</td>
+<td>«Теория → анализ → практика»</td>
+<td>Нет — это доказательство</td>
+</tr>
+<tr>
+<td>3. Результат</td>
+<td>Что получает клиент</td>
+<td>«Сайт, который сам объясняет цены и условия»</td>
+<td>«Умеете вести варку по показателям»</td>
+<td>Да, если платят за это</td>
+</tr>
+<tr>
+<td>4. Результат результата</td>
+<td>Что меняется в жизни или бизнесе после</td>
+<td>«Менеджер говорит с тем, кто уже решил, — сделок больше при той же рекламе»</td>
+<td>«Берут технологом на производство / своя пивоварня не зависит от одного человека»</td>
+<td>Да — лучший уровень</td>
+</tr>
+</tbody>
+</table></div>
+<p>Главная польза — уровень 3 или 4. Уровни 1–2 уходят в доказательства на экране 4 («откуда это берётся») и в справку.</p></div></div></section><section class="blk" id="s4"><div class="wrap"><div class="card"><h2>Где искать настоящую боль (по силе источника)</h2><ol>
+<li><strong>Слова тех, кто уже заплатил.</strong> Почему выбрали вас, что сказали после, что изменилось. Самый сильный источник. Упражнение Прайма: позвонить трём самым лояльным клиентам и спросить, почему они с вами и что для них главное.</li>
+<li><strong>Вопросы и страхи на первых звонках</strong> — дословно (бриф b5). То, что спрашивают первым, почти всегда рядом с главной болью.</li>
+<li><strong>Отказы</strong> (бриф b6): что сказал последний, кто не купил.</li>
+<li><strong>Отзывы</strong> — свои и конкурентов: Яндекс Карты, 2ГИС, Отзовик, маркетплейсы, профильные форумы и чаты. Особенно отзывы на 1–3 звезды у конкурентов: там перечислено, чего люди боятся.</li>
+<li><strong>Запросы и обсуждения</strong>: что люди ищут и как формулируют задачу (поисковые подсказки, форумы, группы).</li>
+<li><strong>Сайты конкурентов</strong>: что обещают все (это обязательный минимум, не отличие) и о чём молчат все (там часто и лежит боль).</li>
+<li><strong>Портрет ниши</strong> в <a href="sayt-3-nishi.html">модуль 3 «Ниши»</a> (страхи, главная польза‑пример) — как подсказка, не как ответ.</li>
+<li><strong>Мнение владельца</strong> — важно, но само по себе самое слабое: владелец часто продаёт то, чем гордится, а не то, за что платят. Сверяй с 1–4.</li>
+</ol></div></div></section><section class="blk" id="s5"><div class="wrap"><div class="card"><h2>Кандидаты: как собрать 4–6</h2><ol>
+<li>Для каждой группы клиентов (если групп две и больше — отдельно) выпиши боли по шести потребностям Прайма «У Б Э П ПГ Н» (<a href="sayt-14-zakony.html#praym">модуль 14 «Инструменты Прайма»</a>, § 1): удобство, безопасность, экономия денег и времени, престиж, «как у других», новизна. Не все шесть — только те, что подтверждаются источниками.</li>
+<li>Подними каждого по лестнице до уровня 3–4.</li>
+<li>Оцени по пяти признакам (0 — нет, 1 — частично, 2 — да):</li>
+</ol>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Признак</th>
+<th>Вопрос</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Сила</td>
+<td>Насколько сильно это болит или хочется? Платят ли именно за это?</td>
+</tr>
+<tr>
+<td>Частота</td>
+<td>У какой доли аудитории это главное?</td>
+</tr>
+<tr>
+<td>Слова</td>
+<td>Говорят ли об этом сами клиенты — есть ли их фразы?</td>
+</tr>
+<tr>
+<td>Доказуемость</td>
+<td>Можем ли показать это на странице фактами (кейс, устройство, расчёт, опыт на самой странице)?</td>
+</tr>
+<tr>
+<td>Отличие</td>
+<td>Альтернативы (сам, частник, крупная фирма, конкуренты) этого не дают или об этом не говорят?</td>
+</tr>
+</tbody>
+</table></div>
+<ol start="4">
+<li>Отсей кандидатов, которые <strong>противоречат честности или договору</strong>. Пример: «гарантируем заявки», если в договоре этого нет, — не главная польза. Тогда ищи формулировку через механизм: не «сайт принесёт заявки», а «сайт продаёт как ваш лучший менеджер: отвечает на вопросы клиента по порядку».</li>
+<li>Максимум баллов — рекомендация. При равенстве выигрывает тот, у кого выше «Сила» и «Слова».</li>
+</ol></div></div></section><section class="blk" id="s6"><div class="wrap"><div class="card"><h2>Как показать выбор пользователю</h2><p>Одним сообщением (или вопрос с готовыми вариантами — варианты с превью заголовка):</p>
+<ul>
+<li>4–6 кандидатов, для каждого: формулировка для посетителя (как заголовок первого экрана), уровень лестницы, откуда взята (источник с цитатой, если есть), баллы, чем докажем на странице, риск.</li>
+<li>Рекомендация и почему — одной строкой.</li>
+<li>Вопрос: «Какую берём? Если ни одна — какая фраза ваших клиентов ближе всего к правде?»</li>
+</ul>
+<p>Не начинай тексты до ответа. Пока ждёшь — можно готовить то, что от главной боли не зависит: карту экранов, технические блоки, контакты.</p></div></div></section><section class="blk" id="s7"><div class="wrap"><div class="card"><h2>Если ответа нет</h2><p>Пользователь говорит «не знаю», «сам предложи», «клиент не ответил»:
+1. Исследуй нишу: найди 2–3 конкурентов, прочитай их сайты и отзывы (свои и конкурентов на картах и отзовиках), профильные обсуждения. Если есть сайт клиента — прочитай и его отзывы.
+2. Выпиши, что люди в этой нише хвалят, за что ругают, о чём спрашивают, чего боятся — с короткими цитатами и ссылками.
+3. Собери кандидатов заново на этих данных и снова предложи с баллами. Пометь каждый: «вывод из анализа ниши, у клиента не подтверждён».
+4. После выбора — в список для клиента добавь «подтвердить: главная польза — [формулировка]; спросить у трёх последних клиентов, почему выбрали вас».</p></div></div></section><section class="blk" id="s8"><div class="wrap"><div class="card"><h2>Как главная польза проходит через весь сайт</h2><p>Выбранная боль — не только заголовок. Она определяет каждый экран:</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Экран</th>
+<th>Что делает главная польза</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 · Контакт</td>
+<td>Заголовок — польза на уровне 3–4, для кого, одной фразой. Подзаголовок — механизм: почему это получается</td>
+</tr>
+<tr>
+<td>2 · Ключ к уху</td>
+<td>«Возможно, вам не нужно, если…» — случаи, когда эта боль у человека не болит. «А вы знаете, что…?» — факт, который делает боль видимой, без страха</td>
+</tr>
+<tr>
+<td>3 · Разведчик</td>
+<td>Вопросы квиза измеряют именно эту боль у посетителя; результат квиза говорит о ней</td>
+</tr>
+<tr>
+<td>4 · Одна польза</td>
+<td>Польза показана в деле: история живого клиента с этой болью, устройство, расчёт, «если бы»</td>
+</tr>
+<tr>
+<td>5 · Варианты</td>
+<td>Каждый вариант описан через то, как он решает эту боль; минус — где он её решает хуже; мнение «мы бы взяли…» — с причиной из этой боли</td>
+</tr>
+<tr>
+<td>6 · Шаг</td>
+<td>Польза шага — маленький кусок главной пользы уже сейчас («10 минут — и понятно, какой сайт нужен вашей рекламе»)</td>
+</tr>
+<tr>
+<td>7 · Фея</td>
+<td>Помогает главной пользе случиться после покупки (памятка менеджерам, если польза — в разговоре с клиентом)</td>
+</tr>
+<tr>
+<td>8 · Готовые слова</td>
+<td>Клиент рассказывает знакомому о том, что изменилось по этой боли</td>
+</tr>
+<tr>
+<td>Уход</td>
+<td>Микромагнит — самопроверка по этой боли</td>
+</tr>
+<tr>
+<td>Выжимка</td>
+<td>Первая строка для того, кто платит, — эта польза на его языке</td>
+</tr>
+</tbody>
+</table></div>
+<p>Остальные достоинства — ниже справкой или на внутренних страницах. Если хочется вставить второй блок «ещё мы…» рядом с главной пользой — это ошибка.</p></div></div></section><section class="blk" id="s9"><div class="wrap"><div class="card"><h2>Несколько групп клиентов</h2><p>Две и больше группы с разными задачами (семьи и инвесторы; «для себя» и «для бизнеса»; дизайнер интерьера и владелец дома) — у каждой своя красная кнопка. Варианты:
+- развилка на первом экране и своя страница у каждой группы;
+- главная группа на лендинге, остальные — вкладками или отдельными страницами;
+- рекламу вести на страницу своей группы.
+Спроси пользователя, какая группа главная, если это не очевидно из денег (кто приносит больше выручки).</p></div></div></section><section class="blk" id="s10"><div class="wrap"><div class="card"><h2>Уроки прошлых прогонов</h2><ul>
+<li><strong>Студия сайтов, прогон 1.</strong> Главной сделан процесс («тексты утверждаете до дизайна») — уровень 2. Владелец: «самое важное — чтобы сайт продавал». Правильный уровень — 4, сформулированный через механизм, а не обещание: «продаёт как ваш лучший менеджер — отвечает на вопросы клиента по порядку»; процесс ушёл в доказательство.</li>
+<li><strong>Художница.</strong> «Картины со смыслом, которые подходят интерьеру» — две пользы сразу и обе общие. Надо было разделить группы (дом / отель‑салон / дизайнер), для каждой найти кнопку (дом — «вижу каждый раз новое», бизнес — «пространство запоминается, есть о чём рассказать гостю»), главную группу — по выручке, спросить владельца.</li>
+<li><strong>Школа технологов.</strong> Сильный факт («из ~500 выпускников практику прошли около 20 — поэтому теперь практика с первого дня») поставлен в «а вы знаете», а главная польза размыта шестью блоками методологии. Одна польза («практика на действующем производстве — работаете технологом, а не знаете теорию») должна держать экран 4, методология — доказательство, свёрнутое в одну схему.</li>
+<li><strong>Студия сайтов, эталонный прогон.</strong> Сильно: «в разговор приходит человек, который уже разобрался» — уровень 4, с механизмом и доказательством самой страницей. Слабо: выбрано моделью без вопроса, с оговоркой «если клиенты ценят другое — меняется экран 4». Теперь такой выбор делается вместе с пользователем.</li>
+</ul></div></div></section>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

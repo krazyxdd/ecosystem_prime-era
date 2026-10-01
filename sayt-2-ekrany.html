@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>2. Библиотека экранов — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.scrtabs{position:sticky;top:calc(58px + var(--pe-nav-h,0px));z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+.scrtabs .segs button{font-size:13px}
+.shead{margin-top:26px}
+.shead .goal{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(max-width:800px){.shead .goal{grid-template-columns:1fr}}
+.shead .goal div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.shead .goal b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.vtabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 10px;align-items:center}
+.vtabs button{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:700;cursor:pointer}
+.vtabs button.on{background:var(--sy);border-color:var(--sy);color:#fff}
+.vtabs .arr{margin-left:auto;display:flex;gap:6px}
+.vtabs .arr button{width:38px;padding:8px 0;text-align:center}
+.var{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.var{grid-template-columns:1fr}}
+.frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.frame .fbar{display:flex;gap:5px;align-items:center;padding:8px 10px;background:#eceae4;border-bottom:1px solid #ddd}
+.frame .fbar i{width:9px;height:9px;border-radius:50%;background:#cfcac0}
+.frame .fbar span{margin-left:8px;font-size:11px;color:#8a857a;background:#fff;border-radius:6px;padding:2px 10px;flex:1}
+.mock{padding:22px;color:#1b1b1f;font-size:13.5px;line-height:1.5;position:relative;background:#fff}
+.mock .n{position:absolute;margin-left:-26px;width:20px;height:20px;border-radius:50%;background:#6d28d9;color:#fff;font-size:11px;font-weight:800;display:inline-grid;place-items:center;font-style:normal}
+.mock .ln{position:relative;padding-left:26px}
+.mock .ey{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#0b6bcb;font-weight:800}
+.mock .h{font-family:var(--fh);font-size:19px;line-height:1.2;margin:4px 0 8px;font-weight:700;color:#111}
+.mock .h.s{font-size:16px}
+.mock .p{color:#4b4b52;margin:0 0 8px}
+.mock .btns{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.mock .b{background:#0b6bcb;color:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:12.5px}
+.mock .b.g{background:#fff;color:#1b1b1f;border:1px solid #d7d4cc}
+.mock .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.mock .cards.c2{grid-template-columns:1fr 1fr}
+.mock .c{border:1px solid #e3e0d8;border-radius:10px;padding:9px;font-size:12px;background:#faf9f6}
+.mock .c b{display:block;font-size:12.5px;color:#111;margin-bottom:2px}
+.mock .c.hl{border:2px solid #0b6bcb;background:#eef5fd}
+.mock .c.art{background:linear-gradient(135deg,#3a1d5c,#1a0f2b);color:#e9d5ff;border-color:#5b3a86}
+.mock .c.art b{color:#fff}
+.mock .minus{background:#fdf0e8;color:#9a3412;border-radius:6px;padding:4px 6px;margin-top:5px;font-size:11px}
+.mock .facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mock .facts span{font-size:11px;border:1px solid #e3e0d8;border-radius:999px;padding:3px 8px;color:#4b4b52}
+.mock .q{border:1px solid #e3e0d8;border-radius:10px;padding:10px;margin:8px 0}
+.mock .opt{border:1px solid #e3e0d8;border-radius:8px;padding:6px 9px;margin:4px 0;font-size:12px}
+.mock .opt.on{border-color:#0b6bcb;background:#eef5fd}
+.mock .bar{height:4px;background:#eee;border-radius:4px;margin-bottom:8px}.mock .bar i{display:block;width:40%;height:100%;background:#0b6bcb;border-radius:4px}
+.mock .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mock .img{background:repeating-linear-gradient(45deg,#f1efe9,#f1efe9 8px,#e8e5dc 8px,#e8e5dc 16px);border-radius:10px;min-height:90px;display:grid;place-items:center;color:#8a857a;font-size:11px;font-weight:700}
+.mock .tbl{width:100%;border-collapse:collapse;font-size:11.5px}.mock .tbl td,.mock .tbl th{border-bottom:1px solid #eee;padding:5px;text-align:left}
+.mock .tbl th{color:#8a857a;font-weight:700}
+.mock .us{background:#eef5fd}
+.mock .inp{border:1px solid #d7d4cc;border-radius:8px;padding:6px 9px;color:#9a978f;font-size:12px;margin:4px 0}
+.mock .big{font-family:var(--fh);font-size:22px;color:#111}
+.mock .note{background:#f3f6fa;border-left:3px solid #0b6bcb;padding:8px 10px;border-radius:6px;margin:8px 0;font-size:12px}
+.mock .wt{background:#fdecec;color:#b91c1c;border:1px dashed #b91c1c;border-radius:5px;padding:0 5px;font-size:11px}
+.expl h4{margin-top:14px}
+.parts{counter-reset:p;list-style:none;padding:0}
+.parts li{counter-increment:p;position:relative;padding:6px 0 6px 30px;font-size:14.5px}
+.parts li::before{content:counter(p);position:absolute;left:0;top:6px;width:20px;height:20px;border-radius:50%;background:var(--sy);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.tpl{white-space:pre-wrap;background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:44px 14px 12px;font-size:14px;position:relative}
+.tpl .cp{position:absolute;top:8px;right:8px;font-size:12px;padding:4px 10px}
+.when{display:flex;flex-wrap:wrap;gap:6px}
+.prime{background:var(--pr2);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:10px}
+.prime b{color:var(--pr)}
+.chk{margin-top:26px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="on">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 2 · библиотека экранов</div>
+  <h1>Экраны сайта: варианты под разные ситуации</h1>
+  <p class="lead">У каждого экрана одна задача, но выглядеть он может по‑разному: у кафе и у производителя станков первый экран разный. Выберите экран, листайте варианты стрелками или вкладками — у каждого есть макет, когда его брать, из чего он состоит, шаблон текста и пример «плохо / хорошо».</p>
+  <div class="note" style="border-color:var(--sy)"><b>Экран — набор блоков, а не один вариант.</b> Варианты ниже — кирпичи. Для каждого экрана берите обязательный минимум и усилители под ситуацию (<a href="sayt-15-sostav-ekranov.html">модуль 15</a>); у каждого блока должна быть опора — закон Сизова или инструмент Прайма (<a href="sayt-14-zakony.html">модуль 14</a>). Отдельного блока возражений и FAQ нет — сомнения встроены в экраны.</div>
+  <div class="note sy">Как выбирать вариант: сначала ситуация из модуля 1 (быстрое или долгое решение, кто платит, сколько групп клиентов), потом ниша из модуля 3. Порядок экранов не меняется — меняется только их вид. Номерки на макете совпадают с пунктами «из чего состоит».</div>
+</div></section>
+<div class="scrtabs noprint"><div class="wrap"><div class="segs" id="scrSeg"></div></div></div>
+<section class="blk" style="padding-top:10px"><div class="wrap" id="root"></div></section>
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 2. Тексты в макетах — примеры для разных ниш, а не готовые факты: в работе они заменяются фактами из брифа.</div></footer>
+<div class="toast" id="toast"></div>
+<script>
+const N=i=>`<i class="n">${i}</i>`;
+const L=(i,html)=>`<div class="ln">${N(i)}${html}</div>`;
+const S=[
+{k:1,n:'Экран 1 · Контакт (первый экран)',st:'Контакт',goal:'За несколько секунд объяснить, куда человек попал и ему ли это.',sign:'Не закрыл страницу, листает дальше.',no:'Страшилки, «лидер рынка», цена (кроме ниш, где она — навигация).',
+ v:[
+ {n:'Кто — для кого — польза',when:['Услуги','B2B','Студии, агентства','Основной вариант'],url:'studio.ru',
+  mock:()=>L(1,'<div class="ey">Студия сайтов на Tilda для малого бизнеса</div>')+L(2,'<div class="h">Сайты, после которых клиент приходит в разговор уже разобравшись</div>')+L(3,'<p class="p">Сначала разбираемся, как вы продаёте. Потом пишем тексты, рисуем и запускаем.</p>')+L(4,'<div class="btns"><span class="b">Понять, нужен ли вам сайт →</span><span class="b g">Работы</span></div>')+L(5,'<div class="facts"><span>Тексты до дизайна</span><span>Цена в договоре</span><span>Сайт на ваше имя</span></div>'),
+  parts:['Надпись над заголовком: кто мы и для кого — одной строкой.','Заголовок: главная польза результатом, а не «мы делаем сайты».','Подзаголовок: как мы работаем — коротко, без прилагательных.','Кнопка ведёт дальше по странице («понять», «разобраться»), а не «купить». Вторая — посмотреть работы.','Три проверяемых факта из брифа — не «качество и опыт».'],
+  tpl:'[Кто мы] для [кого]\n[Результат, который получает клиент — из ответа «что значит „получилось“»]\n[Как мы работаем — одна фраза]\nКнопка: «Понять, подходит ли вам [продукт] →»\nФакты: [факт 1] · [факт 2] · [факт 3]',
+  bad:'«Разработка сайтов любой сложности. Индивидуальный подход, опытная команда. Заказать сайт».',good:'«Кухни на заказ для квартир в новостройках Казани. Замер в день звонка — эскиз остаётся у вас, даже если не закажете».',
+  pr:'Прайм: «оффер за 5 секунд» — что, кому, почему вы. Совпадает с основой.'},
+ {n:'Начинаем с ситуации клиента',when:['Реклама','Понятная ситуация клиента','B2B и B2C'],url:'okna-kazan.ru',
+  mock:()=>L(1,'<div class="ey">Для тех, кто меняет окна в квартире, где уже живут</div>')+L(2,'<div class="h">Замена окон за один день — без пыли в комнатах</div>')+L(3,'<p class="p">Замер в день звонка, изготовление 7–10 дней, монтаж — за один день, мусор вывозим.</p>')+L(4,'<div class="btns"><span class="b">Узнать, что входит →</span></div>'),
+  parts:['Ситуация клиента его словами (из брифа, вопрос «кто покупает и как пользуется»).','Польза, которая снимает главный страх этой ситуации.','Факты процесса вместо эпитетов.','Кнопка ведёт к объяснению, а не к заявке.'],
+  tpl:'Для тех, кто [ситуация клиента — его словами]\n[Польза, снимающая главный страх]\n[Факты: сроки, что входит]\nКнопка: «Узнать, что входит →»',
+  bad:'«Устали от сквозняков? Ваши окна крадут тепло и деньги!» — страшилка.',good:'«Для тех, у кого реклама идёт, а заявок мало» — ситуация одной фразой, без «сайт работает против вас».',
+  pr:'Прайм: формула «факт клиента → характеристика → выгода». Начинаем с факта клиента. Боль не усиливаем.'},
+ {n:'Развилка для двух групп',when:['2+ группы клиентов','Недвижимость','«Для себя / в подарок»','Частные и компании'],url:'zhk-sever.ru',
+  mock:()=>L(1,'<div class="ey">ЖК «Север» · квартиры от застройщика</div>')+L(2,'<div class="h">Квартира для жизни или для сдачи — подберём под вашу задачу</div>')+L(3,'<div class="cards c2"><div class="c"><b>Для семьи</b>Школа во дворе, закрытая территория, сдача в IV квартале</div><div class="c"><b>Для инвестиций</b>Цена за метр, спрос на аренду в районе, срок окупаемости</div></div>'),
+  parts:['Кто мы — одной строкой.','Заголовок признаёт, что задачи у людей разные.','Две карточки‑входа: каждая ведёт в свой путь со своей одной пользой.'],
+  tpl:'[Кто мы]\n[Результат] — подберём под вашу задачу\nКарточка 1: [группа 1] — [что ей важно]\nКарточка 2: [группа 2] — [что ей важно]',
+  bad:'Одна презентация для всех: и семье, и инвестору рассказывают про консьержа.',good:'Семья видит школу и сроки, инвестор — цену за метр и аренду.',
+  pr:'Прайм: разные аргументы для разных типов клиентов. У каждой группы — своя одна польза.'},
+ {n:'Витрина: цена и запись сразу',when:['Кафе, доставка','Салон, автосервис','Массовый магазин','Низкий чек'],url:'kofeinya.ru',
+  mock:()=>L(1,'<div class="ey">Кофейня у метро «Площадь Тукая» · 8:00–22:00</div>')+L(2,'<div class="h">Завтраки до 12:00 — от 290 ₽</div>')+L(3,'<div class="row2"><div class="img">фото блюда</div><div><p class="p">Сырники, каша, омлет с лососем. Готовим за 10 минут.</p></div></div>')+L(4,'<div class="btns"><span class="b">Меню и цены</span><span class="b g">Заказать с собой</span></div>')+L(5,'<p class="p" style="font-size:11.5px">Как добраться · 2 минуты от выхода №1</p>'),
+  parts:['Где и когда — для локального бизнеса это половина решения.','Цена видна сразу: здесь она навигация, это норма.','Фото вместо описаний.','Два действия: посмотреть и сразу заказать или записаться.','Как добраться.'],
+  tpl:'[Что] у [ориентира] · [часы]\n[Главное предложение] — от [цена]\n[Фото] + [одна фраза о главном]\nКнопки: «Меню / прайс» · «Записаться / заказать»',
+  bad:'Красивое видео на весь экран без адреса, цен и кнопки записи.',good:'«Стрижка у мастера с 8 годами опыта — от 1 200 ₽. Запись на сегодня — онлайн».',
+  pr:''},
+ {n:'Лицо эксперта',when:['Психолог, юрист, консультант','Фотограф, дизайнер','Личный бренд'],url:'yurist-ivanova.ru',
+  mock:()=>`<div class="row2"><div>${L(1,'<div class="img" style="min-height:140px">фото эксперта</div>')}</div><div>`+L(2,'<div class="ey">Семейный юрист · Казань · 12 лет практики</div>')+L(3,'<div class="h s">Помогаю разделить имущество без войны в суде</div>')+L(4,'<p class="p">Не беру дела, где клиент хочет «наказать» — только договориться.</p>')+L(5,'<div class="btns"><span class="b">Как проходит первая встреча</span></div>')+'</div></div>',
+  parts:['Живое фото человека, не сток.','Кто — факты: специализация, город, опыт.','Польза результатом.','Честная граница: с кем не работаю — это сразу «ключ к уху».','Шаг — узнать про первую встречу.'],
+  tpl:'[Фото]\n[Специализация] · [город] · [опыт фактом]\n[Результат для клиента]\n[С кем не работаю]\nКнопка: «Как проходит первая встреча»',
+  bad:'«Профессиональный юрист. Индивидуальный подход к каждому клиенту».',good:'«Не беру дела, где клиент хочет „наказать“ — только договориться».',
+  pr:'Прайм: точки соприкосновения — город, общая среда, если это правда.'}
+ ]},
+{k:2,n:'Экран 2 · Ключ к уху («покупать не обязательно»)',st:'Ключ к уху',goal:'Снять ощущение «сейчас будут продавливать» — до рассказа о компании.',sign:'Читает дальше, сам идёт к вопросам.',no:'Блок «Узнаёте себя? Вот что вы теряете», всплывающие окна, таймеры.',
+ v:[
+ {n:'Кому мы не подойдём',when:['Основной вариант','Услуги, B2B','Эксперты'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Заказывать у нас не обязательно</div>')+L(2,'<p class="p">Всё, что дальше, не значит, что вы должны что‑то купить. Сначала поймём, нужно ли вам это.</p>')+L(3,'<div class="cards"><div class="c"><b>Клиентов больше, чем успеваете</b>Сайт добавит заявок, которые некому взять</div><div class="c"><b>Нужна визитка на день</b>Шаблон справится дешевле нас</div><div class="c"><b>Нужен сложный сервис</b>Tilda не подойдёт — скажем сразу</div></div>')+L(4,'<div class="note">А вы знаете, что эта страница устроена так же, как мы предлагаем устроить вашу?</div>'),
+  parts:['Прямо: «покупать не обязательно».','Намерение: сначала понять, нужно ли вообще.','Отталкивание: 2–3 конкретных случая, когда мы не нужны (из вопроса брифа «кому вы не подходите»).','«А вы знаете, что…?» — один интересный факт, чтобы захотелось читать дальше.'],
+  tpl:'Заказывать у нас не обязательно\nСначала поймём, нужно ли вам это вообще.\nВозможно, вам это не нужно, если:\n— [случай 1]\n— [случай 2]\n— [случай 3]\nА вы знаете, что [интересный факт]?',
+  bad:'«Мы подходим всем! Нам доверяют сотни клиентов».',good:'«Если нужна кухня за неделю — не к нам: изготовление 3 недели».',
+  pr:'Прайм: «пятно на рубашке» — назовите своё ограничение первым. Это то же отталкивание.'},
+ {n:'Сравнение способов',when:['Клиент сравнивает с «сам», фрилансером, крупной фирмой','B2B, ремонт, обучение'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Четыре способа получить сайт — и кому какой подойдёт</div>')+L(2,'<table class="tbl"><tr><th></th><th>Сами</th><th>Фрилансер</th><th>Агентство</th><th class="us">Мы</th></tr><tr><td>Кто пишет тексты</td><td>Вы</td><td>Обычно вы</td><td>Копирайтер</td><td class="us">Мы, по интервью</td></tr><tr><td>Цена</td><td>Время</td><td>Ниже</td><td>Выше</td><td class="us">В договоре</td></tr></table>')+L(3,'<table class="tbl"><tr><td><b>Кому подойдёт</b></td><td>Визитка «чтобы была»</td><td>Всё готово, нужна сборка</td><td>Большой бюджет</td><td class="us">Нужны заявки</td></tr></table>'),
+  parts:['Заголовок честно обещает сравнение.','Способы, а не названия конкурентов. Нас не ставим лучшими во всём.','Строка «кому подойдёт» отдаёт часть клиентов другим — это и есть честность.'],
+  tpl:'[N] способов [получить результат] — и кому какой подойдёт\nСтроки: кто делает · цена · сроки · что после\nПоследняя строка: «Кому подойдёт» для каждого способа',
+  bad:'Таблица «мы / они», где у нас везде галочки, а у конкурентов крестики.',good:'«Фрилансер — если дизайн и тексты уже готовы, нужна только сборка».',
+  pr:'Прайм: отстройка «в отличие от…» — без поливания конкурентов.'},
+ {n:'Одна строка честности',when:['Кафе, доставка','Массовый магазин','Быстрое решение'],url:'pizza.ru',
+  mock:()=>L(1,'<div class="note">Честно: в пятницу вечером везём 60–90 минут, а не 30. Если нужно быстрее — самовывоз за 15 минут.</div>')+'<p class="p" style="margin-left:26px">…дальше меню</p>',
+  parts:['В быстрых нишах экран сжимается до одной строки: честное ограничение + что делать.'],
+  tpl:'Честно: [ограничение]. Если [нужно иначе] — [альтернатива].',
+  bad:'«Доставка за 30 минут!» — а везут час.',good:'«Свежие букеты только до 18:00 — после делаем из того, что осталось, и предупредим».',
+  pr:''},
+ {n:'Что будет на странице',when:['Длинная страница','Сложный продукт','Недоверчивая аудитория'],url:'kursy.ru',
+  mock:()=>L(1,'<div class="h s">Прежде чем рассказывать о курсе</div>')+L(2,'<p class="p">На этой странице: 4 вопроса о вашей ситуации · один разбор на примере ученика · две программы с минусами. Кнопки «купить сейчас» здесь нет.</p>')+L(3,'<p class="p">Возможно, курс вам не нужен: если вы уже работаете в профессии больше года — вы знаете 80% программы.</p>'),
+  parts:['Обещание «сначала — не о нас».','Оглавление: что будет на странице и чем она закончится.','Отталкивание конкретным случаем.'],
+  tpl:'Прежде чем рассказывать о [продукте]\nНа этой странице: [что будет] · [что будет] · [чем закончится]\nВозможно, вам это не нужно, если [случай].',
+  bad:'Сразу «Программа курса» из 40 пунктов.',good:'«Кнопки „купить сейчас“ здесь нет — в конце можно записаться на пробный урок».',
+  pr:''}
+ ]},
+{k:3,n:'Экран 3 · Разведчик (вопросы о посетителе)',st:'Разведчик',goal:'Посетитель рассказывает о своей ситуации раньше, чем читает о компании.',sign:'Ответил на вопросы; ответы уходят в заявку.',no:'Вопросы о бюджете и «когда покупаете»; квиз ради телефона.',
+ v:[
+ {n:'Квиз из 4–5 вопросов',when:['Услуги','Ремонт, мебель','B2B','Основной вариант'],url:'kuhni.ru',
+  mock:()=>L(1,'<div class="bar"><i></i></div><div class="ey">Вопрос 2 из 5</div>')+L(2,'<div class="h s">Как вы готовите чаще всего?</div>')+L(3,'<div class="opt">Каждый день, большая семья</div><div class="opt on">По выходным, любим гостей</div><div class="opt">Почти не готовим</div><div class="inp">Или своими словами…</div>')+L(4,'<p class="p" style="font-size:11.5px">Ни одного вопроса о бюджете. Ответы остаются у вас, пока не отправите.</p>'),
+  parts:['Прогресс и номер вопроса.','Вопрос о том, как человек пользуется, а не что купит.','Варианты + поле «своими словами».','Обещание: без бюджета, без обязательного телефона.'],
+  tpl:'Вопросы (4–5):\n1. Как вы сейчас [делаете то, что решает продукт]?\n2. Что в этом «да», а что «нет»?\n3. [Вопрос о ситуации из брифа]\n4. Если бы [результат] уже было — что изменилось бы?\nИтог: «Вот что вы рассказали» + вывод + вариант, который ближе',
+  bad:'«Какой у вас бюджет? Когда планируете покупку? Оставьте телефон, чтобы узнать результат».',good:'«Если бы завтра заявок стало вдвое больше — справились бы?» и честный вывод: «похоже, вам сейчас не нужен новый сайт».',
+  pr:'Прайм: схема вопросов (ситуация, опыт, результат, аналоги) — источник вопросов. Ответы уходят менеджеру.'},
+ {n:'Калькулятор',when:['Есть что считать','B2B','Ремонт, окна','Доставка, логистика'],url:'b2b.ru',
+  mock:()=>L(1,'<div class="h s">Сколько стоит, что менеджеры пересказывают условия</div>')+L(2,'<div class="row2"><div class="inp">Заявок в месяц: 40</div><div class="inp">Минут на пересказ: 10</div></div>')+L(3,'<div class="cards c2"><div class="c"><b>6,7 ч</b>в месяц</div><div class="c"><b>3 333 ₽</b>в месяц</div></div>')+L(4,'<p class="p" style="font-size:11.5px">Подставьте свои цифры. Это ваша оценка, а не наше обещание.</p>'),
+  parts:['Считаем не цену товара, а то, что важно клиенту.','Поля с цифрами посетителя.','Результат сразу.','Подпись: оценка посетителя, не обещание.'],
+  tpl:'Сколько стоит [проблема без продукта]\nПоля: [2–3 цифры посетителя]\nРезультат: [в часах / деньгах]\n«Подставьте свои цифры. Это ваша оценка, а не наше обещание»',
+  bad:'Калькулятор, который выдаёт «от 99 900 ₽» и требует телефон, чтобы показать итог.',good:'Итог виден сразу, без контакта; менеджер получает цифры вместе с заявкой.',
+  pr:''},
+ {n:'Выберите вашу ситуацию',when:['Нечего считать','Психолог, медицина','Обучение','Эксперт'],url:'psiholog.ru',
+  mock:()=>L(1,'<div class="h s">С чем вы приходите?</div>')+L(2,'<div class="cards c2"><div class="c">Постоянная тревога, не могу выключиться</div><div class="c hl">Конфликты с близкими</div><div class="c">Выгорание на работе</div><div class="c">Сложно принять решение</div></div>')+L(3,'<div class="note">Если вам близко «конфликты с близкими» — ниже история, как проходит работа с такой ситуацией.</div>'),
+  parts:['Вопрос о ситуации посетителя.','Карточки ситуаций его словами (из брифа — что говорят клиенты).','Выбор меняет следующий экран: показываем подходящую историю.'],
+  tpl:'С чем вы приходите?\nКарточки: [ситуация 1] · [ситуация 2] · [ситуация 3] · [ситуация 4]\nПосле выбора: «Если вам близко [выбор] — ниже [история / формат]»',
+  bad:'«Выберите услугу: консультация / терапия / коучинг».',good:'Ситуации словами клиента: «не могу выключиться вечером».',
+  pr:''},
+ {n:'Подбор и фильтр',when:['Магазин','Недвижимость, авто','Каталог услуг'],url:'mebel.ru',
+  mock:()=>L(1,'<div class="h s">Подберём диван под вашу комнату</div>')+L(2,'<div class="row2"><div class="inp">Для чего: спать каждый день</div><div class="inp">Кто дома: ребёнок, кот</div></div>')+L(3,'<div class="cards"><div class="c"><b>12 вариантов</b>с износостойкой тканью</div><div class="c"><b>«Антикоготь»</b>ткань</div><div class="c"><b>Ортопедический</b>механизм</div></div>'),
+  parts:['Подбор под использование.','Фильтры — о жизни, а не о характеристиках («кот», а не «плотность ткани»).','Результат подбора.'],
+  tpl:'Подберём [товар] под [ситуацию]\nФильтры: для чего · кто пользуется · где стоит\nРезультат: [N] вариантов + почему они',
+  bad:'Фильтр только по цене и артикулу.',good:'«Кто дома: ребёнок, кот» → ткань «антикоготь».',
+  pr:''},
+ {n:'«Примерка»: как пройдёт ваш день',when:['Туризм, отели','События','Нечего измерить'],url:'baza.ru',
+  mock:()=>L(1,'<div class="h s">Представьте субботу у нас</div>')+L(2,'<div class="q"><b>10:00</b> завтрак на веранде · <b>12:00</b> сап‑борды · <b>15:00</b> баня · <b>19:00</b> ужин у костра</div>')+L(3,'<div class="opt on">С детьми</div><div class="opt">Вдвоём</div><div class="opt">Компанией</div>'),
+  parts:['Приглашение примерить: «представьте».','День по часам — вместо цифр.','Выбор, с кем едете, меняет расписание.'],
+  tpl:'Представьте [день / визит] у нас\n[время] — [что происходит] (4–5 пунктов)\nВыбор: с кем / зачем → расписание меняется',
+  bad:'«Уютная атмосфера, живописная природа, отличный сервис».',good:'«15:00 — баня на дровах, бассейн с водой из скважины».',
+  pr:''}
+ ]},
+{k:4,n:'Экран 4 · Вовлечение в пользы (одна польза)',st:'Вовлечение в пользы',goal:'Показать одну главную пользу в деле и дать примерить на себя.',sign:'Своими словами понял, чем ему хорошо.',no:'«Почему мы» из 10 пунктов; выдуманные итоги кейсов.',
+ v:[
+ {n:'История живого клиента',when:['Есть реальные кейсы','Любая ниша','Основной вариант'],url:'zabor.ru',
+  mock:()=>L(1,'<div class="ey">Одна польза</div><div class="h s">Мастер приезжает к тому, кто уже всё понял</div>')+L(2,'<div class="q"><b>«Арт‑Тим», монтаж заборов.</b> Человеку важно: работают ли в его районе и платить ли заранее. На странице сразу видно регион и «без предоплаты» — вызов мастера в один клик.</div>')+L(3,'<p class="p">Что изменилось: <span class="wt">итог кейса</span></p>')+L(4,'<p class="p"><b>Это то, что вы хотели бы?</b> Если бы у вас было так — что изменилось бы?</p>'),
+  parts:['Одна польза — из брифа.','История: кто клиент, что ему было важно, что сделали.','Итог — только реальный; нет — метка.','Вопрос, чтобы посетитель примерил на себя.'],
+  tpl:'[Одна польза результатом]\n[Клиент]: ему было важно [что]. Мы сделали [что].\nЧто изменилось: [факт из брифа]\nЭто то, что вы хотели бы? Если бы у вас было так — что изменилось бы?',
+  bad:'«Более 500 довольных клиентов» без единой истории.',good:'«Кафе „Сова“: было 2 заявки на банкет в неделю, стало 9 за первый месяц» — если это факт.',
+  pr:'Прайм: кейс «задача → что сделали → что стало»; «результаты результатов».'},
+ {n:'Как это устроено',when:['Нет кейсов','Новый бизнес','Сложный процесс'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Как страница ведёт клиента к разговору</div>')+L(2,'<div class="q">01 Кто вы и для кого → 02 Честная рамка → 03 Вопросы о клиенте → 04 Одна польза → 05 Варианты с минусами → 06 Точный шаг</div>')+L(3,'<p class="p">Эта страница собрана так же. <span class="b" style="display:inline-block;padding:4px 10px">Показать разметку</span></p>'),
+  parts:['Польза через устройство.','Схема шагов процесса.','Наглядный опыт: показать на себе.'],
+  tpl:'Как [продукт] даёт [пользу]\nШаги: 01 [..] → 02 [..] → 03 [..]\nПоказ: [демо / сама страница / видео]',
+  bad:'«Мы используем передовые технологии».',good:'«Своя столярка: вот как проходит заказ от чертежа до монтажа — 21 день».',
+  pr:''},
+ {n:'До / после',when:['Красота, стоматология','Ремонт, клининг','Дизайн'],url:'salon.ru',
+  mock:()=>L(1,'<div class="h s">Окрашивание без жёлтого оттенка — даже на осветлённых</div>')+L(2,'<div class="row2"><div class="img">до</div><div class="img">после</div></div>')+L(3,'<p class="p">Анна, 34 года: «Три года ходила с желтизной». Работа мастера Ольги, 2,5 часа.</p>'),
+  parts:['Одна польза.','Фото «до / после» — реальные, с разрешения.','Подпись: кто, что было, сколько заняло — слова клиента.'],
+  tpl:'[Польза]\nФото: до / после\n[Имя клиента], [ситуация]: «[его слова]». Мастер [имя], [время]',
+  bad:'Стоковые фото «до / после».',good:'Реальные фото с разрешения клиента и подписью, кто делал.',
+  pr:''},
+ {n:'Посчитать, во что обходится',when:['B2B','Есть измеримая выгода','Дорогой продукт'],url:'crm.ru',
+  mock:()=>L(1,'<div class="h s">Менеджер разговаривает с тем, кто уже разобрался</div>')+L(2,'<div class="row2"><div class="inp">Заявок: 60</div><div class="inp">Минут на пересказ: 12</div></div>')+L(3,'<div class="big">12 ч / 7 200 ₽ в месяц</div><p class="p">уходит на то, что мог сказать сайт</p>'),
+  parts:['Одна польза.','Цифры посетителя.','Сколько стоит, что этого нет.'],
+  tpl:'[Польза]\nВаши цифры: [..]\nСейчас на [проблему] уходит [N] ч / [сумма] в месяц',
+  bad:'«Увеличим конверсию в 3 раза» — обещание без основания.',good:'«Это ваша оценка, а не наше обещание».',
+  pr:''},
+ {n:'Представьте, что это уже есть',when:['События, отдых','Подарки','Эмоциональная покупка'],url:'podarki.ru',
+  mock:()=>L(1,'<div class="h s">Подарок, который открывают при всех</div>')+L(2,'<div class="img">фото упаковки</div>')+L(3,'<p class="p">Представьте: коробка из дерева, внутри — гравировка с её именем. Что она скажет, когда откроет?</p>'),
+  parts:['Польза результатом.','Показ фото.','Вопрос с «если бы / представьте».'],
+  tpl:'[Польза]\n[Показ]\nПредставьте: [сцена использования]. Что [человек] скажет / почувствует?',
+  bad:'«Эксклюзивные подарки премиум‑класса».',good:'«Что она скажет, когда откроет?»',
+  pr:''}
+ ]},
+{k:5,n:'Экран 5 · Финансовый консультант (варианты и цены)',st:'Финансовый консультант',goal:'Помочь выбрать. Цена здесь впервые.',sign:'Выбрал вариант и пошёл к шагу, не уйдя сравнивать.',no:'Тариф‑приманка; «хит продаж» без факта; скидка главным аргументом.',
+ v:[
+ {n:'Три варианта с минусами',when:['Основной вариант','Услуги, B2B'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Три варианта — и чем каждый плох</div><p class="p">Большинство проектов стоит 100–200 тыс. ₽.</p>')+L(2,'<div class="cards"><div class="c"><b>Лендинг · от 70 000</b>Одна услуга под рекламу<div class="minus">Минус: одно предложение</div></div><div class="c hl"><b>Многостраничный</b>Несколько направлений<div class="minus">Минус: дольше</div></div><div class="c"><b>Магазин</b>Товары без консультации<div class="minus">Минус: нужен человек на каталог</div></div></div>')+L(3,'<div class="note">По вашим ответам мы бы взяли многостраничный. Но решать вам.</div>'),
+  parts:['Честная типичная цена — первой строкой.','2–3 варианта: кому, что получает в использовании, чем плох.','Мнение прямо + «решать вам»; выделение следует за ответами квиза.'],
+  tpl:'[N] варианта — и чем каждый плох\nОбычно [продукт] стоит [типичная сумма]\nВариант: [название] · [цена] · [срок]\n  Кому: [..] · Что получите: [..] · Чем плох: [..]\nМы бы взяли [вариант], потому что [..]. И нам он тоже выгоден. Решать вам.',
+  bad:'Три колонки галочек, в «Премиум» всё, в «Эконом» ничего, минусов нет.',good:'«Магазин живёт, пока кто‑то ведёт каталог. Если товаров мало — лендинг проще».',
+  pr:'Прайм: оплата частями, шаг поменьше — если сумма заметная.'},
+ {n:'Дорогой вариант первым (якорь)',when:['Есть настоящий премиум‑продукт','Решение владельца','Разрыв в 2–3 раза'],url:'studio.ru',
+  mock:()=>L(1,'<div class="c art" style="padding:12px"><b>Арт‑лендинг · от 200 000 ₽</b>Для брендов, где сайт — часть продукта<div class="minus">Если задача — заявки, это переплата</div></div>')+L(2,'<div class="cards"><div class="c">Многостраничный</div><div class="c hl"><b>Лендинг · от 70 000</b>Мы рекомендуем — и нам он выгоднее</div><div class="c">Магазин</div></div>')+L(3,'<p class="p" style="font-size:11.5px">После квиза выделение переезжает на вариант из ответов.</p>'),
+  parts:['Настоящий дорогой продукт крупно — с «для кого» и минусом.','Целевой выделен — с причиной и признанием своей выгоды.','Рекомендация следует за ответами посетителя.'],
+  tpl:'[Премиум] · от [цена ×2–3] — для [кого]. Минус: переплата, если [..]\nЦелевой: [название] · от [цена] — «Мы рекомендуем, потому что [..]. И нам он тоже выгоднее. Решать вам»',
+  bad:'«VIP от 369 000 ₽» без наполнения, чтобы «Стандарт» казался дешёвым.',good:'Настоящий арт‑лендинг с составом и минусом «переплата, если нужны заявки».',
+  pr:'Прайм: якорь цены. По Сизову — только настоящий продукт; «первым и крупно» — решение владельца.'},
+ {n:'Один продукт: сравнить со способами без нас',when:['Продукт один','Эксперт','Курс'],url:'kurs.ru',
+  mock:()=>L(1,'<div class="h s">Курс или учиться самому — честно</div>')+L(2,'<table class="tbl"><tr><th></th><th>Самостоятельно</th><th class="us">Курс · 45 000 ₽</th></tr><tr><td>Срок до первой работы</td><td>6–12 мес.</td><td class="us">3 мес.</td></tr><tr><td>Чем плох</td><td>Нет обратной связи</td><td class="us">6 ч в неделю — без них не выйдет</td></tr></table>')+L(3,'<div class="note">Если у вас нет 6 часов в неделю — не покупайте сейчас.</div>'),
+  parts:['Честное сравнение со способом обойтись без нас.','Минусы у обоих.','Отталкивание: когда не покупать.'],
+  tpl:'[Продукт] или [альтернатива] — честно\nСтроки: результат · срок · цена · чем плох\nЕсли [условие] — не покупайте сейчас.',
+  bad:'«Самостоятельно — долго и дорого, у нас — быстро и гарантированно».',good:'«Если у вас нет 6 часов в неделю — не покупайте сейчас».',
+  pr:''},
+ {n:'Прайс‑навигация',when:['Салон, автосервис','Кафе','Мелкие услуги'],url:'salon.ru',
+  mock:()=>L(1,'<div class="h s">Цены</div>')+L(2,'<table class="tbl"><tr><td>Стрижка</td><td>от 1 200 ₽ · 45 мин</td></tr><tr><td>Окрашивание</td><td>от 3 500 ₽ · 2–3 ч</td></tr><tr><td>Укладка</td><td>от 900 ₽ · 30 мин</td></tr></table>')+L(3,'<p class="p">Цена зависит от длины волос — мастер скажет точно до начала.</p>'),
+  parts:['Цена — навигация.','Цена и длительность.','От чего зависит — честно.'],
+  tpl:'Услуга · цена · длительность\nОт чего зависит цена: [..]',
+  bad:'«Цены уточняйте по телефону».',good:'«Мастер скажет точную цену до начала работы».',
+  pr:''},
+ {n:'Собрать под себя',when:['Продукт из опций','Мебель, окна','Пакеты услуг'],url:'okna.ru',
+  mock:()=>L(1,'<div class="h s">Уберите, что вам не нужно</div>')+L(2,'<div class="opt on">✓ Монтаж</div><div class="opt on">✓ Откосы</div><div class="opt">Москитная сетка</div><div class="opt">Вывоз старых окон</div>')+L(3,'<div class="big">48 700 ₽</div>'),
+  parts:['Показываем полный набор и предлагаем убрать лишнее.','Опции через использование.','Итог сразу.'],
+  tpl:'Уберите, что вам не нужно\nОпции: [..] (что это даёт в использовании)\nИтог: [сумма]',
+  bad:'Скрытые обязательные доплаты.',good:'Итог меняется сразу, без звонка.',
+  pr:'Прайм: техника «отсечь ненужное».'},
+ {n:'Комбинированный: якорь + варианты с минусами + мини‑старт',when:['Есть настоящий дорогой продукт','Есть квиз или калькулятор','Разрыв цен в 2–3 раза','Решение владельца'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Какой сайт вам нужен — и чем каждый плох</div><p class="p">Обычно проекты у нас выходят в 100–200 тыс. ₽.</p>')+L(2,'<div class="c art" style="padding:12px"><b>Арт‑лендинг · от 200 000 ₽ · 35–50 дней</b>Для брендов, где сайт — часть продукта<div class="minus">Минус: если задача — заявки с рекламы, это переплата</div></div>')+L(3,'<div class="cards"><div class="c hl"><b>Лендинг · от 70 000</b>Одна услуга под рекламу<div class="minus">Минус: одно предложение</div></div><div class="c"><b>Многостраничный</b>Несколько направлений<div class="minus">Минус: дольше и дороже</div></div><div class="c"><b>Магазин</b>Товары без консультации<div class="minus">Минус: нужен человек на каталог</div></div></div>')+L(4,'<div class="note">По вашим ответам мы бы взяли лендинг: у вас одна услуга и трафик с рекламы. Нам он тоже выгоден — быстрее запуск. Решать вам.</div>')+L(5,'<div class="q" style="font-size:12px"><b>Не готовы сразу?</b> Разбор вашего сайта и план структуры · 9 900 ₽ · 3 дня. План остаётся у вас.</div>')+L(6,'<p class="p" style="font-size:11.5px">Решаете не один? <u>Выжимка для руководителя на одну страницу</u></p>'),
+  parts:['Честная типичная сумма — первой строкой, до карточек.','Настоящий дорогой продукт — крупно, с «для кого» и минусом «переплата, если…».','2–3 основных варианта, у каждого честный минус.','Мнение прямо, с причиной из ответов посетителя и признанием своей выгоды, — и «решать вам». Выделение переезжает за ответами квиза.','«Начать с малого» — мини‑продукт отдельной строкой, не тарифом.','Ссылка на выжимку для того, кто решает.'],
+  tpl:'[Заголовок: какой вариант вам нужен — и чем каждый плох]\nОбычно [продукт] стоит [типичная сумма]\n\nДОРОГОЙ: [название] · от [цена ×2–3] · [срок]\n  Для кого: [..] · Минус: переплата, если [..]\n\nВариант 1: [..] · [цена] · Кому: [..] · Минус: [..]\nВариант 2: [..] · [цена] · Кому: [..] · Минус: [..]\nВариант 3: [..] · [цена] · Кому: [..] · Минус: [..]\n\nПо вашим ответам мы бы взяли [вариант], потому что [причина из ответов]. Нам он тоже [чем выгоден]. Решать вам.\n\nНе готовы сразу? [Мини‑продукт] · [цена] · [срок]. [Что остаётся у вас].\nРешаете не один? [Ссылка на выжимку]',
+  bad:'«VIP 369 000» без состава, три колонки галочек без минусов, «хит продаж» на среднем тарифе.',good:'Дорогой вариант — реальный продукт с минусом; у всех вариантов минусы; мнение следует за ответами; мини‑старт — строкой.',
+  warn:'Не брать, если: дорогой вариант придуман для контраста (это тариф‑приманка — запрещено); разрыв больше ×3 (выглядит насмешкой) или меньше ×2 (это просто ещё один вариант); у дорогого нет минуса; низкий чек и быстрое решение — еда, салон, массовый товар (экран перегружен). Проверка одним вопросом: если завтра клиент купит дорогой вариант, вы готовы и рады его сделать? Если нет — убрать.',
+  pr:'Прайм: якорь цены и продукт для старта. Сизов: якорь — только настоящий продукт, минусы у всех, мнение прямо и «решать вам». Здесь обе системы сходятся, если соблюдены условия выше.'},
+ {n:'Начать с малого (мини‑продукт)',when:['Дорогой продукт, долгое решение','Клиент вас не знает','Можно отделить первый этап'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Не готовы сразу? Начните с первого шага</div>')+L(2,'<div class="c" style="padding:12px"><b>Разбор сайта и план структуры · 9 900 ₽ · 3 дня</b>Что получите: разбор по ступеням, карту новой страницы, список того, что сделать первым<div class="minus">Минус: это только план — заявок он сам не прибавит</div></div>')+L(3,'<p class="p">План остаётся у вас, даже если сайт будете делать не у нас. Если закажете сайт — 9 900 ₽ засчитаем в стоимость.</p>')+L(4,'<span class="b">Заказать разбор</span>'),
+  parts:['Мини‑продукт — настоящий первый этап со своей пользой, а не «консультация».','Цена небольшая, но не в убыток и не «за 1 ₽».','Что остаётся у клиента, даже если дальше он не пойдёт.','Засчитывается ли в полную стоимость — только если это правда.','Честный минус: чего мини‑продукт не решает.'],
+  tpl:'Не готовы сразу? Начните с [первого шага]\n[Название] · [цена] · [срок]\nЧто получите: [..]\nМинус: [чего не решает]\n[Что остаётся у вас]. [Засчитаем в стоимость — если правда]\nКнопка: «[Действие]»',
+  bad:'«Консультация за 1 ₽» — приманка, на которой потом дожимают на основное.',good:'«Диагностика за 2 000 ₽ — заключение ваше, даже если лечиться будете не у нас».',
+  warn:'Мини‑продукт не четвёртый тариф и не приманка. Ставится строкой под вариантами экрана 5 или как шаг поменьше на экране 6. Если после него менеджер обязан «дожать» — ошибка: мини‑продукт должен быть полезен сам по себе.',
+  pr:'Прайм: продукт для старта. Сизов: шаг поменьше и польза от каждого промежуточного шага. Примеры по нишам — ниже.'}
+ ],
+ extra:`<div class="card" style="margin-top:18px"><h3>Дополнительный блок: «Решаете не один?»</h3>
+<p>Ставится на экран 5, если платит не тот, кто читает. Это видно из брифа, вопрос «кто покупает и кто решает». Посетитель нажимает ссылку и получает выжимку на одну страницу, которую можно переслать, скачать или распечатать. Выжимка собирается из его ответов в квизе или калькуляторе: как сейчас → что изменится → какой вариант и почему → цена и сроки → что в договоре → чего не обещаем → следующий шаг.</p>
+<p><a class="btn p" href="sayt-9-vyzhimka.html">Открыть генератор выжимки и готовые PDF →</a></p>
+<div class="note warn"><b>Осторожно.</b> Выжимка — не реклама для начальника. Тот, кто решает, не видел сайта. Ему нужны цифры, минусы и риски, а не эмоции. Всё только из фактов брифа, без «лучших на рынке».</div>
+<details class="x"><summary>Пример 1 · B2B‑услуга: платит директор, читает маркетолог (многостраничник или лендинг)</summary><div>
+<div class="frame" style="margin-top:6px"><div class="fbar"><i></i><i></i><i></i><span>Выжимка для руководителя · PDF / ссылка</span></div><div class="mock">
+<div class="ey">Для директора · 1 страница · 2 минуты чтения</div><div class="h s">Сайт под рекламу услуг склада: что предлагаем и зачем</div>
+<table class="tbl"><tr><th style="width:34%">Как сейчас</th><td>Реклама ведёт на главную, 40% уходят за 10 секунд (данные Метрики клиента)</td></tr>
+<tr><th>Что изменится</th><td>Отдельная страница под каждую услугу; заявка приходит с ответами на 4 вопроса</td></tr>
+<tr><th>Вариант</th><td>Многостраничный сайт, 5 страниц услуг. Почему не лендинг: у вас 3 разных клиента</td></tr>
+<tr><th>Цена и сроки</th><td>от 45 000 ₽ · 21–30 рабочих дней · оплата по этапам</td></tr>
+<tr><th>В договоре</th><td>Этапы и даты; права на сайт и домен — у вас; 14 дней поддержки</td></tr>
+<tr><th>Не обещаем</th><td>Конкретное число заявок: оно зависит от рекламы</td></tr>
+<tr><th>Следующий шаг</th><td>Созвон 15 минут: ответим на вопросы директора</td></tr></table></div></div>
+<p class="dim" style="font-size:13px;margin-top:8px">Структура: строки таблицы, никакого «уникального подхода». Цифры в примере условные — в реальной выжимке только факты брифа.</p>
+</div></details>
+<details class="x"><summary>Пример 2 · Крупная покупка частного лица: решают вдвоём (кухня, ремонт, окна)</summary><div>
+<div class="frame" style="margin-top:6px"><div class="fbar"><i></i><i></i><i></i><span>Отправлено из квиза · «Переслать жене»</span></div><div class="mock">
+<div class="h s">Кухня для вашей квартиры: что мы поняли и что предлагаем</div>
+<div class="q" style="font-size:12px"><b>Ваши ответы:</b> угловая, 3,2 м · готовите каждый день · важно, чтобы фасады не царапались · двое детей</div>
+<div class="cards c2"><div class="c hl"><b>Фасады эмаль + столешница кварц</b>≈ 280–320 тыс. ₽ · 30 дней<div class="minus">Минус: эмаль дороже плёнки на 25%</div></div><div class="c"><b>Плёнка ПВХ + ДСП‑столешница</b>≈ 190–220 тыс. ₽ · 21 день<div class="minus">Минус: столешница боится воды у мойки</div></div></div>
+<p class="p" style="font-size:12px">Следующий шаг: бесплатный замер — эскиз останется у вас. Можно выбрать время, удобное обоим.</p></div></div>
+<p class="dim" style="font-size:13px;margin-top:8px">Здесь выжимка — это ответы из квиза и два варианта с минусами. Второй человек видит, что учли их жизнь, а не просто прислали прайс.</p>
+</div></details>
+<details class="x"><summary>Пример 3 · Платит родитель, пользуется ребёнок (школа, курсы, кружок)</summary><div>
+<div class="frame" style="margin-top:6px"><div class="fbar"><i></i><i></i><i></i><span>Для родителей · после пробного занятия</span></div><div class="mock">
+<div class="h s">Курс программирования для Маши, 11 лет: коротко для родителей</div>
+<table class="tbl"><tr><th style="width:34%">Что увидел преподаватель</th><td>Быстро схватывает логику, пока стесняется спрашивать</td></tr>
+<tr><th>Что будет через 3 месяца</th><td>Своя игра на Scratch, которую можно показать друзьям</td></tr>
+<tr><th>Формат и цена</th><td>2 раза в неделю · группа до 6 человек · 6 400 ₽ / мес.</td></tr>
+<tr><th>Чем плох</th><td>Нужны 20 минут домашней практики — без них прогресс медленнее</td></tr>
+<tr><th>Вернуть деньги</th><td>За непройденные занятия — в любой момент (по договору)</td></tr></table></div></div>
+</div></details>
+<details class="x"><summary>Пример 4 · Интернет‑магазин: подарок или покупка «на двоих»</summary><div>
+<p>В магазине выжимка сжимается до кнопки «Отправить подборку»: корзина или избранное одной ссылкой, с фото в использовании, ценой с доставкой и сроком. Тот, кто платит, открывает и оформляет сам. Правило то же: ничего, кроме фактов о товаре и честного минуса.</p>
+</div></details>
+</div>
+<div class="card" style="margin-top:14px"><h3>Мини‑продукт для старта: примеры по нишам</h3>
+<p class="muted">Первый этап, у которого есть своя польза и который остаётся у клиента. Ставится строкой под вариантами или как шаг поменьше на экране 6.</p>
+<div class="sc"><table class="t"><tr><th>Ниша</th><th>Мини‑продукт</th><th>Что остаётся у клиента</th></tr>
+<tr><td>Студия сайтов</td><td>Разбор сайта и план структуры</td><td>Карта страницы и список «что сделать первым»</td></tr>
+<tr><td>Ремонт, кухни, окна</td><td>Замер + 3D‑эскиз (бесплатно или за небольшие деньги)</td><td>Эскиз и смета</td></tr>
+<tr><td>Медицина</td><td>Диагностика с заключением</td><td>Заключение и план лечения</td></tr>
+<tr><td>Обучение</td><td>Пробное занятие или мини‑курс на неделю</td><td>Первый результат, оценка уровня</td></tr>
+<tr><td>Эксперт, консультант</td><td>Разовая сессия 60 минут</td><td>Письменный план действий</td></tr>
+<tr><td>B2B‑услуги</td><td>Аудит / пилот на месяц</td><td>Отчёт с цифрами</td></tr>
+<tr><td>B2B‑товары</td><td>Образцы, тестовая партия</td><td>Проверка качества на своём складе</td></tr>
+<tr><td>Магазин нишевый</td><td>Набор‑пробник</td><td>Возможность попробовать до большой покупки</td></tr>
+<tr><td>Финансы, юристы</td><td>Проверка документов за фиксированную цену</td><td>Письменное заключение о рисках</td></tr></table></div>
+</div>`},
+{k:6,n:'Экран 6 · Кассир (следующий шаг)',st:'Кассир',goal:'Сделать следующий шаг лёгким и определённым.',sign:'Оплатил, записался или выбрал время разговора.',no:'«Менеджер свяжется»; форма на 8 полей; таймеры.',
+ v:[
+ {n:'Выбрать время разговора',when:['Дорогой продукт','Долгий цикл','Основной вариант'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Следующий шаг — 10 минут разговора</div>')+L(2,'<p class="p">Вы выбираете время — в это время вам пишет Ангелина. Уточним задачу и назовём точную сумму.</p>')+L(3,'<div class="row2"><div class="inp">Имя</div><div class="inp">Telegram или телефон</div></div><div class="row2"><div class="inp">Четверг, 26 сентября</div><div class="inp">14:30</div></div>')+L(4,'<span class="b">Договориться о времени</span>'),
+  parts:['Что за шаг и сколько займёт.','Кто, когда и о чём — вместо «менеджер свяжется».','Минимум полей; время выбирает посетитель.','Кнопка называет шаг.'],
+  tpl:'Следующий шаг — [что, сколько времени]\nВы выбираете [время] — [кто] [как свяжется]. [О чём разговор].\nПоля: имя · контакт · когда\nКнопка: «[Действие]»',
+  bad:'«Оставьте заявку, и наш менеджер свяжется с вами».',good:'«В это время вам пишет Ангелина, эксперт студии».',
+  pr:''},
+ {n:'Три шага разной высоты',when:['Долгий цикл','Разная готовность посетителей'],url:'studio.ru',
+  mock:()=>L(1,'<div class="cards"><div class="c hl"><b>10 минут разговора</b>Уточним задачу, назовём сумму</div><div class="c"><b>Видеоразбор без звонка</b>Разбор вашего сайта</div><div class="c"><b>Присматриваюсь</b>Чек‑лист без контакта</div></div>'),
+  parts:['Для решившего, для сомневающегося и для присматривающегося — свой шаг.'],
+  tpl:'[Шаг для решивших] · [шаг поменьше] · [уйти с пользой без контакта]',
+  bad:'Одна кнопка «Купить» для всех.',good:'«Присматриваюсь — заберите чек‑лист, контакт не нужен».',
+  pr:'Прайм: «парашют».'},
+ {n:'Оплата или запись прямо на сайте',when:['Низкий чек','Решает один','Салон, еда, магазин'],url:'salon.ru',
+  mock:()=>L(1,'<div class="h s">Запись к мастеру Ольге</div>')+L(2,'<div class="row2"><div class="inp">Пт, 27 сентября</div><div class="inp">11:00 · 13:30 · 16:00</div></div>')+L(3,'<span class="b">Записаться — оплата на месте</span>')+L(4,'<p class="p" style="font-size:11.5px">Отменить или перенести — за 3 часа, бесплатно.</p>'),
+  parts:['Конкретный человек.','Свободное время — выбрать.','Кнопка и как платить.','Условия отмены — снимают страх.'],
+  tpl:'Запись к [кому]\nСвободное время: [..]\nКнопка: «Записаться — [как оплата]»\nОтмена: [условия]',
+  bad:'Форма «перезвоните мне» для услуги за 1 200 ₽.',good:'Запись в два клика и понятная отмена.',
+  pr:''},
+ {n:'Шаг поменьше с названной пользой',when:['Ремонт, окна, мебель','B2B','Обучение'],url:'kuhni.ru',
+  mock:()=>L(1,'<div class="h s">Бесплатный замер — и 3D‑эскиз остаётся у вас</div>')+L(2,'<p class="p">Давайте приедем и замерим, чтобы вы увидели кухню в своей квартире. Если эскиз понравится — посчитаем точную цену; если нет — эскиз ваш.</p>')+L(3,'<span class="b">Выбрать время замера</span>'),
+  parts:['Польза шага в заголовке.','Формула «Давайте — чтобы — если — то».','Кнопка.'],
+  tpl:'[Шаг] — и [что остаётся у клиента]\nДавайте [шаг], чтобы [польза]. Если [условие] — [следующий шаг]; если нет — [что остаётся].\nКнопка: «[Действие]»',
+  bad:'«Бесплатная консультация».',good:'«Эскиз ваш, даже если не закажете».',
+  pr:'Прайм: «польза от прогресса» и формула «Давайте — чтобы — если — то».'}
+ ]},
+{k:7,n:'Экран 7 · Фея (после оплаты)',st:'Фея',goal:'Подтвердить, что выбор правильный, и дать неожиданную пользу.',sign:'Не ожидал; ему есть что рассказать.',no:'«Второй в подарок», допродажа на «спасибо», скидка за отзыв.',
+ v:[
+ {n:'Страница «спасибо» с памяткой',when:['Услуги','Основной вариант'],url:'studio.ru/spasibo',
+  mock:()=>L(1,'<div class="h s">Спасибо. Дальше — наша работа</div>')+L(2,'<p class="p">От вас — одно интервью на 30 минут. Даты — в договоре.</p>')+L(3,'<div class="q"><b>Памятка для ваших менеджеров:</b> как разговаривать с теми, кто пришёл с нового сайта</div>'),
+  parts:['Подтверждение.','Что будет дальше и что нужно от клиента.','Неожиданная польза, которая почти ничего нам не стоит.'],
+  tpl:'Спасибо. [Что дальше]\nОт вас: [..]\n[Памятка / инструкция / чек‑лист] для [кто будет пользоваться]',
+  bad:'«Спасибо за заказ! Скидка 10% на следующий».',good:'«Как ухаживать за фасадами, чтобы плёнка не облезла».',
+  pr:'Прайм: «вау‑эффект». Можно добавить вопрос «оцените нас от 0 до 10» — позже, после результата.'},
+ {n:'Письмо или вложение в посылку',when:['Интернет‑магазин','Товары'],url:'shop.ru',
+  mock:()=>L(1,'<div class="ey">Письмо после оплаты</div><div class="h s">Ваш заказ собран. Пока он едет —</div>')+L(2,'<p class="p">как выбрать место для растения, чтобы оно не сбросило листья в первую неделю.</p>')+L(3,'<p class="p">Трек: … · Вопросы — ответим в Telegram</p>'),
+  parts:['Подтверждение.','Неожиданная польза про использование.','Трек и контакт.'],
+  tpl:'Ваш заказ [статус]. Пока [ждёте] —\n[совет, как пользоваться / сохранить]\nТрек · контакт',
+  bad:'Письмо «Спасибо за покупку» + 20 товаров «вам понравится».',good:'«Как не погубить растение в первую неделю».',
+  pr:''},
+ {n:'Для того, кто будет пользоваться',when:['Платит один, пользуется другой','B2B','Детские услуги'],url:'school.ru',
+  mock:()=>L(1,'<div class="h s">Для родителей: как помочь ребёнку в первый месяц</div>')+L(2,'<p class="p">Три вещи, которые ребёнку нужно услышать дома после первого занятия.</p>'),
+  parts:['Адресат — тот, кто пользуется или помогает.','Короткая практичная польза.'],
+  tpl:'Для [кто пользуется / помогает]: [практичная польза]',
+  bad:'—',good:'«Памятка для ваших менеджеров» — клиент студии не ждёт, что мы подумаем о его сотрудниках.',
+  pr:''}
+ ]},
+{k:8,n:'Экран 8 · Директор по развитию (рассказать знакомому)',st:'Директор по развитию',goal:'Дать клиенту готовые слова, чтобы рассказать о вас.',sign:'Переслал; пришёл новый человек.',no:'«Кому ещё нужно?»; отзыв, написанный за клиента.',
+ v:[
+ {n:'Готовые слова',when:['Все ниши','Основной вариант'],url:'studio.ru/spasibo',
+  mock:()=>L(1,'<div class="h s">Если было полезно — расскажите знакомому</div>')+L(2,'<div class="row2"><div class="inp">Что мы сделали</div><div class="inp">За какой срок</div></div><div class="inp">Ваши слова — как было</div>')+L(3,'<div class="q">«Привет! Нам делали лендинг в PRIME ERA за 3 недели. [ваши слова]. Если думаешь про сайт — вот они»</div>')+L(4,'<span class="b">Переслать в Telegram</span>'),
+  parts:['Повод, без нажима.','Факты и оценку пишет клиент.','Текст для знакомого.','Переслать одной кнопкой.'],
+  tpl:'Если было полезно — расскажите знакомому\nПоля: что сделали · за какой срок · ваши слова\nТекст: «Привет! Нам [что] в [компания] за [срок]. [слова]. Если [повод] — вот они: [ссылка]»',
+  bad:'«Порекомендуйте нас 3 друзьям и получите скидку».',good:'Рамка + место для слов клиента + кнопка «переслать».',
+  pr:''},
+ {n:'Если программа рекомендаций уже есть',when:['Реальная реферальная программа','Магазин, услуги с повторными покупками'],url:'shop.ru',
+  mock:()=>L(1,'<div class="h s">Расскажите подруге</div>')+L(2,'<p class="p">Готовый текст + ссылка. Кстати, у нас есть программа: подруге — 500 ₽ на первый заказ.</p>'),
+  parts:['Главное — готовые слова.','Бонус — вторым планом и только реальный.'],
+  tpl:'[Готовые слова] + [ссылка]\nКстати: [условия реальной программы]',
+  bad:'Бонус как главный текст.',good:'Бонус упомянут, но главное — слова.',
+  pr:'Прайм: мотивация за рекомендацию — только если программа уже есть.'},
+ {n:'Бонус за приведённого клиента',when:['Программа реальна или владелец её вводит','Чек от 30 000 ₽','Услуги, ремонт, B2B'],url:'studio.ru/spasibo',
+  mock:()=>L(1,'<div class="h s">Если было полезно — расскажите знакомому</div>')+L(2,'<div class="q">«Привет! Нам делали лендинг в PRIME ERA за 3 недели. [ваши слова]. Если думаешь про сайт — вот они: …»</div>')+L(3,'<p class="p"><b>Спасибо за рекомендацию:</b> 10% от первого заказа вашего знакомого — деньгами или в счёт следующей работы. Знакомому — разбор сайта в подарок.</p>')+L(4,'<p class="p" style="font-size:11.5px">Выплачиваем в течение 5 дней после оплаты его заказа. Условия — в правилах программы.</p>')+L(5,'<span class="b">Переслать в Telegram</span>'),
+  parts:['Сначала готовые слова — это главное.','Бонус — «спасибо», вторым планом: сколько, от чего, в какой форме.','Что получает знакомый — лучше, если выгода двусторонняя.','Когда и как платим, где условия — мелко, но обязательно.','Кнопка «переслать».'],
+  tpl:'[Готовые слова для знакомого] + [ссылка]\nСпасибо за рекомендацию: [N% от первого заказа / сумма] — [деньгами / в счёт следующей работы].\nЗнакомому: [что получает].\nВыплачиваем [когда], после [условия]. Условия — [где].',
+  bad:'«Приведи друга — заработай!» первым экраном страницы; процент без условий выплаты.',good:'«Спасибо за рекомендацию: 10% от первого заказа знакомого. Ему — разбор в подарок». Ниже — условия.',
+  warn:'Только если программа реальная: условия записаны (правила или договор), выплату кто‑то делает и срок назван. Показывать после результата (страница «спасибо», письмо после сдачи), не на первых экранах и не главным аргументом. В медицине, финансах и юридических услугах вознаграждение за приведённого клиента может ограничиваться законом и этикой — проверить с юристом.',
+  pr:'Прайм: мотиватор за рекомендацию. Сизов: знакомому не продают — сначала польза и готовые слова, бонус лишь благодарность.'},
+ {n:'Подарок обоим',when:['Магазин, салон, кафе','Повторные покупки','Низкий и средний чек'],url:'shop.ru',
+  mock:()=>L(1,'<div class="h s">Поделитесь с подругой</div>')+L(2,'<div class="q">«Беру тут постельное из перкаля — летом не жарко. Вот ссылка, по ней тебе −500 ₽ на первый заказ»</div>')+L(3,'<p class="p">Когда подруга сделает заказ — вам тоже 500 ₽ на следующий.</p>'),
+  parts:['Готовые слова с конкретной пользой товара.','Подарок знакомому — в самом тексте, так рекомендовать легче.','Подарок вам — одной строкой после.'],
+  tpl:'«[Что беру и чем хорошо]. Вот ссылка, по ней тебе [подарок]»\nКогда [знакомый] сделает заказ — вам [подарок].',
+  bad:'«Пригласи 5 друзей и получи скидку 30%».',good:'Одна подруга, одна ссылка, подарок обоим.',
+  pr:'Прайм: двусторонняя реферальная механика. Работает, когда программа реальна и выдача автоматическая.'},
+ {n:'B2B: письмо коллеге',when:['B2B','Длинный цикл','Рекомендуют руководители'],url:'b2b.ru',
+  mock:()=>L(1,'<div class="h s">Если коллеге из другой компании пригодится</div>')+L(2,'<div class="q">«Иван, добрый день. Мы в прошлом квартале переделали склад с [компания]: инженер приехал, посчитал нагрузку, смонтировали за 12 дней. Если у вас похожая задача — вот контакт инженера: …»</div>')+L(3,'<p class="p">Можно, мы расскажем о вашем складе как о примере? Только с вашего разрешения и в вашей формулировке.</p>'),
+  parts:['Письмо коллеге по‑деловому: что сделали, сколько заняло, контакт конкретного человека.','Просьба разрешить кейс — отдельно и без давления.'],
+  tpl:'«[Имя], добрый день. Мы [что сделали] с [компания]: [факт процесса], [срок]. Если у вас похожая задача — вот контакт [кого]: [..]»\nМожно рассказать о вашем проекте как о примере? Только с вашего разрешения.',
+  bad:'«Порекомендуйте нас партнёрам» без текста.',good:'Готовое письмо коллеге с фактами и контактом конкретного человека.',
+  pr:''},
+ {n:'Сначала оценка, потом рекомендация',when:['Услуги с результатом через время','Есть кому читать ответы'],url:'studio.ru',
+  mock:()=>L(1,'<div class="ey">Письмо через 30 дней после запуска</div><div class="h s">Насколько вероятно, что вы порекомендуете нас знакомому?</div>')+L(2,'<div class="row2"><div class="inp">0 … 6 → «Что нам исправить?»</div><div class="inp">9–10 → готовые слова и «переслать»</div></div>'),
+  parts:['Вопрос — после результата, а не в день оплаты.','Низкая оценка — вопрос «что исправить?», и собственник реально читает.','Высокая — готовые слова для знакомого.'],
+  tpl:'Через [срок после результата]: «Насколько вероятно, что вы порекомендуете нас? 0–10»\n0–6: «Что нам исправить?» → разбор\n9–10: [готовые слова] + «переслать»',
+  bad:'Опрос в день оплаты, ответы никто не читает.',good:'Оценка после результата; на «6» — звонок собственника.',
+  pr:'Прайм: индекс лояльности (0–10). Сизов: не рекомендуют — значит, раньше что‑то сделано не так; ищем причину.'}
+ ],
+ extra:`<div class="card" style="margin-top:18px"><h3>Как описывать бонус за рекомендацию</h3>
+<ol class="parts">
+<li><b>Слова раньше денег.</b> Сначала готовый текст для знакомого, потом бонус. Если бонус крупнее слов — рекомендация выглядит купленной.</li>
+<li><b>Бонус — «спасибо», а не заработок.</b> «Спасибо за рекомендацию: 10% от первого заказа знакомого», а не «Зарабатывайте с нами».</li>
+<li><b>Конкретно:</b> сколько (процент или сумма), от чего (от первого оплаченного заказа), в какой форме (деньгами, в счёт следующей работы, подарком), когда выплачиваем.</li>
+<li><b>Двусторонне, если возможно.</b> Знакомому тоже что‑то полезное — так рекомендовать легче и честнее.</li>
+<li><b>Где показывать:</b> страница «спасибо», письмо после сдачи работы, личный кабинет. Не на первых экранах и не на экране вариантов.</li>
+<li><b>Условия — в правилах или договоре,</b> ссылка рядом мелким шрифтом.</li></ol>
+<div class="sc"><table class="t" style="margin-top:10px"><tr><th>Ниша</th><th>Что уместно</th><th>Пример формулировки</th></tr>
+<tr><td>Услуги с чеком от 30 000 ₽, B2B</td><td>% от первого заказа знакомого</td><td>«Спасибо за рекомендацию: 10% от первого заказа — деньгами или в счёт следующей работы»</td></tr>
+<tr><td>Ремонт, окна, мебель</td><td>Фиксированная сумма или сервис</td><td>«Когда знакомый заключит договор — 5 000 ₽ или бесплатное ТО окон»</td></tr>
+<tr><td>Салоны, кафе, магазины</td><td>Подарок обоим</td><td>«Подруге −500 ₽ на первый визит, вам — 500 ₽ на следующий»</td></tr>
+<tr><td>Обучение</td><td>Занятие или месяц в подарок</td><td>«Если друг придёт в группу — вам занятие в подарок, ему — пробное бесплатно»</td></tr>
+<tr><td>Медицина, финансы, юристы</td><td>Чаще — только готовые слова</td><td>Денежное вознаграждение за привод — проверить с юристом</td></tr></table></div>
+</div>`},
+{k:0,n:'Уход без покупки',st:'на любом экране',goal:'Отпустить по‑хорошему тех, кто не готов купить, — и дать повод вернуться.',sign:'Ушёл без раздражения; взял материал; вернулся сам.',no:'Давящее окно «вы точно уходите?», скидка за уход, материал только в обмен на телефон.',
+ v:[
+ {n:'Заберите с собой (микромагнит)',when:['Долгий цикл','Все ниши','Основной вариант'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Если сейчас не время — ничего страшного</div>')+L(2,'<div class="q">8 вопросов, которые посетитель молча задаёт вашему сайту</div>')+L(3,'<p class="p">Контакт оставлять не нужно. Писать без вашего запроса не будем.</p>'),
+  parts:['Покупают не все — это нормально.','Польза без контакта.','Обещание не беспокоить.'],
+  tpl:'Если сейчас не время — ничего страшного\n[Полезный материал — без контакта]\nПисать без вашего запроса не будем.',
+  bad:'«Подождите! Скидка 15%, если оставите email».',good:'Чек‑лист открыт сразу, без формы.',
+  pr:'Прайм: полезные касания — только с согласия.'},
+ {n:'Микромагнит через Telegram‑бота',when:['Нужен повод для второго касания','Долгий цикл','Контент есть'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Чек‑лист «8 вопросов, которые посетитель молча задаёт сайту»</div>')+L(2,'<p class="p">Бот пришлёт файл сразу. Потом — ещё 2 коротких сообщения за неделю с разбором частых ошибок. Отписаться — одной кнопкой.</p>')+L(3,'<span class="b">Получить в Telegram</span> <span class="b g">Открыть без бота</span>'),
+  parts:['Одна боль и решение — в названии.','Честно: что и сколько раз пришлём.','Альтернатива без контакта — открыть сразу.'],
+  tpl:'[Название: одна боль → решение]\nБот пришлёт файл сразу. Потом — [сколько] сообщений за [срок] о [чём]. Отписаться — одной кнопкой.\nКнопки: «Получить в Telegram» · «Открыть без бота»',
+  bad:'Файл только после телефона и имени; потом ежедневная рассылка скидок.',good:'Файл открывается и без бота; бот честно говорит, что пришлёт.',
+  warn:'Контакт в обмен на материал — только добровольно и честно. Если бот начинает продавать каждый день, человек уходит навсегда.',
+  pr:'Прайм: лид‑магнит и полезные касания с согласия.'},
+ {n:'Мягкое окно при уходе',when:['Долгий цикл','Реклама, дорогой трафик','Есть микромагнит'],url:'studio.ru',
+  mock:()=>L(1,'<div class="q" style="box-shadow:0 8px 30px rgba(0,0,0,.18)"><div style="text-align:right;font-size:12px">✕</div><div class="h s">Уже уходите? Возьмите с собой</div><p class="p">Чек‑лист на 10 минут: проверьте свой сайт сами. Без контакта.</p><span class="b">Открыть чек‑лист</span></div>')+L(2,'<p class="p" style="font-size:11.5px">Показывается один раз: когда курсор уходит к закрытию вкладки. На телефоне — не показываем.</p>'),
+  parts:['Всплывает один раз за визит, только при уходе, не по таймеру.','Без упрёка («вы точно уходите?») и без скидки за уход.','Польза без контакта; закрывается одним нажатием.','На телефоне — не показывать или показывать очень мягко: там окно перекрывает всё.'],
+  tpl:'Уже уходите? Возьмите с собой\n[Микромагнит] — [что даст за N минут]. Без контакта.\nКнопка: «Открыть»',
+  bad:'«Подождите! Скидка 15%, если оставите email» — и окно не закрывается.',good:'Один раз, крестик видно, польза без формы.',
+  warn:'Окно при уходе — единственное всплывающее окно, которое допускаем, и только с условиями выше. Если всплывает при каждом движении мыши или требует телефон — это давление.',
+  pr:'Прайм: удержание ухода. По Сизову допустимо, только если отпускаем по‑хорошему.'},
+ {n:'Что вас остановило?',when:['Нужна обратная связь','Сайт новый','Мало заявок'],url:'studio.ru',
+  mock:()=>L(1,'<div class="h s">Можно один вопрос? Что вас остановило</div>')+L(2,'<div class="opt">Дорого</div><div class="opt">Не понял, что входит</div><div class="opt">Пока просто смотрю</div><div class="opt">Нужно посоветоваться</div>')+L(3,'<p class="p" style="font-size:11.5px">Ответ анонимный. Спасибо — это поможет сделать сайт понятнее.</p>'),
+  parts:['Один вопрос, варианты в один клик, анонимно.','Ответы уходят в аналитику: собственник видит, какая ступень не отработана.'],
+  tpl:'Можно один вопрос? Что вас остановило\n[Дорого] · [Не понял, что входит] · [Пока смотрю] · [Нужно посоветоваться]\nОтвет анонимный.',
+  bad:'«Оставьте телефон, и мы ответим на ваши возражения».',good:'Анонимный вопрос; «не понял, что входит» — сигнал переписать экран 5.',
+  pr:'Сизов: проблема всегда раньше. Ответы показывают, какую ступень чинить.'},
+ {n:'Сохранить на потом',when:['Долгое решение','Решают вдвоём','Сезонная покупка'],url:'kuhni.ru',
+  mock:()=>L(1,'<div class="h s">Решаете не сегодня?</div>')+L(2,'<span class="b g">Отправить ссылку себе в Telegram</span> <span class="b g">Переслать мужу / жене</span>')+L(3,'<p class="p" style="font-size:11.5px">Напомним через неделю — только если попросите.</p>'),
+  parts:['Сохранить или переслать — одним нажатием.','Напоминание — только по просьбе.'],
+  tpl:'Решаете не сегодня?\nКнопки: «Отправить себе» · «Переслать [кто решает вместе]»\nНапомним через [срок] — только если попросите.',
+  bad:'Автоматическая рассылка всем, кто зашёл.',good:'Переслать тому, с кем решают, — и выжимка уже внутри.',
+  pr:''}
+ ],
+ extra:`<div class="card" style="margin-top:18px"><h3>Где стоит блок ухода</h3>
+<p>Это не ступень продажи, а отдельный блок, который отпускает тех, кто не готов купить.</p>
+<ol class="parts"><li><b>Всегда — в конце страницы, сразу после последнего шага</b> (экран 6: созвон, покупка, запись). Кто дошёл до конца и не нажал — получает пользу и уходит спокойно.</li>
+<li><b>На многостраничнике</b> — в конце каждой страницы услуги и в статьях.</li>
+<li><b>По желанию — окно при уходе:</b> один раз, при попытке закрыть вкладку, без требования контакта, на телефоне — не показываем. Это единственное всплывающее окно, которое допускаем.</li></ol>
+</div>
+<div class="card" style="margin-top:14px"><h3>Лид‑магнит (микромагнит): что это и куда ставить</h3>
+<p>Микромагнит — маленький полезный материал про <b>одну боль</b> и её решение: чек‑лист, памятка на 1–3 страницы, видео на 3 минуты, таблица‑расчёт. Он даёт человеку пользу сейчас и повод вернуться, когда тот будет готов.</p>
+<div class="sc"><table class="t"><tr><th>Где</th><th>Кому</th><th>Как подать</th></tr>
+<tr><td><b>Уход без покупки</b> — главное место</td><td>Тем, кто дочитал и не готов</td><td>«Если сейчас не время — возьмите с собой»</td></tr>
+<tr><td><b>Экран 6</b>, третий шаг «присматриваюсь»</td><td>Тем, кому рано разговаривать</td><td>Рядом с главной кнопкой, как самый низкий шаг</td></tr>
+<tr><td><b>Экран 2</b>, продолжение «а вы знаете, что…?»</td><td>Тем, кого зацепило наблюдение</td><td>Ссылкой: «подробно — в памятке»</td></tr>
+<tr><td>Статьи блога</td><td>Пришедшим из поиска</td><td>В конце статьи по той же боли</td></tr></table></div>
+<p style="margin-top:10px"><b>Не на экране 7 «после оплаты»:</b> там польза для тех, кто уже купил. Это фея, а не магнит.</p>
+<h4>Как написать</h4>
+<ol class="parts"><li><b>Название = боль → решение:</b> «Как проверить смету ремонта за 15 минут», а не «Полезные материалы».</li>
+<li><b>Внутри:</b> одна боль его словами (из брифа) → 3–7 конкретных шагов → что делать, если не получилось (мягкий следующий шаг).</li>
+<li><b>Польза без нас:</b> материал решает проблему, даже если человек никогда не купит.</li>
+<li><b>Контакт:</b> лучше открыть сразу. Если через Telegram‑бота — честно, что и сколько раз пришлём, и вариант «открыть без бота».</li></ol>
+<div class="sc"><table class="t" style="margin-top:10px"><tr><th>Ниша</th><th>Пример микромагнита</th></tr>
+<tr><td>Студия сайтов</td><td>«8 вопросов, которые посетитель молча задаёт вашему сайту»</td></tr>
+<tr><td>Ремонт</td><td>«Как проверить смету за 15 минут: 7 строк, где прячут доплаты»</td></tr>
+<tr><td>Медицина</td><td>«Что спросить у любой клиники перед имплантацией»</td></tr>
+<tr><td>Обучение</td><td>«Тест: готов ли ребёнок к программированию — 10 вопросов»</td></tr>
+<tr><td>B2B‑товары</td><td>«Как проверить стеллажи склада самому: чек‑лист на 15 минут»</td></tr>
+<tr><td>Магазин</td><td>«Таблица размеров с примерами: как выбрать с первого раза»</td></tr></table></div>
+</div>`}
+];
+const COMBO={
+1:['Лицо эксперта — фото вместо иллюстрации; развилка — карточки под заголовком, если групп две.','Надпись «кто мы и для кого» над заголовком; витрина — если цена служит навигацией.','«Кто — для кого — польза» сверху; дальше у каждой группы свой экран 3 (квиз по своей ветке).','Лицо эксперта — мастер на фото; одна строка честности на экране 2.','«Кто — для кого — польза»; сравнение способов на экране 2.'],
+2:['«Что будет на странице» — после «кому не подойдём»; микромагнит — ссылкой в «а вы знаете, что…?».','«Кому мы не подойдём» — строкой под таблицей.','Витрина экрана 1; «выберите ситуацию» экрана 3.','«Кому мы не подойдём»; микромагнит — ссылкой.'],
+3:['Калькулятор — последним шагом квиза; «выберите ситуацию» — первым вопросом квиза.','«Выберите ситуацию» перед калькулятором (разводит на разные формулы); «собрать под себя» экрана 5 — продолжение расчёта.','Квиз — после выбора 2–3 уточняющих вопроса; «примерка» — для эмоциональных ниш.','«Выберите ситуацию» как готовые фильтры («жарко спать»); карточка товара магазина.','«Выберите ситуацию»; «представьте, что это уже есть» экрана 4.'],
+4:['«Как это устроено» — схема под историей; до/после — фото внутри истории.','История клиента — когда появится; «посчитать, во что обходится» — в B2B.','История клиента — подпись к фото; «как устроено» — что делали между «до» и «после».','Калькулятор экрана 3 — цифры переносятся сюда; история клиента с цифрами.','«Примерка» экрана 3; история клиента.'],
+5:['«Решаете не один?»; мини‑продукт строкой ниже; мнение — после квиза.','Три варианта с минусами под ним — см. комбинированный вариант 6.','Мини‑продукт как первый шаг; «Решаете не один?», если платят родители или компания.','«Собрать под себя» — для комплексов услуг.','Калькулятор экрана 3 — стартовая сборка; «три варианта» — как готовые наборы.','Это и есть сочетание: якорь + варианты с минусами + мини‑продукт + «Решаете не один?».','Любой вариант экрана 5 — строкой под ним; «шаг поменьше» экрана 6.'],
+6:['«Три шага разной высоты» — эта кнопка главная; мини‑продукт — вторая.','Рамка для остальных вариантов экрана 6: главный шаг + шаг поменьше + микромагнит.','Уход без покупки — строкой ниже.','«Выбрать время разговора» после шага; мини‑продукт экрана 5.'],
+7:['Письмо на следующий день с той же памяткой; экран 8 ниже на той же странице.','Экран 8 — в следующем письме, после получения заказа.','Страница «спасибо» — памятка для пользователя внутри.'],
+8:['Бонус — строкой ниже, если программа есть; сначала оценка — в письме через месяц.','Готовые слова — главнее бонуса.','Готовые слова — всегда первыми.','Готовые слова внутри подарка.','Разрешение на кейс — для экрана 4.','Готовые слова или бонус — только после оценки 9–10.'],
+0:['Мягкое окно при уходе — тот же материал; «что вас остановило?» — строкой ниже.','«Заберите с собой» — вариант без бота рядом.','Микромагнит внутри окна; на телефоне — блок в конце страницы вместо окна.','«Заберите с собой» — после ответа.','Выжимка «Решаете не один?» — внутри пересылаемой ссылки.']};
+let cs=0,cv=0;
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function drawTabs(){document.getElementById('scrSeg').innerHTML=S.map((s,i)=>`<button class="${i===cs?'on':''}" onclick="go(${i},0)">${s.k?'Экран '+s.k+' · '+s.st:'Уход без покупки'}</button>`).join('')}
+function go(i,v){cs=i;cv=v;drawTabs();draw();window.scrollTo({top:document.getElementById('root').offsetTop-130,behavior:'smooth'})}
+function setV(v){const n=S[cs].v.length;cv=(v+n)%n;draw()}
+function draw(){const s=S[cs],x=s.v[cv];
+ document.getElementById('root').innerHTML=`<div class="shead"><div class="eyebrow">${esc(s.k===0?'Отдельный блок · в конце страницы, после последнего шага':'Ступень «'+s.st+'»')}</div><h2>${esc(s.n)}</h2>
+ <div class="goal"><div><b>Задача</b>${esc(s.goal)}</div><div><b>Признак, что сработал</b>${esc(s.sign)}</div><div><b>Нельзя</b>${esc(s.no)}</div></div></div>
+ <div class="vtabs noprint">${s.v.map((y,j)=>`<button class="${j===cv?'on':''}" onclick="setV(${j})">${j+1}. ${esc(y.n)}</button>`).join('')}<span class="arr"><button onclick="setV(cv-1)" aria-label="Назад">←</button><button onclick="setV(cv+1)" aria-label="Вперёд">→</button></span></div>
+ <div class="var">
+  <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>${esc(x.url)}</span></div><div class="mock">${x.mock()}</div></div>
+  <div class="expl">
+   <h3>Вариант ${cv+1} из ${s.v.length}: ${esc(x.n)}</h3>
+   <h4>Когда брать</h4><div class="when">${x.when.map(w=>`<span class="tag t-sy">${esc(w)}</span>`).join('')}</div>
+   <h4>Из чего состоит</h4><ol class="parts">${x.parts.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>
+   <h4>Шаблон текста</h4><div class="tpl"><button class="btn cp noprint" onclick="copy(S[${cs}].v[${cv}].tpl)">Копировать</button>${esc(x.tpl)}</div>
+   <div class="grid g2" style="margin-top:12px">${x.bad&&x.bad!=='—'?`<div class="badx"><b>Плохо</b>${esc(x.bad)}</div>`:''}<div class="good"><b>Хорошо</b>${esc(x.good)}</div></div>
+   ${x.pr?`<div class="prime"><b>Усилитель.</b> ${esc(x.pr)}</div>`:''}
+   ${x.warn?`<div class="note warn" style="margin-top:10px"><b>Осторожно.</b> ${esc(x.warn)}</div>`:''}
+   ${(COMBO[s.k]||[])[cv]?`<div class="note sy" style="margin-top:10px"><b>Сочетается с:</b> ${esc(COMBO[s.k][cv])}</div>`:''}
+  </div>
+ </div>${s.extra||''}`}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')setV(cv+1);if(e.key==='ArrowLeft')setV(cv-1)});
+let tx=0;document.getElementById('root').addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.getElementById('root').addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60&&e.target.closest('.frame'))setV(cv+(d<0?1:-1))});
+function copy(t){const done=()=>toast('Скопировано');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));else fb(t,done)}
+function fb(t,cb){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');cb()}catch(e){}x.remove()}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+drawTabs();draw();
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

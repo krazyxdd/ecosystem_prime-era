@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>16. Глубина текстов — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}.toc a{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 11px;text-decoration:none;color:var(--tx);background:var(--paper)}.toc a:hover{border-color:var(--acc)}
+.blk .card h2{margin-top:0}.blk .card h3{margin:22px 0 8px;font-size:17px}.blk .card p{margin:8px 0}.blk .card li{margin:5px 0}
+.blk .card code{font-size:.9em;background:var(--acc2);border-radius:5px;padding:1px 5px}
+.blk{padding:10px 0}.part{padding:40px 0 6px}.part h2.big{font-size:clamp(24px,3vw,34px);margin:6px 0 8px}
+.srcnote{font-size:13px;color:var(--mut);margin-top:12px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd on" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="on">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 16 · глубина текстов</div>
+  <h1>Глубина текстов и эталон уровня</h1>
+  <div class="lead">Как писать, чтобы страница убеждала, а не перечисляла: типы утверждений и метки, восемь правил глубины, проверка экрана по баллам — и эталон, на который равняемся.</div>
+  <div class="note" style="margin-top:14px">Этот модуль — человеческая версия справочника плагина «Продающий сайт» (версия 2.0). Плагин и методичка работают по одним правилам. Где написано «пользователь» — это тот, кто принимает решение по проекту: руководитель проекта или клиент.</div>
+  <div class="toc"><a href="#s1">Пять типов утверждений и метки</a><a href="#s2">Восемь правил глубины</a><a href="#s3">До и после (из реальных прогонов)</a><a href="#s4">Проверка глубины перед выдачей</a><a href="#s5">Как читать</a><a href="#s6">Чего не было в эталоне и что теперь обязательно</a></div>
+</div></section>
+<section class="blk part" id="pravila"><div class="wrap"><div class="eyebrow">Часть 1 · Правила</div><h2 class="big">Глубина текстов: как писать, чтобы страница убеждала</h2><p>Правильная структура с плоскими текстами не продаёт. Сильная страница звучит как лучший продавец ниши: он знает, о чём думает человек, объясняет <strong>почему</strong>, говорит конкретно и честно. Этот файл — стандарт глубины и проверка перед выдачей.</p></div></section><section class="blk" id="s1"><div class="wrap"><div class="card"><h2>Пять типов утверждений и метки</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Тип</th>
+<th>Что это</th>
+<th>Можно без подтверждения?</th>
+<th>Метка в слое для команды</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Факт</strong></td>
+<td>Цифра, срок, цена, гарантия, имя, кейс, отзыв, условие договора — из брифа или ответа пользователя</td>
+<td>Да, если источник есть</td>
+<td>«факт»</td>
+</tr>
+<tr>
+<td><strong>Вывод</strong></td>
+<td>Рассуждение о ситуации посетителя, о том, как вообще устроена задача, о следствиях — из законов Сизова, инструментов Прайма, логики ниши. Без цифр, имён и обещаний компании</td>
+<td><strong>Да.</strong> Это работа профессионала, а не выдумка</td>
+<td>«вывод ← [основание]»</td>
+</tr>
+<tr>
+<td><strong>Подтвердить</strong></td>
+<td>Идея, похожая на факт о компании, которую должен подтвердить клиент (новая услуга, формулировка гарантии, порядок оплаты)</td>
+<td>Нет</td>
+<td>«подтвердить: …»</td>
+</tr>
+<tr>
+<td><strong>Ждёт ответа</strong></td>
+<td>Места, где нужен факт, которого нет</td>
+<td>Нет — ставится только на месте самого факта</td>
+<td>«ждёт ответа: …»</td>
+</tr>
+<tr>
+<td><strong>Вне методики</strong></td>
+<td>Техника, закон, дизайн</td>
+<td>—</td>
+<td>«вне методики: …»</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Главное правило:</strong> метка заменяет <strong>только факт внутри предложения</strong>, а не абзац. Абзац пишется целиком, с логикой и картинкой; на месте неизвестной цифры — метка.</p>
+<p>Плохо: «Что изменилось после запуска: [ждёт ответа]».
+Хорошо: «Человеку, который ищет забор, важны три вещи: работают ли в его регионе, надо ли платить заранее и как вызвать мастера. На лендинге всё это видно до звонка — вопросы, с которых обычно начинается разговор, закрыты страницей. Что изменилось в цифрах: [ждёт ответа: заявки и вопросы на звонках до/после]».</p>
+<p><strong>Вывод — не выдумка.</strong> «Если клиентов больше, чем успеваете взять, сайт добавит обращений, которые некому обработать» — вывод из логики ситуации, без цифр и обещаний; писать можно. «Наши сайты увеличивают заявки на 40%» — факт без источника; нельзя.</p></div></div></section><section class="blk" id="s2"><div class="wrap"><div class="card"><h2>Восемь правил глубины</h2><ol>
+<li><strong>Каждый тезис — ситуация + причина + следствие.</strong> Не «сначала утверждаем тексты», а «сначала утверждаем тексты — поэтому спорим о смысле, а не о цвете кнопки, и правка стоит абзаца, а не переделки макета».</li>
+<li><strong>«Кому не подойдём» — случай, почему и что вместо.</strong> «Нужна визитка с телефоном на один день — готовый шаблон закроет это быстрее и дешевле, чем мы».</li>
+<li><strong>Кейс — разбор, а не витрина.</strong> Что было важно клиенту (или клиенту клиента) — по пунктам; как это закрыли на странице или в продукте; что стало (факт или метка). Название и отрасль — в подписи, не в заголовке.</li>
+<li><strong>Вариант — кому, что входит, чем плох в использовании, когда лучше другой.</strong> Минус — про использование («живёт, пока кто‑то ведёт каталог»), а не «дороже».</li>
+<li><strong>Мнение — с причиной из главной боли, со своей выгодой и «решать вам».</strong> «Если реклама ведёт на одну услугу, мы бы взяли лендинг: одна страница — одно предложение. Нам он тоже выгоднее. Решать вам».</li>
+<li><strong>Шаг — что, кто, когда, польза, что если не подойдёт.</strong> «В выбранное время напишет Ангелина. 10 минут: уточним задачу по вашим ответам и назовём сумму. Если окажется, что сайт вам сейчас не нужен, — так и скажем».</li>
+<li><strong>Конкретика вместо абстракции.</strong> Сцена, предмет, действие, слова клиента, цифра из брифа. Не «удобно», а «тексты, цены и фото меняет любой сотрудник за пару минут».</li>
+<li><strong>Голос продавца, а не рекламы.</strong> Короткие предложения, «вы», глаголы, без канцелярита и штампов (<a href="sayt-6-teksty.html">модуль 6 «Тексты»</a>). Читается вслух без запинки.</li>
+</ol>
+<p>Плюс Прайм: довод по цепочке «факт клиента → характеристика → благодаря этому → выгода → картинка использования»; сомнение — «присоединение → именно поэтому → два логических довода → одна картинка» (<a href="sayt-14-zakony.html#praym">модуль 14 «Инструменты Прайма»</a>).</p></div></div></section><section class="blk" id="s3"><div class="wrap"><div class="card"><h2>До и после (из реальных прогонов)</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Было (плоско)</th>
+<th>Стало (глубоко)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«Если нужна только реклама — это не к нам»</td>
+<td>«Рекламу мы не ведём: сайт сдаём готовым к ней — аналитика, формы, UTM — и рекомендуем подрядчиков. Если нужна только реклама на готовый сайт, вам к ним, а не к нам»</td>
+</tr>
+<tr>
+<td>«Сделать самому — уходят недели вашего времени»</td>
+<td>«Конструктор или нейросеть — дёшево деньгами, дорого вашим временем: смыслы и тексты всё равно придумываете вы. Подойдёт, если нужна визитка „чтобы была“ и есть время»</td>
+</tr>
+<tr>
+<td>«Вы видите сайт до того, как он нарисован»</td>
+<td>«Когда страница сама проводит посетителя через первые шаги, в разговор приходит человек, которому не нужно пересказывать условия и цены. Разговор идёт о его задаче, а не превращается в справочное бюро»</td>
+</tr>
+<tr>
+<td>«Картины со смыслом, которые подходят интерьеру»</td>
+<td>(для бизнеса) «Гость ждёт в лобби, клиент — в зоне ожидания. Картина с названием, историей и автором даёт повод для разговора — пространство запоминается впечатлением, а не мебелью»</td>
+</tr>
+<tr>
+<td>Шесть карточек методологии «Понимать / Измерять / …»</td>
+<td>Одна схема «от показателя к решению» в экране пользы как доказательство, а главным — «практика на действующем производстве: вы работаете сменой, а не смотрите экскурсию»</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s4"><div class="wrap"><div class="card"><h2>Проверка глубины перед выдачей</h2><p>Оцени каждый экран по шести признакам (0 — нет, 1 — частично, 2 — да):</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Признак</th>
+<th>Вопрос</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Одна мысль</td>
+<td>Экран держит одну задачу ступени и связан с главной болью?</td>
+</tr>
+<tr>
+<td>Почему</td>
+<td>У каждого тезиса есть причина или следствие?</td>
+</tr>
+<tr>
+<td>Конкретика</td>
+<td>Есть сцена, предмет, цифра брифа, слова клиента — а не общие слова?</td>
+</tr>
+<tr>
+<td>Голос клиента</td>
+<td>Посетитель узнаёт свою ситуацию и свои слова?</td>
+</tr>
+<tr>
+<td>Доказательство</td>
+<td>Утверждение чем‑то подкреплено: фактом, устройством, историей, опытом на странице?</td>
+</tr>
+<tr>
+<td>Действие</td>
+<td>Понятно, что посетитель делает дальше на этом экране?</td>
+</tr>
+</tbody>
+</table></div>
+<p>Экран с суммой меньше 8 из 12 — переписать до выдачи. Экраны 4 и 5 — не меньше 10.</p>
+<p><strong>Сигнал недоработки:</strong> больше трёх меток «ждёт ответа» на одном экране. Это значит, что прожарка или анализ ниши сделаны не до конца: вернись к <a href="sayt-13-prozharka.html">модуль 13 «Прожарка»</a> и либо спроси, либо найди, либо перестрой экран на то, что известно (устройство, опыт на странице), оставив метку одну.</p></div></div></section><section class="blk part" id="etalon"><div class="wrap"><div class="eyebrow">Часть 2 · Эталон</div><h2 class="big">Эталон уровня: лендинг студии сайтов (синтез Сизов + Прайм)</h2><p>Это образец <strong>уровня глубины</strong>, а не шаблон. Его собрал исходный плагин <code>sizov-sales</code> для студии PRIME ERA за три итерации с владельцем; владелец оценил результат как лучший. Бери отсюда планку: сколько логики, конкретики и честности должно быть на каждом экране. <strong>Не копируй</strong> приёмы, которые работают только для студии (помечены «только для…»), и не переноси факты — они принадлежат этому клиенту.</p></div></section><section class="blk" id="s5"><div class="wrap"><div class="card"><h2>Как читать</h2><p>Для каждого экрана: что на нём стоит, почему это сильно, что из этого переносится на любую нишу.</p>
+
+<h3>Экран 1 · Контакт</h3>
+<ul>
+<li>Заголовок: «Сайты, после которых клиент приходит в разговор уже разобравшись». Подзаголовок‑механизм: «Сначала разбираемся, как вы продаёте и о чём вас спрашивают клиенты. Потом проектируем структуру, пишем тексты, рисуем и запускаем».</li>
+<li>Кнопки: «Понять, нужен ли вам новый сайт →» (шаг поменьше) и «Посмотреть работы».</li>
+<li>Три опоры под заголовком: «Смысл до картинки», «Всё в договоре», «Сайт ваш» — каждая с одной фразой пояснения.</li>
+<li><strong>Почему сильно:</strong> польза уровня 4 (результат результата), механизм одной фразой, шаг поменьше вместо «заказать».</li>
+<li><strong>Переносится:</strong> заголовок = польза уровня 3–4; подзаголовок = почему это получается; опоры — только проверяемые факты.</li>
+</ul>
+<h3>Экран 2 · Ключ к уху</h3>
+<ul>
+<li>«Заказывать у нас сайт не обязательно. Сначала нужно понять, есть ли у нас то, что вам нужно».</li>
+<li>Что будет на странице — пятью пунктами, включая «Таймеров, „осталось два места“ и окон „вы точно уходите?“ здесь нет».</li>
+<li>«Вполне возможно, новый сайт вам сейчас не нужен» — три случая <strong>с причиной и альтернативой</strong>: клиентов больше, чем успеваете взять («сайт добавит обращений, которые некому обработать. Сначала — люди, потом сайт»); нужна визитка на один день («шаблон Tilda закроет быстрее и дешевле»); нужен сервис с расчётами на сервере («Tilda не подходит — скажем сразу»).</li>
+<li>Таблица «четыре способа получить сайт» (сам / фрилансер / агентство / мы) по строкам: кто думает над смыслами, цена, сроки, правки, <strong>кому подойдёт</strong>.</li>
+<li>«А вы знаете, что эта страница устроена так же, как мы предлагаем устроить вашу?» — <strong>только для тех, кто продаёт сам метод</strong> (студии, маркетинг, обучение продажам).</li>
+<li><strong>Переносится:</strong> отталкивание с причинами и альтернативами; сравнение способов строками «кому подойдёт»; «что будет на странице».</li>
+</ul>
+<h3>Экран 3 · Разведчик</h3>
+<ul>
+<li>«Разбор за две минуты. Пять вопросов о том, как у вас сейчас. Ответы остаются на этой странице — к нам попадут, только если вы сами их отправите».</li>
+<li><strong>Переносится:</strong> честное обещание о данных; результат за ответы; ни одного вопроса о бюджете.</li>
+</ul>
+<h3>Экран 4 · Одна польза — самый насыщенный</h3>
+<ul>
+<li>Польза: «Ваш менеджер разговаривает с человеком, который уже понял, что вы ему подходите». Пояснение: «Не „красивый дизайн“ и не „конверсия“ — вот это… Разговор идёт о его задаче, а не превращается в справочное бюро».</li>
+<li>«Как это устроено»: шесть шагов хорошего продавца, перенесённых на экраны, — с одной фразой зачем каждый.</li>
+<li>Опыт на самой странице: кнопка «Показать разметку этой страницы» (только для продающих метод).</li>
+<li>Живой пример разбором: «Человеку, который ищет забор, важны три вещи: работают ли в его регионе, надо ли платить заранее и как вызвать мастера. На лендинге всё это видно сразу… Вопросы, с которых обычно начинается звонок, закрыты до звонка». Итог — меткой.</li>
+<li>Два калькулятора: «время менеджеров на пересказ условий» и «окупаемость», где конверсию «после» ставит посетитель; подпись: «Это ваша гипотеза, а не наше обещание».</li>
+<li>Вопросы ВВП: «Если бы к вашему менеджеру приходили люди, которые уже поняли условия, — что изменилось бы в неделе отдела продаж?»</li>
+<li>Другие работы «задача → что сделали → результат (метка)», место под отзыв словами клиента.</li>
+<li><strong>Переносится:</strong> польза + устройство + история разбором + монетизация с цифрами посетителя + вопрос‑примерка + похожие кейсы + место под слова клиента.</li>
+</ul>
+<h3>Экран 5 · Финансовый консультант</h3>
+<ul>
+<li>Первая строка: «Сначала честно о деньгах: большинство наших проектов стоит 100–200 тыс. ₽» — снимает якорь «от 40 000».</li>
+<li>Варианты: для каждого — цена, срок, «кому», список «что входит» (4–6 пунктов конкретики) и «чем плох» в использовании. Пример минуса: «Одна страница — одно предложение. Если направлений несколько для разных людей, лендинг заставит выбрать одно. Из поиска одна страница собирает меньше запросов, чем сайт с разделами».</li>
+<li>Якорь (арт‑лендинг первым) — <strong>решение владельца</strong>, помечено «вне канона».</li>
+<li>Шаг поменьше: «Не готовы к сайту целиком? Можно начать со смыслового прототипа… стоимость засчитаем в цену сайта».</li>
+<li>Мнение: «Если вы запускаете рекламу на одну услугу, мы бы взяли продающий лендинг — и не скрываем, что нам он тоже выгоднее всего. Если направлений несколько — многостраничный. Арт‑лендинг — только если сайт для вас часть бренда. Но решать вам».</li>
+<li>«Чего мы не обещаем», «почему дешевле крупных студий», «Решаете не один?» с выжимкой, собираемой из ответов квиза.</li>
+<li><strong>Переносится:</strong> честная типичная сумма первой строкой; «что входит» конкретикой; минус в использовании; мнение с развилкой по ситуации посетителя.</li>
+</ul>
+<h3>Экран 6 · Кассир</h3>
+<ul>
+<li>Три шага разной высоты: 10 минут разговора (кто — Ангелина, о чём, бесплатно и ни к чему не обязывает) / видеоразбор без звонка / «пока присматриваюсь» → чек‑лист без контакта.</li>
+<li>«После разговора — точная сумма и график этапов», «Договор и начало работы», «Что записано в договоре» (сроки, цена, утверждение по шагам, независимость).</li>
+<li>Таблица этапов: срок, что вы получаете, <strong>сколько вашего времени нужно</strong> на каждом этапе.</li>
+<li>Форма из трёх полей, «где удобнее говорить», приложить ответы квиза, галочка «нужна выжимка для руководителя».</li>
+<li><strong>Переносится:</strong> «парашют»; что будет после разговора; ваше время по этапам; ответы квиза в заявку.</li>
+</ul>
+<h3>Экран 7 · Фея (страница после оплаты)</h3>
+<ul>
+<li>«Для ваших менеджеров: как разговаривать с теми, кто пришёл с нового сайта» — 6 коротких правил, кнопка «скопировать памятку». Польза прямо связана с главной пользой сайта.</li>
+<li><strong>Переносится:</strong> фея усиливает главную пользу и адресована тому, кто будет пользоваться.</li>
+</ul>
+<h3>Экран 8 · Готовые слова</h3>
+<ul>
+<li>Поля «что сделали», «за какой срок», «ваши слова» → превью текста для знакомого → «скопировать» / «переслать в Telegram».</li>
+</ul>
+<h3>Уход без покупки</h3>
+<ul>
+<li>«Восемь вопросов, которые посетитель молча задаёт вашему сайту. Если на большинство ответ „да“ — новый сайт, скорее всего, не нужен». Без контакта.</li>
+<li><strong>Переносится:</strong> микромагнит = самопроверка по главной боли, и честно допускает ответ «вам не нужно».</li>
+</ul>
+<h3>Слой для команды</h3>
+<ul>
+<li>Карта экранов (экран → ступень → что делает посетитель → законы); что взято из Прайма и как приведено к канону; что из Прайма не взято и почему; вводные и допущения; метки; чего страница нести не может; что проверить на практике.</li>
+</ul>
+</div></div></section><section class="blk" id="s6"><div class="wrap"><div class="card"><h2>Чего не было в эталоне и что теперь обязательно</h2><ul>
+<li>Главная польза выбрана моделью без вопроса. Теперь — шаг «главная боль» с решением пользователя (<a href="sayt-12-glavnaya-bol.html">модуль 12 «Главная боль»</a>).</li>
+<li>Решения по якорю, прототипу, оплате появились только к третьей итерации. Теперь — прожарка до производства (<a href="sayt-13-prozharka.html">модуль 13 «Прожарка»</a>).</li>
+</ul></div></div></section>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

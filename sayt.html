@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.mods{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px}
+@media(max-width:700px){.mods{grid-template-columns:1fr}}
+.mod{display:block;text-decoration:none;color:var(--tx);background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px;transition:.15s;position:relative}
+a.mod:hover{border-color:var(--acc);transform:translateY(-2px)}
+.mod .n{font-family:var(--fh);font-size:34px;color:var(--acc);line-height:1}
+.mod h3{margin:10px 0 6px}
+.mod p{color:var(--mut);font-size:15px;margin:0}
+.mod .st{position:absolute;top:18px;right:18px}
+.mod.soon{opacity:.6}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.flow span{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:700;font-size:14px}
+.flow i{font-style:normal;color:var(--dim)}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Методичка студии · эксперимент</div>
+  <h1>Продающий сайт: структура и тексты для любой ниши</h1>
+  <p class="lead">Версия 2 · согласована с плагином «Продающий сайт» 2.0. По этой методичке сотрудник без опыта в продажах составляет структуру и тексты лендинга, многостраничного сайта или интернет‑магазина. Основа — технология Андрея Сизова (восемь ступеней продажи). Усилители по ситуации — «Система продаж Прайм».</p>
+  <div class="flow"><span>0. Созвон‑бриф</span><i>→</i><span>12. Главная боль — решает человек</span><i>→</i><span>13. Прожарка</span><i>→</i><span>1, 3. Ситуация и ниша</span><i>→</i><span>2, 15. Экраны: минимум + усилители</span><i>→</i><span>14. Опора: закон и инструмент</span><i>→</i><span>4–5, 11. Страницы, кейсы, блог</span><i>→</i><span>6, 16. Тексты с глубиной</span><i>→</i><span>7. Проверка</span><i>→</i><span>17. Сдача команде</span></div>
+</div></section>
+<section class="blk" style="padding-top:20px"><div class="wrap">
+  <div class="mods">
+    <a class="mod" href="sayt-0-brif.html"><div class="n">0</div><h3>Созвон‑бриф</h3><p>Весь первый созвон по одной странице: скрипт по ступеням, вопросы брифа для ниши и типа сайта, ответы «о нас», готовность экранов, итог для клиента.</p></a>
+    <a class="mod" href="sayt-1-osnova.html"><div class="n">1</div><h3>Основа синтеза</h3><p>Восемь ступеней на странице и как главная проверка, формула 100%, таблица конфликтов двух систем, цена и якорь, ситуации, метки.</p></a>
+    <a class="mod" href="sayt-2-ekrany.html"><div class="n">2</div><h3>Библиотека экранов</h3><p>Каждый экран в 3–5 вариантах со слайдером: макет, когда брать, из чего состоит, шаблон текста, «плохо / хорошо».</p></a>
+    <a class="mod" href="sayt-3-nishi.html"><div class="n">3</div><h3>Ниши</h3><p>12 ниш: вся страница на примере компании, что брать на каждом экране, страхи и где их закрывать, чем заменить калькулятор и квиз.</p></a>
+    <a class="mod" href="sayt-4-mnogostranichnik.html"><div class="n">4</div><h3>Многостраничный сайт</h3><p>Интерактивная карта сайта: какую ступень несёт каждая страница, из чего состоит, типичные ошибки; три пути посетителя.</p></a>
+    <a class="mod" href="sayt-5-magazin.html"><div class="n">5</div><h3>Интернет‑магазин</h3><p>Путь покупателя, хорошая и плохая карточка товара, корзина‑кассир, письма после покупки.</p></a>
+    <a class="mod" href="sayt-6-teksty.html"><div class="n">6</div><h3>Тексты</h3><p>Тон, формулы для каждого экрана, замена штампов, запретные приёмы и проверка текста прямо на странице.</p></a>
+    <a class="mod" href="sayt-7-proverka.html"><div class="n">7</div><h3>Проверка</h3><p>Самопроверка своей структуры перед сдачей: ступени, факты, честность, формула 100%, техника.</p></a>
+    <a class="mod" href="sayt-8-audit.html"><div class="n">8</div><h3>Аудит сайта</h3><p>Разбор готового сайта клиента по ступеням: да · частично · нет, заметки, отчёт «экран → ступень → что не так → что сделаем» и три первых исправления.</p></a>
+    <a class="mod" href="sayt-9-vyzhimka.html"><div class="n">9</div><h3>Выжимка для руководителя</h3><p>Генератор одностраничной выжимки для того, кто решает и платит: 4 готовых варианта, живой предпросмотр, сохранение в PDF и HTML.</p></a>
+    <a class="mod" href="sayt-editor.html"><div class="n">10</div><h3>Конструктор прототипа</h3><p>Прототип сайта из блоков по ступеням: старт по нише, правка любого элемента как в Фигме, шрифты (в том числе свои), цвета, отдельные правки для телефона, проверка ступеней, выгрузка в HTML.</p></a>
+    <a class="mod" href="sayt-11-keysy-blog.html"><div class="n">11</div><h3>Кейсы и блог</h3><p>Как кейсы и статьи встраиваются в ступени продажи: главный кейс и «ещё похожие», страница кейса, все кейсы, мини‑блог, карточка и структура статьи, шаблоны и чек‑листы.</p></a>
+    <a class="mod" href="sayt-12-glavnaya-bol.html"><div class="n">12</div><h3>Главная боль</h3><p>На чём держится весь сайт: кандидаты из слов клиентов, лестница «свойство → процесс → результат → результат результата», баллы, выбор вместе с человеком — до любых текстов.</p></a>
+    <a class="mod" href="sayt-13-prozharka.html"><div class="n">13</div><h3>Прожарка</h3><p>Решения до производства, которых нет в брифе: деньги и типичная сумма, варианты и якорь, шаг поменьше, главный кейс, концовка страницы, приёмы ниши.</p></a>
+    <a class="mod" href="sayt-14-zakony.html"><div class="n">14</div><h3>Законы и инструменты</h3><p>Законы Сизова по экранам — почему блок стоит здесь; инструменты Прайма — как его усилить: красная кнопка, истории, цена, польза от прогресса, доверие, парашют.</p></a>
+    <a class="mod" href="sayt-15-sostav-ekranov.html"><div class="n">15</div><h3>Состав экранов</h3><p>Экран — набор блоков, а не один вариант: обязательный минимум и усилители по ситуации для экранов 1–8 и ухода; карта сомнений проекта.</p></a>
+    <a class="mod" href="sayt-16-glubina.html"><div class="n">16</div><h3>Глубина текстов</h3><p>Факт, вывод, «подтвердить», «ждёт ответа»; восемь правил глубины; проверка экрана по баллам и эталон уровня, на который равняемся.</p></a>
+    <a class="mod" href="sayt-17-sdacha.html"><div class="n">17</div><h3>Сдача и практика</h3><p>Чего страница нести не может и куда это переносится, что проверить на живых посетителях, что сдать команде клиента вместе с сайтом.</p></a>
+  </div>
+</div></section>
+<footer class="f"><div class="wrap">Файлы методички лежат в одной папке — ссылки между модулями работают, когда папка открыта целиком в браузере.</div></footer>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

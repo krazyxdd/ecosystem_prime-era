@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>4. Многостраничный сайт — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.tree{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+.lvl{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pg{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;min-width:150px;text-align:center;transition:.15s}
+.pg b{display:block;font-size:14px}.pg small{color:var(--dim);font-size:12px}
+.pg:hover{border-color:var(--acc)}.pg.on{border:2px solid var(--sy);background:var(--sy2)}
+.pg.main{background:var(--acc2);border-color:var(--acc)}
+.pg.aux{border-style:dashed}
+.arrow{text-align:center;color:var(--dim);font-size:13px}
+.det{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.det{grid-template-columns:1fr}}
+.stk .s{border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:6px;background:var(--paper);font-size:14px}
+.stk .s b{color:var(--sy);font-size:12px;letter-spacing:.04em;text-transform:uppercase;display:block}
+.mx td,.mx th{text-align:center}.mx td:first-child,.mx th:first-child{text-align:left}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--sy)}
+.dot.half{background:linear-gradient(90deg,var(--sy) 50%,var(--line) 50%)}
+.paths .step{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.paths .step span{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px}
+.paths .step i{font-style:normal;color:var(--dim)}
+.frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.frame .fbar{display:flex;gap:5px;align-items:center;padding:8px 10px;background:#eceae4;border-bottom:1px solid #ddd}
+.frame .fbar i{width:9px;height:9px;border-radius:50%;background:#cfcac0}
+.frame .fbar span{margin-left:8px;font-size:11px;color:#8a857a;background:#fff;border-radius:6px;padding:2px 10px;flex:1;overflow:hidden;white-space:nowrap}
+.mk{padding:18px;color:#1b1b1f;font-size:13px;line-height:1.5;background:#fff}
+.mk .nav{display:flex;gap:12px;font-size:11px;color:#6b6b72;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:12px;flex-wrap:wrap}
+.mk .nav b{color:#111;margin-right:auto}.mk .nav span.b{background:#0b6bcb;color:#fff;border-radius:999px;padding:2px 10px}
+.mk .ey{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#0b6bcb;font-weight:800}
+.mk .h{font-size:18px;line-height:1.2;margin:4px 0 8px;font-weight:800;color:#111}
+.mk .p{color:#4b4b52;margin:0 0 8px}
+.mk .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:8px 0}
+.mk .c{border:1px solid #e3e0d8;border-radius:10px;padding:9px;font-size:12px;background:#faf9f6}
+.mk .c b{display:block;font-size:12.5px;color:#111;margin-bottom:2px}.mk .c i{font-style:normal;color:#0b6bcb;font-weight:700;font-size:11.5px}
+.mk .crumb{font-size:11px;color:#8a857a;margin-bottom:6px}
+.mk .blk2{border:1px dashed #d7d4cc;border-radius:8px;padding:7px 9px;margin:6px 0;font-size:12px;color:#4b4b52}
+.mk .blk2 b{color:#6d28d9}
+.fk{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:start;margin-top:12px}
+@media(max-width:900px){.fk{grid-template-columns:1fr}}
+.smap{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.smap .row3{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.smap .nd{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;text-align:center;min-width:120px}
+.smap .nd small{display:block;color:var(--dim);font-size:11.5px}
+.smap .nd.m{background:var(--acc2);border-color:var(--acc);font-weight:700}
+.smap .nd.a{border-style:dashed}
+.smap .dn{color:var(--dim);font-size:12px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="on">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 4 · многостраничный сайт</div>
+  <h1>Многостраничный сайт: какая страница какую ступень несёт</h1>
+  <p class="lead">В лендинге человек проходит ступени сверху вниз. В многостраничнике он может прийти на любую страницу — из поиска сразу на «Услугу», по рекомендации на «Кейсы». Поэтому главное правило другое.</p>
+  <div class="note sy"><b>Правило многостраничника.</b> Каждая страница, на которую можно прийти снаружи (из поиска, рекламы, по ссылке), проходит ступени сама — в сжатом виде: кто мы и для кого → честная рамка → одна польза → варианты → точный шаг. Главная не продаёт всё сразу: она знакомит и разводит по страницам.</div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Карта сайта</h2>
+  <p class="muted">Нажмите на страницу — ниже появится, какие ступени она несёт, из каких экранов состоит и типичные ошибки.</p>
+  <div class="tree" id="tree"></div>
+  <div class="det" id="det"></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Как выглядят развилки</h2>
+  <p class="muted">Развилка — блок на главной (и иногда в меню), который за секунды разводит посетителей по «своим» страницам. У каждой страницы, куда ведёт развилка, — свой путь по ступеням. Выберите тип развилки.</p>
+  <div class="segs noprint" id="fkSeg" style="margin-top:12px"></div>
+  <div id="fk"></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Карты сайтов на примерах</h2>
+  <p class="muted">Как одни и те же правила превращаются в разные сайты. Сплошная рамка — страницы, куда приходят снаружи (реклама, поиск) и которые проходят ступени сами. Пунктир — справочные. Компании выдуманы.</p>
+  <div class="segs noprint" id="mpSeg" style="margin-top:12px"></div>
+  <div id="mp"></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Где живёт каждая ступень</h2>
+  <p class="muted">● — страница несёт ступень полностью; ◐ — коротко или ссылкой на другую страницу.</p>
+  <div class="sc" style="margin-top:12px"><table class="t mx" id="mx"></table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Три типичных пути посетителя</h2>
+  <p class="muted">Проверьте структуру на каждом пути: на каждой странице пути должен быть следующий шаг, а все ступени до кассира — пройдены.</p>
+  <div class="grid g3 paths" style="margin-top:14px">
+   <div class="card"><h3>Из поиска</h3><p class="dim">«окна в квартиру с ребёнком казань»</p><div class="step"><span>Услуга</span><i>→</i><span>Кейсы</span><i>→</i><span>Шаг: замер</span></div><p style="margin-top:10px">Страница услуги — полноценный лендинг: сама знакомит, говорит «вам может не подойти», показывает одну пользу и ведёт к шагу.</p></div>
+   <div class="card"><h3>С рекламы</h3><p class="dim">объявление на одну услугу</p><div class="step"><span>Страница услуги</span><i>→</i><span>Шаг</span></div><p style="margin-top:10px">Реклама ведёт не на главную, а на страницу одной услуги. Меню не должно уводить: кнопка шага видна после экранов 4–5.</p></div>
+   <div class="card"><h3>По рекомендации</h3><p class="dim">«посмотри их сайт»</p><div class="step"><span>Главная</span><i>→</i><span>Кейсы / О нас</span><i>→</i><span>Контакты</span></div><p style="margin-top:10px">Человек уже доверяет и проверяет. Главная быстро подтверждает: кто вы, что делаете, реальные работы, контакты крупно.</p></div>
+  </div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Сквозные элементы — на каждой странице</h2>
+  <div class="grid g2" style="margin-top:12px">
+   <div class="card"><h3>Шапка</h3><ul class="l"><li>Меню — по задачам клиента, а не по структуре компании: «Кухни для семьи», а не «Продукция → Серия К‑2».</li><li>Телефон или мессенджер видны всегда.</li><li>Одна кнопка шага — одна и та же на всём сайте.</li></ul></div>
+   <div class="card"><h3>Подвал</h3><ul class="l"><li>Контакты без формы‑посредника, адрес или зона работы, часы.</li><li>Реквизиты и политика обработки данных.</li><li>Ссылки на справочные страницы: доставка, оплата, гарантии.</li></ul></div>
+   <div class="card"><h3>Блок шага в конце каждой страницы</h3><p>Кто, когда и о чём свяжется — тот же, что на экране 6. На странице услуги — с названием этой услуги.</p></div>
+   <div class="card"><h3>«Решаете не один?»</h3><p>Если платит не читатель — ссылка на выжимку в шапке или на странице цен, а не только в конце главной.</p></div>
+  </div>
+  <div class="note warn" style="margin-top:14px"><b>Частые ошибки многостраничника.</b> Главная пытается рассказать всё и превращается в «почему мы» из 10 пунктов. Страницы услуг — копии друг друга с разными названиями. Страница «Цены» — голый прайс без объяснения, что входит. Реклама ведёт на главную. Кнопки на разных страницах ведут в разные формы.</div>
+</div></section>
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 4. Экраны — из модуля 2, ниши — из модуля 3.</div></footer>
+<script>
+const P=[
+ {id:'home',lv:0,n:'Главная',sm:'знакомство и развилка',cls:'main',st:['Контакт','Ключ к уху','◐ Разведчик','◐ Вовлечение в пользы','◐ Кассир'],
+  stack:[['Экран 1','Кто мы, для кого, чем полезны'],['Развилка','Карточки групп клиентов или главных услуг — ведут на их страницы'],['Экран 2','Кому мы не подойдём (коротко)'],['Экран 4 коротко','Одна общая польза + 2–3 кейса ссылками'],['Шаг','Общая кнопка шага и контакты']],
+  why:'Главная знакомит и разводит по страницам. Её задача — чтобы человек за секунды нашёл «свою» страницу.',err:'Главная рассказывает обо всех услугах подряд; «о компании с 2008 года» первым экраном; нет развилки.'},
+ {id:'serv',lv:1,n:'Страница услуги',sm:'лендинг в миниатюре',st:['Контакт','Ключ к уху','Разведчик','Вовлечение в пользы','Финансовый консультант','Кассир'],
+  stack:[['Экран 1','Кто мы для этой услуги и кому она'],['Экран 2','Кому эта услуга не нужна'],['Экран 3','2–3 вопроса или «выберите ситуацию»'],['Экран 4','Одна польза этой услуги + кейс этой услуги'],['Экран 5','Варианты этой услуги с минусами и честной ценой'],['Экран 6','Шаг с названием услуги']],
+  why:'Сюда приходят из поиска и рекламы. Страница должна продавать сама, не отправляя на главную.',err:'Страницы разных услуг — одинаковые тексты с разными названиями; нет цены; кнопка ведёт в общую форму «оставьте заявку».'},
+ {id:'cases',lv:1,n:'Кейсы / работы',sm:'доказательства',st:['Вовлечение в пользы','◐ Кассир'],
+  stack:[['Фильтр','По услуге или по ситуации клиента'],['Кейс','Задача → что сделали → что стало (цифры — только реальные)'],['Слова клиента','Отзыв, видео или скриншот — только настоящие'],['Шаг','«Хотите так же — вот первый шаг»']],
+  why:'Показ пользы через живых клиентов. Сюда часто идут те, кто пришёл по рекомендации.',err:'Галерея картинок без истории; выдуманные результаты; нет шага в конце.'},
+ {id:'price',lv:1,n:'Цены',sm:'для тех, кто ищет цену',st:['◐ Ключ к уху','Финансовый консультант','Кассир'],
+  stack:[['Честная фраза','«Большинство проектов стоит …» — честная типичная сумма'],['Варианты','2–3 варианта: кому, что входит, чем плох'],['От чего зависит цена','Прозрачно'],['Не знаете, что выбрать?','Ссылка на квиз или подбор'],['Шаг','Точный шаг']],
+  why:'Многие ищут цену первым делом — прятать её нельзя. Но и голый прайс — ошибка: цена без объяснения ценности превращается в торг.',err:'«Цены по запросу» без причины; прайс на 80 строк; «от 40 000» при реальных 150 000.'},
+ {id:'about',lv:1,n:'О компании',sm:'почему можно доверять',st:['Контакт','Ключ к уху','◐ Вовлечение в пользы'],
+  stack:[['Кто мы','Люди с фото и ролями, а не «дружная команда профессионалов»'],['Как работаем','Этапы, договор, что закреплено'],['Кому не подходим','Честно'],['Факты','Проверяемые: гарантии, производство, сроки']],
+  why:'Не история основания, а ответ на вопрос «можно ли вам доверять».',err:'«Мы молодая динамично развивающаяся компания»; стоковые фото команды.'},
+ {id:'blog',lv:2,n:'Статьи / блог',sm:'приходят из поиска',cls:'aux',st:['Контакт','Ключ к уху','◐ Разведчик','◐ Кассир'],
+  stack:[['Статья','Честно отвечает на вопрос из поиска — даже если ответ «вам это не нужно»'],['Вставка','«А вы знаете, что…» — связь с задачей клиента'],['Мягкий шаг','Самопроверка, чек‑лист или ссылка на услугу — без нажима']],
+  why:'Статья — знакомство и открытое внимание для тех, кто ещё не ищет исполнителя.',err:'Статьи ради ключевых слов; в каждой — «закажите у нас».'},
+ {id:'info',lv:2,n:'Доставка, оплата, вопросы',sm:'справочные',cls:'aux',st:['◐ Кассир'],
+  stack:[['Справка','Условия доставки, оплаты, возврата, гарантий — точно'],['Вопросы','Логистика, а не спор с возражениями']],
+  why:'Снимают сомнения у кассы. Это не блок «возражения», а инструкция.',err:'FAQ, где на «дорого» отвечают «у нас лучшее качество».'},
+ {id:'contact',lv:2,n:'Контакты',sm:'кто ответит и когда',cls:'aux',st:['Кассир'],
+  stack:[['Кто ответит','Имя, роль, часы'],['Каналы','Телефон, мессенджеры, почта — без формы‑посредника'],['Как добраться','Если есть офис или шоурум']],
+  why:'Последний шаг человека, который уже решил.',err:'Только форма «напишите нам».'},
+ {id:'thanks',lv:3,n:'Спасибо / после оплаты',sm:'польза после оплаты',cls:'aux',st:['Фея','Директор по развитию'],
+  stack:[['Подтверждение','Что дальше и что нужно от клиента'],['Польза','Памятка для того, кто будет пользоваться'],['Слова для знакомого','Рамка + место для слов клиента']],
+  why:'Отдельная страница после заявки или оплаты.',err:'«Спасибо, ваша заявка принята» и тупик.'}
+];
+const STG=['Контакт','Ключ к уху','Разведчик','Вовлечение в пользы','Финансовый консультант','Кассир','Фея','Директор по развитию'];
+const STF={'Контакт':'первый экран','Ключ к уху':'«не обязательно»','Разведчик':'вопросы','Вовлечение в пользы':'одна польза','Финансовый консультант':'варианты и цены','Кассир':'шаг','Фея':'после оплаты','Директор по развитию':'рекомендация'};
+let cur='home';
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function tree(){const lv=[0,1,2,3];const lab=['','↓ из меню и развилки','↓ второстепенные','↓ после заявки'];
+ document.getElementById('tree').innerHTML=lv.map(l=>`${lab[l]?`<div class="arrow">${lab[l]}</div>`:''}<div class="lvl">${P.filter(p=>p.lv===l).map(p=>`<div class="pg ${p.cls||''} ${p.id===cur?'on':''}" onclick="cur='${p.id}';tree();det()"><b>${esc(p.n)}</b><small>${esc(p.sm)}</small></div>`).join('')}</div>`).join('')}
+function det(){const p=P.find(x=>x.id===cur);
+ document.getElementById('det').innerHTML=`<div><h3>${esc(p.n)}</h3><p>${esc(p.why)}</p><h4 style="margin-top:12px">Ступени</h4><div>${p.st.map(s=>`<span class="tag t-sz">${esc(s.replace('◐ ','коротко: '))}</span>`).join('')}</div><div class="badx" style="margin-top:12px"><b>Типичная ошибка</b>${esc(p.err)}</div></div>
+ <div class="stk"><h4>Из чего состоит — сверху вниз</h4>${p.stack.map(s=>`<div class="s"><b>${esc(s[0])}</b>${esc(s[1])}</div>`).join('')}</div>`}
+function mx(){document.getElementById('mx').innerHTML='<tr><th>Страница</th>'+STG.map(s=>`<th>${s}<br><small style="font-weight:600;text-transform:none;letter-spacing:0;opacity:.75">${STF[s]}</small></th>`).join('')+'</tr>'+P.map(p=>'<tr><td><b>'+esc(p.n)+'</b></td>'+STG.map(s=>{const full=p.st.includes(s),half=p.st.includes('◐ '+s);return `<td>${full?'<span class="dot"></span>':half?'<span class="dot half"></span>':''}</td>`}).join('')+'</tr>').join('')}
+tree();det();mx();
+const FK=[
+{n:'По группам клиентов',when:'Две и больше групп с разными задачами: частные и компании, семья и инвестор, для себя и для бизнеса.',url:'zhk-sever.ru',
+ mock:`<div class="nav"><b>ЖК «Север»</b><span>Квартиры</span><span>Для инвесторов</span><span>О доме</span><span class="b">Выбрать квартиру</span></div><div class="ey">ЖК «Север» · квартиры от застройщика</div><div class="h">Квартира для жизни или для сдачи — подберём под вашу задачу</div><div class="cards"><div class="c"><b>Для семьи</b>Школа во дворе, закрытая территория<br><i>Квартиры для жизни →</i></div><div class="c"><b>Для инвестиций</b>Доходность сдачи, спрос в районе<br><i>Для инвесторов →</i></div></div><div class="blk2"><b>Ниже:</b> кому мы не подойдём · общая польза · кейсы ссылками · шаг</div>`,
+ rules:['Карточек 2–3, у каждой — «кто это» и что ему важно, а не название раздела.','Каждая карточка ведёт на отдельную страницу со своим экраном 3 (вопросы) и своей одной пользой.','Над развилкой — экран 1 «кто мы и для кого».'],
+ bad:'«Физлицам / Юрлицам» — сухие ярлыки без того, что важно каждой группе.'},
+{n:'По услугам или продуктам',when:'Несколько услуг, которые покупают по отдельности: студия, клиника, ремонт, производство.',url:'studio.ru',
+ mock:`<div class="nav"><b>PRIME ERA</b><span>Услуги</span><span>Работы</span><span>Цены</span><span class="b">Обсудить задачу</span></div><div class="h">Сайты для малого бизнеса, после которых клиент приходит уже разобравшись</div><div class="cards"><div class="c"><b>Лендинг</b>Одна услуга под рекламу<br>от 70 000 ₽<br><i>Подробнее →</i></div><div class="c"><b>Многостраничный</b>Несколько направлений<br><i>Подробнее →</i></div><div class="c"><b>Магазин</b>Товары без консультации<br><i>Подробнее →</i></div><div class="c"><b>Не знаю, что нужно</b>Ответьте на 4 вопроса<br><i>Подобрать →</i></div></div>`,
+ rules:['У карточки: для кого, польза одной строкой, цена «от» — если цена служит навигацией.','Последняя карточка — «не знаю, что нужно» → квиз. Она ловит тех, кто не узнал себя.','Карточек не больше 6; больше — группируйте.'],
+ bad:'Плитка из 12 иконок с названиями услуг — никто не понимает, что выбрать.'},
+{n:'По ситуации или задаче',when:'Человек не знает названия услуги, но знает свою проблему: медицина, юристы, финансы, психологи.',url:'klinika.ru',
+ mock:`<div class="nav"><b>Клиника «Улыбка»</b><span>Лечение</span><span>Врачи</span><span>Цены</span><span class="b">Записаться</span></div><div class="h">С чем вы к нам пришли?</div><div class="cards"><div class="c"><b>Болит зуб</b>Примем сегодня<br><i>→ Лечение боли</i></div><div class="c"><b>Нет зуба</b>Имплант или протез — разберём<br><i>→ Восстановление</i></div><div class="c"><b>Ребёнку</b>Без страха, игровой приём<br><i>→ Детский приём</i></div><div class="c"><b>Плановый осмотр</b>Раз в полгода<br><i>→ Осмотр</i></div></div><div class="blk2"><b>Ниже:</b> врачи · как проходит первый приём · лицензия · запись</div>`,
+ rules:['Формулировки — словами пациента или клиента («нет зуба»), а не терминами («имплантация»).','Одна карточка — срочная ситуация, если она есть («примем сегодня»).','Это одновременно экран 3 (разведчик): выбор уже рассказывает о посетителе.'],
+ bad:'«Терапия / Ортопедия / Хирургия» — пациент не знает, куда ему.'},
+{n:'По поводу (магазин)',when:'Интернет‑магазин, подарки, товары для дома: покупают под повод, а не по категории.',url:'shop.ru',
+ mock:`<div class="nav"><b>Лён и хлопок</b><span>Каталог</span><span>Доставка</span><span class="b">Корзина · 0</span></div><div class="h">Постельное бельё, в котором не жарко и не колется</div><div class="cards"><div class="c"><b>Себе</b>По ткани и размеру<br><i>Подобрать →</i></div><div class="c"><b>В подарок</b>С упаковкой и открыткой<br><i>Подарки →</i></div><div class="c"><b>В детскую</b>Мягкое, без красителей<br><i>Детское →</i></div><div class="c"><b>Жарко спать</b>Перкаль и лён<br><i>Для лета →</i></div></div><div class="blk2"><b>Строка честности:</b> доставка 2–4 дня · возврат 14 дней</div>`,
+ rules:['Повод — вход в каталог с готовым фильтром; категории остаются в меню.','Одна строка честности о доставке и возврате — сразу под развилкой.','Подробно о магазине — модуль 5.'],
+ bad:'Главная = баннер со скидкой + 40 категорий.'},
+{n:'По адресу или филиалу',when:'Сеть салонов, клиник, кафе; работа в нескольких городах.',url:'britva.ru',
+ mock:`<div class="nav"><b>Барбершоп «Бритва»</b><span>Цены</span><span>Мастера</span><span class="b">Записаться</span></div><div class="h">Стрижка за 45 минут — в трёх районах Казани</div><div class="cards"><div class="c"><b>Бауманская, 12</b>10:00–22:00 · парковка<br><i>Записаться сюда →</i></div><div class="c"><b>Проспект Победы, 40</b>9:00–21:00<br><i>Записаться сюда →</i></div><div class="c"><b>Ближе ко мне</b>Определим по карте<br><i>Показать →</i></div></div>`,
+ rules:['У филиала: адрес, часы, парковка, свободное время сегодня.','Страница филиала — свои мастера и запись; прайс общий.','Если прайс в городах разный — выбор города в самом начале.'],
+ bad:'Список адресов в подвале; запись без выбора филиала.'}
+];
+const MP=[
+{n:'Студия сайтов',rows:[[['m','Главная','кто мы · развилка по услугам']],[['','Лендинг','лендинг в миниатюре'],['','Многостраничный',''],['','Магазин',''],['','Не знаю, что нужно','квиз']],[['','Работы','кейсы с цифрами'],['','Цены','что входит · типичная сумма'],['a','О студии','как работаем · договор'],['a','Блог','статьи + микромагниты']],[['a','Контакты','кто ответит и когда'],['a','Спасибо','памятка + слова для знакомого']]],
+ note:'Реклама ведёт на страницу типа сайта. «Не знаю, что нужно» — квиз, который выдаёт рекомендацию с минусами.'},
+{n:'Стоматология',rows:[[['m','Главная','«С чем вы пришли?» — развилка по ситуации']],[['','Лечение боли','примем сегодня'],['','Восстановление','импланты / протезы'],['','Детский приём',''],['','Осмотр и гигиена','']],[['','Врачи','страница на каждого'],['','Цены','что входит в «под ключ»'],['a','Лицензии и документы',''],['a','Статьи','«что спросить у клиники»']],[['a','Контакты','как доехать · парковка'],['a','После приёма','памятка по уходу']]],
+ note:'На каждой странице — лицензия и предупреждение о противопоказаниях. Врач — отдельная страница с записью к нему.'},
+{n:'B2B‑производство',rows:[[['m','Главная','развилка по отраслям и продукции']],[['','Гофроупаковка','характеристики через использование'],['','Упаковка для e‑com',''],['','Для пищевой отрасли','']],[['','Калькулятор партии',''],['','Производство и документы','сертификаты · цех · контроль'],['','Кейсы','с цифрами и согласием'],['a','Доставка и оплата','']],[['','Для директора','выжимка на 1 страницу'],['a','Образцы','шаг поменьше']]],
+ note:'Пишет закупщик, решает директор: у каждой страницы продукции есть ссылка «Для директора». Образцы — главный шаг поменьше.'},
+{n:'Школа для детей',rows:[[['m','Главная','развилка по возрасту и интересу']],[['','7–9 лет','программирование на Scratch'],['','10–13 лет','Python и игры'],['','14–17 лет','подготовка к олимпиадам']],[['','Преподаватели',''],['','Результаты учеников','проекты детей'],['','Цены и возврат',''],['a','Для родителей','как помочь ребёнку дома']],[['','Пробное занятие','шаг поменьше'],['a','Контакты','']]],
+ note:'Каждая страница возраста говорит и с ребёнком (что он сделает), и с родителем (что изменится, сколько стоит, как вернуть деньги).'}
+];
+let fk=0,mp=0;
+function drawFk(){document.getElementById('fkSeg').innerHTML=FK.map((f,i)=>`<button class="${i===fk?'on':''}" onclick="fk=${i};drawFk()">${f.n}</button>`).join('');const f=FK[fk];
+ document.getElementById('fk').innerHTML=`<div class="fk"><div class="frame"><div class="fbar"><i></i><i></i><i></i><span>${f.url}</span></div><div class="mk">${f.mock}</div></div><div><h3>${f.n}</h3><p><b>Когда:</b> ${f.when}</p><h4 style="margin-top:10px">Правила</h4><ul class="l">${f.rules.map(r=>`<li>${r}</li>`).join('')}</ul><div class="badx" style="margin-top:10px"><b>Плохо</b>${f.bad}</div></div></div>`}
+function drawMp(){document.getElementById('mpSeg').innerHTML=MP.map((m,i)=>`<button class="${i===mp?'on':''}" onclick="mp=${i};drawMp()">${m.n}</button>`).join('');const m=MP[mp];
+ document.getElementById('mp').innerHTML=`<div class="smap">${m.rows.map((r,i)=>`${i?'<div class="dn">↓</div>':''}<div class="row3">${r.map(n=>`<div class="nd ${n[0]}">${n[1]}${n[2]?`<small>${n[2]}</small>`:''}</div>`).join('')}</div>`).join('')}</div><div class="note sy" style="margin-top:14px">${m.note}</div>`}
+drawFk();drawMp();
+
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

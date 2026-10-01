@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>9. Выжимка для руководителя — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.gen{display:grid;grid-template-columns:420px 1fr;gap:22px;align-items:start}
+@media(max-width:1000px){.gen{grid-template-columns:1fr}}
+.form{position:sticky;top:calc(70px + var(--pe-nav-h,0px));max-height:calc(calc(100vh - var(--pe-nav-h,0px)) - 84px);overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+@media(max-width:1000px){.form{position:static;max-height:none}}
+.form h3{font-size:15px;margin:18px 0 6px;color:var(--acc)}
+.form h3:first-child{margin-top:0}
+.f{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.f label{font-size:12px;font-weight:700;color:var(--dim)}
+.f label i{font-style:normal;font-weight:600;color:var(--mut)}
+.f input,.f textarea{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:7px 9px;font-size:13.5px;width:100%}
+.f textarea{min-height:58px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:10px}
+.opt .ttl{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:13px}
+.opt label.ch{font-size:12.5px;font-weight:700;display:flex;gap:5px;align-items:center}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.paper{background:#eef0f3;border-radius:16px;padding:18px 10px}
+/* документ */
+.doc{background:#fff;color:#1b1b1f;font:15px/1.6 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:18px;padding:44px 48px;max-width:860px;margin:0 auto}
+.doc *{box-sizing:border-box}
+@media(max-width:640px){.doc{padding:26px 20px}}
+.doc .top{display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#6b6b72;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid #1b1b1f;padding-bottom:12px;margin-bottom:26px}
+.doc h1{font-family:Manrope,system-ui,sans-serif;font-size:28px;line-height:1.2;margin:0 0 10px;font-weight:800}
+.doc h2{font-family:Manrope,system-ui,sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#0068c9;margin:30px 0 10px;font-weight:800}
+.doc p{margin:0 0 10px;color:#2b2b31}
+.doc .meta{color:#6b6b72;font-size:14px}
+.doc .note{background:#f3f6fa;border-left:4px solid #0068c9;border-radius:8px;padding:14px 16px;margin:14px 0}
+.doc table{width:100%;border-collapse:collapse;font-size:14px}
+.doc td{padding:9px 10px;border-bottom:1px solid #e6e6ea;vertical-align:top}
+.doc td:first-child{color:#6b6b72;width:38%;font-weight:600}
+.doc blockquote{margin:12px 0 0;padding:12px 16px;border-left:3px solid #d6d6dc;color:#3b3b42;font-style:italic}
+.doc .dopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.doc .dopt{border:1px solid #e0e0e6;border-radius:14px;padding:18px}
+.doc .dopt.rec{border:2px solid #0068c9;background:#f5f9ff}
+.doc .dopt .lbl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#0068c9;margin-bottom:6px}
+.doc .dopt h3{font-family:Manrope,system-ui,sans-serif;font-size:18px;margin:0 0 4px}
+.doc .dopt .pr{font-size:20px;font-weight:800;margin:4px 0 2px}
+.doc .dopt .tm{font-size:13px;color:#6b6b72;margin-bottom:10px}
+.doc .dopt p{font-size:14px}
+.doc .dopt .mn{font-size:13px;color:#9a3412;background:#fdf1ec;border-radius:8px;padding:8px 10px;margin-top:8px}
+.doc ul{margin:0;padding-left:18px}.doc li{margin-bottom:6px}
+.doc .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.doc .steps div{background:#f3f6fa;border-radius:10px;padding:10px;font-size:13px}
+.doc .steps b{display:block;font-size:13px}
+.doc .next{background:#0f1b2d;color:#fff;border-radius:14px;padding:20px 22px;margin-top:10px}
+.doc .next p{color:#dbe6f3}.doc .next b{color:#fff}.doc .next a{color:#8cc8ff}
+.doc .dopt,.doc .next,.doc .steps div,.doc tr,.doc blockquote,.doc .note{break-inside:avoid}
+.doc h2{break-after:avoid}
+.doc .foot{margin-top:28px;padding-top:12px;border-top:1px solid #e6e6ea;font-size:12px;color:#8a8a92}
+@media print{
+ body{background:#fff}
+ header.top,.hero,.blk.noprint,.form,.tools,footer.f,.toast,.presets{display:none!important}
+ .gen{display:block}.paper{background:#fff;padding:0}.doc{padding:0;border-radius:0;max-width:none}
+ section.blk{padding:0!important}
+}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd on" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="on">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 9 · генератор</div>
+  <h1>Выжимка для руководителя</h1>
+  <p class="lead">Одна страница для того, кто решает и платит, но не был на созвоне и не видел сайта: директор, финдиректор, супруг, родитель. Заполните поля слева — справа сразу готовый документ. Сохраните его в PDF или HTML и отправьте.</p>
+  <div class="grid g2" style="margin-top:16px">
+   <div class="card"><h3>Где используется</h3><p><b>1. В продажах студии.</b> После созвона, если решает не собеседник: «Подготовлю выжимку на одну страницу — перешлите руководителю». Отправляем в течение часа.</p><p style="margin-top:8px"><b>2. На сайтах клиентов.</b> Блок «Решаете не один?» на экране 5: выжимка собирается из ответов квиза. Здесь — её тексты и структура; автосборку на сайте делает разработчик.</p></div>
+   <div class="card"><h3>Правила</h3><ul class="l"><li>Только факты брифа и слова собеседника. Нет факта — строку убрать, а не выдумать.</li><li>Сразу сказать: «это не счёт; заказывать не обязательно».</li><li>Варианты — с честными минусами; рекомендация — с причиной, признанием своей выгоды и «решать вам».</li><li>Прямой контакт для того, кто решает, — чтобы вопросы не шли «через коллегу».</li><li>В конце — «если не время, ничего делать не нужно».</li></ul></div>
+  </div>
+</div></section>
+
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="presets"><h3 style="margin-bottom:8px">Готовые варианты — выберите и поправьте под себя</h3><div class="segs" id="pre"></div><p class="dim" style="font-size:13px;margin-top:6px">Первый — реальные условия студии PRIME ERA с условным клиентом. Остальные — примеры для сайтов клиентов: компании и цифры выдуманы.</p></div>
+  <div class="tools noprint"><button class="btn p" onclick="window.print()">Сохранить PDF / печать</button><button class="btn" onclick="dlHTML()">Скачать HTML</button><button class="btn" onclick="copy(docText())">Скопировать текстом</button><button class="btn" onclick="saveJ()">Сохранить черновик</button><label class="btn" style="cursor:pointer">Загрузить<input type="file" accept=".json" style="display:none" onchange="loadJ(event)"></label></div>
+  <div class="gen">
+   <div class="form" id="form"></div>
+   <div class="paper"><div class="doc" id="doc"></div></div>
+  </div>
+  <div class="note warn noprint" style="margin-top:16px"><b>PDF.</b> Кнопка «Сохранить PDF» открывает печать: выберите «Сохранить как PDF». В PDF попадает только документ, без формы. Для точной вёрстки включите «Фон и цвета» в настройках печати.</div>
+</div></section>
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 9.</div></footer>
+<div class="toast" id="toast"></div>
+<script>
+const STUDIO_FOOT='prime-era.pro · ИП Рогожников Александр Игоревич · ИНН 222511029033 · ОГРНИП 323470400119946';
+const PRE={
+studio:{nm:'Студия PRIME ERA → директору клиента',brand:'PRIME ERA · выжимка для руководителя',date:'24 сентября 2026 г.',title:'Новый сайт для «СтройМонтаж»: суть за три минуты',
+ intro:'Сергей Петрович, это подготовил(а) Ольга вместе со студией PRIME ERA, чтобы вы за три минуты поняли, о чём речь, — без пересказа.',
+ stop:'Это не счёт и не договор. Заказывать не обязательно: решение за вами. Если по ответам сайт сейчас не нужен, мы так и пишем.',
+ nowT:'Как сейчас — так описал(а) ситуацию Ольга',
+ rows:'Что продаём | Одну услугу или продукт\nОткуда приходят клиенты | Реклама в интернете\nО чём чаще всего спрашивают в первом разговоре | Сколько стоит\nЧто с сайтом сейчас | Есть, но заявок с него почти нет\nЕсли обращений станет вдвое больше | Пришлось бы взять ещё человека',
+ quote:'«Менеджеры перестали бы по сто раз объяснять цены, а я бы наконец видел, какая реклама приводит клиентов.» — так Ольга описал(а), что изменилось бы с новым сайтом.',
+ main:'Ваш менеджер будет разговаривать с человеком, который уже разобрался: понял, что вы предлагаете, как вы работаете и сколько это стоит. Разговор идёт о задаче клиента, а не превращается в справочное бюро.',
+ more:'Сейчас первый вопрос клиентов — «сколько стоит». На новом сайте цена стоит после объяснения, что входит и кому это подходит, поэтому разговор с менеджером начинается не с цены, а с задачи клиента.',
+ example:'Как это выглядит у других. Лендинг строительной компании «Арт-Тим» (монтаж заборов): человек сразу видит регион работы и условия без предоплаты и вызывает мастера в один клик. Вопросы, с которых обычно начинался звонок, закрыты до звонка. Сайт: zabor-dnr.ru',
+ hours:'12',rate:'600',lossWhat:'на пересказ условий и цен у менеджеров',lossWho:'Ольга',lossNote:'Сайт не уберёт эти разговоры целиком, но часть этих минут возьмёт на себя.',
+ o1:{on:1,rec:1,name:'Продающий лендинг',price:'от 70 000 ₽',term:'14–21 день',who:'одна услуга или продукт, на который ведётся реклама.',get:'одна страница, которая ведёт от клика по рекламе к заявке: первый экран сразу отвечает, что вы предлагаете и кому; цены и условия — до звонка; заявки в Telegram и CRM; аналитика настроена, рекламу можно запускать в день сдачи.',minus:'одна страница — одно предложение: если направлений несколько, придётся выбрать одно; из поиска собирает меньше запросов, чем сайт с разделами.'},
+ o2:{on:1,rec:0,name:'Многостраничный сайт',price:'цена — в разговоре',term:'21–30 дней',who:'несколько услуг, каталог или компания, где клиент должен найти своё.',get:'разделы и переходы продуманы до дизайна, страниц без лимита, сайт готов к продвижению в поиске, новые страницы сотрудники собирают сами.',minus:'дольше и требует больше ваших материалов; для одной рекламной кампании избыточен.'},
+ o3:{on:0,rec:0,name:'',price:'',term:'',who:'',get:'',minus:''},
+ why:'с него обращения с рекламы начинаются быстрее всего. И честно — нам он тоже выгоднее всего, это наша основная работа.',
+ priceNote:'Цены «от»: точную сумму называем после 10-минутного разговора и записываем в договор до старта. В любой формат входят тексты и структура, мобильная версия, базовая SEO-настройка, домен с передачей прав, обучение и видеоинструкция, 14 дней поддержки после запуска.',
+ stepsT:'Как устроена работа и сколько времени нужно от вас',
+ steps:'Интервью и анализ | 3 дня · от вас ≈30 минут\nПрототип и тексты | 3 дня · вы утверждаете\nДизайн и вёрстка | 5 дней · вы утверждаете\nЗапуск и передача | 2 дня',
+ stepsNote:'От компании — одно интервью примерно на 30 минут и согласование шагов. Структуру и тексты вы утверждаете до дизайна, поэтому «кота в мешке» на финише не бывает.',
+ contract:'Сроки | график этапов прописывается до старта, дата запуска известна заранее.\nЦена | итоговая сумма известна до подписания; без доплат за адаптив, интеграции и стандартную доработку.\nКонтроль | каждый этап вы утверждаете — структура и тексты, потом стиль и главный экран, потом остальное.\nСобственность | сайт, домен и все аккаунты оформляются на компанию, доступы передаются полностью.\nЧистота | только лицензионные шрифты, фотостоки и ваш контент — без претензий правообладателей.',
+ nopr:'Конкретное число заявок | Продажи зависят от связки: сайт, реклама и работа менеджеров. Мы отвечаем за сайт: смыслы, удобство, скорость и готовность принять рекламу.\nВедение рекламы | Сами не ведём, но сайт сдаётся готовым к рекламе, и мы порекомендуем проверенных подрядчиков.',
+ next:'Уже договорились: сегодня, чт 24 сентября, 10:00 (МСК) — 10 минут разговора с Ангелиной, экспертом PRIME ERA.',
+ contact:'Если у вас свои вопросы — напишите напрямую, ответим вам, а не через коллегу: Telegram t.me/linarzy · prime-era.pro@yandex.com',
+ bye:'Если решите, что сейчас не время, — ничего делать не нужно. Писать без вашего запроса мы не будем.',
+ foot:STUDIO_FOOT},
+b2b:{nm:'B2B‑услуга: бухгалтерия → финдиректору',brand:'«Баланс» · выжимка для финансового директора',date:'',title:'Бухгалтерское обслуживание для ООО «Вектор»: суть на одной странице',
+ intro:'Ирина Викторовна, это собрано из ответов вашего главного бухгалтера в нашем опроснике, чтобы вы оценили предложение без пересказа.',
+ stop:'Это не счёт и не договор. Если по ответам вам выгоднее оставить штатного бухгалтера, мы так и пишем ниже.',
+ nowT:'Как сейчас — по ответам вашей компании',
+ rows:'Форма и масштаб | ООО на ОСНО, около 60 операций в месяц\nКто ведёт учёт | Штатный бухгалтер на полставки\nЧто не устраивает | Отчёты сдаются в последний день, два требования ФНС за год\nКто принимает решение | Финансовый директор',
+ quote:'«Хочу спать спокойно в отчётный период.» — так ваш бухгалтер описал главное ожидание.',
+ main:'Отчётность сдаётся за 5 рабочих дней до срока, и за ошибки в учёте по договору отвечаем мы — в том числе деньгами.',
+ more:'На требования ФНС отвечаем сами в течение 2 дней; вы получаете уведомление и копию ответа.',
+ example:'',hours:'20',rate:'900',lossWhat:'на исправление ошибок и ответы на требования у сотрудников',lossWho:'ваш бухгалтер',lossNote:'Эту работу мы берём на себя по договору.',
+ o1:{on:1,rec:1,name:'Полное обслуживание',price:'28 000 ₽ / мес.',term:'старт через 10 дней',who:'если учёт нужно полностью снять с компании.',get:'учёт, зарплата, отчётность, ответы на требования, ответственность по договору.',minus:'бухгалтер не сидит в офисе — срочные вопросы через чат, ответ в течение 2 часов.'},
+ o2:{on:1,rec:0,name:'Отчётность и контроль',price:'14 000 ₽ / мес.',term:'старт через 5 дней',who:'если штатный бухгалтер остаётся.',get:'проверка учёта раз в месяц, сдача отчётности, ответы на требования.',minus:'ошибки в первичке остаются на вашем сотруднике.'},
+ o3:{on:1,rec:0,name:'Разовая проверка',price:'35 000 ₽ разово',term:'10 дней',who:'если хотите сначала понять, всё ли в порядке.',get:'письменное заключение о рисках и список исправлений.',minus:'после проверки учёт по‑прежнему на вас.'},
+ why:'по ответам основная боль — сроки и требования, а их снимает только полное обслуживание. Нам этот формат тоже выгоднее — он долгий. Решать вам.',
+ priceNote:'Цены при объёме до 80 операций в месяц; при росте пересчитываем по прайсу из договора.',
+ stepsT:'Как проходит переход',steps:'Проверка базы | 5 дней · от вас доступы\nПлан перехода | 2 дня · вы утверждаете\nПервый месяц | параллельно с вашим бухгалтером',stepsNote:'',
+ contract:'Ответственность | ошибки по нашей вине возмещаем, включая штрафы.\nСроки | отчётность — за 5 рабочих дней до срока.\nРасторжение | с уведомлением за 30 дней, база передаётся полностью.',
+ nopr:'Снижение налогов | Обещать не можем: только законная оптимизация по итогам проверки.',
+ next:'Предлагаем 15 минут звонка с руководителем отдела, чтобы ответить на ваши вопросы.',contact:'Напрямую: [телефон] · [почта]',bye:'Если решите, что сейчас не время, — ничего делать не нужно.',foot:'[Реквизиты компании]'},
+kitchen:{nm:'Кухня: решают вдвоём → второму супругу',brand:'«Кухонный двор» · для того, кто решает вместе',date:'',title:'Кухня для вашей квартиры: что мы поняли и что предлагаем',
+ intro:'Это собрано из ответов в опроснике на сайте, чтобы вы посмотрели вместе и не пересказывали друг другу.',
+ stop:'Это не счёт. Замер и эскиз бесплатные, эскиз останется у вас, даже если закажете в другом месте.',
+ nowT:'Ваши ответы',rows:'Форма и размер | угловая, 3,2 м\nКак готовите | каждый день\nЧто важнее всего | чтобы фасады не царапались\nКто дома | двое детей',
+ quote:'',main:'Фасады и столешница подобраны под то, что вы готовите каждый день и что дома дети: царапины и вода у мойки — главные враги кухни через год.',more:'',example:'',hours:'',rate:'',lossWhat:'',lossWho:'',
+ o1:{on:1,rec:1,name:'Эмаль + кварцевая столешница',price:'≈ 280–320 тыс. ₽',term:'30 дней',who:'если готовите каждый день и дома дети.',get:'фасады, которые не боятся царапин, столешница без швов у мойки.',minus:'дороже плёнки примерно на четверть.'},
+ o2:{on:1,rec:0,name:'Плёнка ПВХ + ДСП‑столешница',price:'≈ 190–220 тыс. ₽',term:'21 день',who:'если важен бюджет и готовите нечасто.',get:'аккуратная кухня за меньшие деньги.',minus:'столешница боится воды у мойки, кромки со временем расходятся.'},
+ o3:{on:0,rec:0,name:'',price:'',term:'',who:'',get:'',minus:''},
+ why:'по вашим ответам — каждый день и дети — плёнка через пару лет будет видна. Нам эмаль выгоднее, это честно. Решать вам.',
+ priceNote:'Точную цену назовём после замера — она не вырастет после подписания договора.',
+ stepsT:'Что дальше',steps:'Замер | 1 час · бесплатно\n3D‑эскиз | 3 дня · остаётся у вас\nДоговор | точная цена\nМонтаж | 1 день',stepsNote:'',
+ contract:'Цена | фиксируется в договоре после замера.\nСроки | неустойка за каждый день задержки.',nopr:'',
+ next:'Выберите время замера, удобное обоим, — приедем в тот же день или на следующий.',contact:'[телефон] · [мессенджер]',bye:'Если решите, что сейчас не время, — ничего делать не нужно.',foot:'[Реквизиты компании]'},
+school:{nm:'Школа: платит родитель',brand:'«Код‑класс» · для родителей',date:'',title:'Курс программирования для Маши, 11 лет: коротко для родителей',
+ intro:'Это итог пробного занятия и ответов в анкете, чтобы вы решили спокойно, без звонка менеджера.',
+ stop:'Это не счёт. Оплачивать ничего не нужно, если решите, что курс не нужен.',
+ nowT:'Что увидел преподаватель',rows:'Сильные стороны | быстро схватывает логику\nЧто мешает | пока стесняется задавать вопросы\nИнтерес | игры и рисование',
+ quote:'«Мама, а можно я ещё посижу?» — так Маша ответила после пробного.',main:'Через 3 месяца у Маши будет своя игра на Scratch, которую она сможет показать друзьям.',more:'',example:'',hours:'',rate:'',lossWhat:'',lossWho:'',
+ o1:{on:1,rec:1,name:'Группа до 6 человек',price:'6 400 ₽ / мес.',term:'2 раза в неделю',who:'если ребёнку важны друзья и темп.',get:'проект к концу курса, отчёт родителям раз в месяц.',minus:'нужны 20 минут практики дома — без них прогресс медленнее.'},
+ o2:{on:1,rec:0,name:'Индивидуально',price:'2 200 ₽ / занятие',term:'1–2 раза в неделю',who:'если ребёнок стесняется в группе.',get:'полное внимание преподавателя.',minus:'дороже почти вдвое и без общения с другими детьми.'},
+ o3:{on:0,rec:0,name:'',price:'',term:'',who:'',get:'',minus:''},
+ why:'Маше интересно с другими детьми, а стеснительность в маленькой группе проходит за месяц. Группа нам тоже выгоднее. Решать вам.',
+ priceNote:'Возврат за непройденные занятия — в любой момент, по договору.',stepsT:'',steps:'',stepsNote:'',contract:'Возврат | за непройденные занятия в любой момент.',nopr:'Олимпиады и «гениальность» | Обещаем только проект и навыки, которые вы увидите сами.',
+ next:'Первое занятие группы — вторник, 17:00. Можно прийти и решить после.',contact:'Преподаватель Анна: [мессенджер]',bye:'Если решите, что сейчас не время, — ничего делать не нужно.',foot:'[Реквизиты школы]'}
+};
+const EMPTY=()=>JSON.parse(JSON.stringify(PRE.studio,(k,v)=>typeof v==='string'&&k!=='nm'?'':v));
+let D=JSON.parse(JSON.stringify(PRE.studio)),cur='studio';
+function esc(t){return String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function link(t){return esc(t).replace(/(https?:\/\/[^\s·]+|t\.me\/[^\s·]+)/g,m=>`<a href="${m.startsWith('http')?m:'https://'+m}">${m}</a>`).replace(/([\w.-]+@[\w.-]+\.\w+)/g,'<a href="mailto:$1">$1</a>')}
+function lines(t){return String(t||'').split('\n').map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf('|');return i<0?[x,'']:[x.slice(0,i).trim(),x.slice(i+1).trim()]})}
+function money(n){return Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ')}
+function F(k,l,hint,ta){return `<div class="f"><label>${l}${hint?` <i>${hint}</i>`:''}</label>${ta?`<textarea data-k="${k}">${esc(D[k])}</textarea>`:`<input data-k="${k}" value="${esc(D[k])}">`}</div>`}
+function O(n){const o=D['o'+n];return `<div class="opt"><div class="ttl">Вариант ${n}<span class="row"><label class="ch"><input type="checkbox" data-o="${n}" data-p="on" ${o.on?'checked':''}> показать</label><label class="ch"><input type="radio" name="rec" data-o="${n}" data-p="rec" ${o.rec?'checked':''}> рекомендуем</label></span></div>
+ ${['name|Название','price|Цена','term|Срок','who|Кому','get|Что получаете','minus|Чем плох (обязательно)'].map(x=>{const [p,l]=x.split('|');return `<div class="f"><label>${l}</label>${['get','who','minus'].includes(p)?`<textarea data-o="${n}" data-p="${p}">${esc(o[p])}</textarea>`:`<input data-o="${n}" data-p="${p}" value="${esc(o[p])}">`}</div>`}).join('')}</div>`}
+function form(){document.getElementById('form').innerHTML=`<h3>Шапка</h3>${F('brand','Надпись сверху')}${F('date','Дата')}${F('title','Заголовок','суть за три минуты')}${F('intro','Кому и от кого','по имени; кто подготовил',1)}${F('stop','Рамка «не обязательно»','',1)}
+ <h3>Как сейчас</h3>${F('nowT','Заголовок блока')}${F('rows','Строки','по одной: вопрос | ответ',1)}${F('quote','Цитата собеседника','дословно',1)}
+ <h3>Что изменится</h3>${F('main','Главное — одно','одна польза',1)}${F('more','Уточнение','',1)}${F('example','Пример у других','только реальный',1)}
+ <div class="two">${F('hours','Часов в месяц','теряется')}${F('rate','₽ за час','')}</div>${F('lossWhat','На что уходит время')}${F('lossWho','Кто назвал цифры')}${F('lossNote','Что из этого изменится','честно, без обещаний',1)}
+ <h3>Что предлагаем</h3>${O(1)}${O(2)}${O(3)}${F('why','Почему рекомендуем','причина + своя выгода',1)}${F('priceNote','Про цену и что входит','',1)}
+ <h3>Как устроена работа</h3>${F('stepsT','Заголовок')}${F('steps','Шаги','по одному: этап | срок · от вас',1)}${F('stepsNote','Пояснение','',1)}
+ <h3>Договор и честность</h3>${F('contract','Что закреплено в договоре','пункт | пояснение',1)}${F('nopr','Чего не обещаем','пункт | почему',1)}
+ <h3>Следующий шаг</h3>${F('next','Шаг','кто, когда, о чём',1)}${F('contact','Прямой контакт','',1)}${F('bye','Отпустить','',1)}${F('foot','Подвал','реквизиты')}`;
+ document.querySelectorAll('#form [data-k]').forEach(e=>e.addEventListener('input',()=>{D[e.dataset.k]=e.value;doc()}));
+ document.querySelectorAll('#form [data-o]').forEach(e=>e.addEventListener('input',()=>{const o=D['o'+e.dataset.o];if(e.type==='checkbox')o.on=e.checked?1:0;else if(e.type==='radio'){[1,2,3].forEach(i=>D['o'+i].rec=0);o.rec=1}else o[e.dataset.p]=e.value;doc()}))}
+function docHTML(){const h=[];const rows=lines(D.rows),st=lines(D.steps),ct=lines(D.contract),np=lines(D.nopr);
+ h.push(`<div class="top"><span>${esc(D.brand)}</span><span>${esc(D.date)}</span></div><h1>${esc(D.title)}</h1>`);
+ if(D.intro)h.push(`<p class="meta">${esc(D.intro)}</p>`);if(D.stop)h.push(`<div class="note">${esc(D.stop).replace(/^([^.]*\.)/,'<b>$1</b>')}</div>`);
+ if(rows.length){h.push(`<h2>${esc(D.nowT||'Как сейчас')}</h2><table>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('')}</table>`)}
+ if(D.quote)h.push(`<blockquote>${esc(D.quote)}</blockquote>`);
+ if(D.main||D.more||D.example){h.push('<h2>Что изменится</h2>');if(D.main)h.push(`<p><b>Главное — одно:</b> ${esc(D.main)}</p>`);if(D.more)h.push(`<p>${esc(D.more)}</p>`);if(D.example)h.push(`<p>${link(D.example).replace(/^(Как это выглядит у других\.)/,'<b>$1</b>')}</p>`)}
+ const hh=parseFloat(D.hours),rr=parseFloat(String(D.rate).replace(/\s/g,''));if(hh&&rr)h.push(`<p>Сейчас ${esc(D.lossWhat||'на это')} уходит около <b>${hh} ч в месяц — ${money(hh*rr)} ₽</b> (${money(hh*rr*12)} ₽ в год).${D.lossWho?' Цифры подставил(а) '+esc(D.lossWho)+'.':''} ${esc(D.lossNote||'')}</p>`);
+ const os=[1,2,3].map(i=>D['o'+i]).filter(o=>o.on&&o.name);
+ if(os.length){h.push(`<h2>Что мы предлагаем</h2><div class="dopts">${os.map(o=>`<div class="dopt${o.rec?' rec':''}"><div class="lbl">${o.rec?'Мы рекомендуем':'Другой вариант'}</div><h3>${esc(o.name)}</h3>${o.price?`<div class="pr">${esc(o.price)}</div>`:''}${o.term?`<div class="tm">${esc(o.term)}</div>`:''}${o.who?`<p><b>Кому:</b> ${esc(o.who)}</p>`:''}${o.get?`<p><b>Что получаете:</b> ${esc(o.get)}</p>`:''}${o.minus?`<div class="mn"><b>Чем плох:</b> ${esc(o.minus)}</div>`:'<div class="mn"><b>Чем плох:</b> [впишите честный минус]</div>'}</div>`).join('')}</div>`);
+  const r=os.find(o=>o.rec);if(r&&D.why)h.push(`<p style="margin-top:12px"><b>Почему мы рекомендуем «${esc(r.name)}»:</b> ${esc(D.why)}${/решать вам/i.test(D.why)?'':' <b>Решать вам.</b>'}</p>`);
+  if(D.priceNote)h.push(`<p class="meta">${esc(D.priceNote)}</p>`)}
+ if(st.length){h.push(`<h2>${esc(D.stepsT||'Как устроена работа')}</h2><div class="steps">${st.map(s=>`<div><b>${esc(s[0])}</b>${esc(s[1])}</div>`).join('')}</div>`);if(D.stepsNote)h.push(`<p style="margin-top:10px">${esc(D.stepsNote)}</p>`)}
+ if(ct.length)h.push(`<h2>Что закреплено в договоре</h2><ul>${ct.map(c=>`<li><b>${esc(c[0])}${c[1]?':':''}</b> ${esc(c[1])}</li>`).join('')}</ul>`);
+ if(np.length)h.push(`<h2>Чего мы не обещаем</h2><ul>${np.map(c=>`<li><b>${esc(c[0])}.</b> ${esc(c[1])}</li>`).join('')}</ul>`);
+ if(D.next||D.contact||D.bye)h.push(`<h2>Следующий шаг</h2><div class="next">${D.next?`<p>${esc(D.next).replace(/^([^:]*:)/,'<b>$1</b>')}</p>`:''}${D.contact?`<p>${link(D.contact)}</p>`:''}${D.bye?`<p style="margin:0">${esc(D.bye)}</p>`:''}</div>`);
+ if(D.foot)h.push(`<div class="foot">${esc(D.foot)}</div>`);return h.join('\n')}
+function doc(){document.getElementById('doc').innerHTML=docHTML()}
+function docText(){const d=document.createElement('div');d.innerHTML=docHTML().replace(/<\/(p|h1|h2|h3|tr|li|div|blockquote)>/g,'\n$&');return d.textContent.replace(/\n{3,}/g,'\n\n').trim()}
+function dlHTML(){const css=[...document.styleSheets].map(s=>{try{return [...s.cssRules].map(r=>r.cssText).filter(t=>t.includes('.doc')).join('\n')}catch(e){return''}}).join('\n');
+ const html=`<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(D.title)}</title><style>body{margin:0;background:#eef0f3;padding:24px 12px}${css}@media print{body{background:#fff;padding:0}}</style></head><body><div class="doc">${docHTML()}</div></body></html>`;
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='vyzhimka.html';document.body.appendChild(a);a.click();a.remove()}
+function saveJ(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));a.download='vyzhimka.json';document.body.appendChild(a);a.click();a.remove()}
+function loadJ(e){const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{D=JSON.parse(t);form();doc();toast('Загружено')}catch(err){toast('Не удалось прочитать файл')}})}
+function preset(k){cur=k;D=k==='empty'?EMPTY():JSON.parse(JSON.stringify(PRE[k]));pre();form();doc()}
+function pre(){document.getElementById('pre').innerHTML=Object.keys(PRE).map(k=>`<button class="${k===cur?'on':''}" onclick="preset('${k}')">${esc(PRE[k].nm)}</button>`).join('')+`<button class="${cur==='empty'?'on':''}" onclick="preset('empty')">Пустой шаблон</button>`}
+function copy(t){const done=()=>toast('Скопировано');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));else fb(t,done)}
+function fb(t,cb){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');cb()}catch(e){}x.remove()}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+pre();form();doc();
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

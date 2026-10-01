@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>1. Основа — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.map{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;margin-top:18px}
+@media(max-width:860px){.map{grid-template-columns:1fr}}
+.page{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:12px;position:sticky;top:calc(74px + var(--pe-nav-h,0px))}
+@media(max-width:860px){.page{position:static}}
+.page .bar3{display:flex;gap:5px;padding:4px 6px 10px}.page .bar3 i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.blkbtn{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:.15s}
+.blkbtn:hover{border-color:var(--acc)}
+.blkbtn.on{border-color:var(--acc);background:var(--acc2)}
+.blkbtn b{font-family:var(--fh);font-size:12px;color:var(--acc);min-width:28px}
+.blkbtn span{font-size:14px;font-weight:700;line-height:1.3}
+.blkbtn em{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;color:var(--sy);display:none}
+body.f100 .blkbtn em{display:block}
+.blkbtn.after{border-style:dashed}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:24px}
+.panel h3{font-size:22px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.col{border-radius:12px;padding:14px 16px}
+.col.sz{background:var(--acc2)}.col.pr{background:var(--pr2)}.col.no{background:var(--bad2)}.col.sy{background:var(--sy2)}
+.col h4{margin-bottom:8px}.col.sz h4{color:var(--sz)}.col.pr h4{color:var(--pr)}.col.no h4{color:var(--bad)}.col.sy h4{color:var(--sy)}
+.col ul{padding-left:18px;font-size:14.5px}.col li{margin-bottom:6px}
+.col li i{font-style:normal;display:block;font-size:13px;color:var(--mut)}
+.sig{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.sig div{flex:1;min-width:220px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.sig b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.fchips{display:none;margin-top:10px}body.f100 .fchips{display:block}
+.filt{margin:14px 0}
+.cf-row td:nth-child(4){background:color-mix(in srgb,var(--sy2) 70%,transparent);font-weight:600}
+.sit{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:760px){.sit{grid-template-columns:1fr}}
+.sit .card h3{font-size:17px}
+.sit .if{font-size:13px;font-weight:800;color:var(--sy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.lbls{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:700px){.lbls{grid-template-columns:1fr}}
+.gl dt{font-weight:800;margin-top:12px}.gl dd{color:var(--mut);margin-left:0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0}
+.flow span{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;font-weight:700}
+.flow i{color:var(--dim);font-style:normal}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="on">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 1 · основа</div>
+  <h1>Как сайт продаёт: основа синтеза</h1>
+  <p class="lead">Хороший продавец проводит клиента по одним и тем же ступеням. Сайт — это тот же продавец, только говорит текстом. Поэтому каждый экран отвечает за свою ступень, и порядок ступеней не меняется.</p>
+  <div class="grid g3" style="margin-top:22px">
+    <div class="card"><span class="tag t-sz">Основа — Сизов</span><p style="margin-top:8px">Восемь ступеней продажи, их порядок, честность и право клиента не покупать. Это скелет каждого сайта.</p></div>
+    <div class="card"><span class="tag t-pr">Усилители — Прайм</span><p style="margin-top:8px">Инструменты, которые добавляются по ситуации: формула 100%, польза от следующего шага, формулы текста, работа с тем, кто решает.</p></div>
+    <div class="card"><span class="tag t-sy">Синтез</span><p style="margin-top:8px">Когда системы расходятся, действует правило синтеза — оно записано в таблице конфликтов ниже. Сотрудник не выбирает наугад.</p></div>
+  </div>
+  <div class="note sy"><b>Три правила, которые не нарушаются никогда.</b><br>1. Порядок ступеней не меняем — можно только сжать несколько ступеней в один экран или растянуть одну на несколько.<br>2. У каждого экрана есть задача и признак на стороне посетителя: не «мы рассказали», а «человек сделал» — прочитал дальше, ответил, выбрал, записался.<br>3. Все факты — только из брифа. Нет факта — метка, а не выдумка.</div>
+</div></section>
+
+<section class="blk" style="padding-bottom:0"><div class="wrap"><div class="card" style="border-color:var(--sy)">
+  <h2 style="margin-top:0">Что изменилось в версии 2 (плагин 0.6)</h2>
+  <ul>
+   <li><b>Главная боль — отдельный шаг с решением человека.</b> До любых экранов выбираем, на чём держится сайт: 4–6 кандидатов из слов клиентов, лестница до результата, баллы — <a href="sayt-12-glavnaya-bol.html">модуль 12</a>.</li>
+   <li><b>Прожарка до производства.</b> Решения, которых нет в брифе: деньги, варианты и якорь, шаг поменьше, кейс, концовка — <a href="sayt-13-prozharka.html">модуль 13</a>.</li>
+   <li><b>У каждого блока есть опора</b>: закон Сизова и, если уместно, инструмент Прайма. Блок без опоры — лишний — <a href="sayt-14-zakony.html">модуль 14</a>.</li>
+   <li><b>Экран — набор блоков</b>, а не один вариант: минимум + усилители по ситуации, карта сомнений — <a href="sayt-15-sostav-ekranov.html">модуль 15</a>.</li>
+   <li><b>Выводы — не выдумки.</b> Факты о компании — только из брифа. Выводы о ситуации посетителя пишем смело и помечаем «вывод». Проверка глубины по баллам — <a href="sayt-16-glubina.html">модуль 16</a>.</li>
+   <li><b>FAQ запрещён под любым видом.</b> Сомнения встроены в блоки, где возникают, не больше двух на экран.</li>
+   <li><b>Сдача — не только страница</b>: что переносится в звонок и письма, что проверить на практике, что отдать команде клиента — <a href="sayt-17-sdacha.html">модуль 17</a>.</li>
+  </ul></div></div></section>
+<section class="blk" style="padding-bottom:0"><div class="wrap">
+  <h2>Как называем ступени и экраны</h2>
+  <p class="muted">Во всей методичке одна схема: <b>ступень Сизова</b> — это то, что происходит с посетителем; <b>экран</b> — то, что для этого стоит на странице. Пишем так: «Экран 5 · Финансовый консультант (варианты и цены)». Короткие слова в скобках — только подсказка, ступень всегда называется по Сизову.</p>
+  <div class="sc"><table class="t"><tr><th>№</th><th>Ступень Сизова</th><th>Экран на сайте</th></tr><tr><td><b>1</b></td><td><b>Контакт</b></td><td>Экран 1 · первый экран</td></tr><tr><td><b>2</b></td><td><b>Ключ к уху</b></td><td>Экран 2 · «покупать не обязательно»</td></tr><tr><td><b>3</b></td><td><b>Разведчик</b></td><td>Экран 3 · вопросы о посетителе</td></tr><tr><td><b>4</b></td><td><b>Вовлечение в пользы</b></td><td>Экран 4 · одна польза</td></tr><tr><td><b>5</b></td><td><b>Финансовый консультант</b></td><td>Экран 5 · варианты и цены</td></tr><tr><td><b>6</b></td><td><b>Кассир</b></td><td>Экран 6 · следующий шаг</td></tr><tr><td><b>7</b></td><td><b>Фея</b></td><td>Экран 7 · после оплаты</td></tr><tr><td><b>8</b></td><td><b>Директор по развитию</b></td><td>Экран 8 · рассказать знакомому</td></tr><tr><td>—</td><td>вне ступеней</td><td>Уход без покупки · в конце страницы</td></tr></table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Карта страницы: восемь ступеней</h2>
+  <p class="muted">Нажмите на блок страницы слева — справа появится, что он должен сделать, что даёт основа, какие усилители можно добавить и когда, и чего делать нельзя.</p>
+  <div class="row" style="margin-top:10px"><label class="btn"><input type="checkbox" id="f100" style="accent-color:var(--sy)"> Показать формулу 100% (что закрывает каждый блок)</label></div>
+  <div class="map">
+    <div class="page" id="page"><div class="bar3"><i></i><i></i><i></i></div></div>
+    <div class="panel" id="panel"></div>
+  </div>
+</div></section>
+
+<section class="blk" id="diag"><div class="wrap">
+  <h2>Главная проверка: восемь ступеней</h2>
+  <p class="lead">Если все ступени до «кассира» пройдены, сделка будет: человек, который хочет, платит быстро и сам находит способ. Если сделки нет — значит, какая‑то ступень не отработана. И почти всегда проблема не там, где она проявилась, а раньше: на шаг, на два‑три.</p>
+  <div class="note sy">Правило одинаково для сайта и для созвона. Сайт не приносит заявок, менеджер слышит «дорого», клиент «думает» — ищите пропущенную ступень <b>до</b> этого места, а не усиливайте нажим там, где болит.</div>
+  <div class="sc" style="margin-top:14px"><table class="t">
+    <tr><th>Что видите</th><th>Что это обычно значит</th><th>Что проверять на сайте</th><th>Что проверять в разговоре</th></tr>
+    <tr><td><b>Трафик есть, заявок почти нет</b></td><td>Человек не понял, куда попал, или почувствовал, что его сейчас будут продавливать</td><td>Экран 1 (кто мы и для кого), экран 2 («покупать не обязательно»)</td><td>—</td></tr>
+    <tr><td><b>Заявки есть, но спрашивают только цену</b></td><td>Посетитель не рассказал о себе и не увидел пользу — сравнивает по цене</td><td>Экран 3 (вопросы о посетителе), экран 4 (одна польза)</td><td>Были ли знакомство и «ни к чему не обязывает»? Задавались ли вопросы?</td></tr>
+    <tr><td><b>«Дорого»</b></td><td>Не ожидал такой суммы или не увидел ценности; обсуждали цену вместо пользы</td><td>Экран 5 (варианты, честная типичная цена), затем экран 4</td><td>Шаг 5 (варианты с минусами, мнение и «решать вам»), затем шаг 4</td></tr>
+    <tr><td><b>«Я подумаю»</b></td><td>У человека отняли право выбора, или польза не стала его пользой</td><td>Экран 2, затем экран 4</td><td>Шаг 2, затем шаг 4. Техника ответа — в модуле 0</td></tr>
+    <tr><td><b>«Скиньте прайс / КП»</b></td><td>Вежливое окончание разговора: человек не слушал</td><td>Экраны 2–3</td><td>Шаг 2; если вопросы уже были — шаг 3</td></tr>
+    <tr><td><b>Ушёл сравнивать</b></td><td>Польза была не одна; варианты разобраны через характеристики, а не через использование</td><td>Экран 4, затем экран 5</td><td>Шаг 4, затем шаг 5</td></tr>
+    <tr><td><b>Оставил заявку и не берёт трубку</b></td><td>Молчание — информация о нашей работе, а не о клиенте</td><td>Экран 6: написано ли, кто, когда и о чём свяжется</td><td>Перезвонили ли вовремя, был ли интерес к разговору</td></tr>
+    <tr><td><b>«Перезвоните позже»</b></td><td>Способ отложить; не спросили, что к тому моменту станет понятнее</td><td>—</td><td>Шаг 3: что должно измениться и почему; затем знакомство</td></tr>
+    <tr><td><b>Решил, но деньги идут медленно</b></td><td>Проблема не у «кассира» — раньше</td><td>Экран 5, затем экран 3</td><td>Шаг 5, затем шаг 3. Отдали «лишь бы взял» — оплата будет последней</td></tr>
+    <tr><td><b>Отвечает односложно</b></td><td>Человек формально на связи, мыслями не здесь</td><td>—</td><td>Вернуть прямым вопросом, потом заново знакомство и шаг 2</td></tr>
+    <tr><td><b>Не рекомендует, не возвращается</b></td><td>Что‑то раньше было сделано неправильно; клиенты не жадные</td><td>Экраны 7–8 и все предыдущие</td><td>Как продали и что было после оплаты</td></tr>
+  </table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Вторая линза: формула 100% из Прайма</h2>
+  <p class="muted">Из «Системы продаж Прайм»: покупка = деньги (финансовая возможность) × осознанная потребность × доверие × тот, кто решает × причина сделать шаг сейчас. Если хоть один множитель равен нулю — заявки не будет. Главная проверка — восемь ступеней выше. Формула — вторая линза: она быстро показывает, какого «множителя» не хватает, а ступени отвечают, <i>как</i> его закрыть.</p>
+  <div class="sc" style="margin-top:14px"><table class="t">
+    <tr><th>Множитель</th><th>Что значит для сайта</th><th>Какие экраны закрывают</th><th>Как проверить</th></tr>
+    <tr><td><b>Деньги</b> (финансовая возможность)</td><td>Человек понимает, сколько это стоит и как заплатить так, чтобы потянуть</td><td>Экран 5 (варианты), экран 6 (шаг)</td><td>Есть честная цена или типичная сумма; есть способ заплатить частями или шаг поменьше, если сумма большая</td></tr>
+    <tr><td><b>Осознанная потребность</b></td><td>Человек сам понял, зачем ему это и что изменится</td><td>Экран 3 (вопросы), экран 4 (польза)</td><td>Посетитель отвечает на вопросы о себе; видит одну пользу в деле; может сказать её своими словами</td></tr>
+    <tr><td><b>Доверие</b></td><td>Эмпатия, экспертность, честность, обязательность</td><td>Экраны 1–2 (честная рамка), 4 (кейсы), 5 (минусы вариантов), 6 (договор)</td><td>Есть «кому не подойдём», минусы, реальные кейсы и договорные условия; нет штампов и выдумок</td></tr>
+    <tr><td><b>Тот, кто решает</b></td><td>Сайт говорит и с тем, кто читает, и с тем, кто платит</td><td>Экран 5: блок «Решаете не один?», выжимка</td><td>Если платит не читатель — есть выжимка для него</td></tr>
+    <tr><td><b>Здесь и сейчас</b></td><td>Есть понятная причина сделать следующий шаг сейчас</td><td>Экран 6 (шаг)</td><td>У шага названа польза («замер — и эскиз остаётся у вас»); реальные ограничения указаны как информация. Таймеров и выдуманного дефицита нет</td></tr>
+  </table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Таблица конфликтов: где системы расходятся и как делаем мы</h2>
+  <p class="muted">Каждая строка — решение, которое уже принято. Колонка «Можно иначе, если…» — единственные разрешённые исключения.</p>
+  <div class="segs filt" id="cfSeg"></div>
+  <div class="sc"><table class="t" id="cfTable"></table></div>
+</div></section>
+
+<section class="blk" id="price"><div class="wrap">
+  <h2>Цена и якорь: как показывать деньги честно</h2>
+  <p class="muted">Из гайда Прайма по якорю и приманке, проверено по технологии Сизова. Коротко: якорь работает, когда он правда, и становится манипуляцией, когда он декорация.</p>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Что такое якорь</h3><p>Первое число, которое человек видит рядом, становится точкой отсчёта: всё остальное он сравнивает с ним. «Приманка» — вариант, добавленный не для продажи, а чтобы соседний казался выгоднее. Классика — подписка The Economist, где «только печать» стоила столько же, сколько «печать + онлайн».</p></div>
+    <div class="card"><h3>Что говорит Сизов</h3><p>Тариф‑приманка, который вы не продаёте, запрещён: люди считывают намерение, и если клиент потом почувствует, что его «сделали», он не вернётся и не порекомендует. Настоящий дорогой вариант — можно: «Хотя, конечно, я хочу, чтобы вы взяли вот это, более дорогое. Однозначно. Но решать вам».</p></div>
+  </div>
+  <div class="note warn" style="margin-top:14px"><b>Главная ловушка — якорь вниз.</b> Если на сайте «от 40 000», а реальные проекты стоят 100–200 тысяч, человек запоминает 40 000, и на созвоне настоящая сумма звучит как обман. Лечится честной фразой на экране вариантов: «Большинство наших проектов стоит …» — а не приманкой.</div>
+  <div class="sc" style="margin-top:14px"><table class="t">
+    <tr><th>Правило из гайда</th><th>Решение в синтезе</th></tr>
+    <tr><td>Дорогой вариант должен быть настоящим</td><td><b>Да, обязательно.</b> С реальным составом, «для кого» и честным минусом «переплата, если задача — …».</td></tr>
+    <tr><td>Разница в цене объяснима: в 2–3 раза к целевому</td><td><b>Да.</b> Разрыв в 1,5 раза почти не работает; в 10 раз — выглядит манипуляцией.</td></tr>
+    <tr><td>Показывать дорогой вариант раньше или рядом</td><td><b>Рядом — всегда можно.</b> Первым и крупно — допустимо по решению владельца, если вариант настоящий, у всех вариантов есть минусы и в конце «решать вам».</td></tr>
+    <tr><td>Выделять целевой вариант («рекомендуем»)</td><td><b>Можно — с причиной и признанием своей выгоды.</b> Если на сайте есть квиз, выделение переезжает на вариант из ответов посетителя.</td></tr>
+    <tr><td>Не давить на дорогой вариант</td><td><b>Да.</b> Он существует в поле зрения, его не «впаривают».</td></tr>
+    <tr><td>Один якорь, а не три «супер‑премиума»</td><td><b>Да.</b> Основных вариантов три; четвёртый — только отдельный настоящий продукт.</td></tr>
+    <tr><td>«Неровное число выглядит просчитанным» (369 000)</td><td><b>Только если оно правда просчитано.</b> Иначе это ложный сигнал.</td></tr>
+    <tr><td>В разговоре: «есть проект от 369 тысяч, но вам, скорее всего, подойдёт за 130»</td><td><b>Только после вопросов.</b> До разведки цену не называем: продавец ещё не знает, что нужно клиенту. После — нормальное мнение консультанта.</td></tr>
+    <tr><td>Цену целевого варианта называть как точку отсчёта, а не как нижнюю границу вилки</td><td><b>Да.</b> Называем честную типичную сумму, а не «от минимальной».</td></tr>
+    <tr><td>Блюдо в меню, которое никто не заказывает; неудачная квартира «для контраста»</td><td><b>Нет.</b> Это приманка — запрещено.</td></tr>
+  </table></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="good"><b>Так можно</b>«Арт‑лендинг от 200 000 ₽ — для брендов, где сайт часть продукта. Если задача — заявки с рекламы, это переплата: продающий лендинг от 70 000 ₽ решит её почти втрое дешевле. Мы рекомендуем лендинг — и нам он тоже выгоднее. Решать вам».</div>
+    <div class="badx"><b>Так нельзя</b>«VIP‑пакет от 369 000 ₽» без реального наполнения, чтобы «Стандарт» казался дешёвым; плашка «Хит продаж» без факта; «осталось 2 места по старой цене».</div>
+  </div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Ситуации: что меняется в структуре</h2>
+  <p class="muted">Скелет один, но под разные условия он сжимается, растягивается и получает разные усилители. Найдите свою ситуацию — их может быть несколько сразу.</p>
+  <div class="sit" id="sit" style="margin-top:14px"></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Метки в структуре и текстах</h2>
+  <div class="lbls">
+    <div class="card"><span class="tag t-ok">факт</span><p style="margin-top:6px">Взято из брифа или с сайта клиента. Метки не требует.</p></div>
+    <div class="card"><span class="tag t-warn">подтвердить: …</span><p style="margin-top:6px">Идея или условие, которого нет у клиента: «бесплатный замер», «оплата 50/50». До запуска клиент либо подтверждает, либо убираем.</p></div>
+    <div class="card"><span class="tag t-bad">ждёт ответа: …</span><p style="margin-top:6px">На этом месте должен стоять факт клиента, а его нет: «ждёт ответа: итог кейса». Место оставляем пустым, не подставляем «правдоподобное».</p></div>
+    <div class="card"><span class="tag">вне методики</span><p style="margin-top:6px">Требование носителя или закона: форма, согласие на обработку данных, мобильная версия, лицензия. Делаем, но не путаем с методикой.</p></div>
+  </div>
+  <h3 style="margin-top:26px">Как сдавать структуру</h3>
+  <p class="muted">Структура — это таблица до текстов. Сначала карта, потом слова.</p>
+  <div class="sc"><table class="t">
+    <tr><th>Экран</th><th>Ступень</th><th>Задача экрана</th><th>Что делает посетитель</th><th>Усилители</th><th>Метки</th></tr>
+    <tr><td>Экран 1 · первый</td><td>Контакт</td><td>Кто мы, для кого, чем полезны</td><td>Листает дальше</td><td>—</td><td>—</td></tr>
+    <tr><td>Экран 5 · варианты</td><td>Консультант</td><td>Честный выбор из 3 вариантов</td><td>Выбирает вариант</td><td>Оплата частями (подтвердить)</td><td>ждёт ответа: цена магазина</td></tr>
+  </table></div>
+  <p class="dim" style="margin-top:8px">В шапке структуры: вид бизнеса, тип сайта, одна главная польза, допущения одной строкой каждое, список меток «ждёт ответа».</p>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Словарь</h2>
+  <div class="grid g2">
+    <dl class="gl card"><h3>Из Сизова</h3>
+      <dt>Ключ к уху</dt><dd>Снять у человека ощущение «сейчас мне будут продавать»: покупать не обязательно; возможно, вам это не нужно; а вы знаете, что…?</dd>
+      <dt>Разведчик</dt><dd>Вопросы о том, как человек будет пользоваться, а не о том, что он купит. С «если бы».</dd>
+      <dt>Одна польза</dt><dd>Профессионал продаёт на одной пользе, показанной в деле. Каждая следующая характеристика стирает предыдущую.</dd>
+      <dt>Финансовый консультант</dt><dd>Тот, к кому идут за советом, как потратить деньги: заинтересован в выгоде клиента, знает, что ему нужно, профессионал, даёт решить самому.</dd>
+      <dt>Кассир</dt><dd>Сумма, способ, дата — или точно: кто, когда и о чём свяжется.</dd>
+      <dt>Фея</dt><dd>Неожиданная польза после оплаты, которая почти ничего не стоит компании. Не скидка.</dd>
+      <dt>Директор по развитию</dt><dd>Клиенту дают готовые слова, чтобы рассказать о вас знакомому. Знакомятся, а не продают знакомому.</dd>
+      <dt>Отталкивание</dt><dd>Честно сказать, кому продукт не нужен. Оставшиеся начинают слушать.</dd>
+    </dl>
+    <dl class="gl card"><h3>Из Прайма</h3>
+      <dt>Формула 100%</dt><dd>ФВ × ОП × Д × ЛПР × ЗС: деньги, осознанная потребность, доверие, тот, кто решает, причина сейчас.</dd>
+      <dt>Д = Э + Э + Ч + О</dt><dd>Доверие = эмпатия + экспертность + честность + обязательность.</dd>
+      <dt>ФХВЭ</dt><dd>Факт клиента → характеристика → выгода → эмоция. Формула, чтобы писать о пользе от лица клиента.</dd>
+      <dt>Фразы‑мостики</dt><dd>«Благодаря этому…», «Это значит, что…», «В вашей ситуации это…» — связывают характеристику с выгодой.</dd>
+      <dt>Польза от прогресса</dt><dd>У каждого промежуточного шага (замер, разбор, пробный урок) своя польза, ради которой его делают.</dd>
+      <dt>ДЧЕТ</dt><dd>Давайте … чтобы … если … то … — формула подписи к следующему шагу.</dd>
+      <dt>Парашют</dt><dd>Несколько шагов разной высоты: для решившего, для сомневающегося, для присматривающегося.</dd>
+      <dt>Пятно на рубашке</dt><dd>Назвать своё ограничение первым, пока клиент не нашёл его сам.</dd>
+      <dt>Предвосхищение</dt><dd>Закрыть сомнение до того, как клиент его озвучит.</dd>
+    </dl>
+  </div>
+</div></section>
+
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 1 из 7. Источники: база плагина sizov-sales (технология Андрея Сизова) и скилл «Система продаж Прайм». Правила синтеза — решения студии, в книгах их нет.</div></footer>
+
+<script>
+const FN={'ФВ':'деньги (финансовая возможность)','ОП':'осознанная потребность','Д':'доверие','ЛПР':'тот, кто решает','ЗС':'причина сделать шаг сейчас'};
+const FS={'ФВ':'деньги','ОП':'потребность','Д':'доверие','ЛПР':'кто решает','ЗС':'сейчас'};
+const ST=[
+ {k:'S1',sn:'Контакт',e:'1',n:'Кто мы и для кого',f:['Д','ОП'],task:'За несколько секунд объяснить, куда человек попал и ему ли это. Информируем, а не предлагаем купить.',vis:'Не закрыл страницу, листает дальше.',
+  sz:['Одной фразой: кто мы, для кого, чем полезны.','Без предложения купить и без давления — продажа ещё не началась.','Первое впечатление второго шанса не имеет: контакты и понятная навигация видны сразу.'],
+  pr:[['Оффер «за 5 секунд»: что, кому, почему вы.','Совпадает с основой — используем всегда.'],['Начать с факта клиента (ФХВЭ): «Для тех, у кого…».','Когда в брифе есть ситуация клиента его словами.'],['Точки соприкосновения (ПТС): город, отрасль, масштаб.','Когда общность реальная: «для малого бизнеса Казани».'],['Второе предложение — шаг поменьше на отдельной кнопке.','Когда цикл сделки длинный и сразу не покупают.']],
+  no:['Начинать со страшилки: «ваш сайт работает против вас».','«Лучшие», «№1», «лидер рынка» без доказательства.','Цену в первом экране — кроме ниш, где цена — навигация (еда, запись в салон, массовый магазин).'],
+  ex:'«Сайты на Tilda, после которых клиент приходит в разговор уже разобравшись» + «Понять, нужен ли вам новый сайт».'},
+ {k:'S2',sn:'Ключ к уху',e:'2',n:'Покупать не обязательно',f:['Д'],task:'Снять ощущение «сейчас будут продавливать» и открыть внимание — до рассказа о продукте.',vis:'Читает дальше; сам идёт к вопросам или к пользе.',
+  sz:['«Покупать не обязательно» — прямым текстом.','Отталкивание: «возможно, вам это не нужно» — и конкретно кому.','Интерес: «а вы знаете, что…?» — один любопытный факт.','Сказать, что будет на странице и чем она закончится.'],
+  pr:[['«Пятно на рубашке»: назвать своё ограничение первым.','Всегда, если есть реальное ограничение (сроки, цена, чего не делаем).'],['Честность (Ч) из формулы доверия.','Всегда — это то же, что отталкивание.'],['Сравнение способов: «кому подойдёт другой вариант».','Когда клиент сравнивает с «сделаю сам», фрилансером, крупной фирмой.']],
+  no:['Блок «Узнаёте себя? Вот что вы теряете» — усиление страха.','Всплывающие окна, таймеры, «вы точно уходите?».'],
+  ex:'«Вполне возможно, новый сайт вам не нужен: если клиентов и так больше, чем вы успеваете взять…». В быстрых нишах (еда, массовый магазин) экран сжимается до одной строки честности: «доставка 60–90 минут, не 30».'},
+ {k:'S3',sn:'Разведчик',e:'3',n:'Вопросы о вас',f:['ОП'],task:'Посетитель рассказывает о своей ситуации раньше, чем читает о компании.',vis:'Ответил на вопросы: прошёл квиз, выбрал свою ситуацию, заполнил подбор.',
+  sz:['3–5 вопросов о том, как человек будет пользоваться; хотя бы один с «если бы».','Ни одной цены до этого экрана.','Квиз — только начало разведки: следующий вопрос из ответа задаст человек в разговоре.','Ответы посетителя — дословно в заявку.'],
+  pr:[['Схема вопросов Прайма (ситуация, опыт, проблемы, результат, аналоги) — как источник вопросов.','Всегда при составлении вопросов.'],['Результат квиза — польза для посетителя: подбор, расчёт, рекомендация.','Всегда: человек должен что‑то получить за ответы.'],['Ответы уходят менеджеру, и он начинает разговор с фактов клиента.','Всегда, когда есть форма.']],
+  no:['Вопросы о бюджете и «когда планируете купить» в квизе — это вопросы покупающему.','Квиз ради сбора контакта: «ответьте на 5 вопросов и оставьте телефон, чтобы узнать результат».'],
+  ex:'Квиз, калькулятор, подбор, тест, «выберите вашу ситуацию» карточками. Чем заменить квиз в нишах, где он не подходит, — в модуле 3.'},
+ {k:'S4',sn:'Вовлечение в пользы',e:'4',n:'Одна польза и показ',f:['ОП','Д'],task:'Показать одну главную пользу в деле и дать примерить её на себя.',vis:'Понял своими словами, чем ему хорошо: дочитал кейс, написал в поле, переслал.',
+  sz:['Одна польза — из ответа брифа «что для клиента значит „получилось“».','Показ: как устроено, история живого клиента или наглядный опыт (видео, до/после).','Вопросы: «это то, что вы хотели бы? если бы у вас было так — что изменилось бы?»','Посчитать, во сколько обходится то, что этого нет, — если есть что считать.'],
+  pr:[['Формула «факт клиента → характеристика → выгода → эмоция» и фразы‑мостики («благодаря этому…», «это значит…») для текста пользы.','Всегда, когда пишем текст пользы.'],['«Результаты результатов»: не «сайт», а «менеджер говорит с тем, кто уже разобрался».','Всегда.'],['Кейсы «задача → что сделали → что стало».','Когда в брифе есть реальные случаи.'],['Экспертность (Э): факты, цифры, видео, отзывы.','Только реальные.']],
+  no:['Блок «почему мы» из десяти пунктов вместо одной пользы.','Выдуманные результаты кейсов и отзывы, написанные за клиента.'],
+  ex:'Если у бизнеса 2+ разные группы клиентов — у каждой своя одна польза: вкладки, развилка или отдельные страницы. Остальные преимущества — ниже справкой.'},
+ {k:'S5',sn:'Финансовый консультант',e:'5',n:'Варианты и честный выбор',f:['ФВ','Д','ЛПР'],task:'Помочь выбрать. Цена появляется здесь впервые.',vis:'Выбрал вариант и пошёл к шагу, не уйдя сравнивать.',
+  sz:['2–3 варианта через использование: кому подходит и чем плох.','Мнение прямо: «мы бы взяли этот» — и «решать вам».','Не изображать работу себе в убыток: «нам тоже выгодно».','«Чего мы не обещаем» — честно.'],
+  pr:[['Оплата частями, рассрочка, шаг поменьше — чтобы человек потянул сумму.','Когда сумма заметная для клиента.'],['Настоящий дорогой вариант как ориентир (якорь).','Только если это реальный продукт, с «для кого» и минусом «переплата, если…».'],['Гарантии (техники‑доверители).','Только из договора.'],['Выжимка для того, кто решает.','Когда платит не тот, кто читает.'],['«Отсечь ненужное»: конструктор или выбор опций.','Когда продукт собирается из частей.']],
+  no:['Тариф‑приманка, который не собираются продавать.','Плашка «хит продаж» без факта; выделение, чтобы остальные выглядели глупо.','Скидка как главный аргумент.'],
+  ex:'«Три варианта — и чем каждый плох» + «мы бы взяли лендинг — и нам он тоже выгоднее всего. Но решать вам».'},
+ {k:'S6',sn:'Кассир',e:'6',n:'Точный следующий шаг',f:['ЗС','ФВ'],task:'Сделать следующий шаг лёгким и определённым.',vis:'Оплатил, записался или оставил контакт и выбрал время.',
+  sz:['Сумма, способ, дата — если покупку можно сделать сразу, берём оплату или запись прямо на сайте.','Если нет — кто, когда и о чём свяжется.','Минимум полей; путь заявки и оплаты проверен целиком.','Повтор кнопки шага после экранов 4–5 — для тех, кто уже решил.'],
+  pr:[['Польза от прогресса: у шага своя польза.','Всегда: «замер — и 3D‑эскиз остаётся у вас».'],['Подпись к шагу по формуле «Давайте…, чтобы…, если…, то…».','Всегда для текста рядом с кнопкой.'],['Парашют: 2–3 шага разной высоты.','Когда цикл длинный: купить / пробный шаг / присмотреться.'],['Реальные ограничения: сезон, набор, остатки.','Только правда и как информация.']],
+  no:['«Оставьте заявку, менеджер свяжется».','Таймеры, «осталось 2 места» без правды.','Форма на 8 полей.'],
+  ex:'«10 минут разговора: вы выбираете время — в это время вам пишет Ангелина. Уточним задачу и назовём точную сумму».'},
+ {k:'S7',sn:'Фея',e:'7',n:'После оплаты',after:1,f:['Д'],task:'Подтвердить, что выбор правильный, и дать неожиданную пользу.',vis:'Не ожидал; ему есть что рассказать.',
+  sz:['Фея: ценно клиенту, почти ничего не стоит компании. Не скидка.','Сделать что‑то и для того, кто будет пользоваться покупкой (сотрудник, член семьи).','Подтверждение выбора — голосом, звонком.'],
+  pr:[['«Вау‑эффект» — превзойти ожидания — и сопровождение после продажи.','То же, что фея.'],['Вопрос «оцените нас от 0 до 10» (NPS).','Можно — это мера, а не продажа.'],['«Маячки» — полезные касания.','Только с согласия клиента.']],
+  no:['«Второй в подарок» вместо пользы.','Допродажа сразу на странице «спасибо».','Скидка за отзыв.'],
+  ex:'Страница после оплаты: «памятка для ваших менеджеров: как разговаривать с теми, кто пришёл с нового сайта».'},
+ {k:'S8',sn:'Директор по развитию',e:'8',n:'Рассказать знакомому',after:1,f:[],task:'Дать клиенту готовые слова, чтобы рассказать о вас.',vis:'Переслал; по ссылке пришёл новый человек.',
+  sz:['Текст для знакомого: рамка и повод от нас, факты и оценка — от клиента.','Знакомимся, а не продаём знакомому.','Вопрос «кого вы хотели бы с нами познакомить?» — голосом.'],
+  pr:[['Сарафанное радио: о хорошем рассказывают сами.','Совпадает с основой.'],['Бонус за рекомендацию.','Только если программа уже есть и она важна клиентам; не главный текст.'],['Просить отзыв у тех, кто поставил 9–10.','После оценки.']],
+  no:['«Кому ещё из друзей это нужно?»','Отзыв, написанный за клиента.'],
+  ex:'«Привет! Нам делали [что] в студии … за [срок]. [Ваши слова]. Если думаешь про сайт — вот они».'},
+ {k:'S0',sn:'вне ступеней',e:'∞',n:'Уход без покупки',f:[],task:'Отпустить по‑хорошему тех, кто не готов купить. Стоит в конце страницы после последнего шага; по желанию — мягкое окно при уходе.',vis:'Ушёл без раздражения; вернулся или подписался сам.',
+  sz:['Что можно забрать без контакта: чек‑лист, памятка.','«Не будем писать, пока вы сами не напишете».','Покупают не все — это нормально.'],
+  pr:[['Ступенька «присматриваюсь» в парашюте.','Всегда при длинном цикле.'],['Работа с отказниками, маячки.','Только с согласия.']],
+  no:['Окно «вы точно уходите?», скидка за уход.','Материал «в обмен на телефон».'],
+  ex:'«Если сейчас не время — ничего страшного. Заберите восемь вопросов для самопроверки сайта. Контакт оставлять не нужно».'}
+];
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+let cur=0;
+function drawPage(){const p=document.getElementById('page');
+  p.innerHTML='<div class="bar3"><i></i><i></i><i></i></div>'+ST.map((s,i)=>`${s.k==='S7'?'<div class="dim" style="margin:10px 4px 6px">Отдельная страница после оплаты</div>':''}${s.k==='S0'?'<div class="dim" style="margin:10px 4px 6px">В конце страницы, после последнего шага</div>':''}<button class="blkbtn${i===cur?' on':''}${s.after||s.k==='S0'?' after':''}" onclick="sel(${i})"><b>${s.e}</b><span>${s.k==='S0'?esc(s.n):'<small style="display:block;font-size:11px;opacity:.7;font-weight:700">'+esc(s.sn)+'</small>'+esc(s.n)}</span><em>${s.f.map(x=>FS[x]).join(' · ')}</em></button>`).join('')}
+function sel(i){cur=i;drawPage();const s=ST[i];
+  document.getElementById('panel').innerHTML=`<div class="row"><span class="tag t-sz">${s.e==='∞'?'Уход без покупки · в конце страницы':'Экран '+s.e+' · ступень «'+s.sn+'»'}</span></div>
+  <h3 style="margin-top:8px">${esc(s.n)}</h3>
+  <div class="sig"><div><b>Задача экрана</b>${esc(s.task)}</div><div><b>Признак, что ступень пройдена</b>${esc(s.vis)}</div></div>
+  <div class="fchips note sy"><b>Формула 100% — что закрывает экран:</b> ${s.f.length?s.f.map(x=>FN[x]).join(', '):'не закрывает множители напрямую — работает на повторные продажи и рекомендации'}</div>
+  <div class="cols">
+    <div class="col sz"><h4>Основа — Сизов</h4><ul>${s.sz.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="col pr"><h4>Усилители — Прайм · когда добавлять</h4><ul>${s.pr.map(x=>`<li>${esc(x[0])}<i>${esc(x[1])}</i></li>`).join('')}</ul></div>
+    <div class="col no"><h4>Нельзя</h4><ul>${s.no.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="col sy"><h4>Как это выглядит</h4><p style="font-size:14.5px">${esc(s.ex)}</p></div>
+  </div>`;
+  document.querySelectorAll('.fchips').forEach(e=>e.style.display=document.body.classList.contains('f100')?'':'none');
+  if(window.innerWidth<860)document.getElementById('panel').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('f100').onchange=e=>{document.body.classList.toggle('f100',e.target.checked);sel(cur)};
+
+const CF=[
+ ['Цена','Где показывать цену','Не раньше экрана вариантов — после того, как понятно, как клиент будет пользоваться.','«Вторая ошибка — не называть цену»; ориентир цены в оффере.','Цена — на экране вариантов, с честной типичной суммой («обычно проекты стоят…»). На первом экране можно ссылку «ориентир цен — ниже» без цифры.','Цена — навигация: еда, запись в салон, массовый магазин, низкий чек. Там цена видна сразу, это норма.'],
+ ['Цена','Якорь и тариф‑приманка','Тариф, который не продают, запрещён.','Дорогой VIP‑вариант как якорь.','Дорогой вариант — только настоящий продукт, с «для кого» и минусом «переплата, если…». Разрыв с целевым — в 2–3 раза. Честная типичная цена снимает якорь вниз. Подробно — раздел «Цена и якорь».','Первым и крупно — допустимо по решению владельца, если продукт настоящий и у всех вариантов есть минусы.'],
+ ['Цена','Скидки и бонусы','Скидка — стимул, а не мотив; не на старте; не ответ на «дорого».','Мотиваторы: бонус за быстрое решение, запланированная уступка.','Скидка или бонус — только реальные, на экране шага, не главным аргументом. Запланированную уступку на сайте не используем.','Магазин с реальной сезонной распродажей: акция — факт, показываем.'],
+ ['Выбор','Сколько вариантов','2–3, не больше.','Лестница тарифов + якорь (3–4).','Три основных. Четвёртый — только отдельный настоящий продукт, вынесенный отдельно.','Каталог магазина — не варианты. Правило действует на комплектации внутри карточки.'],
+ ['Выбор','«Мы рекомендуем»','Мнение прямо + «решать вам»; нельзя выделять так, чтобы остальные выглядели глупо.','Визуально выделять целевой тариф.','Выделение допустимо с причиной и признанием своей выгоды. Если есть квиз — рекомендация следует за ответами посетителя.','—'],
+ ['Выбор','Кто решает','Если платит не тот, кто пользуется, — экран выбора говорит с платящим.','«Тот, кто решает» — отдельный множитель формулы; выжимка для руководителя.','Если платит не читатель — блок «Решаете не один?» и выжимка, которую можно переслать.','—'],
+ ['Выбор','Гарантии','Не обещать неизвестного; не изображать убыток.','Техники‑доверители: гарантия возврата, лучшей цены.','Только гарантии из договора клиента.','—'],
+ ['Потребность','Проблемы на старте','Сначала ключ к уху; проблемы клиента не усиливать.','Боли от лица клиента, «узнаёте?».','Ситуация клиента одной фразой, его словами из брифа — и сразу облегчение. Без «сайт работает против вас».','—'],
+ ['Потребность','Вопросы о бюджете и сроках','Нельзя — это вопросы покупающему.','В схеме вопросов Прайма есть «ограничения»: бюджет и сроки.','В квизе — нет. Сроки — в форме после выбора варианта, как логистика.','Недвижимость, авто: вилка бюджета как фильтр подбора — «чтобы подобрать варианты».'],
+ ['Потребность','Одна польза или много выгод','Одна польза в деле.','Формула «факт → характеристика → выгода → эмоция», выгоды под разные потребности.','Главная польза — одна, на экране пользы; текст пишется по формуле «факт клиента → характеристика → выгода → эмоция». Остальные — ниже справкой или на внутренних страницах.','—'],
+ ['Потребность','Разные группы клиентов','Одна польза из брифа.','Разные аргументы для разных типов клиентов; типология поведения DISC.','2+ группы — развилка, вкладки или отдельные страницы, у каждой своя одна польза. Типологию DISC на сайте не применяем: страница одна для всех.','—'],
+ ['Доверие','Возражения','Отдельного блока нет: возражения — след ошибки раньше.','80% усилий — предвосхищение; банк возражений.','Каждое сомнение закрываем на том экране, где оно возникает. Таблица предвосхищений — источник, но раскладывается по экранам.','FAQ тоже нет — ни аккордеона «что смущает», ни «частых вопросов», ни списка «вопрос — ответ» на любом экране: это тот же блок возражений. На экране — не больше двух встроенных ответов на сомнения. Справочные страницы «Доставка» и «Оплата» в магазине — логистика (сроки, способы, адреса), без спора и без списка вопросов.'],
+ ['Доверие','Сравнение с конкурентами','Таблица «мы/они» с ценами — ошибка.','Отстройка «в отличие от…».','Сравниваем способы (сам, фрилансер, крупная фирма, мы), не называя конкурентов, со строкой «кому подойдёт не мы».','—'],
+ ['Доверие','Цифры и кейсы','Только факты из брифа.','Экспертность: цифры, кейсы, отзывы.','Цифры только реальные. Нет цифр — показываем процесс и устройство.','—'],
+ ['Доверие','Отзывы','Не писать за клиента.','Отзывы, видео; просить у тех, кто поставил 9–10.','Только реальные; место под отзыв — с меткой; просим после оценки.','—'],
+ ['Шаг','Срочность и дефицит','Искусственные сроки и ложный дефицит запрещены.','Мотиваторы (дедлайн, дефицит), но «не обманывайте».','Только реальные ограничения — как информация, без таймеров и нажима.','Набор группы, сезон, реальные остатки на складе.'],
+ ['Шаг','Бесплатный шаг','Точный шаг; материал без обмена на контакт.','Польза от прогресса, конвертеры.','Шаг поменьше с названной пользой — да. Материал для ухода — без контакта.','—'],
+ ['Шаг','Текст у кнопки','Сумма, способ, дата; кто, когда, о чём.','Формула «Давайте — чтобы — если — то»; «парашют» — несколько шагов разной высоты.','Кнопка называет шаг и его пользу; 2–3 ступеньки разной высоты.','—'],
+ ['Шаг','Порядок экранов','Порядок ступеней не меняется.','Порядок не задан.','Порядок — по ступеням. Можно сжимать, можно повторять кнопку шага после экранов 4–5.','—'],
+ ['После','После покупки','Фея — неожиданная польза, не скидка.','«Вау‑эффект», сопровождение, опрос «оцените от 0 до 10», регулярные полезные касания.','Фея + вопрос об оценке; касания — только с согласия.','—'],
+ ['После','Рекомендации','Без вознаграждения; готовые слова.','Бонус за друга.','Главное — готовые слова. Бонус упоминаем, только если программа уже есть.','—'],
+ ['Язык','«Вы получите», «инвестиция»','Говорить об использовании, без давления.','Клиенто‑ориентированные замены: «вы получите», «инвестиция».','«Вы получите», «в вашей ситуации» — да. «Инвестиция» — только в B2B, где есть окупаемость; в B2C — «цена», «стоимость».','—']
+];
+let cfCat='Все';
+function drawCF(){const cats=['Все',...new Set(CF.map(r=>r[0]))];
+  document.getElementById('cfSeg').innerHTML=cats.map(c=>`<button class="${c===cfCat?'on':''}" onclick="cfCat='${c}';drawCF()">${c}</button>`).join('');
+  document.getElementById('cfTable').innerHTML='<tr><th>Тема</th><th>Сизов</th><th>Прайм</th><th>Как делаем в синтезе</th><th>Можно иначе, если…</th></tr>'+CF.filter(r=>cfCat==='Все'||r[0]===cfCat).map(r=>`<tr class="cf-row"><td><b>${esc(r[1])}</b><br><span class="dim">${esc(r[0])}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td></tr>`).join('')}
+
+const SIT=[
+ ['Недорого и решают быстро','Чек небольшой, решает один человек, покупают в тот же день: еда, салон, мелкие услуги, массовые товары.',['Экраны 2–3 сжимаются до строк: одна строка честности и выбор «вашей ситуации».','Цена видна рано — это навигация.','Шаг — оплата, запись на время или корзина прямо на сайте.']],
+ ['Дорого и долго','Большая сумма, решение неделями: ремонт, мебель, B2B, обучение.',['Полный путь всех ступеней.','Шаг поменьше: замер, расчёт, разбор, пробный урок — с названной пользой.','Честная типичная цена, оплата частями.']],
+ ['Платит не тот, кто читает','Заявку оставляет сотрудник, жена, родитель, а решает другой.',['Блок «Решаете не один?» на экране вариантов.','Выжимка для того, кто решает: можно переслать, скачать, распечатать.','Аргументы для второго человека: гарантии, сроки, договор.']],
+ ['Несколько разных групп клиентов','«Для себя» и «для аренды», «частные» и «компании».',['Развилка на первом экране или вкладки.','У каждой группы своя одна польза и свои кейсы.','На многостраничнике — отдельные страницы.']],
+ ['Нечего считать калькулятором','Красота, психолог, отдых, подарки — пользу не измерить в деньгах.',['Вместо калькулятора — «примерка»: сценарий дня, до/после, подбор, тест.','Показ через историю живого клиента.','Подробно по нишам — модуль 3.']],
+ ['Нет кейсов и отзывов','Новый бизнес или клиент не даёт публиковать.',['Показ через процесс и устройство: как именно делаем.','Шаг поменьше, где клиент сам оценит работу.','Честно: «мы новые — вот что закреплено в договоре».']],
+ ['Регулируемая ниша','Медицина, финансы, образование, дети, алкоголь.',['Никаких обещаний результата.','Лицензии и документы на видном месте.','Тексты проверяет юрист клиента — метка «проверить с юристом».']],
+ ['Приходят по рекомендации','Человек уже доверяет и заходит проверить.',['Первый экран подтверждает: кто вы, чем занимаетесь, контакты крупно.','Путь короче: кейсы и шаг ближе к началу.','Честные цены — чтобы не было разочарования на звонке.']]
+];
+function drawSit(){document.getElementById('sit').innerHTML=SIT.map(s=>`<div class="card"><div class="if">Если</div><h3>${esc(s[0])}</h3><p class="dim">${esc(s[1])}</p><ul class="l" style="margin-top:8px">${s[2].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}
+drawPage();sel(0);drawCF();drawSit();
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

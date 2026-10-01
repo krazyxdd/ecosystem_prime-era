@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>7. Проверка — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.grp{margin-top:26px}
+.grp h3{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.grp h3 small{font-family:var(--fb);font-size:13px;color:var(--dim)}
+.it{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px}
+.it .st{display:flex;gap:4px}
+.it .st button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 9px;font-size:12.5px;font-weight:700;cursor:pointer}
+.it .st button.y.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.it .st button.n.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.it .st button.na.on{background:var(--dim);border-color:var(--dim);color:#fff}
+.it b{display:block;font-size:15px}
+.it span{font-size:13.5px;color:var(--mut)}
+@media(max-width:640px){.it{grid-template-columns:1fr}}
+.score{position:sticky;top:calc(58px + var(--pe-nav-h,0px));z-index:20;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:16px 0;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.score .big{font-family:var(--fh);font-size:22px}
+.rep{max-height:60vh;overflow:auto;white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;min-height:60px}
+.proc{counter-reset:s;list-style:none}
+.proc li{counter-increment:s;position:relative;padding:12px 0 12px 48px;border-bottom:1px solid var(--line)}
+.proc li::before{content:counter(s);position:absolute;left:0;top:11px;width:30px;height:30px;border-radius:50%;background:var(--sy2);color:var(--sy);font-weight:800;display:grid;place-items:center}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="on">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 7 · проверка</div>
+  <h1>Проверка структуры и текстов</h1>
+  <p class="lead">Перед сдачей клиенту пройдите чек‑лист. Главная проверка — по ступеням: если все ступени до «кассира» отработаны, сайт продаёт. Сначала — шлюзы (без них не сдаём). Что «нет» и в ваших силах — переписать до сдачи; в отчёт клиенту — только то, что зависит от него. Каждое «нет» показывает, где дыра, и почти всегда причину стоит искать на шаг раньше.</p>
+  <div class="pick"><label style="font-size:13px;font-weight:700;color:var(--dim)">Тип сайта — добавит пункты</label><div class="segs" id="siteSeg" style="margin-top:6px"></div></div>
+</div></section>
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="score noprint"><span class="big" id="sc">0 / 0</span><span id="scs" class="dim">Отметьте пункты: да · нет · не относится</span><div class="row" style="margin-left:auto"><button class="btn p" onclick="report()">Собрать отчёт</button><button class="btn" onclick="reset()">Сбросить</button></div></div>
+  <div id="root"></div>
+  <h3 style="margin-top:30px">Отчёт</h3>
+  <div class="row noprint" style="margin:8px 0"><button class="btn" onclick="copy(document.getElementById('rep').textContent)">Скопировать</button><button class="btn" onclick="window.print()">Печать</button></div>
+  <div class="rep" id="rep">Нажмите «Собрать отчёт».</div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <div class="note sy"><b>Разбираете чужой, уже работающий сайт?</b> Для этого — отдельный <a href="sayt-8-audit.html">модуль 8 «Аудит»</a>: пункты по ступеням с «частично», заметки и отчёт для клиента.</div>
+</div></section>
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 7.</div></footer>
+<div class="toast" id="toast"></div>
+<script>
+const G=[
+ {g:'Шлюзы: без них сдачи нет',items:[
+  ['Главная боль выбрана вместе с руководителем проекта или клиентом','Модуль 12. Если решали без человека — выбрана по баллам и стоит первой строкой в «подтвердить».'],
+  ['Главная польза — результат или результат результата, а не свойство и не процесс','Лестница уровней — модуль 12.'],
+  ['Главная польза проходит через все экраны: заголовок, «возможно, вам не нужно», вопросы, показ, мнение на вариантах, польза шага, фея, готовые слова, микромагнит','Таблица «как польза проходит через сайт» — модуль 12.'],
+  ['Прожарка проведена: решения по деньгам, вариантам, якорю, шагу поменьше, кейсу, концовке записаны','Модуль 13.'],
+  ['Состав каждого экрана не беднее минимума для ситуации','Модуль 15.'],
+  ['Глубина: каждый экран не ниже 8 из 12, экраны 4 и 5 — не ниже 10 из 12','Модуль 16.'],
+  ['Не больше трёх меток «ждёт ответа» на экране; абзацы написаны целиком, метка — только на месте факта','Модуль 16.'],
+  ['Есть карта сомнений; каждое сомнение закрыто на своём экране','Модуль 15.'],
+  ['Нет FAQ: нигде подряд трёх и больше «вопрос — ответ», аккордеона «что смущает», «частых вопросов»','Ответы встроены в блоки, где сомнение возникает, не больше двух на экран.'],
+  ['У каждого блока есть опора — закон Сизова или инструмент Прайма с условием','Модуль 14. Блок без опоры — лишний.'],
+  ['Сдача: что переносится в звонок и письма, что проверить на практике, что отдать команде клиента','Модуль 17.']]},
+ {g:'Ступени: главная проверка',items:[
+  ['Экран 1: за 5 секунд понятно, кто вы, для кого и чем полезны','Нет — посетитель уходит сразу. Модуль 2, экран 1.'],
+  ['Экран 1: нет страшилок, «лидер рынка», предложения купить','Продажа до знакомства вызывает сопротивление.'],
+  ['Экран 2: прямо сказано «покупать не обязательно» и кому мы не подойдём','Без этого — «я подумаю» и «скиньте прайс».'],
+  ['Экран 3: посетитель отвечает на вопросы о себе до рассказа о компании','Вопросы — об использовании, без бюджета.'],
+  ['Экран 3: ответы посетителя уходят в заявку','Менеджер начинает разговор с фактов клиента.'],
+  ['Экран 4: одна главная польза — из брифа, а не список преимуществ','«Почему мы» из 10 пунктов — ошибка.'],
+  ['Экран 4: польза показана — кейс, устройство, до/после, видео','Показ, а не описание.'],
+  ['Экран 5: цена впервые здесь (кроме ниш, где цена — навигация)','Цена до пользы превращается в торг.'],
+  ['Экран 5: 2–3 варианта, у каждого честный минус','Вариант без минуса читается как продажа.'],
+  ['Экран 5: мнение прямо и «решать вам»','Не молчаливое «выбирайте сами».'],
+  ['Экран 5: честная типичная цена — нет «якоря вниз»','«От 40 000» при реальных 150 000 — обман на звонке.'],
+  ['Экран 6: написано, кто, когда и о чём свяжется (или оплата/запись на сайте)','«Менеджер свяжется» — не шаг.'],
+  ['Экран 6: у шага названа польза','«Замер — и эскиз остаётся у вас».'],
+  ['Кнопка шага повторяется после экранов 4–5 для тех, кто уже решил','Решившего не заставляют листать до конца.'],
+  ['Экран 7: после оплаты — польза, которую не ждут (не скидка)','Памятка, инструкция, забота о том, кто будет пользоваться.'],
+  ['Экран 8: готовые слова для знакомого, оценку пишет клиент','Без «кому ещё нужно» и отзывов за клиента.'],
+  ['Есть блок «если сейчас не время» без обмена на контакт','Отпустить по‑хорошему.']
+ ]},
+ {g:'Правило фактов',items:[
+  ['Все цифры, сроки, цены и гарантии — из брифа','Выдумка — брак.'],
+  ['Кейсы и отзывы — реальные, с разрешения','Нет — место с меткой.'],
+  ['Метки «ждёт ответа» и «подтвердить» собраны списком для клиента','Клиент закрывает их одним письмом.'],
+  ['Юридические ограничения ниши учтены (медицина, финансы, дети, лицензии)','Метка «проверить с юристом».']
+ ]},
+ {g:'Честность и давление',items:[
+  ['Нет таймеров, «осталось N мест» и «только сегодня» без правды','Реальный срок — как информация.'],
+  ['Нет тарифа‑приманки; дорогой вариант — настоящий, с минусом','Модуль 1, раздел «Цена и якорь».'],
+  ['Скидка не главный аргумент','Скидка — стимул, а не причина.'],
+  ['Сомнения закрыты на своих экранах, а не отдельным блоком «возражения»','Справочные страницы (доставка, оплата) — можно.'],
+  ['Текст больше о клиенте, чем о компании','Проверка текста — модуль 6.']
+ ]},
+ {g:'Вторая линза: формула 100%',items:[
+  ['Деньги: понятно, сколько стоит и как заплатить (частями, шаг поменьше)',''],
+  ['Осознанная потребность: посетитель сам понял, зачем ему это',''],
+  ['Доверие: честная рамка, минусы, реальные кейсы, договор',''],
+  ['Тот, кто решает: если платит не читатель — есть выжимка',''],
+  ['Здесь и сейчас: у шага есть польза, реальные ограничения указаны честно','']
+ ]},
+ {g:'Вне методики: техника и закон',items:[
+  ['Форма работает, заявки доходят (проверено)',''],
+  ['Путь оплаты проверен целиком (если есть оплата)',''],
+  ['Мобильная версия проходится с телефона, включая квиз и форму',''],
+  ['Контакты и реквизиты видны без формы‑посредника',''],
+  ['Согласие на обработку данных и политика — у каждой формы',''],
+  ['Аналитика и метки подключены','']
+ ]}
+];
+const SITE={landing:{n:'Лендинг',q:[['Одна страница — одно предложение; меню не уводит со страницы','']]},
+ multi:{n:'Многостраничник',q:[['Каждая страница услуги проходит ступени сама','Модуль 4.'],['Главная — развилка, а не «всё обо всём»',''],['Реклама ведёт на страницу услуги, а не на главную',''],['Страница «Цены» объясняет, что входит, а не голый прайс','']]},
+ shop:{n:'Магазин',q:[['Фильтры о жизни покупателя, есть подбор','Модуль 5.'],['Карточка: для кого, фото в использовании, одна польза, 2–3 комплектации с минусом',''],['Сумма с доставкой видна до оплаты; условия возврата — рядом с кнопкой',''],['Нет заранее отмеченных платных допов',''],['Письма после покупки: польза, «как вам?», готовые слова','']]}};
+let site='';const S={};
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function groups(){const g=[...G];if(site)g.splice(1,0,{g:'Для типа сайта: '+SITE[site].n,items:SITE[site].q});return g}
+function draw(){document.getElementById('siteSeg').innerHTML=`<button class="${!site?'on':''}" onclick="site='';draw()">Не выбрано</button>`+Object.keys(SITE).map(k=>`<button class="${site===k?'on':''}" onclick="site='${k}';draw()">${SITE[k].n}</button>`).join('');
+ document.getElementById('root').innerHTML=groups().map((g,gi)=>`<div class="grp"><h3>${esc(g.g)} <small id="gs${gi}"></small></h3>${g.items.map((it,ii)=>{const id=g.g+'|'+ii;const v=S[id]||'';return `<div class="it"><div class="st"><button class="y ${v==='y'?'on':''}" onclick="set('${esc(id)}','y')">да</button><button class="n ${v==='n'?'on':''}" onclick="set('${esc(id)}','n')">нет</button><button class="na ${v==='na'?'on':''}" onclick="set('${esc(id)}','na')">—</button></div><div><b>${esc(it[0])}</b>${it[1]?`<span>${esc(it[1])}</span>`:''}</div></div>`}).join('')}</div>`).join('');score()}
+function set(id,v){S[id]=S[id]===v?'':v;draw()}
+function score(){let y=0,t=0;groups().forEach((g,gi)=>{let gy=0,gt=0;g.items.forEach((it,ii)=>{const v=S[g.g+'|'+ii];if(v==='na')return;gt++;t++;if(v==='y'){gy++;y++}});const e=document.getElementById('gs'+gi);if(e)e.textContent=`${gy} из ${gt}`});
+ document.getElementById('sc').textContent=`${y} / ${t}`;const no=Object.values(S).filter(v=>v==='n').length;document.getElementById('scs').textContent=no?`«Нет»: ${no} — ищите причину на шаг раньше`:'Отметьте пункты: да · нет · не относится'}
+function report(){const L=['ПРОВЕРКА САЙТА'+(site?' · '+SITE[site].n:''),''];groups().forEach(g=>{const bad=g.items.map((it,ii)=>[it,S[g.g+'|'+ii]]).filter(x=>x[1]==='n');const open=g.items.filter((it,ii)=>!S[g.g+'|'+ii]).length;L.push(g.g+': '+(bad.length?'есть проблемы':'ок')+(open?` (не проверено: ${open})`:''));bad.forEach(x=>L.push('  ✗ '+x[0][0]+(x[0][1]?' — '+x[0][1]:'')))});document.getElementById('rep').textContent=L.join('\n')}
+function reset(){for(const k in S)delete S[k];draw();document.getElementById('rep').textContent='Нажмите «Собрать отчёт».'}
+function copy(t){const done=()=>toast('Скопировано');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));else fb(t,done)}
+function fb(t,cb){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');cb()}catch(e){}x.remove()}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+draw();
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

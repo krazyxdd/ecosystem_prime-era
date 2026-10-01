@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>14. Законы и инструменты — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}.toc a{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 11px;text-decoration:none;color:var(--tx);background:var(--paper)}.toc a:hover{border-color:var(--acc)}
+.blk .card h2{margin-top:0}.blk .card h3{margin:22px 0 8px;font-size:17px}.blk .card p{margin:8px 0}.blk .card li{margin:5px 0}
+.blk .card code{font-size:.9em;background:var(--acc2);border-radius:5px;padding:1px 5px}
+.blk{padding:10px 0}.part{padding:40px 0 6px}.part h2.big{font-size:clamp(24px,3vw,34px);margin:6px 0 8px}
+.srcnote{font-size:13px;color:var(--mut);margin-top:12px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd on" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="on">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 14 · законы и инструменты</div>
+  <h1>Законы Сизова и инструменты Прайма: на что опирается каждый блок</h1>
+  <div class="lead">У каждого блока на странице должна быть опора: закон Сизова (почему блок стоит здесь) и, если уместно, инструмент Прайма (как его усилить). Блок без опоры — лишний.</div>
+  <div class="note" style="margin-top:14px">Этот модуль — человеческая версия справочника плагина «Продающий сайт» (версия 2.0). Плагин и методичка работают по одним правилам. Где написано «пользователь» — это тот, кто принимает решение по проекту: руководитель проекта или клиент.</div>
+  <div class="toc"><a href="#s1">Основа: что вообще делает сайт</a><a href="#s2">Экран 1 · Контакт</a><a href="#s3">Экран 2 · Ключ к уху</a><a href="#s4">Экран 3 · Разведчик</a><a href="#s5">Экран 4 · Вовлечение в пользы</a><a href="#s6">Экран 5 · Финансовый консультант</a><a href="#s7">Экран 6 · Кассир</a><a href="#s8">Экран 7 · Фея</a><a href="#s9">Экран 8 · Директор по развитию</a><a href="#s10">Уход без покупки (вне ступеней)</a><a href="#s11">Антипаттерны, которые на сайте встречаются чаще всего</a><a href="#s12">Двенадцать правил тона (из базы, для текстов посетителю)</a><a href="#s13">1. Красная кнопка и потребности «У Б Э П ПГ Н» → главная польза, экраны 1 и 4</a><a href="#s14">2. «Результаты результатов» → экран 1, экран 4</a><a href="#s15">3. ФХВЭ и фразы‑мостики → текст пользы (экран 4), описание вариантов (экран 5), карточка товара</a><a href="#s16">4. Истории живых клиентов → экран 4, страница кейса</a><a href="#s17">5. Презентация цены → экран 5</a><a href="#s18">6. Польза от прогресса и «Давайте — чтобы — если — то» → экран 6</a><a href="#s19">7. Предвосхищение возражений → каждое сомнение на своём экране</a><a href="#s20">8. Формула доверия Д = Э + Э + Ч + О → экраны 1, 2, 4, 5, 6</a><a href="#s21">9. Вопросы: «СОПРАНО» и «копай глубже» → бриф и экран 3</a><a href="#s22">10. «Парашют» — техники закрытия → экран 6</a><a href="#s23">11. После покупки: NPS, WOW, маячки → экраны 7–8</a><a href="#s24">12. Формула 100% как вторая линза</a></div>
+</div></section>
+<section class="blk part" id="sizov"><div class="wrap"><div class="eyebrow">Часть 1 · Сизов</div><h2 class="big">Канон Сизова для сайта: законы, на которые опирается каждый блок</h2><p>Выжимка из базы плагина <code>sizov-sales</code> (книга «Продажи и управление по Сизову»). Здесь только то, что работает на странице. <strong>Как пользоваться.</strong> Для каждого экрана и каждого блока внутри экрана назови закон, на который он опирается, и что посетитель должен сделать, чтобы ступень считалась пройденной. Блок без опоры — лишний или «вне методики». Опоры пишутся в слое для команды (коротко: «одна польза»), в тексте для посетителя — никогда.</p>
+<p><strong>Главное правило вывода (аксиома переноса).</strong> Сайта у Сизова нет. Страница — это носитель тех же восьми ступеней: вместо продавца говорит текст. Отсюда три следствия:
+1. Порядок ступеней не меняется. Сжимать можно (в быстрых нишах экраны 2–3 — строка), переставлять и пропускать нельзя.
+2. Ступень несёт тот, кто сейчас говорит. Если на странице говорит текст — «покупать не обязательно» говорит текст. Если носитель ступень не может пройти — она переносится (звонок, первое сообщение, письмо), и это пишется прямо (<a href="sayt-17-sdacha.html">модуль 17 «Сдача и практика»</a>).
+3. Ступень засчитана, когда посетитель что‑то сделал: пошёл ниже, ответил, выбрал, оставил контакт, заплатил, переслал. Не когда мы что‑то сказали.</p>
+</div></section><section class="blk" id="s1"><div class="wrap"><div class="card"><h2>Основа: что вообще делает сайт</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте это значит</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Что предлагает продавец</td>
+<td>Продавец предлагает не товар, а информирование и помощь в выборе</td>
+<td>Первый экран информирует и помогает выбрать, а не предлагает купить</td>
+</tr>
+<tr>
+<td>Не продавайте — помогайте купить</td>
+<td>Позиция помощника в выборе</td>
+<td>Каждый экран отвечает на вопрос посетителя, а не рекламирует</td>
+</tr>
+<tr>
+<td>Самое сложное — выбор</td>
+<td>Помощь в выборе — главная работа</td>
+<td>Сайт обязан облегчить выбор: подбор, сравнение, мнение</td>
+</tr>
+<tr>
+<td>Общий знаменатель проблемы</td>
+<td>Клиент не может сам выбрать, полон ложных идей о цене и качестве, нуждается в помощи, но не доверяет продавцам</td>
+<td>Страница помогает, не требуя доверия заранее: честность раньше хвастовства</td>
+</tr>
+<tr>
+<td>Люди платят за свои мысли</td>
+<td>Покупают то, что думают о продукте</td>
+<td>Задача текста — какие мысли о продукте останутся у посетителя, а не перечень свойств</td>
+</tr>
+<tr>
+<td>Клиент платит за то, что думает</td>
+<td>«Он хороший» и «он мой»</td>
+<td>Экран пользы делает продукт «моим»: примерка, «если бы», ситуация посетителя</td>
+</tr>
+<tr>
+<td>Нельзя ничего не делать при контакте</td>
+<td>Каждый контакт увеличивает или уменьшает ценность</td>
+<td>Каждый блок либо добавляет ценность, либо удаляется. Нейтральных блоков нет</td>
+</tr>
+<tr>
+<td>Сначала дать, потом получить</td>
+<td>Сначала внимание, информация, помощь</td>
+<td>Полезное — до формы: подбор, расчёт, честное сравнение, микромагнит без контакта</td>
+</tr>
+<tr>
+<td>Люди воспроизводят намерение</td>
+<td>Намерение читается сквозь слова</td>
+<td>Текст пишется с намерением помочь выбрать. «Покупать не обязательно» рядом с таймером — фальшь</td>
+</tr>
+<tr>
+<td>Никогда не побеждайте клиента</td>
+<td>Клиент не должен почувствовать, что его «сделали»</td>
+<td>Никаких приёмов, после которых человек понимает, что его подтолкнули</td>
+</tr>
+<tr>
+<td>Проблема всегда раньше</td>
+<td>Затык — следствие ошибки на 1–3 шага раньше</td>
+<td>Не продаёт экран цены → чинить пользу или вопросы. Аудит ищет раньше</td>
+</tr>
+<tr>
+<td>Возражения — ретушь</td>
+<td>Работа с возражениями — коррекция ранней ошибки</td>
+<td>Отдельного блока «возражения» нет. Каждое сомнение закрывается на своём экране</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s2"><div class="wrap"><div class="card"><h2>Экран 1 · Контакт</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Конечный продукт контакта</td>
+<td>Информация собрана, человек хочет продолжать, интерес создан</td>
+<td>Экран 1 засчитан, если посетитель пошёл ниже</td>
+</tr>
+<tr>
+<td>Когда начинается продажа</td>
+<td>До понимания задачи клиента продажи нет</td>
+<td>Никакого «купите» на первом экране</td>
+</tr>
+<tr>
+<td>Первое впечатление</td>
+<td>Второго шанса нет</td>
+<td>Кто, для кого, чем полезны — за 5 секунд; контакты видны сразу</td>
+</tr>
+<tr>
+<td>Пока нравится каждому</td>
+<td>Покупают не все, но нравиться должен каждому</td>
+<td>Тон, после которого не стыдно уйти и захочется вернуться</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s3"><div class="wrap"><div class="card"><h2>Экран 2 · Ключ к уху</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Фатальная ошибка</td>
+<td>Рассказ о товаре, пока не отключено «догоняешь — убегаю»</td>
+<td>Экран 2 стоит ДО рассказа о продукте и о компании</td>
+</tr>
+<tr>
+<td>Право выбора номер один</td>
+<td>Право купить или нет — вслух</td>
+<td>«Покупать не обязательно» прямым текстом</td>
+</tr>
+<tr>
+<td>Главный критерий чемпиона</td>
+<td>Не цепляться, давать свободу</td>
+<td>«Возможно, вам это не нужно, если…» — с конкретными случаями</td>
+</tr>
+<tr>
+<td>Правило успеха</td>
+<td>Сохранять право «выбрать не у вас»</td>
+<td>Честно сказать, кому лучше другой способ, и назвать его</td>
+</tr>
+</tbody>
+</table></div>
+<p>Формулы: «Всё, что дальше, вовсе не значит, что вы должны это купить» → «Вполне возможно, вам это не нужно» → «А вы знаете, что…?» (один реальный интересный факт, ответ на который — дальше на странице).</p></div></div></section><section class="blk" id="s4"><div class="wrap"><div class="card"><h2>Экран 3 · Разведчик</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Правильный выбор для использования</td>
+<td>Клиент хочет правильный выбор для использования, не «удачную покупку»</td>
+<td>Вопросы — о том, как человек будет пользоваться, а не о бюджете и сроках покупки</td>
+</tr>
+<tr>
+<td>Важнейшее искусство — «если бы»</td>
+<td>Пока не примерил — не может захотеть</td>
+<td>Хотя бы один вопрос с «если бы»</td>
+</tr>
+<tr>
+<td>Ключ этапа</td>
+<td>Говорить с использующим, не с покупающим</td>
+<td>Ни одного вопроса «когда планируете купить», «какой бюджет»</td>
+</tr>
+<tr>
+<td>Правило чистого железа</td>
+<td>Настоящий интерес снимает сопротивление</td>
+<td>Страница не может интересоваться человеком — квиз только начинает разведку; ответы уходят человеку, который продолжит</td>
+</tr>
+</tbody>
+</table></div>
+<p>Формулы: «Что вам в нынешнем „да“, а что „нет“?», «Если бы … — что было бы?»</p></div></div></section><section class="blk" id="s5"><div class="wrap"><div class="card"><h2>Экран 4 · Вовлечение в пользы</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Одна польза</td>
+<td>Профессионал продаёт на одной пользе</td>
+<td>Одна главная польза (выбрана на шаге «главная польза»), остальное — справкой ниже</td>
+</tr>
+<tr>
+<td>Ключ этапа</td>
+<td>С использующим</td>
+<td>Текст о том, что будет у человека, когда он пользуется</td>
+</tr>
+<tr>
+<td>Зачем вопросы ВВП</td>
+<td>Чтобы убедиться, что не ошиблись в выборе</td>
+<td>«Это то, что вы хотели бы? Если бы у вас было так — что изменилось бы?»</td>
+</tr>
+<tr>
+<td>Монетизация выгод</td>
+<td>Посчитать, во что обходится отсутствие решения</td>
+<td>Расчёт или калькулятор, если есть что считать; «сколько стоит, что этого нет»</td>
+</tr>
+<tr>
+<td></td>
+<td>Продукт становится «моим»</td>
+<td>Показ: история живого клиента, устройство, до/после, опыт на самой странице</td>
+</tr>
+</tbody>
+</table></div>
+<p>Формулы: подтверждение одной пользы, три вопроса ВВП, история живого клиента, связки «представьте, что…», «вы сказали … именно поэтому …».</p></div></div></section><section class="blk" id="s6"><div class="wrap"><div class="card"><h2>Экран 5 · Финансовый консультант</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Не изображать работу в убыток</td>
+<td>Выгодно и нам, и клиенту — открыто</td>
+<td>«Нам этот вариант тоже выгоден» рядом с мнением</td>
+</tr>
+<tr>
+<td>Позволит решить самому</td>
+<td>Решение за клиентом</td>
+<td>«Решать вам» после мнения</td>
+</tr>
+<tr>
+<td>Выбор — самое сложное</td>
+<td>Помощь в выборе</td>
+<td>2–3 варианта через использование, у каждого «кому» и «чем плох»</td>
+</tr>
+<tr>
+<td>Чаша весов</td>
+<td>Гирьки — на «ценности»</td>
+<td>Цена рядом с тем, что входит и что это даст; не рядом со скидкой</td>
+</tr>
+<tr>
+<td>Закон обмена</td>
+<td>Деньги легко после созданной ценности</td>
+<td>Цена — впервые здесь, после пользы</td>
+</tr>
+<tr>
+<td>Частая ошибка</td>
+<td>Обсуждать цену вместо ценности</td>
+<td>Не спорить с «дорого»: «Да, недёшево. Вот что входит»</td>
+</tr>
+<tr>
+<td>Кто переплачивает</td>
+<td>Те, кто смотрит только на цену</td>
+<td>Вернуть к использованию: какой вариант будет работать именно у вас</td>
+</tr>
+<tr>
+<td>Скидка</td>
+<td>Скидка — стимул, не мотив; только когда уже хотят</td>
+<td>Скидка никогда не аргумент на экране 5</td>
+</tr>
+</tbody>
+</table></div>
+<p>Формулы: разложить плюсы и минусы, прямо сказать своё мнение и свою выгоду, «решать вам»; вернуть человека в использование.</p></div></div></section><section class="blk" id="s7"><div class="wrap"><div class="card"><h2>Экран 6 · Кассир</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Решение — уже движение</td>
+<td>Решившего только подогреть</td>
+<td>Кнопка шага повторяется после экранов 4 и 5 для тех, кто уже решил</td>
+</tr>
+<tr>
+<td>Деньги берём сейчас</td>
+<td>В момент решения</td>
+<td>Если купить можно сразу — оплата или запись на странице, путь проверен</td>
+</tr>
+<tr>
+<td>Проблема не здесь</td>
+<td>Нет денег — причина раньше</td>
+<td>Не усиливать нажим у кнопки, чинить раньше</td>
+</tr>
+<tr>
+<td>Правило профессионала</td>
+<td>Инициатива следующего шага — у нас</td>
+<td>Не «оставьте заявку», а кто, когда и о чём свяжется</td>
+</tr>
+<tr>
+<td>Пока деньги не в кассе</td>
+<td>Работа до денег</td>
+<td>Страница не кончается «спасибо, мы свяжемся»: дальше назначенное время</td>
+</tr>
+<tr>
+<td>Отдал как бросовое</td>
+<td>Уговорённый не ценит и платит последним</td>
+<td>Шаг поменьше — со своей пользой, а не «бесплатно, только возьмите»</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s8"><div class="wrap"><div class="card"><h2>Экран 7 · Фея</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Главный принцип феи</td>
+<td>Ценно клиенту, ничего не стоит нам</td>
+<td>Памятка, инструкция, забота о том, кто будет пользоваться</td>
+</tr>
+<tr>
+<td>Не стоит денег</td>
+<td>Фея не требует расходов</td>
+<td>Не подарок за деньги</td>
+</tr>
+<tr>
+<td>Фея — не скидка</td>
+<td>Учить, как пользоваться и сохранить</td>
+<td>Знание и внимание после покупки</td>
+</tr>
+<tr>
+<td>Правило Якокки</td>
+<td>Перепроверить выбор и позвонить с подтверждением</td>
+<td>Страница не может — переносится в звонок после оплаты</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s9"><div class="wrap"><div class="card"><h2>Экран 8 · Директор по развитию</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Дайте клиенту слова</td>
+<td>Готовая фраза для знакомого</td>
+<td>Текст на 3–4 строки, написанный для знакомого; оценку вписывает клиент</td>
+</tr>
+<tr>
+<td>Знакомимся, не продаём</td>
+<td>Никакого «кому ещё продать»</td>
+<td>Ни «кому ещё нужно?», ни скидки за отзыв</td>
+</tr>
+<tr>
+<td>Клиенты не жмоты</td>
+<td>Рассказывают о хорошем без вознаграждения</td>
+<td>Бонус — вторым планом, только реальный</td>
+</tr>
+<tr>
+<td>«Нет» — ответ вам</td>
+<td>Отказ дать имена — оценка работы</td>
+<td>Главный вопрос задаётся голосом — переносится в разговор</td>
+</tr>
+<tr>
+<td>Где заканчивается работа</td>
+<td>На новом контакте</td>
+<td>Страница «спасибо» и письма ведут к готовым словам</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s10"><div class="wrap"><div class="card"><h2>Уход без покупки (вне ступеней)</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Закон</th>
+<th>Суть</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Давать свободу</td>
+<td>Не цепляться</td>
+<td>«Если сейчас не время — ничего страшного», без окна «вы точно уходите?»</td>
+</tr>
+<tr>
+<td>Нравиться каждому</td>
+<td>Ушедший уходит без раздражения</td>
+<td>Полезное с собой без контакта</td>
+</tr>
+<tr>
+<td>Сначала дать</td>
+<td>Дать до того, как получить</td>
+<td>Микромагнит без обмена на телефон</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></section><section class="blk" id="s11"><div class="wrap"><div class="card"><h2>Антипаттерны, которые на сайте встречаются чаще всего</h2><p>Перед выдачей проверь, что ни одного нет. Номера — из базы <code>sizov-sales</code>.</p>
+<ul>
+<li>** Продавать на этапе знакомства** — «Закажите сайт!» на первом экране, цена в шапке.</li>
+<li>** Возражения отдельным этапом** — блок «Частые возражения», FAQ как свалка сомнений вместо ответов на своих экранах.</li>
+<li>** Стандартная презентация по прайсу** — «Наши услуги» списком, одинаково для всех.</li>
+<li>** Навязывание и победа над клиентом** — давление, «вы теряете деньги каждый день».</li>
+<li>** Продавать на восьмом этапе** — «Приведи друга — получи скидку» главным текстом.</li>
+<li>** «Я сам позвоню»** — «Оставьте заявку, менеджер свяжется» без кто/когда/о чём.</li>
+<li>** Скидка вместо интереса** — скидка как главный аргумент.</li>
+<li>** Говорить с покупающим, а не с использующим** — квиз «Когда планируете покупку?», «Ваш бюджет?».</li>
+<li>** Проскакивать этапы** — цена до пользы; форма до вопросов.</li>
+<li>** Рассказ о товаре до ключа к уху** — «О компании» вторым экраном.</li>
+<li>** Не задавать вопросов** — нет ни квиза, ни выбора ситуации, ни «если бы».</li>
+<li>** Изображать работу в убыток** — «уступаем только вам», «себе в минус».</li>
+<li>** Дожимать и решать за клиента** — таймеры, «осталось 2 места» без правды.</li>
+<li>** Технические провалы у кассы** — неработающая форма, 8 полей, оплата без суммы доставки.</li>
+<li>** Фея = скидка** — «Второй в подарок» на странице спасибо.</li>
+<li>** Работа закончена на оплате** — после оплаты — тишина.</li>
+<li>** «Всё одинаково, решает цена»** — сравнение только ценой.</li>
+<li>** Обсуждать цену вместо ценности** — цена без «что входит и что это даст».</li>
+<li>** Ошибки первых секунд** — первый экран о себе, штамп, непонятно, куда попал.</li>
+<li>** Мыслезаключения вместо фактов** — «клиенты довольны», «лучшее качество» без факта.</li>
+<li>** Позиционировать себя как решение** — «Мы — ваше решение!» вместо помощи в выборе.</li>
+</ul></div></div></section><section class="blk" id="s12"><div class="wrap"><div class="card"><h2>Двенадцать правил тона (из базы, для текстов посетителю)</h2><ol>
+<li>Без давления и борьбы.</li>
+<li>Клиент не должен почувствовать, что его «сделали».</li>
+<li>Право выбора — вслух.</li>
+<li>Об использовании, а не о покупке.</li>
+<li>Одна польза, не перечень: каждая следующая характеристика стирает предыдущую.</li>
+<li>Намерение совпадает со словами.</li>
+<li>Не рассказывать о продукте, пока уши закрыты.</li>
+<li>Интерес к человеку, а не к деньгам.</li>
+<li>Сослагательное наклонение: «если бы».</li>
+<li>Не спорить с «дорого», не заливать костёр.</li>
+<li>Давать свободу и уметь отпустить.</li>
+<li>С интересом к своему продукту — если автор текста не видит, чем продукт хорош, это слышно.</li>
+</ol></div></div></section><section class="blk part" id="praym"><div class="wrap"><div class="eyebrow">Часть 2 · Прайм</div><h2 class="big">Инструменты Прайма для сайта: что брать, где и как</h2><p>Выжимка из «Системы продаж Прайм» (скилл <code>sistema-prodazh-prime</code>, главы 1, 6–11). Здесь только инструменты, которые работают на странице, и для каждого — где он стоит, как пишется и где его останавливает Сизов. Основа — всегда Сизов (<a href="sayt-14-zakony.html">модуль 14 «Законы и инструменты»</a>); спорные случаи уже решены в таблице конфликтов <a href="sayt-1-osnova.html">модуль 1 «Основа»</a> — она главнее этого файла.</p>
+<p>Помечай в слое для команды: «добавка Прайма: &lt;инструмент&gt;, потому что &lt;условие&gt;».</p>
+</div></section><section class="blk" id="s13"><div class="wrap"><div class="card"><h2>1. Красная кнопка и потребности «У Б Э П ПГ Н» → главная польза, экраны 1 и 4</h2><p><strong>Что это у Прайма.</strong> Любой продукт закрывает шесть типов потребностей: <strong>У</strong>добство, <strong>Б</strong>езопасность (гарантии, не рисковать), <strong>Э</strong>кономия (денег и времени), <strong>П</strong>рестиж, <strong>П</strong>ринадлежность к <strong>Г</strong>руппе («что берут другие»), <strong>Н</strong>овизна. Главная для человека потребность — его «красная кнопка». Профессионал находит её и строит всю презентацию вокруг неё. Прайм прямо говорит: «люди покупают от боли и только иногда — для удовольствия»; «выпишите проблемы, которые клиенты уже устали терпеть».</p>
+<p><strong>На сайте.</strong> Это инструмент выбора главной пользы (<a href="sayt-12-glavnaya-bol.html">модуль 12 «Главная боль»</a>): для каждой группы клиентов определи красную кнопку, и одна польза экрана 4 говорит именно в неё. Одна и та же характеристика подаётся под разные кнопки по‑разному — пример Прайма: «срок ремонта 4 месяца» — для удобства «вам останется принять работу», для безопасности «успеваем соблюсти все требования», для экономии «оптимизируем бюджет». Выбирается одна подача — под кнопку группы.</p>
+<p><strong>Где останавливает Сизов.</strong> Боль не усиливаем (конфликт «Проблемы на старте»): ситуация клиента — одной фразой его словами, и сразу облегчение. Никаких «узнаёте себя? вы теряете деньги».</p></div></div></section><section class="blk" id="s14"><div class="wrap"><div class="card"><h2>2. «Результаты результатов» → экран 1, экран 4</h2><p><strong>У Прайма.</strong> «Продавайте продукт — заработаете тысячи. Продавайте результат — сотни тысяч. Продавайте результаты результатов — миллионы». Не дрель, а картина на стене; не ремонт, а «просыпаетесь и босиком по тёплому полу».</p>
+<p><strong>На сайте.</strong> Главная польза формулируется на уровне результата результата: не «сайт», не «удобный сайт», а то, что происходит у владельца потом («менеджер говорит с тем, кто уже решил»). Лестница — в <a href="sayt-12-glavnaya-bol.html">модуль 12 «Главная боль»</a>.</p></div></div></section><section class="blk" id="s15"><div class="wrap"><div class="card"><h2>3. ФХВЭ и фразы‑мостики → текст пользы (экран 4), описание вариантов (экран 5), карточка товара</h2><p><strong>У Прайма.</strong> Факт клиента → Характеристика → Выгода → Эмоция. Начинать с факта клиента («в вашей ситуации…», «вы сказали…»), связывать характеристику и выгоду мостиками: «благодаря этому вы сможете…», «это позволит…», «это даёт вам…», «в вашей ситуации это означает…», «поэтому…». Характеристика без выгоды — «только „я“ и „у меня“».</p>
+<p><strong>На сайте.</strong> Факт клиента на странице — это его ситуация, выбранная в квизе или названная в «для тех, кто…». Пиши каждый довод по цепочке, эмоцию — картинкой использования («результат результата»), а не восклицанием.</p>
+<p>Пример: «У вас одна услуга и реклама в Директе (факт) → страница с одним предложением и квизом (характеристика) → благодаря этому человек с рекламы сразу видит, что попал куда нужно, и отвечает на вопросы вместо того, чтобы закрыть вкладку (выгода) → а менеджер начинает разговор с его ответов, а не с „что вас интересует?“ (эмоция‑картинка)».</p></div></div></section><section class="blk" id="s16"><div class="wrap"><div class="card"><h2>4. Истории живых клиентов → экран 4, страница кейса</h2><p><strong>У Прайма.</strong> «Факты говорят, истории продают». Правила: история правдивая; реальные имена — только с разрешения; история не должна повторять ситуацию посетителя точь‑в‑точь (лучше та, что начиналась хуже); короткая, с выводом в конце. Структура: цепляющее начало → герой и его проблема (его словами) → как помогали → результат → вывод. Кейсы держи сгруппированными по сегментам, чтобы на вопрос «а с такими, как я, работали?» был пример.</p>
+<p><strong>На сайте.</strong> Совпадает с Сизовым («история живого клиента»). Итог — только реальный; нет итога — метка, но сама история (что было важно клиенту клиента и как это закрыли) пишется полностью. Эталон: «Человеку, который ищет забор, важны три вещи: работают ли в его регионе, надо ли платить заранее и как вызвать мастера. На лендинге всё это видно сразу…»</p></div></div></section><section class="blk" id="s17"><div class="wrap"><div class="card"><h2>5. Презентация цены → экран 5</h2><p>У Прайма десять приёмов. Что из них берём на сайте:</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Приём Прайма</th>
+<th>На сайте</th>
+<th>Условие / где останавливает Сизов</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Сначала ценность, потом цена</td>
+<td>Да — это и Сизов</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Не прятать цену «в КП»</td>
+<td>Да — честная типичная сумма на экране 5</td>
+<td>Типичная, не «от минимальной» (якорь вниз)</td>
+</tr>
+<tr>
+<td>Не стесняться цены</td>
+<td>Да — «да, недёшево, вот что входит»</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Не давать скидку сразу</td>
+<td>Да</td>
+<td>Скидка — не аргумент</td>
+</tr>
+<tr>
+<td>Правильные слова («приобрести», «инвестиция»)</td>
+<td>«Вы получите» — да. «Инвестиция» — только B2B с окупаемостью</td>
+<td>Конфликт «Язык» в <a href="sayt-1-osnova.html">модуль 1 «Основа»</a></td>
+</tr>
+<tr>
+<td>Дробление цены («1000 ₽ в месяц»)</td>
+<td>Да, если это правда способ оплаты или расчёт на единицу</td>
+<td>Не маскировать общую сумму: общая сумма видна рядом</td>
+</tr>
+<tr>
+<td>«За сотрудника / за единицу»</td>
+<td>Да, для B2B с количеством</td>
+<td>Общая сумма рядом</td>
+</tr>
+<tr>
+<td>Привязка к результату клиента, окупаемость</td>
+<td>Да — калькулятор, где цифры ставит посетитель</td>
+<td>Подпись: «это ваша гипотеза, а не наше обещание» (честность)</td>
+</tr>
+<tr>
+<td>Сравнение с бытовыми вещами</td>
+<td>Осторожно, только в B2C‑эмоциональных нишах</td>
+<td>Не обесценивать покупателя</td>
+</tr>
+<tr>
+<td>Сравнение со стоимостью исправления ошибок</td>
+<td>Да — одной строкой, как информация</td>
+<td>Не страшилка: факт, без «вы потеряете всё»</td>
+</tr>
+<tr>
+<td>«Вам с этим жить»</td>
+<td>Да — для долгого использования (мебель, ремонт)</td>
+<td>Это и есть Сизов: об использовании</td>
+</tr>
+<tr>
+<td>Вилка цен и 2–3 варианта</td>
+<td>Да — экран 5</td>
+<td>2–3 настоящих варианта</td>
+</tr>
+<tr>
+<td>Вовлекающий вопрос после цены</td>
+<td>Да — «если бы» или «какой вариант ближе к вашей ситуации?»</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s18"><div class="wrap"><div class="card"><h2>6. Польза от прогресса и «Давайте — чтобы — если — то» → экран 6</h2><p><strong>У Прайма.</strong> Цель презентации — следующий шаг, не всё сразу. Нужен «максимально возможный прогресс» (замер, расчёт, эскиз, тест‑драйв, заявка в банк, план помещения). Ошибка — предлагать только «глобальное сотрудничество» и не продавать пользу самого шага. Польза от прогресса ≠ польза от продукта: это выгода только от следующего шага. Формула подписи: <strong>Давайте</strong> [шаг], <strong>чтобы</strong> [польза шага]. <strong>Если</strong> [условие] — <strong>то</strong> [что дальше]; если нет — [что остаётся у клиента].</p>
+<p><strong>На сайте.</strong> Каждая кнопка шага называет шаг и его пользу; 2–3 шага разной высоты («парашют»). У шага поменьше — своя ценность, не «бесплатно, только возьмите».</p>
+<p>Примеры прогресса из Прайма для подсказки: недвижимость — просмотр, заявка в банк на сумму одобрения; дизайн интерьера — план помещения, эскизы типовых решений, смета; авто — тест‑драйв, расчёт комплектации; B2B — аудит, расчёт, пилот.</p></div></div></section><section class="blk" id="s19"><div class="wrap"><div class="card"><h2>7. Предвосхищение возражений → каждое сомнение на своём экране</h2><p><strong>У Прайма.</strong> «80% усилий — чтобы возражений не было, 20% — на отработку». «Пятно на рубашке»: знаешь о слабом месте — скажи первым. Заранее выпиши «опасные моменты» и подготовь ответы. Позитивные формулировки («между остановкой и домом уютный сквер, 10–15 минут»). «АнтиСПАМ»: никаких «взаимовыгодное сотрудничество».</p>
+<p><strong>На сайте.</strong> Это то же, что Сизов требует без отдельного блока возражений: составь таблицу «сомнение → экран, где оно возникает → чем закрываем» и разложи ответы по экранам. Формат ответа внутри экрана берём из алгоритма «НЕ СПОРЬ»:
+- <strong>Присоединиться</strong> к неоспоримой части сомнения — и продолжать через «именно поэтому», а не «но». «Понимаю, 100 тысяч — заметная сумма. Именно поэтому ниже — что в неё входит и чем каждый вариант плох».
+- <strong>Ответить комбинацией</strong>: два логических довода и один эмоциональный (картинка использования).
+- <strong>Резюмировать и дать шаг</strong>.</p>
+<p>Позитивная формулировка не отменяет правды: ограничение называется, просто без самобичевания.</p></div></div></section><section class="blk" id="s20"><div class="wrap"><div class="card"><h2>8. Формула доверия Д = Э + Э + Ч + О → экраны 1, 2, 4, 5, 6</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Компонент</th>
+<th>Как выглядит на странице</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Эмпатия</strong></td>
+<td>Ситуация посетителя его словами; вопросы о нём раньше рассказа о нас; «если сейчас не время — ничего страшного»</td>
+</tr>
+<tr>
+<td><strong>Экспертность</strong> (6 шагов Прайма)</td>
+<td>Знание рынка и ситуаций клиента («какие бывают случаи и что делать в каждом»); точные вопросы в квизе («копай глубже»); цифры, примеры, ссылки на источники — только реальные; <strong>открыто о рисках</strong> («в вашей отрасли большинство заходит с телефона — если мобильная версия слабая, вы теряете этих людей»); <strong>схема работы</strong> — этапы, сроки, что делает клиент, что делаем мы</td>
+</tr>
+<tr>
+<td><strong>Честность</strong></td>
+<td>Минусы вариантов, «кому не подойдём», «чего не обещаем», мини‑недостатки, не связанные с качеством («мы в центре, с парковкой не всегда удобно — позвоните, договоримся»); «обещать меньше, делать больше»</td>
+</tr>
+<tr>
+<td><strong>Общее (ПТС)</strong></td>
+<td>Точки соприкосновения — только реальные: город, отрасль, масштаб («для малого бизнеса Казани»), опыт в сегменте посетителя («работали с такими, как вы» — если это факт)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Совпадает с Сизовым; единственное ограничение — все цифры и примеры только из брифа.</p></div></div></section><section class="blk" id="s21"><div class="wrap"><div class="card"><h2>9. Вопросы: «СОПРАНО» и «копай глубже» → бриф и экран 3</h2><p><strong>У Прайма.</strong> Типы вопросов: <strong>С</strong>итуация, <strong>О</strong>пыт (что пробовали раньше), <strong>П</strong>ринципы (что важно при выборе), <strong>Р</strong>ешение (кто и как решает), <strong>А</strong>налоги (что ещё рассматриваете), <strong>Н</strong>ежелательное (чего точно не хотите), <strong>О</strong>граничения (сроки, бюджет). «Программирование»: сказать заранее, как пройдёт разговор, — получить право спрашивать.</p>
+<p><strong>На сайте.</strong> Квиз берёт С, О, П, Н и один вопрос с «если бы» (Сизов). Р — только если нужна развилка «решаете не один?». <strong>А</strong> — если посетитель сравнивает способы. <strong>О (бюджет)</strong> в квизе нельзя (конфликт «Вопросы о бюджете»). «Программирование» — это и есть сизовское «скажите, что будет на странице и чем она закончится» на экране 2.</p>
+<p>В брифе — полный СОПРАНО + «копай глубже»: на каждый общий ответ — уточнение.</p></div></div></section><section class="blk" id="s22"><div class="wrap"><div class="card"><h2>10. «Парашют» — техники закрытия → экран 6</h2><div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Группа Прайма</th>
+<th>Что это</th>
+<th>На сайте</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Подталкиватели</td>
+<td>Прямое предложение шага, «закрытие действием», позитивное резюме</td>
+<td>Да: кнопка называет шаг прямо; рядом резюме выбранного («лендинг, 14–21 день, итог в договоре»)</td>
+</tr>
+<tr>
+<td>Формирователи</td>
+<td>«Требования и ограничения» (не всем подходим), пробный период, «что вы теряете?», «вы всё равно это делаете», внешние обстоятельства</td>
+<td>Да, если правда: «ТО» = сизовское отталкивание; пробный шаг = шаг поменьше; «что вы теряете» — только если шаг действительно без обязательств. «Потерянное время» и «точка Ж» — нет (давление)</td>
+</tr>
+<tr>
+<td>Доверители</td>
+<td>Гарантии, мнение клиента, «мне сделать это для вас?», «отсечь ненужное»</td>
+<td>Гарантии — только из договора; «отсечь ненужное» — конструктор или выбор опций, если продукт собирается из частей</td>
+</tr>
+<tr>
+<td>Мотиваторы</td>
+<td>Крайний срок, дефицит, ажиотаж, «везунчик», запланированная уступка</td>
+<td>Только реальные ограничения как информация (набор группы, сезон, остатки). Уступку и «везунчика» на сайте не используем</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s23"><div class="wrap"><div class="card"><h2>11. После покупки: NPS, WOW, маячки → экраны 7–8</h2><ul>
+<li><strong>WOW</strong> = сизовская фея: превзойти ожидания тем, что ценно клиенту и почти ничего не стоит.</li>
+<li><strong>NPS</strong> («оцените от 0 до 10») — можно: это мера, а не продажа. 9–10 — просим отзыв и даём готовые слова; 7–8 — спрашиваем, чего не хватило; 0–6 — разбираемся.</li>
+<li><strong>Маячки</strong> (полезные касания после покупки) — только с согласия.</li>
+<li><strong>Сарафанное радио</strong> — готовые слова; бонус только реальный и вторым планом.</li>
+</ul></div></div></section><section class="blk" id="s24"><div class="wrap"><div class="card"><h2>12. Формула 100% как вторая линза</h2><p>Покупка = финансовая возможность × осознанная потребность × доверие × тот, кто решает × здесь и сейчас. Ноль в любом множителе — нет заявки. На сайте: для каждого множителя — какой экран его закрывает (таблица в <a href="sayt-1-osnova.html">модуль 1 «Основа»</a>). Используй при проверке и в разборе «почему не продаёт», после главной проверки по ступеням.</p></div></div></section>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

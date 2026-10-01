@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>11. Кейсы и блог — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.frame .fbar{display:flex;gap:5px;align-items:center;padding:8px 10px;background:#eceae4;border-bottom:1px solid #ddd}
+.frame .fbar i{width:9px;height:9px;border-radius:50%;background:#cfcac0}
+.frame .fbar span{margin-left:8px;font-size:11px;color:#8a857a;background:#fff;border-radius:6px;padding:2px 10px;flex:1;overflow:hidden;white-space:nowrap}
+.mk{padding:20px;color:#1b1b1f;font-size:13px;line-height:1.5;background:#fff;position:relative}
+.mk .ey{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#0b6bcb;font-weight:800}
+.mk .h{font-size:19px;line-height:1.2;margin:4px 0 8px;font-weight:800;color:#111}
+.mk .h.s{font-size:15px}
+.mk .p{color:#4b4b52;margin:0 0 8px}
+.mk .sm{font-size:11.5px;color:#8a857a}
+.mk .img{background:repeating-linear-gradient(45deg,#f1efe9,#f1efe9 8px,#e8e5dc 8px,#e8e5dc 16px);border-radius:10px;min-height:90px;display:grid;place-items:center;color:#8a857a;font-size:11px}
+.mk .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.mk .c{border:1px solid #e3e0d8;border-radius:10px;padding:9px;font-size:12px;background:#faf9f6}
+.mk .c b{display:block;font-size:12.5px;color:#111;margin:6px 0 2px}
+.mk .kp{font-weight:800;color:#0b6bcb;font-size:13px}
+.mk .tag{display:inline-block;font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;background:#eef5fd;color:#0b6bcb}
+.mk .b{display:inline-block;background:#0b6bcb;color:#fff;border-radius:999px;padding:6px 13px;font-weight:700;font-size:12px}
+.mk .b.g{background:#fff;color:#1b1b1f;border:1px solid #d7d4cc}
+.mk .n{position:absolute;margin-left:-24px;width:18px;height:18px;border-radius:50%;background:#6d28d9;color:#fff;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.mk .ln{position:relative;padding-left:24px;margin-bottom:6px}
+.mk .q{border-left:3px solid #d6d6dc;padding:4px 10px;font-style:italic;color:#3b3b42;margin:6px 0}
+.mk .row2{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+@media(max-width:640px){.mk .cards{grid-template-columns:1fr}.mk .row2{grid-template-columns:1fr}}
+.two{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;align-items:start;margin-top:14px}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+.two>*{min-width:0}
+.card table.t{display:block;overflow-x:auto}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid var(--line)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:11px;width:28px;height:28px;border-radius:50%;background:var(--sy2);color:var(--sy);font-weight:800;display:grid;place-items:center}
+.steps li b{display:block}
+.steps li .st{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--acc2);color:var(--acc);margin-left:6px;vertical-align:1px}
+.tpl{white-space:pre-wrap;background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:44px 14px 12px;font-size:14px;position:relative;margin-top:12px}
+.tpl .cp{position:absolute;top:8px;right:8px;font-size:12px;padding:4px 10px}
+.chk{list-style:none;padding:0;margin:0}
+.chk li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:flex-start;cursor:pointer}
+.chk li input{margin-top:4px;accent-color:var(--ok);width:16px;height:16px}
+.chk li.done span{color:var(--dim);text-decoration:line-through}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="on">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 11 · кейсы и блог</div>
+  <h1>Кейсы и блог, которые продают, а не хвастаются</h1>
+  <p class="lead">Кейсы и статьи — не отдельная витрина «смотрите, сколько у нас всего». Каждый кейс и каждая статья — это доказательство или ответ, который стоит там, где у человека возникает сомнение, и ведёт к следующему шагу.</p>
+  <div class="sc" style="margin-top:18px"><table class="t"><tr><th>Что</th><th>Ступень Сизова</th><th>Где стоит</th><th>Чего добиваемся</th></tr>
+  <tr><td><b>Главный кейс</b></td><td>Вовлечение в пользы</td><td>Экран 4 лендинга и страницы услуги</td><td>Посетитель видит свою ситуацию, решённую у другого</td></tr>
+  <tr><td><b>«Ещё похожие» и счётчик</b></td><td>Вовлечение в пользы · доверие</td><td>Под главным кейсом</td><td>Видно, что кейсов много, но человек не уходит с пути</td></tr>
+  <tr><td><b>Страница кейса</b></td><td>Все ступени в миниатюре</td><td>Отдельная страница</td><td>Кейс сам доводит до шага</td></tr>
+  <tr><td><b>Все кейсы</b></td><td>Разведчик (фильтр) · пользы</td><td>Раздел сайта</td><td>Найти «свой» кейс по ситуации</td></tr>
+  <tr><td><b>Статья блога</b></td><td>Контакт · ключ к уху</td><td>Вход из поиска и соцсетей</td><td>Честный ответ на вопрос → доверие → мягкий шаг</td></tr>
+  <tr><td><b>Мини‑блог (3 статьи)</b></td><td>Та ступень, где сомнение</td><td>Рядом с сомнением, например после цен</td><td>Закрыть сомнение, не уводя с пути</td></tr></table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Кейсы</h2>
+  <h3 style="margin-top:18px">1. Где кейсы на сайте</h3>
+  <div class="two">
+   <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>Экран 4 · главный кейс + ещё</span></div><div class="mk">
+    <div class="ey">История клиента</div><div class="h">Кухня для семьи с двумя детьми — через год ни одной царапины</div>
+    <div class="row2"><div class="img" style="min-height:120px">фото «после»</div><div><div class="q">«Больше всего боялись, что затянется. Уложились в срок из договора»</div><div class="sm">Анна, ЖК «Солнечный» · эмаль · 30 дней</div><div style="margin-top:8px"><span class="b g">Читать историю →</span></div></div></div>
+    <div class="sm" style="margin-top:12px;font-weight:700;color:#1b1b1f">Ещё похожие</div>
+    <div class="cards"><div class="c"><div class="img" style="min-height:50px"></div><b>Угловая 6 м² в хрущёвке</b><span class="kp">+40% хранения</span></div><div class="c"><div class="img" style="min-height:50px"></div><b>Кухня‑гостиная 18 м²</b><span class="kp">монтаж 1 день</span></div><div class="c"><div class="img" style="min-height:50px"></div><b>Новостройка без ремонта</b><span class="kp">розетки до стройки</span></div></div>
+    <div class="sm">Всего 47 проектов · <u>все кейсы →</u></div>
+   </div></div>
+   <div><ul class="l">
+    <li><b>Главный кейс — один</b>, самый похожий на ситуацию посетителя. Если есть квиз — подбирается по ответам («у вас новостройка → кейс новостройки»).</li>
+    <li><b>«Ещё похожие» — 2–3 мини‑карточки</b>, не больше: они показывают, что кейс не единственный, но не превращают экран в каталог.</li>
+    <li><b>Счётчик и ссылка «все кейсы»</b> — для тех, кому важно убедиться, что опыта много. Ссылка открывается в той же вкладке и на странице кейсов есть путь обратно к шагу.</li>
+    <li><b>На странице услуги</b> — только кейсы этой услуги.</li>
+    <li><b>Не ставьте 12 кейсов на лендинг.</b> Посетитель уйдёт их листать и не дойдёт до шага.</li>
+   </ul></div>
+  </div>
+
+  <h3 style="margin-top:34px">2. Мини‑карточка кейса</h3>
+  <div class="two">
+   <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>Карточка</span></div><div class="mk" style="max-width:320px">
+    <div class="ln"><i class="n">1</i><div class="img" style="min-height:120px">фото результата в жизни</div></div>
+    <div class="ln"><i class="n">2</i><span class="tag">кухня · новостройка</span></div>
+    <div class="ln"><i class="n">3</i><b style="font-size:14px">Кухня в новостройке без ремонта: розетки и вода — до стройки</b></div>
+    <div class="ln"><i class="n">4</i><span class="kp">Уложились в 28 дней вместо 45</span></div>
+    <div class="ln"><i class="n">5</i><span class="sm">Анна и Игорь, ЖК «Солнечный»</span></div>
+   </div></div>
+   <div><ol class="steps"><li><b>Фото результата в жизни</b>, а не рендер и не фото из каталога.</li><li><b>Тег задачи или ниши</b> — по нему человек узнаёт «своё» и фильтрует.</li><li><b>Заголовок = ситуация клиента</b> его словами, а не «Проект для ООО „Ромашка“».</li><li><b>Один проверяемый результат</b>: срок, цифра, «было → стало». Только из подтверждённых данных.</li><li><b>Кто клиент</b> — с разрешения. Нет разрешения — отрасль и город без имени.</li></ol>
+   <div class="grid g2" style="margin-top:12px"><div class="badx"><b>Плохо</b>«Проект „Уют“. Стильная кухня в современном стиле».</div><div class="good"><b>Хорошо</b>«Кухня 6 м² в хрущёвке: +40% места для хранения за счёт шкафов до потолка».</div></div></div>
+  </div>
+
+  <h3 style="margin-top:34px">3. Страница кейса — продажа в миниатюре</h3>
+  <p class="muted">Кейс сам проходит ступени: читатель узнаёт себя, видит честность и путь, результат и цену — и получает тот же шаг, что на сайте.</p>
+  <div class="two">
+   <ol class="steps">
+    <li><b>Кто клиент и в какой ситуации <span class="st">контакт</span></b>Одной‑двумя фразами: кто, где, какая задача. Читатель должен узнать себя.</li>
+    <li><b>Что было и чего боялся <span class="st">ключ к уху</span></b>Цитата клиента: страх или сомнение его словами.</li>
+    <li><b>Что предложили — и от чего отговорили <span class="st">разведчик · честность</span></b>Какие вопросы задали, что выяснили, какой вариант не подошёл и почему.</li>
+    <li><b>Как делали <span class="st">доверие</span></b>Этапы и сроки. Обязательно — что пошло не так и как решили: это самый убедительный абзац.</li>
+    <li><b>Результат «было → стало» <span class="st">вовлечение в пользы</span></b>Цифры и факты только подтверждённые. Фото до/после, скриншоты, документы.</li>
+    <li><b>Слова клиента <span class="st">доверие</span></b>С именем и фото (с разрешения), лучше — видео или ссылка на отзыв на картах.</li>
+    <li><b>Какой вариант и сколько стоило <span class="st">финансовый консультант</span></b>Вариант, вилка цены, срок. «Похожий проект сейчас стоит от…».</li>
+    <li><b>«Похожая задача?» <span class="st">кассир</span></b>Тот же шаг, что на сайте, с пользой шага: «замер — эскиз остаётся у вас».</li>
+    <li><b>2–3 похожих кейса <span class="st">развилка</span></b>Для тех, кто хочет ещё убедиться.</li>
+   </ol>
+   <div><div class="frame"><div class="fbar"><i></i><i></i><i></i><span>kuhni.ru/keysy/novostroyka</span></div><div class="mk">
+    <div class="ey">Кейс · новостройка</div><div class="h">Кухня в новостройке без ремонта: розетки и вода — до стройки</div>
+    <div class="img" style="min-height:110px">фото «после»</div>
+    <div class="p" style="margin-top:8px"><b>Ситуация.</b> Анна и Игорь купили квартиру без отделки и хотели въехать через 2 месяца.</div>
+    <div class="q">«Боялись, что кухню сделают, а розетки окажутся не там»</div>
+    <div class="p"><b>Что пошло не так.</b> Застройщик сдвинул стояк на 12 см — переделали эскиз за день, срок не сдвинули.</div>
+    <div class="p"><b>Результат.</b> 28 дней вместо 45 · ни одной переделки</div>
+    <div class="p"><b>Вариант:</b> эмаль + кварц · похожий проект сейчас — от 280 тыс. ₽</div>
+    <span class="b">Похожая задача? Выбрать время замера</span>
+   </div></div>
+   <div class="tpl"><button class="btn cp" onclick="copy(this.parentNode.innerText.replace('Копировать',''))">Копировать</button>Заголовок: [ситуация клиента] — [главный результат]
+Ситуация: [кто], [где], [задача и срок].
+«[Страх или сомнение клиента дословно]»
+Что предложили: [вариант] — потому что [из ответов]. Отговорили от [..], потому что [..].
+Как делали: [этап — срок] → [этап — срок] → [этап — срок].
+Что пошло не так: [проблема] — [как решили], [как это отразилось на сроке].
+Результат: было [..] → стало [..]. [Подтверждение: фото, документ, отзыв].
+Слова клиента: «[..]» — [имя, где].
+Вариант и цена: [вариант], похожий проект сейчас — [вилка].
+Похожая задача? [Шаг] — [польза шага].</div></div>
+  </div>
+
+  <h3 style="margin-top:34px">4. Страница «Все кейсы»</h3>
+  <div class="two">
+   <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>kuhni.ru/keysy</span></div><div class="mk">
+    <div class="h">47 кухонь — найдите похожую на вашу</div>
+    <div><span class="tag">Новостройка</span> <span class="tag" style="background:#0b6bcb;color:#fff">Маленькая кухня</span> <span class="tag">Кухня‑гостиная</span> <span class="tag">Живём, меняем</span></div>
+    <div class="cards"><div class="c"><div class="img" style="min-height:50px"></div><b>6 м² в хрущёвке</b><span class="kp">+40% хранения</span></div><div class="c"><div class="img" style="min-height:50px"></div><b>7 м² с колонкой</b><span class="kp">колонку спрятали</span></div><div class="c"><div class="img" style="min-height:50px"></div><b>5,5 м² без окна</b><span class="kp">свет по рабочей зоне</span></div></div>
+    <div style="text-align:center"><span class="b g">Показать ещё 9</span></div>
+    <div class="p" style="margin-top:10px;text-align:center">Не нашли похожую? <b style="color:#0b6bcb">Расскажите задачу — покажем ближайшие</b></div>
+   </div></div>
+   <div><ul class="l"><li><b>Фильтр по ситуации</b> — это ступень «разведчик»: человек сам говорит, что ему важно. Фильтр по стилю вторичен.</li><li><b>Показывать 6–9 карточек</b>, остальное — по кнопке «Показать ещё».</li><li><b>Шаг внутри списка</b> — после каждых 6 карточек и в конце: «не нашли похожий — расскажите задачу».</li><li><b>Сортировка — по близости к главным услугам</b>, а не по дате.</li></ul></div>
+  </div>
+
+  <h3 style="margin-top:34px">5. Если кейсов мало или нельзя называть клиентов</h3>
+  <div class="grid g3" style="margin-top:12px">
+   <div class="card"><h4>Кейсов нет (новый бизнес)</h4><p>Экран 4 — вариант «Как это устроено»: процесс, сроки, что остаётся у клиента. Плюс разбор типичной ситуации: «так обычно выглядит…». Не выдавайте пример за реальный кейс.</p></div>
+   <div class="card"><h4>Клиент под NDA</h4><p>Анонимный кейс: отрасль, масштаб, город, задача и результат без названия. «Производитель упаковки, 120 сотрудников, Татарстан».</p></div>
+   <div class="card"><h4>Медицина, финансы, юристы</h4><p>Только с письменного согласия и без обещания результата другим. Лучше — «как проходит лечение / процедура» на примере, с оговоркой, что у каждого по‑своему.</p></div>
+  </div>
+  <div class="sc" style="margin-top:16px"><table class="t"><tr><th>Ниша</th><th>Что показывать как результат</th></tr>
+  <tr><td>Ремонт, мебель, окна</td><td>Фото до/после, срок по договору и по факту, смета без доплат</td></tr>
+  <tr><td>B2B‑услуги</td><td>Цифры клиента: сэкономленные часы, штрафы, выручка — с согласия</td></tr>
+  <tr><td>B2B‑производство</td><td>Партия, сроки отгрузки, тесты, повторные заказы</td></tr>
+  <tr><td>Обучение</td><td>Работа ученика, путь «с чего начал → что умеет», трудоустройство — только проверяемо</td></tr>
+  <tr><td>Эксперт</td><td>Анонимная ситуация «было → что сделали → что изменилось»</td></tr>
+  <tr><td>Магазин</td><td>Отзывы с фото покупателей, «как носится через полгода»</td></tr></table></div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Блог</h2>
+  <h3 style="margin-top:18px">1. Зачем и о чём писать</h3>
+  <div class="two"><div><ul class="l">
+   <li><b>Одна статья = один вопрос клиента.</b> Темы берутся из брифа: «о чём спрашивают в первом разговоре», «почему отказываются», «что можно получить до покупки».</li>
+   <li><b>Честный ответ, даже если он «не к нам».</b> Статья, которая говорит «в вашем случае хватит готовой кухни», вызывает больше доверия, чем реклама.</li>
+   <li><b>Мягкий шаг, а не «купите»:</b> микромагнит, шаг поменьше, похожий кейс.</li>
+   <li><b>Автор — живой эксперт</b> с фото и опытом. Это доказывает экспертность лучше любых слов.</li></ul></div>
+   <div class="card"><h4>Разделы блога — по пути покупателя</h4><table class="t" style="margin-top:6px"><tr><th>Раздел</th><th>Ступень</th><th>Примеры тем</th></tr><tr><td><b>Разобраться</b></td><td>Контакт · ключ к уху</td><td>«Что влияет на цену кухни», «Плёнка или эмаль: честно»</td></tr><tr><td><b>Выбрать</b></td><td>Финансовый консультант</td><td>«Как проверить смету за 15 минут», «Что спросить на замере»</td></tr><tr><td><b>После покупки</b></td><td>Фея</td><td>«Как ухаживать за эмалью», «Что делать, если поцарапали»</td></tr></table></div></div>
+
+  <h3 style="margin-top:34px">2. Мини‑блог на странице продажи</h3>
+  <div class="two">
+   <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>после экрана 5 · варианты и цены</span></div><div class="mk">
+    <div class="h s">Перед тем как выбирать — полезно прочитать</div>
+    <div class="cards"><div class="c"><div class="img" style="min-height:46px"></div><b>Как проверить смету кухни за 15 минут</b><span class="sm">5 мин · выбрать</span></div><div class="c"><div class="img" style="min-height:46px"></div><b>Плёнка, эмаль или шпон: честное сравнение</b><span class="sm">7 мин · разобраться</span></div><div class="c"><div class="img" style="min-height:46px"></div><b>Что спросить у замерщика</b><span class="sm">4 мин · выбрать</span></div></div>
+   </div></div>
+   <div><ul class="l"><li><b>Три статьи, связанные с сомнением этого места.</b> После цен — про смету и выбор; после «как устроено» — про процесс.</li><li><b>Это не отдельный блок «возражения»</b>: сомнение закрывается на своём экране, статья — продолжение ответа для тех, кому мало одной строки.</li><li>Статьи открываются <b>в той же вкладке</b>, в конце статьи — путь обратно к шагу.</li></ul></div>
+  </div>
+
+  <h3 style="margin-top:34px">3. Карточка статьи</h3>
+  <div class="two">
+   <div class="frame"><div class="fbar"><i></i><i></i><i></i><span>Карточка</span></div><div class="mk" style="max-width:320px">
+    <div class="ln"><i class="n">1</i><div class="img" style="min-height:100px">обложка по теме</div></div>
+    <div class="ln"><i class="n">2</i><span class="tag">Выбрать</span> <span class="sm">· 5 мин</span></div>
+    <div class="ln"><i class="n">3</i><b style="font-size:14px">Как проверить смету кухни за 15 минут</b></div>
+    <div class="ln"><i class="n">4</i><span class="p">7 строк, где чаще всего прячут доплаты — и что спросить про каждую.</span></div>
+   </div></div>
+   <div><ol class="steps"><li><b>Обложка по теме</b>, не сток «улыбающиеся люди».</li><li><b>Раздел и время чтения</b> — человек понимает, где он и сколько займёт.</li><li><b>Заголовок = вопрос или задача клиента</b> его словами.</li><li><b>Одна строка ответа</b> — уже польза, даже если не откроет.</li></ol>
+   <div class="grid g2" style="margin-top:12px"><div class="badx"><b>Плохо</b>«10 шокирующих ошибок, которые разорят вас при заказе кухни!»</div><div class="good"><b>Хорошо</b>«Как проверить смету кухни за 15 минут: 7 строк, где прячут доплаты»</div></div></div>
+  </div>
+
+  <h3 style="margin-top:34px">4. Как устроена статья</h3>
+  <div class="two">
+   <ol class="steps">
+    <li><b>Заголовок‑вопрос <span class="st">контакт</span></b>Словами клиента, без кликбейта.</li>
+    <li><b>Короткий ответ в 2 строках <span class="st">ключ к уху</span></b>Сразу польза: кто прочитал только это — уже получил ответ.</li>
+    <li><b>Кому полезно, кому нет <span class="st">отталкивание</span></b>«Если кухня уже заказана — эта статья не поможет, читайте про уход».</li>
+    <li><b>Разбор по шагам <span class="st">вовлечение в пользы</span></b>Факты, примеры, таблица, фото. «А вы знаете, что…» — одно наблюдение из практики.</li>
+    <li><b>Честные минусы и ограничения <span class="st">доверие</span></b>Где способ не сработает, чего мы не знаем.</li>
+    <li><b>Пример из практики <span class="st">доверие</span></b>Ссылка на кейс.</li>
+    <li><b>Автор <span class="st">доверие</span></b>Фото, имя, опыт фактом. Дата обновления.</li>
+    <li><b>Микромагнит или шаг поменьше <span class="st">кассир</span></b>Чек‑лист по теме статьи или «пришлите смету — проверим за день».</li>
+    <li><b>Похожие статьи</b>Из того же раздела пути.</li>
+   </ol>
+   <div><div class="frame"><div class="fbar"><i></i><i></i><i></i><span>kuhni.ru/blog/proverit-smetu</span></div><div class="mk">
+    <span class="tag">Выбрать</span> <span class="sm">· 5 мин · обновлено 12.09.2026</span>
+    <div class="h">Как проверить смету кухни за 15 минут</div>
+    <div class="p" style="background:#f3f6fa;border-radius:8px;padding:8px 10px"><b>Коротко:</b> сверьте 7 строк — фурнитуру, кромку, столешницу, монтаж, подъём, вывоз и технику. В них прячут 80% доплат.</div>
+    <div class="p"><b>Кому не нужно:</b> если кухня уже оплачена — читайте, как принять монтаж.</div>
+    <div class="p"><b>1. Фурнитура.</b> …</div>
+    <div class="p" style="color:#9a3412">Честно: мы тоже берём за подъём без лифта — это в смете отдельной строкой.</div>
+    <div class="row2" style="align-items:center"><div class="sm">Автор — Ольга, замерщик, 9 лет, 1 200+ замеров</div><span class="b">Пришлите смету — проверим за день</span></div>
+   </div></div>
+   <div class="tpl"><button class="btn cp" onclick="copy(this.parentNode.innerText.replace('Копировать',''))">Копировать</button>Заголовок: [вопрос клиента его словами]
+Коротко: [ответ в 2 строках — польза сразу]
+Кому полезно: [..]. Кому нет: [..] — [куда им].
+1. [Шаг / критерий] — [объяснение, пример, цифра из практики]
+2. …
+А вы знаете, что [наблюдение из практики]?
+Честно: [где этот способ не сработает / наше ограничение]
+Пример: [ссылка на кейс — одна строка результата]
+Автор: [имя, роль, опыт фактом] · обновлено [дата]
+Шаг: [микромагнит или шаг поменьше — польза]
+Похожие: [2–3 статьи того же раздела]</div></div>
+  </div>
+
+  <h3 style="margin-top:34px">5. Страница «Блог»</h3>
+  <ul class="l"><li><b>Разделы по пути покупателя</b> вверху: «Разобраться · Выбрать · После покупки» — это и есть фильтр.</li><li><b>Вверху — 1–2 главные статьи</b> по самым частым вопросам из брифа.</li><li><b>После каждых 6 карточек</b> — микромагнит или шаг поменьше.</li><li><b>Внизу</b> — «Не нашли ответ? Задайте вопрос эксперту» с прямым контактом.</li></ul>
+  <div class="note sy" style="margin-top:14px"><b>Как писать статьи без копирайтера.</b> Возьмите вопрос из брифа, задайте его эксперту клиента голосом, расшифруйте ответ и приведите к шаблону. Получаются живые статьи с фактами, а не пересказ интернета.</div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Проверка перед публикацией</h2>
+  <div class="grid g2" style="margin-top:12px">
+   <div class="card"><h3>Кейс</h3><ul class="chk" id="c1"></ul></div>
+   <div class="card"><h3>Статья</h3><ul class="chk" id="c2"></ul></div>
+  </div>
+  <p class="hint" style="margin-top:10px">Всё это собирается в конструкторе (модуль 10): блоки «Главный кейс + ещё», «Все кейсы», «Страница кейса», «Мини‑блог», «Список статей», «Статья» и шаблоны страниц «Кейс», «Кейсы», «Блог», «Статья».</p>
+</div></section>
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 11.</div></footer>
+<div class="toast" id="toast"></div>
+<script>
+const C1=['Заголовок — ситуация клиента, а не название проекта','Есть страх или сомнение клиента его словами','Сказано, что предложили и от чего отговорили','Есть «что пошло не так и как решили»','Результат — только подтверждённые цифры и факты','Слова клиента с именем — есть разрешение на публикацию','Названы вариант и вилка цены','В конце — тот же шаг, что на сайте, с пользой шага','Есть 2–3 похожих кейса'];
+const C2=['Заголовок — вопрос клиента, без кликбейта и страшилок','Короткий ответ в первых двух строках','Сказано, кому статья не нужна','Разбор по шагам с фактами из практики','Есть честное ограничение или минус','Есть автор с опытом фактом и дата обновления','Шаг — микромагнит или шаг поменьше, не «купите»','Нет выдуманной статистики и обещаний результата'];
+function list(id,a){document.getElementById(id).innerHTML=a.map(t=>`<li onclick="this.classList.toggle('done');this.querySelector('input').checked=this.classList.contains('done')"><input type="checkbox" onclick="event.stopPropagation();this.parentNode.classList.toggle('done',this.checked)"><span>${t}</span></li>`).join('')}
+list('c1',C1);list('c2',C2);
+function copy(t){const done=()=>toast('Скопировано');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.trim()).then(done).catch(()=>fb(t,done));else fb(t,done)}
+function fb(t,cb){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');cb()}catch(e){}x.remove()}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>17. Сдача и практика — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}.toc a{font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:5px 11px;text-decoration:none;color:var(--tx);background:var(--paper)}.toc a:hover{border-color:var(--acc)}
+.blk .card h2{margin-top:0}.blk .card h3{margin:22px 0 8px;font-size:17px}.blk .card p{margin:8px 0}.blk .card li{margin:5px 0}
+.blk .card code{font-size:.9em;background:var(--acc2);border-radius:5px;padding:1px 5px}
+.blk{padding:10px 0}.part{padding:40px 0 6px}.part h2.big{font-size:clamp(24px,3vw,34px);margin:6px 0 8px}
+.srcnote{font-size:13px;color:var(--mut);margin-top:12px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd on" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="on">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 17 · сдача и практика</div>
+  <h1>Чего страница нести не может — и как проверить, что она работает</h1>
+  <div class="lead"><p>Два обязательных раздела выдачи. Первый говорит команде клиента, что сайт отдаёт живым людям. Второй — по каким действиям посетителей видно, что каждая ступень работает. Без них сайт сдаётся «вслепую», а причину слабых продаж потом ищут не там.</p></div>
+  <div class="note" style="margin-top:14px">Этот модуль — человеческая версия справочника плагина «Продающий сайт» (версия 2.0). Плагин и методичка работают по одним правилам. Где написано «пользователь» — это тот, кто принимает решение по проекту: руководитель проекта или клиент.</div>
+  <div class="toc"><a href="#s1">1. Что страница пройти не может и куда это переносится</a><a href="#s2">2. Что проверить на практике</a><a href="#s3">3. Что сдать команде клиента вместе с сайтом</a></div>
+</div></section>
+<section class="blk" id="s1"><div class="wrap"><div class="card"><h2>1. Что страница пройти не может и куда это переносится</h2><p>Страница — одно касание и одинаковый текст для всех. Часть ступеней в ней физически не проходится. Для каждого проекта выдай эту таблицу, адаптировав последнюю колонку к клиенту (кто именно, в каком канале).</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Ступень</th>
+<th>Что страница не может</th>
+<th>Куда переносится</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Контакт — такт и «попасть в согласие»</td>
+<td>Реагировать на конкретного человека</td>
+<td>Первое сообщение после заявки: начать с его ответов из квиза (скилл <code>sozvon-brif</code>, режим 0)</td>
+</tr>
+<tr>
+<td>Разведчик целиком</td>
+<td>Каждый следующий вопрос из ответа на предыдущий — квиз это заготовленный список</td>
+<td>Первый разговор: вопросы растут из ответов квиза. В карте писать: «разведка начата на странице, закончена в разговоре»</td>
+</tr>
+<tr>
+<td>Интерес к человеку (правило чистого железа)</td>
+<td>Страница не может интересоваться</td>
+<td>Любой живой контакт</td>
+</tr>
+<tr>
+<td>Намерение</td>
+<td>У страницы нет намерения, есть только намерение автора текста</td>
+<td>Писать с намерением помочь выбрать; в разговоре — живой человек</td>
+</tr>
+<tr>
+<td>Финансовый консультант — «знает, что нужно мне»</td>
+<td>Страница не знает человека; рекомендация по квизу — только подсветка</td>
+<td>Персональное мнение — в разговоре после квиза</td>
+</tr>
+<tr>
+<td>Кассир при длинном цикле</td>
+<td>Деньги не берутся, пока решение не принято</td>
+<td>Разговор → сумма → договор → оплата; на странице — назначенное время</td>
+</tr>
+<tr>
+<td>Фея — подтверждение выбора (правило Якокки)</td>
+<td>Автоматическое письмо ждут все — это не фея</td>
+<td>Звонок после оплаты: «перепроверили — вы выбрали правильно, вот почему»</td>
+</tr>
+<tr>
+<td>Директор по развитию — главный вопрос</td>
+<td>«Кого вы хотели бы с нами познакомить?» — ответ «нет» надо услышать</td>
+<td>Разговор после результата; на странице только готовые слова</td>
+</tr>
+<tr>
+<td>Частота подходов</td>
+<td>Страница — одно касание</td>
+<td>Цепочка касаний с согласия (канал, частота, польза каждого касания)</td>
+</tr>
+</tbody>
+</table></div></div></div></section><section class="blk" id="s2"><div class="wrap"><div class="card"><h2>2. Что проверить на практике</h2><p>Для каждого экрана — признак на стороне посетителя (что он сделал) и как это увидеть. Технические события настраиваются в аналитике (вне методики), но решение, <strong>что</strong> мерить, — методическое.</p>
+<div class="sc"><table class="t">
+<thead>
+<tr>
+<th>Экран</th>
+<th>Признак прохождения</th>
+<th>Как увидеть</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 · Контакт</td>
+<td>Не закрыл, пошёл ниже</td>
+<td>Доля дошедших до экрана 2; отказы в первые 10 секунд</td>
+</tr>
+<tr>
+<td>2 · Ключ к уху</td>
+<td>Сам идёт к вопросам</td>
+<td>Доля начавших квиз / выбор ситуации от дошедших до экрана 2</td>
+</tr>
+<tr>
+<td>3 · Разведчик</td>
+<td>Ответил о себе</td>
+<td>Доля завершивших квиз; ответы приходят в заявке</td>
+</tr>
+<tr>
+<td>4 · Одна польза</td>
+<td>Понял своими словами, чем ему хорошо</td>
+<td>Клики «примерить», заполнение поля «своими словами», глубина чтения истории; на звонке человек говорит о своей задаче, а не о цене</td>
+</tr>
+<tr>
+<td>5 · Финансовый консультант</td>
+<td>Выбрал вариант и пошёл к шагу, не уйдя сравнивать</td>
+<td>Клики по кнопке после экрана 5; доля «дорого» на звонках падает</td>
+</tr>
+<tr>
+<td>6 · Кассир</td>
+<td>Оставил контакт и время / оплатил</td>
+<td>Конверсия в заявку; доля заявок с выбранным временем; доля дозвона</td>
+</tr>
+<tr>
+<td>7 · Фея</td>
+<td>Не ждал, есть что рассказать</td>
+<td>Пересылка памятки; ответы «спасибо, не ожидал»</td>
+</tr>
+<tr>
+<td>8 · Директор по развитию</td>
+<td>Переслал, пришёл новый человек</td>
+<td>Переходы по ссылке с готовыми словами; «пришёл по рекомендации» в заявках</td>
+</tr>
+<tr>
+<td>Уход</td>
+<td>Ушёл без раздражения, вернулся</td>
+<td>Скачивания микромагнита; повторные визиты</td>
+</tr>
+</tbody>
+</table></div>
+<p>Правило чтения цифр: если провал на экране N, причина обычно на 1–3 экрана раньше.</p></div></div></section><section class="blk" id="s3"><div class="wrap"><div class="card"><h2>3. Что сдать команде клиента вместе с сайтом</h2><p>Коротко, одним блоком в выдаче:
+- кто и в какой срок отвечает на заявку, с чего начинает (с ответов квиза, не с «что вас интересует?»);
+- три вопроса для первого разговора, которые продолжают разведку по главной боли;
+- что делать, если человек выбрал «присматриваюсь» (не писать, пока не напишет сам);
+- звонок после оплаты с подтверждением выбора;
+- когда и как спросить о готовых словах для знакомого.</p></div></div></section>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

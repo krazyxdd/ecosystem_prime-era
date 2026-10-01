@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="assets/pe-core.css?v=202610011423"><script src="assets/pe-core.js?v=202610011423" data-module="sayt"></script><link rel="stylesheet" href="assets/sayt-fonts.css?v=202610011423"><style>body{padding-top:var(--pe-nav-h,0px)}html{scroll-padding-top:calc(var(--pe-nav-h,0px) + 72px)}</style>
+<title>0. Созвон‑бриф — Продающий сайт · Prime Era</title>
+<style>
+:root{
+  --bg:#f6f5f1;--paper:#ffffff;--tx:#1b1b1f;--mut:#5b5b63;--dim:#8a8a92;--line:#e4e2dc;
+  --acc:#0b6bcb;--acc2:#e6f0fb;--sz:#0b6bcb;--pr:#c2410c;--pr2:#fdf0e8;--sy:#6d28d9;--sy2:#f1ebfd;
+  --ok:#15803d;--ok2:#e8f6ec;--warn:#a16207;--warn2:#fdf6e3;--bad:#b91c1c;--bad2:#fdecec;
+  --r:16px;--fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Unbounded","Manrope",system-ui,sans-serif;
+}
+html[data-pe-theme="dark"]{
+  --bg:#121214;--paper:#1b1b1e;--tx:#f0f0ee;--mut:#b0b0b6;--dim:#85858c;--line:#2e2e33;
+  --acc:#5aa7ff;--acc2:#15263a;--sz:#5aa7ff;--pr:#fb923c;--pr2:#2e1c12;--sy:#a78bfa;--sy2:#231a38;
+  --ok:#4ade80;--ok2:#12281a;--warn:#facc15;--warn2:#2b2410;--bad:#f87171;--bad2:#2f1515}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--acc)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:var(--pe-nav-h,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:58px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+header.top .brand{font-family:var(--fh);font-weight:700;font-size:14px;text-decoration:none;color:var(--tx)}
+header.top nav{display:flex;gap:2px;flex:1;justify-content:space-between;margin-right:-7px}
+header.top .brand{flex:none}
+header.top nav a{font-size:12.5px;font-weight:600;color:var(--mut);text-decoration:none;padding:6px 5px;border-radius:8px;flex:none}
+header.top nav a.on,header.top nav a:hover{background:var(--acc2);color:var(--acc)}
+h1,h2,h3{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(28px,4.6vw,46px);margin-bottom:14px}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 12px}
+h3{font-size:18px;margin:0 0 8px}
+h4{font-size:15px;margin:0 0 6px;font-weight:800}
+p{margin:0 0 10px}
+.lead{font-size:18px;color:var(--mut);max-width:780px}
+.muted{color:var(--mut)}.dim{color:var(--dim);font-size:14px}
+section.blk{padding:54px 0;border-top:1px solid var(--line)}
+section.hero{padding:48px 0 34px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--acc2);color:var(--acc);margin:0 4px 4px 0;white-space:nowrap}
+.t-sz{background:var(--acc2);color:var(--sz)}.t-pr{background:var(--pr2);color:var(--pr)}.t-sy{background:var(--sy2);color:var(--sy)}
+.t-ok{background:var(--ok2);color:var(--ok)}.t-warn{background:var(--warn2);color:var(--warn)}.t-bad{background:var(--bad2);color:var(--bad)}
+.note{border-left:4px solid var(--acc);background:var(--acc2);border-radius:10px;padding:14px 16px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn2)}.note.bad{border-color:var(--bad);background:var(--bad2)}.note.ok{border-color:var(--ok);background:var(--ok2)}.note.sy{border-color:var(--sy);background:var(--sy2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;color:var(--tx)}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+table.t th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);background:color-mix(in srgb,var(--paper) 70%,var(--bg))}
+.sc{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.sc table.t{min-width:760px}
+.good,.badx{border-radius:10px;padding:12px 14px;font-size:14px}
+.good{background:var(--ok2);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badx{background:var(--bad2);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.good b,.badx b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.good b{color:var(--ok)}.badx b{color:var(--bad)}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.segs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+details.x{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0}
+details.x>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary::before{content:"+ ";color:var(--acc)}
+details.x[open]>summary::before{content:"− "}
+details.x>div{padding:0 16px 14px}
+ul.l{padding-left:20px}ul.l li{margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:90;transition:.25s;pointer-events:none}
+.toast.on{transform:translateX(-50%);opacity:1}
+footer.f{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+@media print{header.top,.noprint{display:none!important}body{background:#fff}.sumout,.rep,.out{max-height:none!important;overflow:visible!important}}
+
+/* логотип: в покое — печатная машинка, при наведении — неон */
+header.top .brand{position:relative;display:inline-flex;align-items:flex-start;padding:4px 0}
+header.top .brand .t{white-space:pre;transition:color .2s}
+header.top .brand .cur{display:inline-block;width:2px;height:1.05em;background:var(--acc);margin-left:3px;align-self:center;animation:brandBlink 1s steps(1) infinite}
+header.top .brand sup{font-family:var(--fb);font-size:10px;font-weight:800;margin-left:2px;margin-top:-2px;color:var(--acc);line-height:1;display:inline-block}
+header.top .brand:hover .t{color:var(--acc);animation:brandFlick .12s steps(2) 4,brandNeon 3s ease-in-out .5s infinite}
+header.top .brand:hover sup{text-shadow:0 0 8px color-mix(in srgb,var(--acc) 70%,transparent)}
+header.top .brand:hover .cur{box-shadow:0 0 8px var(--acc)}
+@keyframes brandBlink{50%{opacity:0}}
+@keyframes brandFlick{0%{opacity:1}50%{opacity:.35}}
+@keyframes brandNeon{0%,100%{text-shadow:0 0 4px color-mix(in srgb,var(--acc) 35%,transparent)}50%{text-shadow:0 0 12px color-mix(in srgb,var(--acc) 65%,transparent),0 0 2px var(--acc)}}
+@media(prefers-reduced-motion:reduce){header.top .brand .cur,header.top .brand .t{animation:none!important}}
+ol:not([class]),ul:not([class]){padding-left:22px}
+
+header.top nav .dd{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--mut);padding:6px 5px;border-radius:8px;cursor:pointer;flex:none}
+header.top nav .dd:hover,header.top nav .dd.on{background:var(--acc2);color:var(--acc)}
+.ddm{position:fixed;z-index:60;display:none;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.14);min-width:190px}
+.ddm.open{display:flex}
+.ddm a{font-size:14px;font-weight:600;color:var(--tx);text-decoration:none;padding:8px 12px;border-radius:8px}
+.ddm a:hover,.ddm a.on{background:var(--acc2);color:var(--acc)}
+
+.stepnav{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.stepnav a{text-decoration:none;font-size:13px;font-weight:700;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 12px;color:var(--tx)}
+.stepnav a:hover{border-color:var(--acc)}
+.cstep{border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:24px;margin-top:22px;scroll-margin-top:130px}
+.cstep>.hd{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.cstep .num{font-family:var(--fh);font-size:30px;color:var(--acc);line-height:1}
+.cstep .hd h2{font-size:24px;margin:0}
+.cstep .hd .time{margin-left:auto}
+.goal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:700px){.goal{grid-template-columns:1fr}}
+.goal div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.goal b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.say{background:var(--acc2);border-radius:14px;padding:14px 16px;margin-top:12px}
+.say h4{color:var(--acc);font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.say p{margin:6px 0;font-size:15.5px}
+.say p.q::before{content:"— ";color:var(--acc);font-weight:800}
+.say .alt{font-size:13.5px;color:var(--mut);border-top:1px dashed color-mix(in srgb,var(--acc) 40%,transparent);margin-top:10px;padding-top:8px}
+.prime{background:var(--pr2);border-radius:14px;padding:12px 16px;margin-top:10px;font-size:14.5px}
+.prime b.h{color:var(--pr);font-size:12px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media(max-width:700px){.fields{grid-template-columns:1fr}}
+.fld label{display:block;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:4px}
+.fld textarea,.fld input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.fld textarea{min-height:64px;resize:vertical}
+.qcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px}
+.qcard.done{border-color:color-mix(in srgb,var(--ok) 50%,var(--line))}
+.qhead{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.qhead h4{font-size:15.5px;line-height:1.35}
+.qask{font-size:15px;margin-top:6px;color:var(--acc);font-weight:600}
+.qask::before{content:"Спросите: ";color:var(--dim);font-weight:700}
+.pr{flex:none;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+.pr.must{background:var(--bad2);color:var(--bad)}.pr.imp{background:var(--warn2);color:var(--warn)}.pr.opt{background:var(--acc2);color:var(--acc)}
+.qcard textarea{width:100%;min-height:64px;margin-top:10px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 12px;resize:vertical}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.qmeta .tag{white-space:normal}
+.qhelp{display:none;margin-top:10px;font-size:14px}.qcard.open .qhelp{display:block}.qhelp .grid{margin-top:8px}
+.qtoggle{background:none;border:0;color:var(--acc);font-weight:700;font-size:13px;cursor:pointer;padding:0;margin-top:8px}
+.grp{margin-top:24px}.grp>h3{font-size:18px;margin-bottom:8px}
+.bar{position:sticky;top:calc(58px + var(--pe-nav-h,0px));z-index:20;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:18px 0;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.meter{flex:1;min-width:140px;height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok);width:0;transition:.3s}
+.status{font-weight:800;font-size:14px}
+.pick{margin:10px 0 4px}.pick label{font-size:13px;font-weight:700;color:var(--dim);display:block;margin-bottom:6px}
+.inlineqa{margin-top:12px}
+.inlineqa details{border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:6px 0}
+.inlineqa summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:14.5px;list-style:none}
+.inlineqa summary::-webkit-details-marker{display:none}
+.inlineqa summary::before{content:"❯ ";color:var(--acc);font-size:12px}
+.inlineqa details[open] summary::before{content:"⌄ "}
+.inlineqa .a{padding:0 14px 12px;font-size:14.5px}
+.ready{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+@media(max-width:800px){.ready{grid-template-columns:1fr 1fr}}
+.ready div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;background:var(--paper)}
+.ready div b{display:block;font-size:14px}
+.ready .ok{border-color:color-mix(in srgb,var(--ok) 55%,var(--line));background:var(--ok2)}
+.ready .no{border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.ready small{color:var(--mut)}
+.fab{position:fixed;right:16px;bottom:16px;z-index:40;background:var(--sy);color:#fff;border:0;border-radius:999px;padding:12px 18px;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.drawer{position:fixed;inset:0 0 0 auto;width:min(620px,100%);background:var(--paper);border-left:1px solid var(--line);z-index:60;transform:translateX(100%);transition:.25s;overflow:auto;padding:20px 20px 80px;top:var(--pe-nav-h,0px)}
+.drawer.on{transform:none}
+.drawer .x{position:sticky;top:var(--pe-nav-h,0px);float:right;z-index:2}
+.drawer input.search{width:100%;margin:12px 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.qa{border-bottom:1px solid var(--line);padding:12px 0}
+.qa h4{font-size:15px}
+.qa .ans{font-size:14.5px;margin-top:4px}
+.qa .ans p{margin:4px 0}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:6px 12px;font-size:14.5px;margin-top:8px}
+@media(max-width:600px){.kv{grid-template-columns:1fr}}
+.kv dt{font-weight:800;color:var(--mut)}.kv dd{margin:0}
+.cf{display:inline;background:var(--warn2);border:1px dashed var(--warn);color:var(--warn);border-radius:6px;padding:0 6px;font-size:.92em;font-weight:600}
+.cf::before{content:"подтвердить: "}
+.wt{display:inline;background:var(--bad2);border:1px dashed var(--bad);color:var(--bad);border-radius:6px;padding:0 6px;font-size:.92em;font-weight:600}
+.wt::before{content:"ждёт ответа: "}
+.sumout{max-height:60vh;overflow:auto;white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;min-height:80px}
+</style></head><body>
+<header class="top"><div class="wrap"><a class="brand" href="sayt.html" title="На главную методички" aria-label="Продающий сайт — на главную"><span class="t">Продающий сайт</span><span class="cur"></span><sup>™</sup></a><nav><a href="sayt-0-brif.html" class="on">0 Бриф</a><a href="sayt-1-osnova.html" class="">1 Основа</a><a href="sayt-2-ekrany.html" class="">2 Экраны</a><a href="sayt-3-nishi.html" class="">3 Ниши</a><a href="sayt-4-mnogostranichnik.html" class="">4 Многостр.</a><a href="sayt-5-magazin.html" class="">5 Магазин</a><a href="sayt-6-teksty.html" class="">6 Тексты</a><a href="sayt-7-proverka.html" class="">7 Проверка</a><a href="sayt-11-keysy-blog.html" class="">11 Кейсы</a><button class="dd" type="button" onclick="ddT(this)">Глубже ▾</button><div class="ddm"><a href="sayt-12-glavnaya-bol.html" class="">12 Главная боль</a><a href="sayt-13-prozharka.html" class="">13 Прожарка</a><a href="sayt-14-zakony.html" class="">14 Законы и инструменты</a><a href="sayt-15-sostav-ekranov.html" class="">15 Состав экранов</a><a href="sayt-16-glubina.html" class="">16 Глубина текстов</a><a href="sayt-17-sdacha.html" class="">17 Сдача и практика</a></div><button class="dd" type="button" onclick="ddT(this)">Инструменты ▾</button><div class="ddm"><a href="sayt-8-audit.html" class="">8 Аудит</a><a href="sayt-9-vyzhimka.html" class="">9 Выжимка</a><a href="sayt-editor.html" class="">10 Конструктор</a></div></nav></div></header><script>function ddT(b){var m=b.nextElementSibling;var o=m.classList.toggle("open");if(o){var r=b.getBoundingClientRect();m.style.top=(r.bottom+6)+"px";m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-10)+"px"}}document.addEventListener("click",function(e){if(!e.target.closest(".dd"))document.querySelectorAll(".ddm.open").forEach(function(m){m.classList.remove("open")})});(function(){var b=document.querySelector("header.top .brand"),t=b&&b.querySelector(".t");if(!t||matchMedia("(prefers-reduced-motion: reduce)").matches)return;b.style.minWidth=b.getBoundingClientRect().width+"px";var W=t.textContent,busy=0,hov=0,tm=[];function clr(){tm.forEach(clearInterval);tm=[]}function retype(){if(busy||hov)return;busy=1;var s=W,d=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}s=s.slice(0,-1);t.textContent=s;if(!s){clearInterval(d);var i=0,y=setInterval(function(){if(hov){clr();t.textContent=W;busy=0;return}i++;t.textContent=W.slice(0,i);if(i>=W.length){clearInterval(y);busy=0}},90);tm.push(y)}},55);tm.push(d)}setInterval(retype,9000);b.addEventListener("mouseenter",function(){hov=1;clr();t.textContent=W;busy=0});b.addEventListener("mouseleave",function(){hov=0})})();(function(){var w=document.querySelector("header.top .wrap"),a=document.querySelector("header.top nav a.on");if(w&&a&&w.scrollWidth>w.clientWidth+2){var r=a.getBoundingClientRect(),q=w.getBoundingClientRect();if(r.right>q.right-8)w.scrollLeft+=r.right-q.right+24}})()</script>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Модуль 0 · обязательный</div>
+  <h1>Созвон‑бриф: весь разговор по одной странице</h1>
+  <p class="lead">Путь обычно такой: сайт или холодное сообщение → короткая переписка в Telegram, где договариваемся о времени → созвон. Бриф — это и есть этот созвон: на нём и узнаём клиента, и рассказываем о себе. Ведите его по этой странице сверху вниз: у каждого шага есть цель, что сказать, что записать и как понять, что шаг пройден. Всё, что клиент говорит, записывайте в поля — из них потом соберутся структура, тексты и итог разговора.</p>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card"><h3>Длительность</h3><p>40–60 минут голосом или видео. Письменная анкета, которую клиент заполняет сам, почти всегда даёт общие слова — нам нужны факты и его фразы.</p></div>
+    <div class="card"><h3>Кто на созвоне</h3><p>Собственник (цены, что можно обещать) и тот, кто у клиента продаёт (его дословные вопросы и отказы). Если продаёт сам собственник — достаточно его.</p></div>
+    <div class="card"><h3>Правило фактов</h3><p>В текст сайта идут только факты из этого созвона. Нет ответа — метка <span class="wt">…</span>, идея без подтверждения — <span class="cf">…</span>. «Правдоподобная» выдумка — брак.</p></div>
+  </div>
+  <div class="stepnav noprint">
+    <a href="#tg">Переписка в Telegram</a><a href="#prep">Подготовка</a><a href="#st1">1. Знакомство</a><a href="#st2">2. «Ни к чему не обязывает»</a><a href="#st3">3. Вопросы — бриф</a><a href="#st4">4. Одна польза</a><a href="#st5">5. Варианты и цена</a><a href="#st6">6. Следующий шаг</a><a href="#st7">7. Завершение</a><a href="#after">После созвона</a><a href="#about">О нас и ответы</a>
+  </div>
+</div></section>
+
+<section class="blk" style="padding-top:10px"><div class="wrap">
+  <div class="pick"><label>Вид бизнеса клиента — добавит вопросы для ниши</label><div class="segs" id="nicheSeg"></div></div>
+  <div class="pick"><label>Тип сайта — добавит вопросы для лендинга, многостраничника или магазина</label><div class="segs" id="siteSeg"></div></div>
+  <div class="note" id="nicheNote" style="display:none"></div>
+
+  <div class="bar noprint">
+    <span class="status" id="status">Обязательные: 0 из 0</span>
+    <div class="meter"><i id="meter"></i></div>
+    <div class="row">
+      <button class="btn" onclick="document.getElementById('ready').scrollIntoView({behavior:'smooth'})">Готовность экранов</button>
+      <button class="btn" onclick="downloadJSON()">Сохранить файл</button>
+      <label class="btn" style="cursor:pointer">Загрузить<input type="file" accept=".json" style="display:none" onchange="loadJSON(event)"></label>
+    </div>
+  </div>
+
+  <!-- ПЕРЕПИСКА -->
+  <div class="cstep" id="tg">
+    <div class="hd"><span class="num">−1</span><div><h2>Переписка в Telegram: договориться о созвоне</h2><p class="dim">Обычно созвону предшествует короткая переписка. Человек пришёл с сайта (заявка, квиз) или ответил на холодное сообщение — и попадает в Telegram. Здесь не продаём и не брифуем: единственная цель — точное время созвона.</p></div><span class="tag time">5–15 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Договориться о созвоне на конкретные дату и время — и чтобы человек ждал его, а не терпел.</div><div><b>Шаг пройден, если</b>Время названо и подтверждено; человек ответил хотя бы на один вопрос о своей задаче; не попросил «скиньте прайс».</div></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card" style="padding:16px"><h4>Как переписка ложится на ступени</h4><ul class="l" style="margin-top:6px"><li><b>Контакт:</b> кто пишет и почему — одной фразой.</li><li><b>Ключ к уху:</b> «созвон ни к чему не обязывает; скажу, если сайт вам не нужен».</li><li><b>Разведчик:</b> максимум один вопрос в переписке — остальное на созвоне.</li><li><b>Кассир:</b> два конкретных варианта времени, а не «когда удобно?».</li></ul></div>
+      <div class="card" style="padding:16px"><h4>Правила</h4><ul class="l" style="margin-top:6px"><li>Отвечаем быстро: в рабочее время — в течение 15 минут после заявки.</li><li>Сообщения короткие, как пишет сам человек. Пишет коротко — отвечаем коротко.</li><li>Не отправляем прайс, КП и презентации до созвона.</li><li>Без «Мы — команда профессионалов». Сразу о его задаче.</li></ul></div>
+    </div>
+    <div class="say"><h4>А · пришёл с сайта (заявка или квиз)</h4>
+      <p class="q">Здравствуйте, [имя]! Это [ваше имя] из студии PRIME ERA. Вижу вашу заявку: [что ответил в квизе — одной фразой].</p>
+      <p class="q">Чтобы не гонять вопросы в переписке, предлагаю созвониться на 30–40 минут: разберём, как у вас сейчас продаётся, и я честно скажу, нужен ли вам новый сайт. Это ни к чему не обязывает.</p>
+      <p class="q">Сегодня в [16:00] или завтра в [11:00] — как вам удобнее? Можно голосом в Telegram.</p>
+    </div>
+    <div class="say"><h4>Б · ответил на холодное сообщение</h4>
+      <p class="q">Спасибо, что ответили. Не буду грузить перепиской: по вашему сайту у меня одно наблюдение — [реальное наблюдение из подготовки].</p>
+      <p class="q">Удобнее показать голосом за 15–20 минут — заодно пойму, актуально ли вам это вообще. Если нет — так и скажу. [День, время] или [день, время]?</p>
+    </div>
+    <div class="say"><h4>Если спрашивают в переписке</h4>
+      <p><b>«Сколько стоит?»</b> — «Ориентир: лендинг от 70 000 ₽, чаще проекты выходят в 100–200 тысяч. Точную сумму назову на созвоне — без пары ответов назову цену не того сайта».</p>
+      <p><b>«Скиньте прайс / КП»</b> — «Пришлю. Только без 15 минут разговора я пришлю вам не то. Давайте созвонимся, и после — структура и точная сумма».</p>
+      <p><b>«Давайте в переписке, без звонка»</b> — «Можно. Тогда пять вопросов — отвечайте голосовыми, так быстрее». Отметьте: бриф из переписки слабее, дожмите факты позже.</p>
+      <div class="alt"><b>Напоминание в день созвона:</b> «Напоминаю: сегодня в 16:00 созваниваемся, [ссылка]. Если планы поменялись — напишите, перенесём». Пишем за 1–2 часа.</div>
+    </div>
+    <div class="prime"><b class="h">Усилитель из Прайма · скорость и подстройка</b>Чем быстрее первый ответ после заявки, тем выше шанс созвона. Подстройтесь под стиль: деловой — без смайлов и по делу, живой — можно теплее. Только не копируйте манеру наигранно.</div>
+    <div class="fields"><div class="fld"><label>Откуда пришёл: сайт (что ответил в квизе) / холодное касание</label><textarea data-f="tg_src"></textarea></div><div class="fld"><label>Что написал о задаче — дословно</label><textarea data-f="tg_quote"></textarea></div><div class="fld"><label>Договорились: дата, время, канал</label><input data-f="tg_time"></div></div>
+  </div>
+
+  <!-- ПОДГОТОВКА -->
+  <div class="cstep" id="prep">
+    <div class="hd"><span class="num">0</span><div><h2>Подготовка до созвона</h2><p class="dim">10–15 минут между перепиской и созвоном. Шаг «сбор информации до контакта»: с пустыми руками на созвон не выходим. Перечитайте переписку — первый вопрос на созвоне берите из неё.</p></div><span class="tag time">10–15 мин</span></div>
+    <ul class="l" style="margin-top:12px">
+      <li>Посмотрите сайт клиента (если есть), соцсети, карточки на Яндекс.Картах / 2ГИС, отзывы.</li>
+      <li>Посмотрите 2–3 конкурентов клиента: как они подают цену, что обещают.</li>
+      <li>Найдите <b>одно живое наблюдение</b> — для вопроса «а вы знаете, что…?» на шаге 2. Только реальное: «у вас цена стоит раньше, чем объяснение, что входит».</li>
+      <li>Выберите выше вид бизнеса и тип сайта — добавятся нужные вопросы.</li>
+      <li>Откройте справа «О нас и ответы» — чтобы не искать ответы во время разговора.</li>
+    </ul>
+    <div class="fields"><div class="fld"><label>Клиент, компания, ссылки</label><textarea data-f="p_links"></textarea></div><div class="fld"><label>Наблюдение для «а вы знаете, что…?»</label><textarea data-f="p_obs"></textarea></div></div>
+  </div>
+
+  <!-- ШАГ 1 -->
+  <div class="cstep" id="st1">
+    <div class="hd"><span class="num">1</span><div><h2>Знакомство</h2><p class="dim">Ступень «контакт». Разговор ради разговора, не ради продажи.</p></div><span class="tag time">1–2 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Познакомиться, договориться о времени и о том, что будем записывать.</div><div><b>Шаг пройден, если</b>Собеседник согласился на время, отвечает развёрнуто, сам задал хотя бы один вопрос.</div></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Добрый день, [имя]! Это [ваше имя], студия PRIME ERA. Как договаривались — про сайт. Вам сейчас удобно? У нас около сорока минут.</p>
+      <p class="q">Можно я буду записывать ваши ответы? Чтобы потом не переспрашивать и чтобы тексты были вашими словами.</p>
+      <div class="alt"><b>Если неудобно:</b> «Давайте перенесём — когда вам удобно? Я наберу сам». Перезваниваем сами и точно в оговорённое время — клиент сам не звонит.</div>
+    </div>
+    <div class="prime"><b class="h">Усилитель из Прайма · точки соприкосновения</b>Если есть реальная общность — скажите о ней одной фразой: «Посмотрел ваш сайт — вы тоже в Казани, мы много делали для местного бизнеса». Только правда, без комплиментов «для галочки».</div>
+    <div class="fields"><div class="fld"><label>Имя и роль собеседника</label><input data-f="c_who"></div><div class="fld"><label>Кто ещё будет на созвоне / кто ещё решает</label><input data-f="c_who2"></div></div>
+  </div>
+
+  <!-- ШАГ 2 -->
+  <div class="cstep" id="st2">
+    <div class="hd"><span class="num">2</span><div><h2>«Ни к чему не обязывает»</h2><p class="dim">Ступень «ключ к уху». До любого рассказа о студии.</p></div><span class="tag time">1 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Снять ощущение «сейчас мне будут продавать», чтобы человек говорил открыто.</div><div><b>Шаг пройден, если</b>Интонация живая, человек рассказывает больше, чем спрашивали, не торопит.</div></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Прежде чем начнём: этот разговор вас ни к чему не обязывает. Мне сначала нужно понять, нужен ли вам вообще новый сайт.</p>
+      <p class="q">Бывает, что не нужен: хватит доработать текущий, или сайт сейчас вообще не главное. Тогда я так и скажу.</p>
+      <p class="q">Кстати, а вы знаете, что [ваше наблюдение из подготовки]? Расскажу, если интересно, — но сначала несколько вопросов про ваших клиентов. Не про бюджет, про клиентов. Хорошо?</p>
+      <div class="alt"><b>Если отвечает односложно</b> («да», «угу», «понятно») — человек формально на связи, а мыслями не здесь. Не продолжайте по списку, спросите прямо: «Честно — вам сейчас удобно говорить? Или сайт вообще сейчас не в приоритете?» Потом заново — знакомство и эта фраза.</div>
+    </div>
+    <div class="prime"><b class="h">Усилитель из Прайма · «пятно на рубашке»</b>Если у студии есть ограничение, которое клиент всё равно узнает, — скажите о нём сами и сейчас: «Сразу скажу: рекламу мы не ведём, делаем сайты. Если нужен подрядчик под всё — порекомендую».</div>
+  </div>
+
+  <!-- ШАГ 3 -->
+  <div class="cstep" id="st3">
+    <div class="hd"><span class="num">3</span><div><h2>Вопросы — это и есть бриф</h2><p class="dim">Ступень «разведчик». Самый длинный шаг.</p></div><span class="tag time">25–35 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Понять, как клиент и его покупатели пользуются продуктом, и собрать факты для каждого экрана сайта.</div><div><b>Шаг пройден, если</b>Все красные вопросы заполнены; клиент назвал свои цифры и свои слова; вы можете описать неделю его покупателя с его продуктом.</div></div>
+    <div class="say"><h4>Как вести</h4>
+      <p>Начинайте с клиентов и того, как они пользуются продуктом, — это оживляет разговор. Деньги и процесс — потом.</p>
+      <p>Каждый следующий вопрос — из ответа на предыдущий. Список ниже — чтобы ничего не забыть, а не чтобы читать по порядку.</p>
+      <p>На общие слова переспрашивайте: «качественно — это как видно клиенту? например?», «быстро — это сколько дней?». Просите дословные фразы клиентов.</p>
+      <p>Задавайте вопросы с «если бы»: «если бы клиент мог выбрать один результат — какой?»</p>
+    </div>
+    <div class="inlineqa" id="qa_st3"></div>
+    <div id="qroot"></div>
+  </div>
+
+  <!-- ШАГ 4 -->
+  <div class="cstep" id="st4">
+    <div class="hd"><span class="num">4</span><div><h2>Одна польза — вместе с клиентом</h2><p class="dim">Ступень «вовлечение в пользы». Из всех ответов выбираем одну главную пользу, на которой будет стоять сайт.</p></div><span class="tag time">5 мин</span></div>
+    <div class="note" style="margin:10px 0 14px"><b>Главная боль — отдельное решение, не первая строка брифа.</b> Перед созвоном выпишите 2–3 гипотезы главной боли по нише и проверьте их вопросами b8 (за что на самом деле платят — словами трёх последних довольных клиентов) и b9 (чего боялись, что раздражало в прошлом опыте). После созвона соберите 4–6 кандидатов, поднимите по лестнице до результата и отдайте на выбор руководителю проекта — <a href="sayt-12-glavnaya-bol.html">модуль 12</a>. Затем — <a href="sayt-13-prozharka.html">прожарка</a>.</div>
+    <div class="goal"><div><b>Цель</b>Договориться о главной пользе и дать клиенту примерить результат.</div><div><b>Шаг пройден, если</b>Клиент своими словами сказал, что изменится, если сайт будет делать это.</div></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Как я понял, для ваших клиентов важнее всего [польза] — правильно?</p>
+      <p class="q">Если бы сайт делал именно это — что изменилось бы у вас через месяц?</p>
+      <p class="q">А во сколько вам сейчас обходится, что этого нет? Сколько заявок, времени, денег уходит?</p>
+      <div class="alt"><b>Если посчитать нечего</b> (красота, психолог, отдых) — не выжимайте цифру. Спросите: «Как вы поймёте, что сайт работает? Что должен сказать клиент?»</div>
+    </div>
+    <div class="prime"><b class="h">Усилитель из Прайма · «результаты результатов»</b>Помогите сформулировать не «красивый сайт», а результат результата: «менеджер разговаривает с человеком, который уже понял, что вы ему подходите». Покажите пример: «У нас был клиент — монтаж заборов: человек сразу видит регион и условия без предоплаты и вызывает мастера в один клик». Итог чужого кейса не придумывайте.</div>
+    <div class="fields">
+      <div class="fld"><label>Одна главная польза (подтвердил клиент)</label><textarea data-f="u_benefit"></textarea></div>
+      <div class="fld"><label>Что изменится — словами клиента</label><textarea data-f="u_words"></textarea></div>
+      <div class="fld"><label>Во сколько обходится, что этого нет</label><textarea data-f="u_cost"></textarea></div>
+      <div class="fld"><label>Как клиент поймёт, что сайт работает</label><textarea data-f="u_ok"></textarea></div>
+    </div>
+  </div>
+
+  <!-- ШАГ 5 -->
+  <div class="cstep" id="st5">
+    <div class="hd"><span class="num">5</span><div><h2>Варианты сайта и честная цена</h2><p class="dim">Ступень «финансовый консультант». Вы — тот, к кому идут за советом, как потратить деньги.</p></div><span class="tag time">5–10 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Разобрать 2–3 варианта сайта под задачу клиента, сказать своё мнение и цену.</div><div><b>Шаг пройден, если</b>Клиент выбрал вариант или спрашивает совета, как лучше; разговор о деньгах идёт как консультация, а не как спор.</div></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Для вашей задачи вижу два варианта. [Вариант А] — подойдёт, если [кому]; минус в том, что [минус]. [Вариант Б] — если [кому]; минус — [минус].</p>
+      <p class="q">Я бы взял [вариант] — и честно скажу, нам он тоже выгоднее. Но решать вам.</p>
+      <p class="q">По деньгам: такой сайт у нас стоит от [цена]. Обычно проекты выходят в [типичная сумма]. Точную сумму и график пришлю после того, как соберу структуру, — и она будет в договоре.</p>
+      <p class="q">Кто ещё будет принимать решение? Могу подготовить выжимку на одну страницу — перешлёте за минуту, а на вопросы я отвечу ему сам.</p>
+      <div class="alt"><b>Если «дорого»</b> — не спорьте и не снижайте цену сразу: «Да, это недёшево. Давайте на минуту забудем о покупке и ещё раз посмотрим, что входит и что это вам даст». Скидка в ответ на «дорого» — согласие, что сайт столько не стоит.</div>
+    </div>
+    <div class="prime"><b class="h">Усилители из Прайма · когда добавлять</b>
+      <b>Настоящий дорогой вариант рядом с основным</b> (например, арт‑лендинг) — если клиенту он реально может подойти; называйте его «для кого» и честный минус «переплата, если задача — заявки».<br>
+      <b>Шаг поменьше</b> (смысловой прототип, разбор) — если сумма для клиента заметная <span class="cf">услуга и цена прототипа</span>.<br>
+      <b>Оплата частями</b> — если сумма пугает <span class="cf">порядок оплаты</span>.<br>
+      <b>Выжимка для руководителя</b> — если решает не собеседник.</div>
+    <div class="inlineqa" id="qa_st5"></div>
+    <div class="fields">
+      <div class="fld"><label>Какие варианты обсудили, что выбрал клиент</label><textarea data-f="v_choice"></textarea></div>
+      <div class="fld"><label>Реакция на цену — дословно</label><textarea data-f="v_price"></textarea></div>
+      <div class="fld"><label>Кто ещё решает, нужна ли выжимка (<a href="sayt-9-vyzhimka.html">генератор</a>)</label><textarea data-f="v_lpr"></textarea></div>
+    </div>
+  </div>
+
+  <!-- ШАГ 6 -->
+  <div class="cstep" id="st6">
+    <div class="hd"><span class="num">6</span><div><h2>Точный следующий шаг</h2><p class="dim">Ступень «кассир». Не «созвонимся», а что, кто и когда.</p></div><span class="tag time">3 мин</span></div>
+    <div class="goal"><div><b>Цель</b>Договориться о конкретном шаге с датой; если клиент уже решил — о договоре и оплате.</div><div><b>Шаг пройден, если</b>Записаны дата, время и кто что делает. «Ну, тогда ждём от вас» — шаг не пройден.</div></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Давайте так: я соберу структуру сайта, чтобы вы увидели логику ещё до дизайна. До [день] пришлю её вместе с точной суммой и графиком.</p>
+      <p class="q">[День], в [время] созвонимся на 15 минут и разберём. Если всё подойдёт — договор и старт. Удобно?</p>
+      <div class="alt"><b>Если клиент уже решил</b> — не откладывайте: «Тогда подготовлю договор сегодня. На какие реквизиты? Кто у вас оплачивает — дайте контакт бухгалтера, чтобы не терять время». Решившего клиента не толкают, ему просто помогают сделать шаг.</div>
+    </div>
+    <div class="prime"><b class="h">Усилитель из Прайма · «Давайте — чтобы — если — то»</b>Формула подписи к шагу: «<b>Давайте</b> я соберу структуру, <b>чтобы</b> вы увидели сайт до дизайна. <b>Если</b> логика подойдёт, <b>то</b> начнём — и первые правки будут быстрыми и дешёвыми». Реальный срок можно назвать как информацию («свободная дизайнерская неделя — с 14‑го»), выдуманный — нельзя.</div>
+    <div class="inlineqa" id="qa_st6"></div>
+    <div class="fields">
+      <div class="fld"><label>Следующий шаг: что, кто делает</label><textarea data-f="n_step"></textarea></div>
+      <div class="fld"><label>Дата и время</label><input data-f="n_date"></div>
+      <div class="fld"><label>Способ оплаты / реквизиты / бухгалтер</label><input data-f="n_pay"></div>
+    </div>
+  </div>
+
+  <!-- ШАГ 7 -->
+  <div class="cstep" id="st7">
+    <div class="hd"><span class="num">7</span><div><h2>Завершение</h2><p class="dim">Ступени «фея» и «уход без покупки» — в маленьком масштабе.</p></div><span class="tag time">2 мин</span></div>
+    <div class="say"><h4>Что сказать</h4>
+      <p class="q">Спасибо, очень полезный разговор. В течение часа пришлю короткий итог — вашими же словами, чтобы вы проверили, правильно ли я понял.</p>
+      <div class="alt"><b>Если стало ясно, что вам не подходим</b> — отпустите по‑хорошему: «Похоже, это не совсем то, что вам нужно, — это нормально. Если найду, кто вам подойдёт, — скажу. Нормально же мы поговорили?» Такой человек часто возвращается или рекомендует.</div>
+    </div>
+    <div class="prime"><b class="h">Итог созвона — маленькая «фея»</b>Клиент не ждёт, что вы соберёте его мысли в понятный текст. Это ничего не стоит вам и ценно ему. Кнопка ниже соберёт итог из ваших записей.</div>
+  </div>
+
+  <!-- ПОСЛЕ -->
+  <div class="cstep" id="after">
+    <div class="hd"><span class="num">✓</span><div><h2>После созвона</h2></div></div>
+    <ol class="l" style="margin-top:10px;padding-left:20px">
+      <li>Если решает не собеседник — в течение часа отправьте <a href="sayt-9-vyzhimka.html">выжимку для руководителя</a> (генератор, модуль 9): из ответов этого созвона, с вариантами и минусами, с прямым контактом для того, кто решает.</li>
+      <li>В течение часа отправьте клиенту итог разговора (кнопка ниже).</li>
+      <li>Проверьте «Готовность экранов»: какие экраны можно писать, а по каким нужно дожать факты.</li>
+      <li>Запишите допущения — по одной строке на каждый пропущенный «важный» вопрос.</li>
+      <li>Сохраните файл брифа — он понадобится для структуры и для скилла.</li>
+    </ol>
+    <h3 style="margin-top:18px">Готовность экранов сайта</h3>
+    <p class="dim">Экран готов к работе, когда заполнены вопросы, от которых зависит его текст. Красные — дожать у клиента.</p>
+    <div class="ready" id="ready"></div>
+    <h3 style="margin-top:22px">Итог созвона для клиента</h3>
+    <div class="row noprint" style="margin:8px 0"><button class="btn p" onclick="makeSummary()">Собрать итог</button><button class="btn" onclick="copy(document.getElementById('sumout').textContent)">Скопировать</button><button class="btn" onclick="copy(briefText())">Скопировать весь бриф</button><button class="btn" onclick="window.print()">Печать</button></div>
+    <div class="sumout" id="sumout">Нажмите «Собрать итог».</div>
+  </div>
+</div></section>
+
+<!-- О НАС -->
+<section class="blk" id="about"><div class="wrap">
+  <h2>О нас: что клиенту важно знать и что он может спросить</h2>
+  <p class="muted">Эти же ответы открываются кнопкой справа внизу в любой момент созвона. Ответы — по фактам с сайта студии. Где факта нет — метка: владелец студии заполняет её один раз.</p>
+  <div id="aboutInline"></div>
+</div></section>
+
+<footer class="f"><div class="wrap">Методичка «Продающий сайт» · модуль 0. Ступени созвона — технология Андрея Сизова; усилители — «Система продаж Прайм».</div></footer>
+
+<button class="fab noprint" onclick="drawer(true)">О нас и ответы</button>
+<aside class="drawer" id="drawer"><button class="btn x" onclick="drawer(false)">Закрыть ✕</button><h2 style="font-size:22px">О нас и ответы</h2><input class="search" placeholder="Найти вопрос: цена, сроки, кейсы…" oninput="filterQA(this.value)"><div id="aboutDrawer"></div></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Факты студии: правит владелец ===== */
+const STUDIO={
+ know:[
+  ['Кто мы','Студия PRIME ERA: сайты на Tilda для малого и среднего бизнеса. Сначала разбираемся, как вы продаёте, потом проектируем структуру, пишем тексты, рисуем и запускаем.'],
+  ['Что делаем','Лендинги (14–21 день), многостраничные сайты (21–30), интернет‑магазины (25–35), арт‑лендинги (35–50).'],
+  ['Как идёт работа','Интервью около 30 минут → смысловой прототип и тексты (вы утверждаете до дизайна) → дизайн: сначала стиль и главный экран → вёрстка и мобильная версия → запуск и передача.'],
+  ['Что входит всегда','Тексты и структура, мобильная версия, собранная отдельно, базовая SEO‑настройка, Метрика и UTM, заявки в Telegram и CRM, домен с передачей прав, обучение и видеоинструкция, 14 дней поддержки после запуска (для арт‑лендинга — 30).'],
+  ['Что в договоре','График этапов; итоговая цена без доплат за адаптив, интеграции и стандартную доработку; утверждение каждого шага; сайт, домен и аккаунты — на клиента; только лицензионные шрифты и фото.'],
+  ['Чего не делаем','Не ведём рекламу — сайт сдаём готовым к ней и рекомендуем подрядчиков. Не обещаем конкретное число заявок.'],
+  ['Контакты','Telegram t.me/linarzy · prime-era.pro@yandex.com · ИП Рогожников А. И., ИНН 222511029033']
+ ],
+ qa:[
+  {st:'st3',q:'«Сколько стоит?» — спрашивают до того, как вы разобрались',a:['Цену назову сегодня же. Но сначала пойму, что вам нужно, — иначе назову цену не того сайта. Может оказаться, что вам нужно меньше, чем вы думаете.','Если настаивает — ориентир: «Лендинг у нас от 70 000 ₽, чаще проекты выходят в 100–200 тысяч <span class="cf">типичная сумма</span>. Точнее скажу через 15 минут разговора».']},
+  {st:'st5',q:'«Почему так дорого?»',a:['Не спорьте и не доказывайте. «Да, это недёшево — мы не делаем дешёвых сайтов. Давайте забудем пока о покупке и посмотрим ещё раз, что входит и что это вам даст».','Дальше — к пользе клиента из шага 4 и к тому, что закреплено в договоре. Скидку в ответ на «дорого» не предлагаем.']},
+  {st:'st5',q:'«Почему у вас дешевле, чем у агентств?»',a:['У нас нет штата аккаунт‑менеджеров и офиса в центре — вы платите за смыслы, дизайн и сборку. В убыток мы не работаем: эта цена покрывает работу и нам выгодна.']},
+  {st:'st5',q:'«Сколько по времени?»',a:['Лендинг — 14–21 день, многостраничный — 21–30, магазин — 25–35, арт‑лендинг — 35–50. График этапов прописываем в договоре до старта.']},
+  {st:'st5',q:'«Есть кейсы в нашей нише?»',a:['Честно: именно в вашей нише может не быть. Смотрите не на отрасль, а на подход — специфику ниши мы вытаскиваем на интервью.','Показать: «Мосподкаст» (медиа), «Арт‑Тим» (монтаж заборов), апарт‑отель «1703» (каталог), Favourite Partners (B2B, вёрстка по макету). Результаты в цифрах <span class="wt">итоги кейсов</span>.']},
+  {st:'st5',q:'«Кто будет делать мой сайт?»',a:['<span class="wt">кто в команде и кто ведёт проект</span>. С сайта известно: на арт‑лендинге — выделенная команда из арт‑директора, дизайнера и разработчика; первый разговор ведёт Ангелина, эксперт PRIME ERA.']},
+  {st:'st5',q:'«А если дизайн не понравится?»',a:['«Кота в мешке» на финише не бывает: сначала утверждаем структуру и тексты, потом стиль и главный экран, и только потом верстаем остальное. Вы одобряете каждый шаг.']},
+  {st:'st5',q:'«Тексты пишете вы?»',a:['Да. По интервью и анализу ниши делаем структуру и тексты. В многостраничном сайте дорабатываем ваши материалы и пишем заголовки и описания разделов.']},
+  {st:'st5',q:'«Кому будет принадлежать сайт?»',a:['Вам на 100%. Сервисы, домен и кабинеты регистрируем на ваши данные и передаём все доступы.']},
+  {st:'st5',q:'«Можно оплатить частями?»',a:['<span class="cf">порядок оплаты: например, 50% на старте и 50% при сдаче</span>. Точные условия — в договоре.']},
+  {st:'st5',q:'«Гарантируете заявки?»',a:['Честно — нет. Продажи зависят от связки: сайт, реклама и то, как ваши менеджеры отвечают. Мы отвечаем за сайт: смыслы, удобство, скорость и готовность принять рекламу.']},
+  {st:'st5',q:'«Поможете с рекламой?»',a:['Рекламу сами не ведём — делаем сайты. Сайт сдаём готовым к рекламе: аналитика, формы, UTM‑метки. Порекомендуем проверенных подрядчиков по контексту и таргету.']},
+  {st:'st5',q:'«Почему Tilda, а не WordPress или Битрикс?»',a:['Tilda тянет лендинги, многостраничники и магазины и позволяет вам менять тексты, цены и фото без программиста. Если вашей задаче нужна другая платформа — скажем это прямо.']},
+  {st:'st5',q:'«Что будет после запуска?»',a:['Обучение и видеоинструкция: любой сотрудник меняет тексты, цены и фото за пару минут. 14 дней бесплатной поддержки после запуска.']},
+  {st:'st6',q:'«Пришлите КП или прайс»',a:['Если вы ещё не разобрались в задаче, это вежливое окончание разговора. «Пришлю. Только честно — без пары ответов я пришлю вам не то. Один вопрос — и пришлю именно ваше».','Если разобрались: «Пришлю структуру и точную сумму до [дня]. Наберу вас в [день, время] — разберём, что подошло». Шаблонное КП «с потолка» не отправляем.']},
+  {st:'st6',q:'«Я подумаю»',a:['«Никаких проблем, подумайте. Скажите только ещё раз: что вам понравилось? На что обратили внимание? О чём будете думать?» — выслушать.','Если всё равно думать: «Хорошо. Когда вам удобно, чтобы я набрал? Что к тому моменту станет понятнее?» — записать дату. «Я подумаю» обычно значит, что раньше было пропущено «ни к чему не обязывает» или польза не стала его пользой.']},
+  {st:'st6',q:'«Надо посоветоваться с партнёром / руководителем»',a:['«Это нормально. Давайте я подготовлю выжимку на одну страницу: что сделаем, зачем, сколько стоит и когда запуск. И если у него будут вопросы — отвечу ему сам, созвон на 10 минут». Договоритесь, когда вы узнаете решение.']},
+  {st:'st6',q:'«Мы уже работаем с другим подрядчиком»',a:['«Это нормально, я почти так и думал. А что в их работе вам „да“, а что „нет“?» — дальше вопросы о том, что не устраивает. Не ругайте чужую работу.']}
+ ]
+};
+
+/* ===== Вопросы брифа ===== */
+const SC={1:'Экран 1 · Контакт (первый экран)',2:'Экран 2 · Ключ к уху («покупать не обязательно»)',3:'Экран 3 · Разведчик (вопросы о посетителе)',4:'Экран 4 · Вовлечение в пользы (одна польза)',5:'Экран 5 · Финансовый консультант (варианты и цены)',6:'Экран 6 · Кассир (следующий шаг)',7:'Экран 7 · Фея (после оплаты)',8:'Экран 8 · Директор по развитию (рассказать знакомому)'};
+const BASE=[
+ {g:'Клиенты и как они пользуются',items:[
+  {id:'b8',pr:'must',sc:[1,4,8],t:'За что вам на самом деле платят? Почему последние три клиента выбрали именно вас — их словами? Что довольный клиент говорит через месяц?',ask:'Вспомните трёх последних клиентов, которые остались довольны. Что каждый сказал, когда всё получилось? А с какой фразой они к вам пришли?',why:'Главная боль сайта берётся из слов тех, кто уже заплатил, а не из того, чем гордится владелец (модуль 12).',no:'Анализ ниши — отзывы клиентов и конкурентов, страхи ниши; кандидаты предлагаются на выбор.',bad:'«Ценят качество и подход».',good:'«„Наконец-то звонят те, кто уже понял цену“; „впервые не пришлось переделывать тексты“. Пришли с фразой: „сайт есть, а заявок нет“».'},
+  {id:'b9',pr:'must',sc:[2,4,5],t:'Что клиенты больше всего боялись до покупки и что их раздражало в прошлом опыте (у вас или у других)?',ask:'Что клиента бесило у прежнего подрядчика? Чего он боялся, когда выбирал вас?',why:'Боль, которую клиенты «устали терпеть», — главный кандидат в главную пользу; страхи — карта сомнений (модули 12 и 15).',no:'Отзывы на 1–3 звезды у конкурентов.',bad:'«Боятся, что будет плохо».',good:'«Боялись, что сделают „красиво, но не продаёт“ и что придётся самим писать тексты».'},
+  {id:'b2',pr:'must',sc:[1,3,4],t:'Как покупатели пользуются результатом и что для них значит «получилось»? Что у них происходит через месяц после покупки?',ask:'Когда ваш покупатель говорит «это было правильное решение»? Что для этого должно произойти?',why:'Из этого ответа выбирается одна главная польза — на ней держится весь сайт.',no:'Экран пользы — меткой «ждёт ответа». Остальное делается.',bad:'«Клиенты довольны».',good:'«Через год после ремонта ничего не переделывали и уложились в смету. Больше всего боятся, что ремонт затянется».'},
+  {id:'b1',pr:'must',sc:[5],t:'Кто покупает: частное лицо или компания? Кто решает, кто платит, кто потом пользуется?',ask:'Кто обычно пишет вам первым? А кто в итоге говорит «да»?',why:'Если читает один, а платит другой, сайту нужна выжимка и аргументы для второго.',no:'Допущение: «решает и платит один человек».',bad:'«Все, кому нужны окна».',good:'«Пишет жена, выбирает цвет она; решает и платит муж — спрашивает про гарантию и сроки».'},
+  {id:'b3',pr:'imp',sc:[1],t:'Откуда приходят покупатели и что они уже знают о вас? Реклама, поиск, рекомендации, соцсети, маркетплейсы.',ask:'Откуда пришли последние десять клиентов?',why:'Человек из рекламы вас не знает, по рекомендации — уже доверяет. Первый экран говорит с ними по‑разному.',no:'Допущение: «основной поток — реклама».',bad:'«Отовсюду».',good:'«6 из 10 — по рекомендации, заходят проверить сайт; 4 — из Директа».'},
+  {id:'b5',pr:'must',sc:[3,5],t:'О чём покупатели спрашивают в первом разговоре? 3–5 вопросов дословно.',ask:'Какой вопрос вы слышите чаще всего? Как именно его задают — прямо их словами?',why:'Сайт закрывает эти вопросы до звонка — каждый на своём экране.',no:'Сомнения помечаем «подтвердить у продавца».',bad:'«Про цену».',good:'«„А вы сами делаете или субподряд?“, „Сколько по времени?“, „А если не понравится цвет?“».'},
+  {id:'b6',pr:'imp',sc:[],t:'Почему покупатели отказываются? Что говорят, когда уходят, — дословно.',ask:'Что сказал последний клиент, который не купил?',why:'Отказы показывают, на какой ступени ломается продажа, — сайт закрывает эту дыру раньше.',no:'Проверяем сайт по общему чек‑листу.',bad:'«Дорого».',good:'«„Подумаю“ после расчёта — чаще те, кому не показали, что входит в цену».'},
+  {id:'b7',pr:'imp',sc:[1,4],t:'Есть ли разные группы покупателей с разными задачами? «Для себя» и «для сдачи», «частные» и «компании».',ask:'Если бы у вас было два продавца — как бы вы поделили клиентов между ними?',why:'Одна презентация для всех — ошибка. У каждой группы своя польза и свой путь.',no:'Один путь для основной группы.',bad:'«Все одинаковые».',good:'«Семьи (безопасность, сроки) и инвесторы (цена за метр, аренда)».'},
+  {id:'b4',pr:'imp',sc:[2,5],t:'С чем покупатели вас сравнивают? Что делают вместо вас: другие компании, «сам», дешёвый аналог, «ничего не делать»? 2–3 ссылки на конкурентов.',ask:'Почему клиенты уходят к другим? Кто уходит к частнику, а кто к большой фирме?',why:'Честно сказать, кому лучше другой способ, — сильнейший ход доверия.',no:'Остаётся только блок «кому мы не подойдём».',bad:'«Конкурентов нет».',good:'«Частные бригады (дешевле на 20%, без договора) и сетевые салоны (дороже, долгие сроки)».'}
+ ]},
+ {g:'Продукт и деньги',items:[
+  {id:'a1',pr:'must',sc:[4,5],t:'Что именно вы продаёте? Из чего состоит продукт — по шагам, от первого звонка до конца.',ask:'Если бы я был вашим клиентом — что конкретно я получу, шаг за шагом?',why:'Без состава нельзя ни показать пользу в деле, ни честно сравнить варианты.',no:'Экраны 4–5 делаются рамкой с меткой «ждёт ответа: состав».',bad:'«Качественные окна под ключ».',good:'«Окна Rehau: замер в день звонка, изготовление 7–10 дней, монтаж за 1 день, вывоз мусора. Откосы — отдельно».'},
+  {id:'a2',pr:'must',sc:[5],t:'Сколько стоит? Вилка цен, от чего зависит цена, сколько обычно стоят реальные сделки.',ask:'Сколько обычно платят клиенты? Какой самый частый чек? От чего он растёт?',why:'Честная типичная цена снимает торг. Если на сайте «от 40 000», а реальные сделки — 150 000, на звонке это звучит как обман.',no:'Цены — меткой. Никогда не ставить «по рынку».',bad:'«Цена индивидуальная».',good:'«Кухни от 180 до 450 тыс., чаще всего 250–300. Цена растёт от длины и фасадов».'},
+  {id:'a3',pr:'imp',sc:[5],t:'Какие есть варианты или тарифы? Для каждого: кому подходит и чем плох. Есть ли настоящий дорогой вариант?',ask:'Кому вы бы НЕ посоветовали дорогой вариант? А дешёвый?',why:'Честное сравнение 2–3 вариантов с минусами — главный инструмент доверия. Дорогой вариант рядом работает как ориентир, только если он настоящий.',no:'Если вариант один — сравниваем со способами обойтись без вас.',bad:'«Эконом, стандарт, премиум» без разницы.',good:'«Стандарт — для аренды, фасады плёнка; минус — боится влаги у мойки».'},
+  {id:'a4',pr:'imp',sc:[5,6],t:'Как платят: предоплата или этапы, рассрочка, способы оплаты. Можно ли оплатить сразу на сайте?',ask:'Как клиенты обычно платят? Бывает, что откладывают из‑за суммы?',why:'На шаге оплаты нужны сумма, способ и дата. Рассрочка и этапы снимают барьер суммы.',no:'«Порядок оплаты — в договоре», метка.',bad:'«По договорённости».',good:'«50% при подписании, 50% после монтажа. Для частных лиц — рассрочка банка на 6 месяцев».'},
+  {id:'a5',pr:'imp',sc:[6],t:'Что полезного покупатель может получить ДО покупки: замер, разбор, пробный урок, образец, расчёт?',ask:'Что вы можете сделать для клиента до договора, чтобы ему было проще решить?',why:'Не каждый готов сразу купить. Небольшой полезный шаг двигает дело и сам по себе ценен.',no:'Следующий шаг — короткий разговор с названной пользой.',bad:'«Бесплатная консультация».',good:'«Бесплатный замер с 3D‑эскизом за 2 дня — эскиз остаётся у клиента».'}
+ ]},
+ {g:'Доказательства и границы',items:[
+  {id:'c1',pr:'must',sc:[4],t:'Реальные случаи покупателей: что было → что сделали → что стало. Есть цифры? Можно называть клиента?',ask:'Расскажите про клиента, которым вы гордитесь. Что у него было до вас?',why:'Показ пользы на живом клиенте убеждает сильнее любых преимуществ.',no:'Показ через устройство процесса; итог кейса — меткой.',bad:'«Много довольных клиентов».',good:'«Кафе „Сова“: было 2 заявки в неделю на банкеты, стало 9 за первый месяц. Название можно».'},
+  {id:'c2',pr:'imp',sc:[4],t:'Отзывы: где лежат, можно ли показывать? Кто согласится на видео?',ask:'Где клиенты оставляли отзывы? Кто согласится сказать пару слов на видео?',why:'Слова клиента — только его слова. Писать отзывы за клиентов нельзя ни в какой форме.',no:'Место под отзыв — пустое с меткой.',bad:'«Напишите что‑нибудь от клиентов».',good:'«48 отзывов на Яндекс.Картах, 4,9; три клиента согласны на видео».'},
+  {id:'c3',pr:'imp',sc:[1,5],t:'Чем вы отличаетесь — проверяемо? Гарантия, своё производство, сроки, сертификаты — не «качество и индивидуальный подход».',ask:'Что вы делаете, чего конкурент точно не делает? Как это проверить?',why:'Непроверяемые слова пишут все — их пропускают.',no:'Блок «почему мы» не пишем вовсе.',bad:'«Индивидуальный подход».',good:'«Своя столярка — сроки не зависят от поставщика; гарантия 5 лет в договоре».'},
+  {id:'c4',pr:'imp',sc:[6],t:'Гарантии и договор: сроки, цена, возврат, что будет, если что‑то пойдёт не так?',ask:'Покажите договор. Что будет, если вы сорвёте срок?',why:'Гарантия — доверие, но только реальная.',no:'Блок договора — только из образца договора.',bad:'«Гарантия качества».',good:'«Неустойка 0,1% в день за срыв срока, гарантия на монтаж 3 года».'},
+  {id:'c6',pr:'imp',sc:[2],t:'Кому вы НЕ подходите? Каким клиентам честно лучше в другое место?',ask:'Каких клиентов вы бы вежливо отправили к другим?',why:'Когда сайт говорит «вам может не подойти — если…», остальные читают спокойнее и доверяют больше.',no:'Выводим из вопроса о сравнении.',bad:'«Мы подходим всем».',good:'«Если нужна кухня за неделю — не к нам: изготовление 3 недели».'},
+  {id:'c5',pr:'must',sc:[1,4,5],t:'Чего нельзя обещать? Ограничения закона в нише: медицина, финансы, дети, алкоголь, лицензии.',ask:'Есть ли слова, которые вам нельзя использовать? Какие документы нужно показать?',why:'В ряде ниш обещания результата запрещены законом о рекламе — такие тексты проверяет юрист клиента.',no:'Пишем без обещаний результата, метка «проверить с юристом».',bad:'«Гарантированно вылечим».',good:'«Нельзя обещать результат лечения; лицензия № …; нужен текст о противопоказаниях».'}
+ ]},
+ {g:'Процесс продажи',items:[
+  {id:'d1',pr:'must',sc:[6],t:'Что происходит после заявки: кто свяжется, через сколько, каким способом, в какие часы?',ask:'Заявка пришла в 19:00 в пятницу — что происходит дальше?',why:'«Менеджер свяжется» — не шаг. Нужно: кто, когда, о чём.',no:'Форму без этого не запускаем, метка.',bad:'«Перезвоним».',good:'«Администратор Анна пишет в WhatsApp в течение 15 минут с 9 до 21; ночью — до 10 утра».'},
+  {id:'d2',pr:'must',sc:[6],t:'Сколько проходит от первого контакта до оплаты? Можно ли купить сразу?',ask:'Сколько времени прошло от первого звонка до оплаты у последних трёх клиентов?',why:'Покупают сразу и недорого — берём оплату или запись на сайте. Дорого или решает не один — сайт ведёт к разговору.',no:'Описываем обе концовки, метка.',bad:'«По‑разному».',good:'«Обычно 2–3 недели: звонок → замер → расчёт → договор».'},
+  {id:'d3',pr:'imp',sc:[6,7],t:'Что происходит после оплаты: этапы, сроки, что нужно от покупателя?',ask:'Клиент заплатил — что происходит в первую неделю?',why:'Понятный процесс снимает страх «заплачу, а дальше неизвестно».',no:'«Сроки — в договоре».',bad:'«Выполняем работы».',good:'«День 1 — договор и чертёж, 2–20 — производство, 21 — монтаж, 22 — приёмка».'},
+  {id:'d4',pr:'imp',sc:[7],t:'Что ценного можно дать после покупки, что почти ничего не стоит вам? Памятка, настройка, звонок‑проверка.',ask:'Что клиенты часто делают неправильно после покупки? Как это предотвратить?',why:'Неожиданная польза после оплаты — о ней рассказывают знакомым. Это не скидка.',no:'Предлагаем клиенту варианты — он выбирает.',bad:'«Скидка 10% на следующий заказ».',good:'«Памятка, как мыть фасады, + звонок через месяц: всё ли в порядке».'},
+  {id:'d5',pr:'imp',sc:[6],t:'Есть ли РЕАЛЬНЫЕ ограничения по времени: сезон, набор группы, остатки, рост цен? Только правда.',ask:'Есть ли что‑то, что реально меняется со временем — цены, сроки, наличие?',why:'Реальный срок — полезная информация. Таймеры и «осталось 2 места» без правды — запрещены.',no:'Никаких сроков на сайте.',bad:'«Акция до конца недели» (которая продлевается каждую неделю).',good:'«Набор в группу закрывается 1 октября, следующая — через 3 месяца».'},
+  {id:'d6',pr:'opt',sc:[8],t:'Рассказывают ли о вас знакомым? Есть ли программа рекомендаций?',ask:'Сколько клиентов пришло по рекомендации? Что они говорят, когда советуют вас?',why:'Клиенту нужны готовые слова. Бонус — только если он уже есть и важен клиентам.',no:'Блок «слова для знакомого» без бонусов.',bad:'«Дадим скидку за друга» главным текстом.',good:'«Треть — по рекомендации, говорят: „делают быстро и убирают за собой“».'}
+ ]},
+ {g:'Проект сайта',items:[
+  {id:'e1',pr:'must',sc:[1,2,3,4,5,6],t:'Главная задача сайта: заявки с рекламы, поиск, витрина для пришедших по рекомендации, продажи онлайн?',ask:'Что должно случиться, чтобы вы сказали: сайт работает?',why:'Сайт под рекламу и сайт‑подтверждение строятся по‑разному.',no:'Допущение: «заявки с рекламы».',bad:'«Чтобы был красивый».',good:'«Запускаем Директ на одну услугу, нужно 30 заявок в месяц».'},
+  {id:'e5',pr:'imp',sc:[],t:'К какой дате нужен сайт и почему именно к ней?',ask:'Есть ли дата, к которой сайт обязательно нужен? Что произойдёт в эту дату?',why:'Реальная дата клиента — основа графика и честная причина начать сейчас. Бюджет на сайт не спрашиваем: цену честно называем сами на шаге 5.',no:'График — после структуры.',bad:'«Вчера».',good:'«1 марта запуск рекламы на сезон — сайт нужен к 20 февраля».'},
+  {id:'e2',pr:'imp',sc:[1,4],t:'Какие материалы есть: фото работ, видео, тексты, логотип, брендбук, фото команды?',ask:'Пришлите лучшие 20 фото работ и фото людей, которые общаются с клиентами.',why:'Показ пользы и доверие держатся на реальных фото. Стоковая «команда» вредит.',no:'Места под фото — «нужна съёмка».',bad:'«Возьмите со стоков».',good:'«60 фото объектов, видео монтажа, логотип; команду нужно снять».'},
+  {id:'e6',pr:'imp',sc:[],t:'Кто со стороны клиента утверждает тексты и дизайн? Сколько человек согласует?',ask:'Кто будет смотреть и утверждать структуру и дизайн?',why:'Если согласуют трое, а на созвоне один, — график сорвётся. Это тот же вопрос «кто решает».',no:'Допущение: утверждает собеседник.',bad:'—',good:'«Структуру — я, дизайн — я и партнёр, финально — директор»'},
+  {id:'e7',pr:'imp',sc:[6],t:'Что нужно подключить: CRM, онлайн‑оплату, запись, телефонию, 1С, доставку?',ask:'Куда сейчас падают заявки? В какой системе вы их ведёте?',why:'От этого зависит, чем заканчивается страница: оплата, запись на время или заявка.',no:'Заявки — в Telegram и почту.',bad:'—',good:'«amoCRM, оплата ЮKassa, запись через YCLIENTS»'},
+  {id:'e3',pr:'opt',sc:[],t:'Как вы говорите с клиентами: на «ты» или «вы», официально или просто? Слова, которые не любите?',ask:'Прочитайте пару фраз с сайта конкурента — вы бы так сказали клиенту?',why:'Сайт говорит голосом компании. Разнобой с менеджером рушит доверие.',no:'На «вы», просто, без канцелярита.',bad:'—',good:'«На „вы“, без официоза; не любим слово „бюджетный“»'},
+  {id:'e4',pr:'must',sc:[1,6],t:'Контакты и юрлицо: телефон, мессенджеры, почта, адрес или зона работы, часы, реквизиты, домен.',ask:'—',why:'Контакты без формы‑посредника и реквизиты — базовое доверие и требование закона.',no:'Без контактов и политики обработки данных сайт не запускается.',bad:'Только форма.',good:'«+7 …, WhatsApp, ИП Иванов И. И., ИНН …, Казань и 30 км вокруг»'}
+ ]}
+];
+const NICHE={
+ local:{n:'Услуги с записью, локальный бизнес',d:'Салон, автосервис, химчистка, фитнес, репетитор. Решение быстрое: важны место, время, мастер. Цена показывается сразу — это навигация.',q:[
+  {id:'n1',pr:'must',sc:[1,6],t:'Адрес, как добраться, парковка, график. Есть онлайн‑запись на конкретное время?',ask:'Как клиент к вам добирается? Может ли записаться сам, без звонка?',why:'Для локального бизнеса «где и когда» — половина решения.'},
+  {id:'n2',pr:'imp',sc:[4],t:'Кто оказывает услугу: мастера, тренеры — их опыт фактами. Можно выбрать мастера?',ask:'К кому клиенты записываются повторно и почему?',why:'Клиент выбирает человека.'},
+  {id:'n3',pr:'must',sc:[5],t:'Прайс по основным услугам и длительность каждой.',ask:'Пришлите прайс. Что заказывают чаще всего?',why:'Здесь цена — навигация.'},
+  {id:'n4',pr:'imp',sc:[1,4],t:'Фото интерьера, мастеров, работ «до / после».',ask:'Есть ли фото, где видно результат и место?',why:'Замена калькулятору — показ «до / после».'}]},
+ big:{n:'Крупная обдуманная покупка',d:'Ремонт, окна, мебель на заказ, дома, авто, недвижимость. Долгий выбор, решает семья, боятся ошибиться.',q:[
+  {id:'n1',pr:'must',sc:[6],t:'Есть ли замер, выезд, расчёт, показ образцов? Сколько стоит и что клиент получает на руки?',ask:'Что клиент получает после замера, даже если не купит?',why:'Главный шаг сайта — не покупка, а замер или расчёт.'},
+  {id:'n2',pr:'must',sc:[5,6],t:'Сроки: изготовление, работы, от договора до результата.',ask:'Сколько проходит от договора до готового результата?',why:'Самый частый страх — «затянется».'},
+  {id:'n3',pr:'imp',sc:[5],t:'Рассрочка, кредит, ипотека, оплата частями?',ask:'Как платят за дорогие проекты?',why:'Снимает барьер суммы.'},
+  {id:'n4',pr:'imp',sc:[5],t:'Кто в семье решает и о чём спрашивает второй человек?',ask:'Кто ещё обычно приходит на замер?',why:'Нужны аргументы и для того, кто на сайт не зашёл.'},
+  {id:'n5',pr:'imp',sc:[4],t:'Своё производство или склад? Готовые объекты с адресами, которые можно посмотреть?',ask:'Можно ли приехать посмотреть готовый объект или производство?',why:'Наглядный опыт вместо обещаний.'}]},
+ med:{n:'Медицина и здоровье',d:'Клиники, стоматологии, косметология, психологи. Закон о рекламе ограничивает обещания и отзывы.',q:[
+  {id:'n1',pr:'must',sc:[1],t:'Лицензия: номер, кем выдана, юрлицо.',ask:'Пришлите лицензию и реквизиты.',why:'Обязательно на сайте.'},
+  {id:'n2',pr:'must',sc:[1,4,5],t:'Какие формулировки запрещены? Нужно ли предупреждение о противопоказаниях?',ask:'Кто у вас проверяет рекламу на соответствие закону?',why:'Нельзя обещать результат лечения. Тексты проверяет юрист.'},
+  {id:'n3',pr:'imp',sc:[4],t:'Врачи: образование, стаж, специализация — фактами.',ask:'К кому из врачей чаще всего записываются и почему?',why:'Выбирают врача.'},
+  {id:'n4',pr:'must',sc:[6],t:'Как проходит первый приём: сколько длится, что будет, сколько стоит, как записаться?',ask:'Что происходит на первом приёме по минутам?',why:'Главный шаг — первичный приём; главный страх — неизвестность.'}]},
+ edu:{n:'Обучение, курсы, школы',d:'Онлайн‑курсы, языковые школы, детские центры, повышение квалификации.',q:[
+  {id:'n1',pr:'must',sc:[4],t:'Что выпускник умеет делать после курса — конкретно, на примере?',ask:'Что ваш выпускник сделал такого, чего не мог до курса?',why:'Покупают результат, а не число уроков.'},
+  {id:'n2',pr:'imp',sc:[5],t:'Программа по модулям, формат, длительность, нагрузка в неделю, кто преподаёт.',ask:'Сколько часов в неделю нужно ученику?',why:'Главный страх — «не потяну по времени».'},
+  {id:'n3',pr:'imp',sc:[6],t:'Пробный урок, возврат денег, документ об окончании, лицензия (если нужна).',ask:'Можно ли попробовать до оплаты? Вернёте ли деньги, если не подойдёт?',why:'Шаг поменьше и доверие.'},
+  {id:'n4',pr:'imp',sc:[5],t:'Для детей: кто решает, что важно ребёнку, а что родителю?',ask:'О чём спрашивает мама, а о чём ребёнок?',why:'Платит один, пользуется другой.'}]},
+ expert:{n:'Эксперт, личный бренд',d:'Юрист, психолог, консультант, фотограф, дизайнер. Покупают человека.',q:[
+  {id:'n1',pr:'must',sc:[1,4],t:'Кто вы фактами: образование, опыт, с кем работали, чем отличается подход?',ask:'Почему к вам идут, а не к коллеге?',why:'Сайт — знакомство с человеком.'},
+  {id:'n2',pr:'must',sc:[5,6],t:'Форматы работы и цены; как проходит первая встреча и что клиент с неё уносит?',ask:'Что человек получает уже после первой встречи?',why:'Шаг поменьше.'},
+  {id:'n3',pr:'imp',sc:[2],t:'С кем вы НЕ работаете?',ask:'Кому вы отказываете?',why:'Для эксперта это самое сильное «вам может не подойти».'},
+  {id:'n4',pr:'imp',sc:[4],t:'Можно ли показывать кейсы и отзывы (конфиденциальность)?',ask:'Что из работы с клиентами можно рассказывать?',why:'Часто кейсы закрыты — нужен показ через процесс.'}]},
+ b2bs:{n:'B2B‑услуги',d:'Маркетинг, IT, бухгалтерия, клининг, логистика, юр. обслуживание компаний.',q:[
+  {id:'n1',pr:'must',sc:[5],t:'Кто решает, кто пользуется, кто согласует (финансы, безопасность)?',ask:'Кто подписывает договор? Кто ещё должен сказать «да»?',why:'Нужна выжимка для руководителя.'},
+  {id:'n2',pr:'imp',sc:[4],t:'На какие показатели бизнеса клиента вы влияете — в деньгах или часах?',ask:'Сколько клиент экономит или зарабатывает с вами за месяц?',why:'Здесь калькулятор уместен.'},
+  {id:'n3',pr:'imp',sc:[6],t:'Есть пилот, тестовый период, соглашение об уровне сервиса, образец договора?',ask:'Можно ли начать с малого объёма?',why:'Шаг поменьше и меньше риска.'},
+  {id:'n4',pr:'imp',sc:[1],t:'Типичный клиент: размер компании, отрасль, как долго длится сделка, бывают ли тендеры?',ask:'Опишите трёх лучших клиентов.',why:'Первый экран говорит с конкретной компанией.'}]},
+ b2bg:{n:'B2B‑товары, опт, производство',d:'Поставки, оборудование, стройматериалы, собственное производство.',q:[
+  {id:'n1',pr:'must',sc:[5,6],t:'Минимальная партия, наличие, сроки поставки, доставка, регионы.',ask:'Что закупщик спрашивает первым?',why:'Первые вопросы закупщика.'},
+  {id:'n2',pr:'imp',sc:[5],t:'Сертификаты, документы, отсрочка платежа, НДС.',ask:'Какие документы требуют клиенты?',why:'Без этого закупщик не согласует.'},
+  {id:'n3',pr:'imp',sc:[6],t:'Образцы, посещение производства или склада?',ask:'Можно ли получить образец?',why:'Шаг поменьше.'},
+  {id:'n4',pr:'imp',sc:[5],t:'Цены показывать открыто или по запросу? Есть оптовый прайс?',ask:'Почему цены по запросу?',why:'«По запросу» без причины — потеря; причина пишется честно.'}]},
+ shopm:{n:'Интернет‑магазин массовый',d:'Одежда, электроника, товары для дома — много товаров, покупают без разговора.',q:[
+  {id:'n1',pr:'must',sc:[6],t:'Доставка: способы, сроки, стоимость, зона. Возврат и обмен.',ask:'Что чаще всего спрашивают перед оплатой?',why:'Главные сомнения в корзине.'},
+  {id:'n2',pr:'must',sc:[3,5],t:'По каким признакам выбирают товар (для фильтров и карточки)?',ask:'Как покупатель объясняет, что ему нужно?',why:'Фильтры — это вопросы магазина.'},
+  {id:'n3',pr:'imp',sc:[4],t:'Какие вопросы задают в чате по товарам?',ask:'Покажите переписки с покупателями.',why:'Ответы — в карточке товара.'},
+  {id:'n4',pr:'imp',sc:[],t:'Сколько товаров, откуда фото и описания (1С, выгрузка), есть ли реальные акции?',ask:'Как вы сейчас обновляете цены и остатки?',why:'Определяет устройство каталога.'}]},
+ shopp:{n:'Магазин нишевый, премиум, ручная работа',d:'Авторские изделия, премиальные бренды, подарки.',q:[
+  {id:'n1',pr:'must',sc:[4],t:'История бренда или мастера фактами, материалы, как делается.',ask:'Как рождается одно изделие — по шагам?',why:'Показ пользы через устройство.'},
+  {id:'n2',pr:'imp',sc:[7],t:'Упаковка, персонализация, подарочное оформление.',ask:'Что чувствует человек, открывая коробку?',why:'Часть ценности и неожиданная польза.'},
+  {id:'n3',pr:'imp',sc:[7],t:'Как ухаживать и хранить — памятка.',ask:'Что портит изделие быстрее всего?',why:'Польза после покупки.'},
+  {id:'n4',pr:'imp',sc:[1],t:'Поводы и сезонность: для себя или в подарок, к какому событию?',ask:'Для кого чаще покупают?',why:'Развилка «себе / в подарок».'}]},
+ food:{n:'Общепит и доставка еды',d:'Кафе, рестораны, доставка, кейтеринг. Решение за минуты.',q:[
+  {id:'n1',pr:'must',sc:[5,6],t:'Меню с ценами, зона и время доставки, минимальный заказ.',ask:'Сколько реально едет заказ в час пик?',why:'Меню и цена — навигация, показываются сразу.'},
+  {id:'n2',pr:'imp',sc:[4],t:'Что заказывают чаще всего и почему? Что особенного — фактами?',ask:'Ради какого блюда к вам возвращаются?',why:'Одна польза — одно «фирменное».'},
+  {id:'n3',pr:'imp',sc:[4],t:'Фото блюд и зала, агрегаторы (Яндекс Еда, Delivery).',ask:'Есть ли профессиональные фото?',why:'Показ вместо описания.'},
+  {id:'n4',pr:'imp',sc:[6],t:'Для банкетов и кейтеринга: как проходит заказ, дегустация.',ask:'С чего начинается заказ банкета?',why:'Шаг поменьше.'}]},
+ event:{n:'События, туризм, отели',d:'Праздники, туры, базы отдыха, отели, площадки. Бронирование на даты.',q:[
+  {id:'n1',pr:'must',sc:[6],t:'Даты, вместимость, как бронировать, предоплата, условия отмены.',ask:'Что будет, если гость отменит за неделю?',why:'Главный страх — потерять деньги при отмене.'},
+  {id:'n2',pr:'imp',sc:[4],t:'Как выглядит день гостя по часам?',ask:'Опишите идеальный день гостя.',why:'Показ через «представьте ваш день».'},
+  {id:'n3',pr:'imp',sc:[6],t:'Реальные сроки: когда заканчиваются места на сезон?',ask:'Когда обычно заканчиваются места?',why:'Только реальные сроки — как информация.'},
+  {id:'n4',pr:'imp',sc:[4],t:'Фото и видео площадки, отзывы на площадках бронирования.',ask:'Где у вас больше всего отзывов?',why:'Доверие и наглядность.'}]},
+ fin:{n:'Финансы, юр. услуги, страхование',d:'Кредитные брокеры, бухгалтерия для частных лиц, банкротство, страхование. Регулируемая сфера.',q:[
+  {id:'n1',pr:'must',sc:[1,5],t:'Лицензии, регистрация, что нельзя обещать по закону.',ask:'Какие формулировки вам запрещены?',why:'Нельзя обещать гарантированный результат.'},
+  {id:'n2',pr:'imp',sc:[2],t:'Когда вы честно не поможете? Риски клиента.',ask:'В каких случаях вы отказываете клиенту?',why:'Честность о рисках — главный источник доверия.'},
+  {id:'n3',pr:'imp',sc:[4],t:'Что конфиденциально и как вы это защищаете?',ask:'Чего больше всего боятся клиенты, передавая документы?',why:'Страх утечки данных.'},
+  {id:'n4',pr:'must',sc:[5,6],t:'Стоимость, этапы, сроки процедуры.',ask:'Сколько длится процедура и сколько стоит каждый этап?',why:'Главная неизвестность клиента.'}]}
+};
+const SITE={
+ landing:{n:'Лендинг',q:[
+  {id:'s1',pr:'must',sc:[1,2,3,4,5,6],t:'Одно предложение, на которое идёт страница: какая услуга, для кого, откуда трафик?',ask:'Если бы на сайте можно было оставить одну услугу — какую?',why:'Лендинг — одна страница под одну задачу.'},
+  {id:'s2',pr:'imp',sc:[3,4],t:'Что можно посчитать или подобрать для посетителя: стоимость, сроки, выгоду? Или посчитать нечего?',ask:'Что клиенты просят прикинуть до звонка?',why:'От этого зависит, будет ли калькулятор, квиз, подбор или «примерка».'}]},
+ multi:{n:'Многостраничный сайт',q:[
+  {id:'s1',pr:'must',sc:[1],t:'Список разделов и услуг. Какие 2–3 страницы главные для заявок?',ask:'С каких услуг вы зарабатываете больше всего?',why:'Каждая ключевая страница проходит все ступени сама.'},
+  {id:'s2',pr:'imp',sc:[1],t:'Есть ли поисковые запросы, под которые нужны страницы? Нужен ли блог или новости?',ask:'Что люди пишут в поиске, когда ищут вас?',why:'Человек из поиска попадает сразу на внутреннюю страницу.'},
+  {id:'s3',pr:'imp',sc:[4],t:'Кейсы, команда, отзывы — сколько материала для отдельных страниц?',ask:'Сколько кейсов готовы показать?',why:'Отдельные страницы доверия — только если есть чем наполнить.'}]},
+ shop:{n:'Интернет‑магазин',q:[
+  {id:'s1',pr:'must',sc:[4,5],t:'Сколько товаров и категорий? Что в карточке товара важнее всего покупателю?',ask:'Что покупатель смотрит в первую очередь, когда выбирает?',why:'Карточка — маленький продавец и проходит ступени в миниатюре.'},
+  {id:'s2',pr:'must',sc:[6],t:'Точные условия доставки, оплаты, возврата.',ask:'Почему бросают корзину?',why:'Главные сомнения в корзине.'},
+  {id:'s3',pr:'imp',sc:[6],t:'Интеграции: 1С / склад, онлайн‑оплата, службы доставки.',ask:'Откуда берутся цены и остатки?',why:'Иначе на сайте будет товар, которого нет.'},
+  {id:'s4',pr:'imp',sc:[7],t:'Что покупатель получает после покупки: письмо, трек, инструкция, вложение в посылку?',ask:'Что приходит покупателю после оплаты?',why:'Место для неожиданной пользы.'}]}
+};
+const READY={1:['b2','b8','e1','e4'],2:['c6','b4','b9'],3:['b2','b5'],4:['b2','b8','c1','a1'],5:['a1','a2','a3'],6:['d1','d2'],7:['d4'],8:['d6']};
+let niche='',site='';const V={};const F={};
+const PRN={must:'без этого нельзя',imp:'важно',opt:'желательно'};
+function esc(t){return String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function allQs(){const out=BASE.map(g=>({g:g.g,items:g.items}));if(niche)out.push({g:'Для ниши: '+NICHE[niche].n,items:NICHE[niche].q.map(q=>({...q,id:'n_'+niche+'_'+q.id}))});if(site)out.push({g:'Для типа сайта: '+SITE[site].n,items:SITE[site].q.map(q=>({...q,id:'s_'+site+'_'+q.id}))});return out}
+function render(){
+  document.getElementById('qroot').innerHTML=allQs().map(g=>`<div class="grp"><h3>${esc(g.g)}</h3>${g.items.map(q=>`
+  <div class="qcard${V[q.id]?' done':''}">
+    <div class="qhead"><h4>${esc(q.t)}</h4><span class="pr ${q.pr}">${PRN[q.pr]}</span></div>
+    ${q.ask&&q.ask!=='—'?`<div class="qask">«${esc(q.ask)}»</div>`:''}
+    <div class="qmeta">${(q.sc||[]).map(n=>`<span class="tag t-sy">${SC[n]}</span>`).join('')}</div>
+    <textarea data-id="${q.id}" placeholder="Ответ — по возможности словами клиента">${esc(V[q.id]||'')}</textarea>
+    <button class="qtoggle noprint" onclick="this.closest('.qcard').classList.toggle('open')">Подсказка: зачем, если нет ответа, примеры</button>
+    <div class="qhelp"><p><b>Зачем:</b> ${esc(q.why||'')}</p>${q.no?`<p><b>Если ответа нет:</b> ${esc(q.no)}</p>`:''}
+      ${q.bad||q.good?`<div class="grid g2">${q.bad&&q.bad!=='—'?`<div class="badx"><b>Плохой ответ</b>${esc(q.bad)}</div>`:''}${q.good?`<div class="good"><b>Хороший ответ</b>${esc(q.good)}</div>`:''}</div>`:''}</div>
+  </div>`).join('')}</div>`).join('');
+  document.querySelectorAll('#qroot textarea').forEach(t=>t.addEventListener('input',()=>{V[t.dataset.id]=t.value.trim();t.closest('.qcard').classList.toggle('done',!!V[t.dataset.id]);progress()}));
+  progress();
+}
+function progress(){const must=allQs().flatMap(g=>g.items).filter(q=>q.pr==='must');const ok=must.filter(q=>V[q.id]).length;
+  document.getElementById('status').textContent=`Обязательные: ${ok} из ${must.length}`+(ok===must.length?' — можно начинать структуру':'');
+  document.getElementById('meter').style.width=(must.length?ok/must.length*100:0)+'%';drawReady()}
+function drawReady(){const extra={};allQs().flatMap(g=>g.items).filter(q=>q.id.startsWith('n_')||q.id.startsWith('s_')).filter(q=>q.pr==='must').forEach(q=>(q.sc||[]).forEach(n=>{(extra[n]=extra[n]||[]).push(q.id)}));
+  const lbl=Object.fromEntries(allQs().flatMap(g=>g.items).map(q=>[q.id,q.t]));
+  document.getElementById('ready').innerHTML=Object.keys(SC).map(n=>{const need=[...(READY[n]||[]),...(extra[n]||[])];const miss=need.filter(id=>!V[id]);const benefitOk=n!=4||F.u_benefit;const ok=miss.length===0&&benefitOk;
+   return `<div class="${ok?'ok':'no'}"><b>${SC[n]}</b><small>${ok?'можно писать':(miss.length?'не хватает: '+miss.map(id=>esc((lbl[id]||'').split(/[?.:]/)[0])).join('; '):'')+(!benefitOk?(miss.length?'; ':'не хватает: ')+'одна польза (шаг 4)':'')}</small></div>`}).join('')}
+function seg(el,obj,cur,set){el.innerHTML=`<button data-k="" class="${!cur?'on':''}">Не выбрано</button>`+Object.keys(obj).map(k=>`<button data-k="${k}" class="${cur===k?'on':''}">${esc(obj[k].n)}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{set(b.dataset.k);drawSegs();render()})}
+function drawSegs(){seg(document.getElementById('nicheSeg'),NICHE,niche,k=>niche=k);seg(document.getElementById('siteSeg'),SITE,site,k=>site=k);
+  const nn=document.getElementById('nicheNote');if(niche){nn.style.display='block';nn.innerHTML='<b>'+esc(NICHE[niche].n)+'.</b> '+esc(NICHE[niche].d)+' Как меняются экраны для этой ниши — в модуле 3.'}else nn.style.display='none'}
+/* поля шагов */
+document.querySelectorAll('[data-f]').forEach(el=>el.addEventListener('input',()=>{F[el.dataset.f]=el.value.trim();drawReady()}));
+function fillFields(){document.querySelectorAll('[data-f]').forEach(el=>el.value=F[el.dataset.f]||'')}
+/* о нас */
+function aboutHTML(){return `<h3 style="margin-top:6px">Что клиенту важно знать о нас</h3><dl class="kv">${STUDIO.know.map(k=>`<dt>${esc(k[0])}</dt><dd>${esc(k[1])}</dd>`).join('')}</dl>
+  <h3 style="margin-top:22px">Что могут спросить о нас — и как ответить</h3>${STUDIO.qa.map(x=>`<div class="qa" data-s="${esc((x.q+' '+x.a.join(' ')).toLowerCase())}"><h4>${esc(x.q)}</h4><div class="ans">${x.a.map(p=>`<p>${p}</p>`).join('')}</div></div>`).join('')}
+  <p class="dim" style="margin-top:14px">Как отвечать на любой вопрос о нас: не спорить; сначала согласиться, что вопрос нормальный; дать факт; вернуть разговор к задаче клиента или к следующему шагу. Ничего не обещать сверх того, что есть в договоре.</p>`}
+function inlineQA(step){return STUDIO.qa.filter(x=>x.st===step).map(x=>`<details><summary>Если спросит: ${esc(x.q)}</summary><div class="a">${x.a.map(p=>`<p>${p}</p>`).join('')}</div></details>`).join('')}
+document.getElementById('aboutInline').innerHTML=aboutHTML();document.getElementById('aboutDrawer').innerHTML=aboutHTML();
+['st3','st5','st6'].forEach(s=>document.getElementById('qa_'+s).innerHTML=inlineQA(s));
+function filterQA(v){v=v.toLowerCase();document.querySelectorAll('#aboutDrawer .qa').forEach(e=>e.style.display=!v||e.dataset.s.includes(v)?'':'none')}
+function drawer(on){document.getElementById('drawer').classList.toggle('on',on)}
+/* итог */
+function makeSummary(){const L=[];const nm=F.c_who?F.c_who.split(/[,;]/)[0]:'';
+  L.push((nm?nm+', ':'')+'спасибо за разговор! Коротко, как я вас понял — поправьте, если что‑то не так.');
+  if(V.b2)L.push('\n• Для ваших клиентов «получилось» — это: '+V.b2);
+  if(V.b1)L.push('• Кто покупает и решает: '+V.b1);
+  if(V.b5)L.push('• Что клиенты спрашивают первым: '+V.b5);
+  if(F.u_benefit)L.push('• Главное, на чём строим сайт: '+F.u_benefit);
+  if(F.u_words)L.push('• Что изменится, по вашим словам: «'+F.u_words+'»');
+  if(F.v_choice)L.push('• Вариант сайта: '+F.v_choice);
+  L.push('\nСледующий шаг: '+(F.n_step||'[что делаем]')+(F.n_date?' — '+F.n_date:''));
+  L.push('\nЕсли у вас или у партнёра будут вопросы — пишите мне напрямую.');
+  document.getElementById('sumout').textContent=L.join('\n')}
+function briefText(){const L=['СОЗВОН‑БРИФ'+(niche?' · '+NICHE[niche].n:'')+(site?' · '+SITE[site].n:''),''];
+  const FL={tg_src:'Откуда пришёл',tg_quote:'Что написал о задаче',tg_time:'Созвон назначен',p_links:'Клиент и ссылки',p_obs:'Наблюдение',c_who:'Собеседник',c_who2:'Кто ещё решает',u_benefit:'Одна польза',u_words:'Что изменится (слова клиента)',u_cost:'Во сколько обходится',u_ok:'Как поймёт, что работает',v_choice:'Варианты / выбор',v_price:'Реакция на цену',v_lpr:'Кто решает, выжимка',n_step:'Следующий шаг',n_date:'Дата',n_pay:'Оплата'};
+  L.push('## Записи по ходу созвона');Object.keys(FL).forEach(k=>{if(F[k])L.push(`— ${FL[k]}: ${F[k]}`)});L.push('');
+  allQs().forEach(g=>{L.push('## '+g.g);g.items.forEach(q=>{L.push(`— ${q.t}\n  ${V[q.id]?V[q.id]:(q.pr==='must'?'[ждёт ответа]':'[нет ответа — допущение]')}`)});L.push('')});return L.join('\n')}
+function downloadJSON(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({niche,site,answers:V,fields:F},null,2)],{type:'application/json'}));a.download='brif-sait.json';document.body.appendChild(a);a.click();a.remove()}
+function loadJSON(e){const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);niche=d.niche||'';site=d.site||'';Object.assign(V,d.answers||{});Object.assign(F,d.fields||{});fillFields();drawSegs();render();toast('Бриф загружен')}catch(err){toast('Не удалось прочитать файл')}})}
+function copy(t){const done=()=>toast('Скопировано');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));else fb(t,done)}
+function fb(t,cb){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');cb()}catch(e){}x.remove()}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+drawSegs();render();
+</script>
+<script>
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href').slice(1);e.preventDefault();if(!id)return;const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})});
+</script>
+</body></html>

@@ -104,7 +104,13 @@ var MODULES = [
     icon:'<path d="M3 20.5h18" /><rect x="4" y="13" width="3.6" height="7.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="4" y="13" width="3.6" height="7.5" rx="1"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1"/><path d="M4.5 9.5l5-4 3.5 2.2L19 3.2M15.4 3.2H19v3.5"/>', color:'#1FA971' },
   { id:'calc', name:'Калькулятор', href:'calculator.html',
     desc:'Смета сайта: позиции, готовые сборки, срочность, скидки, итог в часах и рублях. Прайс общий для команды.',
-    icon:'<rect x="4.5" y="2.5" width="15" height="19" rx="2.6" fill="currentColor" fill-opacity=".16"/><rect x="4.5" y="2.5" width="15" height="19" rx="2.6"/><rect x="7.5" y="5.5" width="9" height="4" rx="1"/><path d="M8.2 13h.01M12 13h.01M15.8 13h.01M8.2 16.4h.01M12 16.4h.01M8.2 19h.01M12 19h.01"/><path d="M15.8 16.2v3"/>', color:'#E59A00' }
+    icon:'<rect x="4.5" y="2.5" width="15" height="19" rx="2.6" fill="currentColor" fill-opacity=".16"/><rect x="4.5" y="2.5" width="15" height="19" rx="2.6"/><rect x="7.5" y="5.5" width="9" height="4" rx="1"/><path d="M8.2 13h.01M12 13h.01M15.8 13h.01M8.2 16.4h.01M12 16.4h.01M8.2 19h.01M12 19h.01"/><path d="M15.8 16.2v3"/>', color:'#E59A00' },
+  { id:'sayt', name:'Продающий сайт', href:'sayt.html',
+    desc:'Методичка по структуре и текстам продающих сайтов: ступени Сизова, инструменты Прайма, экраны, ниши, главная боль, проверка, аудит и выжимка для руководителя.',
+    icon:'<rect x="4" y="2.5" width="16" height="19" rx="2.4" fill="currentColor" fill-opacity=".16"/><rect x="4" y="2.5" width="16" height="19" rx="2.4"/><path d="M8 7h8M8 10.5h8M8 14h4.5"/><path d="M13.8 17.2l1.7 1.6 3-3.2"/>', color:'#0B6BCB' },
+  { id:'sayt-editor', name:'Редактор сайта', href:'sayt-editor.html',
+    desc:'Прототип сайта из готовых блоков по ступеням: страницы, тексты, картинки, фигуры, проверка ступеней, выгрузка HTML. Проекты команды хранятся здесь же.',
+    icon:'<rect x="2.5" y="3.5" width="19" height="15" rx="2.2" fill="currentColor" fill-opacity=".16"/><rect x="2.5" y="3.5" width="19" height="15" rx="2.2"/><path d="M2.5 7.5h19M6.5 11h6M6.5 14h4"/><path d="M15 11l5.2 2.1-2.3.8-.8 2.3z"/>', color:'#E0457B' }
 ];
 /* исходные названия, описания и порядок модулей — владелец может переименовать
    модуль, поменять описание плашки, порядок и скрыть его из меню / с главной
