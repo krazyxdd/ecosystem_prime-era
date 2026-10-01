@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610011113">
-<script src="assets/pe-core.js?v=202610011113" data-module="org-board"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610011113">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610011255">
+<script src="assets/pe-core.js?v=202610011255" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610011255">
 <style>
 :root{
   color-scheme:light;
@@ -1377,7 +1377,9 @@ function act(a,el){
   case "fit": fit();break;
   case "fitw": fitWidth();break;
   case "to-flow": if(!FL().length){if(!CAN_EDIT||(HAS_PE&&!remoteReady))break;leftTab="flow";if(mode!=="edit"){mode="edit";render();}else renderLeft();setStatus("Добавьте шаги пути клиента слева");break;}sch().showFlow=!sch().showFlow;save();el.classList.toggle("on",flowOn());renderChart();if(flowOn()){setTimeout(function(){var vp=document.getElementById("vp"),fb=document.querySelector("#chart .flowbox");if(vp&&fb){autoFit=false;Z.y=Math.min(0,vp.clientHeight-(fb.offsetTop+fb.offsetHeight+40)*Z.z);applyZ();}},60);}break;
-  case "split": var f=find(d.id);if(f){if(mode==="edit")pushHist();f.node.split=!f.node.split;save();renderChart();if(mode==="edit")renderInsp();}break;
+  case "split": var f=find(d.id);if(f){if(mode==="edit")pushHist();f.node.split=!f.node.split;
+    /* раскрыть в одну колонку бессмысленно: если все видимые отделы помечены «под предыдущим», снимаем пометки */
+    if(f.node.split&&f.node.type==="div"){var vk=(f.node.children||[]).filter(function(c){return !c.off;});if(vk.length>1&&vk.slice(1).every(function(c){return c.stackPrev;}))vk.forEach(function(c){delete c.stackPrev;});}save();renderChart();if(mode==="edit")renderInsp();}break;
   case "expand-all": case "collapse-all": walk(sch().root,function(n){if(n.type==="div")n.split=(a==="expand-all");});save();renderChart();break;
   case "toggle-stats": case "tg": var kk=d.k||"showStats";if(kk==="showNotes"){sch().showNotes=!notesOn();save();el.classList.toggle("on",notesOn());renderChart();break;}sch()[kk]=!sch()[kk];if(!sch()[kk]&&(kk==="showStats"||kk==="showDu")){var fk=kk==="showStats"?"xS":"xD";walk(sch().root,function(nn){delete nn[fk];});}save();document.querySelectorAll('[data-act="tg"][data-k="'+kk+'"]').forEach(function(b){b.classList.toggle("on",!!sch()[kk]);b.setAttribute("aria-pressed",!!sch()[kk]);});renderChart();break;
   case "close-drawer": closeDrawer();break;
