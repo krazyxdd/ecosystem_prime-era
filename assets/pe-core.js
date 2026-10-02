@@ -102,6 +102,9 @@ var MODULES = [
   { id:'sales-kb', name:'Продажи', href:'sales-kb.html',
     desc:'База знаний отдела продаж: восемь ступеней, тексты сообщений, созвоны, КП, возражения, CRM и управление отделом. Админ редактирует разделы и загружает файлы.',
     icon:'<path d="M3 20.5h18" /><rect x="4" y="13" width="3.6" height="7.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1" fill="currentColor" fill-opacity=".16"/><rect x="4" y="13" width="3.6" height="7.5" rx="1"/><rect x="10.2" y="9.5" width="3.6" height="11" rx="1"/><rect x="16.4" y="6" width="3.6" height="14.5" rx="1"/><path d="M4.5 9.5l5-4 3.5 2.2L19 3.2M15.4 3.2H19v3.5"/>', color:'#1FA971' },
+  { id:'karta', name:'Карта подпродуктов', href:'karta.html',
+    desc:'Весь процесс студии по станциям и подстанциям: как сделать, шаблон, идеальный продукт и брак, проверка, заметки и файлы.',
+    icon:'<rect x="2.5" y="4" width="5" height="16" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="9.5" y="4" width="5" height="16" rx="1.4" fill="currentColor" fill-opacity=".16"/><rect x="16.5" y="4" width="5" height="16" rx="1.4" fill="currentColor" fill-opacity=".16"/><path d="M4 8h2M4 11.5h2M11 8h2M11 11.5h2M11 15h2M18 8h2M7.5 12h2M14.5 12h2"/>', color:'#D9531A' },
   { id:'calc', name:'Калькулятор', href:'calculator.html',
     desc:'Смета сайта: позиции, готовые сборки, срочность, скидки, итог в часах и рублях. Прайс общий для команды.',
     icon:'<rect x="4.5" y="2.5" width="15" height="19" rx="2.6" fill="currentColor" fill-opacity=".16"/><rect x="4.5" y="2.5" width="15" height="19" rx="2.6"/><rect x="7.5" y="5.5" width="9" height="4" rx="1"/><path d="M8.2 13h.01M12 13h.01M15.8 13h.01M8.2 16.4h.01M12 16.4h.01M8.2 19h.01M12 19h.01"/><path d="M15.8 16.2v3"/>', color:'#E59A00' },
@@ -133,6 +136,7 @@ var PERMS = [
   { id:'modules', group:'Админка', name:'Настройки модулей', desc:'Включает и выключает модули, открывает их гостям.', only:['admin','moderator'] },
   { id:'audit', group:'Админка', name:'Журнал действий', desc:'Видит журнал: входы, заявки, изменения.', only:['admin','moderator'] },
   { id:'saleskb_edit', group:'Инструменты', name:'Продажи: редактор', desc:'Правит разделы базы продаж, схемы-плейбуки, загружает файлы.' },
+  { id:'karta_edit', group:'Инструменты', name:'Карта подпродуктов: редактор', desc:'Правит станции и подстанции карты, ставит отметки проверки, пишет заметки и прикрепляет файлы.' },
   { id:'calc_edit', group:'Инструменты', name:'Калькулятор: прайс', desc:'Меняет позиции, цены, сборки, надбавки и скидки для всей команды.' },
   { id:'org_edit', group:'Инструменты', name:'Оргсхема: редактор', desc:'Меняет оргсхему, шляпы и расстановку людей по постам.' },
   { id:'glossary_edit', group:'Инструменты', name:'Глоссарий: панель', desc:'Открывает панель глоссария: свои термины, картинки, результаты.' },
@@ -140,7 +144,7 @@ var PERMS = [
 ];
 var DEFAULT_PERMS = {
   admin:{},
-  moderator:{ panel:true, requests:true, users_edit:true, audit:true, saleskb_edit:true, calc_edit:true, org_edit:true, glossary_edit:true, tasks_all:true },
+  moderator:{ panel:true, requests:true, users_edit:true, audit:true, saleskb_edit:true, karta_edit:true, calc_edit:true, org_edit:true, glossary_edit:true, tasks_all:true },
   member:{}
 };
 var STATUS_NAMES = { pending:'Ждёт одобрения', active:'Активен', blocked:'Заблокирован', rejected:'Отклонён' };
