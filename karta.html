@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Карта подпродуктов</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610021620">
-<script src="assets/pe-core.js?v=202610021620" data-module="karta"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610021620">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610021628">
+<script src="assets/pe-core.js?v=202610021628" data-module="karta"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610021628">
 <style>
 /* Конвейер: станции — колонки слева направо, подпродукты — подстанции сверху вниз; справа паспорт подстанции */
 :root{
@@ -536,12 +536,14 @@ edBtn.addEventListener('click',function(){ editing=!editing; edBtn.setAttribute(
 
 /* ---------- хранилище: Firebase экосистемы, узлы karta и kartafiles ---------- */
 function storeLabel(t){ document.getElementById('store').textContent=t; }
-db={ collection:function(col){ return { doc:function(id){ return { set:function(o){ return PE.fb('PUT','karta/'+col+'/'+id,o).then(function(){ if(PE.audit && col!=='audit') PE.audit('karta.'+col,id,(o&&o.name)||''); }); } }; } }; } };
+function enc(k){ return String(k).replace(/\./g,'_'); }
+function decMap(m){ var r={}; Object.keys(m||{}).forEach(function(k){ r[k.replace(/_/g,'.')]=m[k]; }); return r; }
+db={ collection:function(col){ return { doc:function(id){ return { set:function(o){ return PE.fb('PUT','karta/'+col+'/'+enc(id),o).then(function(){ if(PE.audit && col!=='audit') PE.audit('karta.'+col,id,(o&&o.name)||''); }); } }; } }; } };
 var loading=false;
 function loadAll(){
   if(loading) return Promise.resolve(); loading=true;
   return PE.fb('GET','karta').then(function(d){
-    d=d||{}; dbCards=d.cards||{}; dbAreas=d.areas||{}; marks=d.audit||{}; settings=(d.meta&&d.meta.settings)||{};
+    d=d||{}; dbCards=decMap(d.cards); dbAreas=d.areas||{}; marks=decMap(d.audit); settings=(d.meta&&d.meta.settings)||{};
     build(); if(formOpen||selArea) renderSum(); else render();
   }).catch(function(){ storeLabel('Нет доступа к данным карты — показана исходная версия. Опубликуйте правила базы.'); }).then(function(){ loading=false; });
 }
