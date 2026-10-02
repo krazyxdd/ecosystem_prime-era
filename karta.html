@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Карта подпродуктов</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610021628">
-<script src="assets/pe-core.js?v=202610021628" data-module="karta"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610021628">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610021634">
+<script src="assets/pe-core.js?v=202610021634" data-module="karta"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610021634">
 <style>
 /* Конвейер: станции — колонки слева направо, подпродукты — подстанции сверху вниз; справа паспорт подстанции */
 :root{
@@ -20,7 +20,7 @@ html[data-pe-theme="dark"]{
   --ok:#4DBB7C; --ok-soft:#173225; --bad:#EA5A4F; --bad-soft:#3A1A17; --todo:#6C746F; --gate:#E2A63A; --gate-soft:#33280F; --edit:#7EA2F5; --edit-soft:#1B2640;
 }
 *{box-sizing:border-box}
-body{color:var(--ink);font:15px/1.5 var(--f-body)}
+body{color:var(--ink);font:15px/1.5 var(--f-body);padding-top:var(--pe-nav-h,0px)}
 button,input,textarea,select{font:inherit;color:inherit}
 .wrap{padding-inline:clamp(16px,3vw,32px);padding-block:28px 48px;max-width:1680px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 .top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
@@ -105,7 +105,7 @@ body.editing .st,body.editing .col-h{cursor:grab}
 body.editing .addbtn{display:block}
 .loop{margin:14px 0 0 14px;border:1.5px dashed var(--accent);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--accent);font-weight:600}
 
-.pass{position:sticky;top:calc(var(--pe-nav-h,56px) + 14px);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - var(--pe-nav-h,56px) - 28px);overflow:auto}
+.pass{position:sticky;top:calc(var(--pe-nav-h,0px) + 14px);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - var(--pe-nav-h,0px) - 28px);overflow:auto}
 body.editing .pass{border-color:var(--edit)}
 .eyebrow{font:700 11px var(--f-mono);color:var(--muted);letter-spacing:.06em}
 .pass h3{font:700 20px/1.25 var(--f-display);margin:3px 0 0;text-wrap:balance}
