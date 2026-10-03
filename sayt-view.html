@@ -22,7 +22,9 @@ html,body{margin:0;height:100%;background:#f6f5f1;color:#1b1b1f;font:15px/1.5 sy
    Снимок страницы лежит в базе в ecosystem-v2/sitekonpub/<ключ> кусками c0…c{n-1}.
    Читать можно только по точному ключу из ссылки — списка ссылок база не отдаёт. */
 (function(){
-  var FB='https://prime-era-glossary-default-rtdb.firebaseio.com/ecosystem-v2/sitekonpub/';
+  if(/github\.io$/.test(location.hostname)){ location.replace('https://prime-era.website/sayt-view.html'+location.search+location.hash); return; }   /* переехали на свой хостинг */
+  var FB=/github\.io$/.test(location.hostname) ? 'https://prime-era-glossary-default-rtdb.firebaseio.com/ecosystem-v2/sitekonpub/'
+    : location.href.replace(/[?#].*$/,'').replace(/[^\/]*$/,'')+'api/db/ecosystem-v2/sitekonpub/';   /* на хостинге — своя серверная часть */
   var t=(location.search.match(/[?&]p=([a-z0-9]{8,40})/i)||[])[1];
   function fail(title, text){ document.getElementById('msg').innerHTML='<div><b>'+title+'</b><span>'+text+'</span></div>'; }
   if(!t){ fail('Ссылка неполная','Попросите отправить ссылку на прототип ещё раз.'); return; }

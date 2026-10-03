@@ -42,6 +42,13 @@ var CFG = {
   MOCK: false,
   MODE: 'live'
 };
+/* 03.10.2026 экосистема переехала на свой хостинг: старый адрес на GitHub ведёт на новый
+   (тестовый режим ?pe2=… остаётся для проверок) */
+if(/github\.io$/.test(location.hostname) && !/[?&]pe2=/.test(location.search) && !nget('pe2_backend')){
+  document.documentElement.style.visibility='hidden';
+  location.replace('https://prime-era.website/'+location.pathname.replace(/^\/ecosystem_prime-era\/?/,'')+location.search+location.hash);
+  return;
+}
 /* тестовый режим: ?pe2=mock — всё хранится только в этом браузере (без
    Firebase), ?pe2=<имя> — отдельный корень ecosystem-v2-<имя> в Firebase,
    ?pe2=live — вернуться к рабочей базе. Режим запоминается в браузере. */
@@ -50,7 +57,17 @@ var CFG = {
   if(q){ if(q[1]==='live') ndel('pe2_backend'); else nset('pe2_backend', q[1]); }
   var b = nget('pe2_backend');
   if(b==='mock'){ CFG.MOCK=true; CFG.MODE='mock'; }
+  else if(b==='php'){ CFG.PHP=true; }
   else if(b){ CFG.ROOT='ecosystem-v2-'+b; CFG.MODE=b; }
+  /* своя серверная часть (хостинг: PHP + MySQL): на своём домене — всегда; на github.io — Firebase.
+     Локально включается ?pe2=php. Адрес API — рядом с сайтом: <сайт>/api */
+  var h=location.hostname, local=(h==='localhost' || h==='127.0.0.1' || location.protocol==='file:');
+  if(!CFG.MOCK && !/github\.io$/.test(h) && !local) CFG.PHP=true;
+  if(CFG.PHP){
+    var me=document.currentScript && document.currentScript.src || '';
+    var base=me ? me.replace(/assets\/pe-core\.js.*$/,'') : location.origin+'/';
+    CFG.API=base+'api'; CFG.FB=CFG.API+'/db';
+  }
 })();
 var NS = CFG.MOCK ? 'mock' : CFG.ROOT;
 /* ---------- тема: светлая / тёмная, одна на всю экосистему. Ставится до отрисовки
@@ -338,6 +355,7 @@ function stream(path, onChange, onCancel, opts){
     fb('GET', path).then(function(d){ tree=d; emit({ path:'/', full:true, first:true }); });
     return { close:function(){ closed=true; mockListeners=mockListeners.filter(function(x){ return x!==l; }); }, get:function(){ return tree; }, reopen:function(){} };
   }
+  if(CFG.PHP) return streamPhp(path, onChange, onCancel, opts);
   function cancel(){ if(es){ es.close(); es=null; } closed=true; clearTimeout(pollT); if(onCancel) onCancel(); }
   var lastPoll=0;
   function poll(){
@@ -385,6 +403,42 @@ function stream(path, onChange, onCancel, opts){
   return api;
 }
 
+/* своя серверная часть: вместо постоянного соединения — «что изменилось после версии N».
+   Пока ничего не менялось, ответ — несколько байт; изменилось — приходят только изменённые документы. */
+function streamPhp(path, onChange, onCancel, opts){
+  var tree=null, rev=0, closed=false, suspended=false, timer=null, gotFirst=false, fails=0, busy=false;
+  var every=opts.poll ? Math.min(opts.poll, 15000) : 2500;
+  function emit(ev){ try{ onChange(tree, ev); }catch(e){ if(window.console) console.error(e); } }
+  function next(){ if(closed || suspended) return; clearTimeout(timer); timer=setTimeout(tick, document.hidden ? Math.max(every, 15000) : every*(fails ? Math.min(6, fails+1) : 1)); }
+  function tick(){
+    if(closed || suspended || busy) return; clearTimeout(timer); busy=true;
+    ensureToken().then(function(t){ return realFetch(withAuth(CFG.API+'/delta/'+CFG.ROOT+'/'+path+'?since='+rev, t), { cache:'no-store' }); })
+      .then(function(r){
+        if(r.status===401 || r.status===403){ var e=new Error('denied'); e.denied=true; throw e; }
+        if(!r.ok) throw new Error('http '+r.status); return r.json();
+      })
+      .then(function(d){
+        fails=0; var first=!gotFirst; gotFirst=true;
+        if(d && Object.prototype.hasOwnProperty.call(d,'full')){ tree=d.full; rev=d.rev; emit({ path:'/', full:true, first:first }); return; }
+        rev=d.rev;
+        if(d.changes && d.changes.length){
+          var tops={};
+          d.changes.forEach(function(c){ tree=setAt(tree, '/'+c[0], c[1]); tops[c[0].split('/')[0]]=1; });
+          var ks=Object.keys(tops); emit(ks.length===1 ? { path:'/'+ks[0] } : { path:'/', full:true });
+        }
+      })
+      .catch(function(e){ if(e && e.denied && !gotFirst){ closed=true; if(onCancel) onCancel(); return; } fails++; })
+      .then(function(){ busy=false; next(); });
+  }
+  var api={ close:function(){ closed=true; clearTimeout(timer); }, get:function(){ return tree; },
+            reopen:function(){ if(!closed){ busy=false; tick(); } },
+            suspend:function(){ if(closed || suspended) return; suspended=true; clearTimeout(timer); },
+            resume:function(){ if(closed || !suspended) return; suspended=false; tick(); },
+            refresh:function(){ if(!closed && !suspended) tick(); } };
+  STREAMS.push(api); tick();
+  return api;
+}
+
 /* =========================================================================
    Firebase Authentication (REST): вход, регистрация, смена пароля, токены
    ========================================================================= */
@@ -395,7 +449,7 @@ function authEmail(login, suffix){
   return 'u'+h+(suffix?'.'+suffix:'')+CFG.AUTH_SUFFIX;
 }
 function idt(method, body){
-  return realFetch('https://identitytoolkit.googleapis.com/v1/accounts:'+method+'?key='+CFG.API_KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) })
+  return realFetch(CFG.PHP ? CFG.API+'/auth/'+method : 'https://identitytoolkit.googleapis.com/v1/accounts:'+method+'?key='+CFG.API_KEY, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) })
     .then(function(r){ return r.json().then(function(j){ if(!r.ok){ var e=new Error((j.error&&j.error.message)||'AUTH'); e.code=e.message; throw e; } return j; }); });
 }
 function tokFrom(j){ return { id:j.idToken, refresh:j.refreshToken, exp:Date.now()+(+j.expiresIn||3600)*1000, fbUid:j.localId }; }
@@ -408,7 +462,7 @@ function ensureToken(force){
   var t=session.tok;
   if(!force && t.exp-Date.now()>120000) return Promise.resolve(t.id);
   if(tokP) return tokP;
-  tokP=realFetch('https://securetoken.googleapis.com/v1/token?key='+CFG.API_KEY, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(t.refresh) })
+  tokP=realFetch(CFG.PHP ? CFG.API+'/auth/token' : 'https://securetoken.googleapis.com/v1/token?key='+CFG.API_KEY, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(t.refresh) })
     .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j.error&&j.error.message)||'refresh'); return j; }); })
     .then(function(j){
       session.tok={ id:j.id_token, refresh:j.refresh_token, exp:Date.now()+(+j.expires_in||3600)*1000, fbUid:j.user_id };
@@ -874,6 +928,7 @@ var ICON={
   shield:'<path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2.2 2.2L15.5 10"/>',
   out:'<path d="M15 4h3.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H15"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
   clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
   home:'<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>'
 };
@@ -1287,16 +1342,60 @@ function refreshGuestRequests(){
 }
 
 /* ---------- профиль ---------- */
+/* Telegram-бот (только на своём сервере): привязка по одноразовой ссылке и выбор уведомлений */
+var TG_EVENTS=[['assign','Мне поставили задачу'],['comment','Комментарии в моих задачах'],['mention','Меня упомянули'],['review','Задачу прислали на проверку'],['done','Мою задачу завершили'],['due','Утром — сроки на сегодня']];
+function tgBlock(el, u){
+  var bot='', st={}, waitT=null;
+  function draw(){
+    if(!document.body.contains(el)){ clearInterval(waitT); return; }
+    if(!bot){ el.innerHTML='<span class="pe2-muted">Бот пока не настроен.</span>'; return; }
+    if(!st.chat){
+      el.innerHTML='<p class="pe2-muted" style="margin:0 0 10px">Уведомления о задачах прямо в Telegram: кто поставил задачу, комментарии, упоминания, сроки.</p>'+
+        '<button type="button" class="pe2-btn primary" data-tg-link>Подключить Telegram</button>'+(waitT?' <span class="pe2-muted" style="margin-left:8px">Нажмите «Start» в боте — жду…</span>':'');
+      el.querySelector('[data-tg-link]').onclick=link; return;
+    }
+    var evs=TG_EVENTS.slice(); if(perm('requests') && isStaff()) evs.push(['requests','Новые заявки на доступ']);
+    el.innerHTML='<div class="pe2-tg-on">'+I('check',14)+' Подключён'+(st.tgName?' — <b>'+esc(st.tgName)+'</b>':'')+
+      '<button type="button" class="pe2-btn ghost" data-tg-off style="margin-left:auto">Отключить</button></div>'+
+      '<div class="pe2-tgev">'+evs.map(function(e){ var on=!(st.ev && st.ev[e[0]]===false);
+        return '<label><input type="checkbox" data-tg-ev="'+e[0]+'"'+(on?' checked':'')+'> '+esc(e[1])+'</label>'; }).join('')+'</div>';
+    el.querySelector('[data-tg-off]').onclick=function(){ fb('DELETE','tg/'+u.id+'/chat').then(function(){ st.chat=null; draw(); toast('Telegram отключён'); }); };
+    [].forEach.call(el.querySelectorAll('[data-tg-ev]'), function(c){ c.onchange=function(){
+      var k=c.getAttribute('data-tg-ev'); st.ev=st.ev||{}; st.ev[k]=c.checked;
+      fb('PUT','tg/'+u.id+'/ev/'+k, c.checked).catch(function(){ c.checked=!c.checked; toast('Не сохранилось — нет связи'); });
+    }; });
+  }
+  function link(){
+    var a=new Uint8Array(18); crypto.getRandomValues(a);
+    var code=[].map.call(a, function(x){ return ('0'+x.toString(16)).slice(-2); }).join('');
+    /* окно открываем сразу по нажатию — иначе браузер его заблокирует */
+    var w=window.open('about:blank','_blank');
+    fb('PATCH','tg/'+u.id, { code:code, codeAt:Date.now() }).then(function(){
+      var url='https://t.me/'+bot+'?start='+code;
+      if(w) w.location.href=url; else location.href=url;
+      var n=0; clearInterval(waitT);
+      waitT=setInterval(function(){
+        if(++n>60 || !document.body.contains(el)){ clearInterval(waitT); waitT=null; draw(); return; }
+        fb('GET','tg/'+u.id).then(function(v){ if(v && v.chat){ st=v; clearInterval(waitT); waitT=null; draw(); toast('Telegram подключён'); } });
+      }, 3000);
+      draw();
+    }).catch(function(){ if(w) w.close(); toast('Нет связи с сервером'); });
+  }
+  Promise.all([fb('GET','meta/tgBot'), fb('GET','tg/'+u.id)]).then(function(r){ bot=r[0]||''; st=r[1]||{}; draw(); })
+    .catch(function(){ el.innerHTML='<span class="pe2-muted">Нет связи с сервером</span>'; });
+}
 function openProfile(){
   var u=R.me(); if(!u) return;
   var mm=modal('<h2>Мой профиль</h2><form data-form="profile">'+profileFields(u, {})+
     '<div class="pe2-sep"></div><div class="pe2-label">Смена пароля <span class="pe2-muted" style="font-weight:400;text-transform:none;letter-spacing:0">— необязательно</span></div>'+
     '<div class="pe2-grid2">'+field('Текущий пароль','<input name="oldpass" type="password" autocomplete="current-password">')+field('Новый пароль','<input name="newpass" type="password" minlength="6" autocomplete="new-password">')+'</div>'+
+    (CFG.PHP && !CFG.MOCK?'<div class="pe2-sep"></div><div class="pe2-label">Telegram</div><div class="pe2-tg" data-pe2-tg><span class="pe2-muted">Загрузка…</span></div>':'')+
     '<div class="pe2-kv"><span>Логин</span><b>'+esc(u.login)+'</b><span>Роль</span><b>'+esc(ROLE_NAMES[u.role]||u.role)+'</b><span>В экосистеме с</span><b>'+esc(fmtDate(u.createdAt))+'</b></div>'+
     '<div class="pe2-err" data-err></div>'+
     '<div class="pe2-actions"><button type="button" class="pe2-btn ghost" data-logout-btn style="margin-right:auto">'+I('out',14)+' Выйти</button><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Сохранить</button></div></form>', { wide:true });
   var form=mm.el.querySelector('form');
   bindAvatarPicker(mm.el);
+  var tgEl=mm.el.querySelector('[data-pe2-tg]'); if(tgEl) tgBlock(tgEl, u);
   mm.el.querySelector('[data-logout-btn]').onclick=logout;
   form.addEventListener('input', function(){ formErr(form,''); });
   form.addEventListener('submit', function(e){

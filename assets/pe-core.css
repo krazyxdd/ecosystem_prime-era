@@ -260,6 +260,13 @@ html.pe2-gated body > *:not(.pe2-gate):not(#pe2-toasts):not(.pe2-modal-back){ vi
 .pe2-modal .pe2-check .ic{ background:var(--pe-accent-t); color:var(--pe-accent-ink); }
 .pe2-modal .pe2-check small{ color:var(--pe-ink-2); }
 .pe2-modal .pe2-err{ background:var(--pe-danger-t); border-color:transparent; color:var(--pe-danger); }
+.pe2-tg{ margin:0 0 14px; font-size:13px; }
+.pe2-tg-on{ display:flex; align-items:center; gap:6px; color:var(--pe-ok); margin:0 0 10px; }
+.pe2-tg-on b{ color:var(--pe-ink); }
+.pe2-tgev{ display:grid; grid-template-columns:1fr 1fr; gap:6px 14px; }
+.pe2-tgev label{ display:flex; align-items:center; gap:8px; color:var(--pe-ink); cursor:pointer; }
+.pe2-tgev input{ accent-color:var(--pe-accent); width:15px; height:15px; margin:0; }
+@media (max-width:560px){ .pe2-tgev{ grid-template-columns:1fr; } }
 .pe2-kv{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:13px; margin:0 0 14px; padding:10px 12px; background:var(--pe-sunk); border-radius:10px; }
 .pe2-kv span{ color:var(--pe-ink-2); }
 

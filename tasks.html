@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Задачи</title>
-<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
+<link rel="stylesheet" href="assets/fonts.css?v=202610031804">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
-<script src="assets/pe-core.js?v=202610031051" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031804">
+<script src="assets/pe-core.js?v=202610031804" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -1135,6 +1135,13 @@ function merge3(base, local, remote){
         if(pick) res[i]=pick;
       });
       out[k]=mapToList(res);
+      return;
+    }
+    if(SETF[k]){   /* исполнители, аудиторы, теги: мои «добавил / убрал» поверх свежей версии коллеги */
+      var Bs=arr(base&&base[k]), Ls=arr(local[k]), Rs=arr(remote[k]);
+      var res2=Rs.filter(function(x){ return !(Bs.indexOf(x)>=0 && Ls.indexOf(x)<0); });
+      Ls.forEach(function(x){ if(Bs.indexOf(x)<0 && res2.indexOf(x)<0) res2.push(x); });
+      out[k]=res2;
       return;
     }
     if(k==='doneBy'){   /* отметки исполнителей — по каждому человеку отдельно, чтобы не терять одновременные */
@@ -4503,7 +4510,7 @@ function bindTeam(){
    Инициализация и глобальные обработчики
    ===================================================================== */
 function init(){
-  if(PE.CFG.MODE!=='live') window.__tasks={ get state(){ return state; }, Sync:Sync, sig:sig, taskFromRemote:taskFromRemote, renderDrawer:renderDrawer };   /* только в тестовом режиме */
+  if(PE.CFG.MODE!=='live' || /^(127\.0\.0\.1|localhost)$/.test(location.hostname)) window.__tasks={ newTask:newTask, addTask:addTask, persist:persist, setStatus:setStatus, complete:complete, isDone:isDone, startTimer:startTimer, stopTimer:stopTimer, log:log, uid:uid, keyOf:keyOf, addDays:addDays, today:today, openTask:openTask, closeDrawer:closeDrawer, deleteTask:deleteTask, syncReady:syncReady, ME:ME, get timer(){ return state.timer; }, get state(){ return state; }, Sync:Sync, sig:sig, taskFromRemote:taskFromRemote, renderDrawer:renderDrawer };   /* только в тестовом режиме */
   var qv=location.search.match(/[?&]view=(board|cal|time|list)/); if(qv){ state.settings.view=qv[1]; try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){} }
   startSync();
   /* изменились люди (новый сотрудник, аватарка, отозван доступ) — обновляем команду */
