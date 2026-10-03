@@ -308,3 +308,8 @@ html:not(.pe2-can-glossary_edit) .pe2-need-glossary_edit, html:not(.pe2-can-task
 .pe-drop-r{ box-shadow:inset -3px 0 0 0 var(--pe-accent) !important; }
 tr.pe-drop-before > td{ box-shadow:inset 0 3px 0 0 var(--pe-accent) !important; }
 tr.pe-drop-after > td{ box-shadow:inset 0 -3px 0 0 var(--pe-accent) !important; }
+
+.pe2-note-staff{margin:-4px 0 14px;padding:10px 12px;border-radius:10px;background:var(--pe-accent-t);color:var(--pe-ink);font-size:13px;line-height:1.45}.pe2-note-staff a{color:var(--pe-accent);font-weight:600}
+@media (max-width:600px){ .pe2-nav-links{ -webkit-mask-image:linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 36px), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 36px), transparent 100%); } }
+.pe2-preset-hint{margin:0 0 10px;padding:9px 12px;border-radius:10px;background:var(--pe-accent-t);font-size:13px;line-height:1.45;color:var(--pe-ink)}.pe2-preset-hint a{color:var(--pe-accent);font-weight:600}
+.pe2-presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.pe2-presets button{font:600 12px var(--pe-font);border:1px solid var(--pe-line);background:var(--pe-card);color:var(--pe-ink);border-radius:999px;padding:5px 11px;cursor:pointer}.pe2-presets button:hover{border-color:var(--pe-accent);color:var(--pe-accent)}

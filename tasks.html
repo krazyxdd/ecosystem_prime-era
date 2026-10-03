@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Задачи</title>
-<link rel="stylesheet" href="assets/fonts.css?v=202610030209">
+<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610030209">
-<script src="assets/pe-core.js?v=202610030209" data-module="tasks"></script>
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
+<script src="assets/pe-core.js?v=202610031051" data-module="tasks"></script>
 <style>
   /* ===== Токены — 1:1 из planner.html ===== */
   :root{
@@ -97,6 +97,18 @@
   .toolbar-scroll{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
 
   /* ===== Доска ===== */
+  .arch-q{ width:100%; margin:4px 0 10px; padding:9px 12px; border:1px solid var(--pe-line); border-radius:10px; background:var(--pe-bg); color:var(--pe-ink); font:inherit; }
+  .arch-list{ max-height:55vh; overflow:auto; display:flex; flex-direction:column; gap:6px; }
+  .arch-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--pe-line); border-radius:10px; font-size:.86rem; }
+  .arch-row small{ display:block; color:var(--pe-ink-3); font-size:.75rem; margin-top:2px; }
+  .dr-pres{ display:inline-flex; align-items:center; gap:4px; margin-right:6px; }
+  .dr-pres .av{ width:22px; height:22px; font-size:.6rem; box-shadow:0 0 0 2px var(--surface); }
+  .pres-typing{ font-size:.72rem; color:var(--pe-accent); margin-right:6px; white-space:nowrap; animation:prespulse 1.4s ease-in-out infinite; }
+  @keyframes prespulse{ 50%{ opacity:.45; } }
+  .board-tip{ display:flex; gap:16px; align-items:flex-start; justify-content:space-between; margin:0 0 14px; padding:14px 16px; border-radius:14px; background:var(--pe-accent-t); color:var(--pe-ink); font-size:.86rem; line-height:1.5; }
+  .board-tip.hidden{ display:none; }
+  .board-tip ul{ margin:6px 0 0; padding-left:18px; }
+  .board-tip kbd{ font:600 .75rem var(--pe-mono); padding:1px 5px; border:1px solid var(--pe-line); border-radius:4px; background:var(--pe-card); }
   .board-wrap{ flex:1 1 auto; min-height:0; overflow-x:auto; overflow-y:hidden; margin:0 -32px; padding:0 32px 18px; }
   @media (max-width:880px){ .board-wrap{ margin:0 -16px; padding:0 16px 16px; } }
   .board{ display:flex; gap:14px; height:100%; align-items:flex-start; }
@@ -872,6 +884,7 @@
     <button class="btn btn-primary" id="add-btn" title="Новая задача (N)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Задача <span class="kbd">N</span></button>
   </div>
 
+  <div class="board-tip hidden" id="board-tip"></div>
   <div class="board-wrap" id="board-wrap"><div class="board" id="board"></div></div>
   <div class="list-wrap hidden" id="list-wrap"></div>
   <div class="time-wrap hidden" id="time-wrap"></div>
@@ -902,10 +915,11 @@ var IS_ADMIN = PE.perm('tasks_all');   /* режим руководителя �
 var TEAM = [], MENTION_RE = /(?!)/g;
 function reEsc(x){ return String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function buildTeam(){
-  TEAM = PE.team('tasks').map(function(u){ return { id:u.id, full:PE.fullName(u), short:PE.shortName(u), color:u.color||'#6B7280', role:u.position||'', avatar:u.avatar||'' }; });
-  var cnt={}; TEAM.forEach(function(m){ var k=m.short.toLowerCase(); cnt[k]=(cnt[k]||0)+1; });
-  TEAM.forEach(function(m){ m.tag = cnt[m.short.toLowerCase()]>1 ? m.full : m.short; });   /* @Имя, а при тёзках — @Имя Фамилия */
-  var names=[]; TEAM.forEach(function(m){ names.push(m.full); if(m.tag!==m.full) names.push(m.tag); });
+  TEAM = PE.team('tasks').map(function(u){ return { id:u.id, full:PE.fullName(u), short:PE.shortName(u), last:u.last||'', color:u.color||'#6B7280', role:u.position||'', avatar:u.avatar||'' }; });
+  /* @Имя Ф. — так понятно, о ком речь; при совпадении — @Имя Фамилия. Старые «@Имя» тоже узнаём, если имя одно */
+  var cnt={}, cntS={}; TEAM.forEach(function(m){ m.tag = m.last ? m.short+' '+m.last.charAt(0).toUpperCase()+'.' : m.short; var k=m.tag.toLowerCase(); cnt[k]=(cnt[k]||0)+1; var ks=m.short.toLowerCase(); cntS[ks]=(cntS[ks]||0)+1; });
+  TEAM.forEach(function(m){ if(cnt[m.tag.toLowerCase()]>1) m.tag=m.full; m.uniqShort = cntS[m.short.toLowerCase()]===1; });
+  var names=[]; TEAM.forEach(function(m){ names.push(m.full); if(m.tag!==m.full) names.push(m.tag); if(m.uniqShort && names.indexOf(m.short)<0) names.push(m.short); });
   names.sort(function(a,b){ return b.length-a.length; });
   MENTION_RE = names.length ? new RegExp('@('+names.map(reEsc).join('|')+')(?![а-яёa-z0-9])', 'gi') : /(?!)/g;
 }
@@ -1067,7 +1081,10 @@ function parseDuration(str){
    задачи — сохраняются обе правки. Офлайн-правки копятся и уходят позже.
    Личное (вид, фильтры, уведомления) хранится отдельно у каждого.
    ===================================================================== */
-var KEYED = { comments:1, activity:1 };
+/* поля-списки, которые хранятся по id: одновременные добавления не затирают друг друга */
+var KEYED = { comments:1, activity:1, checklist:1, files:1, links:1 };
+/* поля-наборы (строки): меняются транзакцией «добавить / убрать» поверх свежей версии */
+var SETF = { assignees:1, auditors:1, tags:1 };
 function canon(v){
   if(v===null || v===undefined) return undefined;
   if(Array.isArray(v)){ var a=v.map(canon).filter(function(x){ return x!==undefined; }); return a.length ? a : undefined; }
@@ -1080,19 +1097,24 @@ function canon(v){
 }
 function sig(v){ var c=canon(v); return c===undefined ? '' : JSON.stringify(c); }
 function listToMap(list){ var m={}; (list||[]).forEach(function(x){ if(x && x.id) m[x.id]=x; }); return m; }
-function mapToList(m){ return Object.keys(m||{}).map(function(k){ return m[k]; }).filter(Boolean).sort(function(a,b){ return (a.at||0)-(b.at||0); }); }
+function mapToList(m){ return Object.keys(m||{}).map(function(k){ return m[k]; }).filter(Boolean).sort(function(a,b){ var x=a.o!=null?a.o:(a.at||0), y=b.o!=null?b.o:(b.at||0); return x-y || (a.id<b.id?-1:a.id>b.id?1:0); }); }
+/* порядок пунктов чек-листа: поле o; новые — в конец */
+function ensureOrder(t){ var last=0; (t.checklist||[]).forEach(function(i){ if(i.o==null || i.o<=last) i.o=last+1; last=i.o; }); }
+function remoteItem(k, x){ if(k==='files') return stripFiles([x])[0]; return x.files ? Object.assign({}, x, { files:stripFiles(x.files) }) : x; }
 function stripFiles(files){ return (files||[]).map(function(f){ var c=Object.assign({}, f); delete c.data; return c; }); }
 /* локальная форма задачи → форма для Firebase */
 function taskToRemote(t){
   var r=canon(t)||{};
   delete r.done; delete r.tag;
-  Object.keys(KEYED).forEach(function(k){ if(t[k]) r[k]=canon(listToMap(t[k].map(function(x){ return x.files ? Object.assign({}, x, { files:stripFiles(x.files) }) : x; }))); });
-  if(t.files) r.files=canon(stripFiles(t.files));
+  Object.keys(KEYED).forEach(function(k){ if(t[k]) r[k]=canon(listToMap(t[k].map(function(x){ return remoteItem(k, x); }))); });
+  delete r._arr;
   return r;
 }
 function taskFromRemote(r){
-  var t=clone(r);
-  Object.keys(KEYED).forEach(function(k){ if(t[k] && !Array.isArray(t[k])) t[k]=mapToList(t[k]); });
+  var t=clone(r), old={};
+  /* старый формат (массив) помечаем: при первой правке поле перезапишется целиком в новом формате */
+  Object.keys(KEYED).forEach(function(k){ if(Array.isArray(t[k])) old[k]=1; else if(t[k]) t[k]=mapToList(t[k]); });
+  if(Object.keys(old).length) t._arr=old;
   normalize(t);
   return t;
 }
@@ -1135,7 +1157,10 @@ function diffOps(base, cur){
     if(KEYED[k]){
       var B=listToMap(base[k]), C=listToMap(cur[k]), ids={};
       [B,C].forEach(function(o){ Object.keys(o).forEach(function(i){ ids[i]=1; }); });
-      Object.keys(ids).forEach(function(i){ if(sig(B[i])!==sig(C[i])) ops[k+'/'+i]= C[i] ? (canon(C[i].files?Object.assign({}, C[i], { files:stripFiles(C[i].files) }):C[i])||null) : null; });
+      var ch=Object.keys(ids).filter(function(i){ return sig(remoteItem(k,B[i]||{}))!==sig(remoteItem(k,C[i]||{})) || !B[i]!==!C[i]; });
+      if(!ch.length) return;
+      if(base._arr && base._arr[k]){ ops[k]=canon(listToMap((cur[k]||[]).map(function(x){ return remoteItem(k, x); })))||null; return; }
+      ch.forEach(function(i){ ops[k+'/'+i]= C[i] ? (canon(remoteItem(k, C[i]))||null) : null; });
       return;
     }
     if(k==='doneBy'){ var Bd=base.doneBy||{}, Cd=cur.doneBy||{}, us={};
@@ -1197,11 +1222,37 @@ function pushNow(){
     Promise.all(fileJobs).then(function(){ Sync.pushing=false; pushNow(); }, function(){ Sync.pushing=false; offline(); });
     return;
   }
+  var setJobs=[], setIds={};
   state.tasks.forEach(function(t){
+    ensureOrder(t);
     var b=Sync.base.items[t.id];
     if(!b){ t.updatedAt=now; t.updatedBy=ME; ops[t.id]=taskToRemote(t); newTasks.push(t); any=true; return; }
     var d=diffOps(b, t);
-    if(Object.keys(d).length){ t.updatedAt=now; t.updatedBy=ME; d.updatedAt=now; d.updatedBy=ME; Object.keys(d).forEach(function(k){ ops[t.id+'/'+k]=d[k]; }); any=true; }
+    Object.keys(SETF).forEach(function(k){
+      if(!(k in d)) return; delete d[k];
+      var B=arr(b[k]), C=arr(t[k]), add=C.filter(function(x){ return B.indexOf(x)<0; }), rm=B.filter(function(x){ return C.indexOf(x)<0; });
+      if(!add.length && !rm.length) return;
+      setIds[t.id]=1;
+      setJobs.push({ path:'tasks/items/'+t.id, fn:function(rt){
+        if(!rt) return undefined;   /* задачу удалили — не воскрешаем */
+        var cur=arr(rt[k]).filter(function(x){ return rm.indexOf(x)<0; }); add.forEach(function(x){ if(cur.indexOf(x)<0) cur.push(x); });
+        if(cur.length) rt[k]=cur; else delete rt[k]; return rt; } });
+      d.updatedAt=now;
+    });
+    /* переход списка со старого формата (массив) — транзакцией со слиянием, чтобы не затереть одновременные правки */
+    Object.keys(KEYED).forEach(function(k){
+      if(!(k in d) || !(b._arr && b._arr[k])) return; delete d[k];
+      var Bm=listToMap(b[k]), Cm=listToMap(t[k]); setIds[t.id]=1;
+      setJobs.push({ path:'tasks/items/'+t.id, fn:function(rt){
+        if(!rt) return undefined;
+        var R=listToMap(Array.isArray(rt[k]) ? rt[k] : mapToList(rt[k])), out={};
+        Object.keys(R).forEach(function(i){ if(!(Bm[i] && !Cm[i])) out[i]=R[i]; });
+        Object.keys(Cm).forEach(function(i){ out[i]=canon(remoteItem(k, Cm[i])); });
+        var c=canon(out); if(c) rt[k]=c; else delete rt[k]; return rt; },
+        after:function(){ [task(t.id), Sync.base.items[t.id], snapBase && snapBase.items[t.id]].forEach(function(x){ if(x && x._arr){ delete x._arr[k]; if(!Object.keys(x._arr).length) delete x._arr; } }); } });
+      d.updatedAt=now;
+    });
+    if(Object.keys(d).length || setIds[t.id]){ t.updatedAt=now; t.updatedBy=ME; d.updatedAt=now; d.updatedBy=ME; Object.keys(d).forEach(function(k){ ops[t.id+'/'+k]=d[k]; }); any=true; }
   });
   Object.keys(Sync.base.items).forEach(function(id){ if(!cur[id]){ ops[id]=null; any=true; } });
   var curE={};
@@ -1218,12 +1269,19 @@ function pushNow(){
   state.entries.forEach(function(e){ snapBase.entries[e.id]=clone(e); });
   var metaSnap=clone(meta), timerSnap=clone(state.timer);
   var jobs=[];
-  if(Object.keys(ops).length) jobs.push(PE.fb('PATCH','tasks/items', ops));
+  if(Object.keys(ops).length) jobs.push(PE.fb('PATCH','tasks/items', ops).then(function(){
+    /* исполнители, аудиторы, теги — после основной записи, поверх свежей версии */
+    return Promise.all(setJobs.map(function(j){ return PE.tx(j.path, j.fn).then(function(){ if(j.after) j.after(); }); }));
+  }));
   if(Object.keys(eops).length) jobs.push(PE.fb('PATCH','tasks/entries', eops));
   if(metaChanged) jobs.push(PE.fb('PATCH','tasks/meta', metaToRemote(meta)));
   if(timerChanged) jobs.push(state.timer ? PE.fb('PUT','tasks/timers/'+ME, canon(state.timer)) : PE.fb('DELETE','tasks/timers/'+ME));
   Promise.all(jobs).then(function(){
-    Object.keys(ops).forEach(function(k){ var id=k.split('/')[0]; if(ops[k]===null && k.indexOf('/')<0) delete Sync.base.items[id]; else if(snapBase.items[id]) Sync.base.items[id]=snapBase.items[id]; });
+    Object.keys(ops).forEach(function(k){ var p=k.split('/'), id=p[0];
+      if(ops[k]===null && p.length===1) { delete Sync.base.items[id]; return; }
+      /* поле переписано в новом формате — снимаем пометку старого */
+      if(p.length===2 && KEYED[p[1]]){ var lt=task(id); [lt, snapBase.items[id]].forEach(function(x){ if(x && x._arr){ delete x._arr[p[1]]; if(!Object.keys(x._arr).length) delete x._arr; } }); }
+      if(snapBase.items[id]) Sync.base.items[id]=snapBase.items[id]; });
     Object.keys(eops).forEach(function(id){ if(eops[id]===null) delete Sync.base.entries[id]; else Sync.base.entries[id]=snapBase.entries[id]; });
     if(metaChanged) Sync.base.meta=metaSnap;
     if(timerChanged) Sync.base.timer=timerSnap;
@@ -1338,7 +1396,7 @@ function onRemoteTimers(tree){
 function afterRemote(changed){
   if(!syncReady()) return;
   if(Sync.status==='loading') setSyncStatus('ok');
-  if(!Sync.shown){ Sync.shown=true; changed=true; }   // первая загрузка — перерисовать в любом случае
+  if(!Sync.shown){ Sync.shown=true; changed=true; setTimeout(archiveOld, 4000); }   // первая загрузка — перерисовать в любом случае
   pushNow();                      // наши несинхронизированные правки (в т.ч. офлайн)
   if(!changed){ saveCache(); return; }
   clearTimeout(Sync.renderT);
@@ -1371,6 +1429,7 @@ function startSync(){
     if(!seg || seg==='entries') onRemoteEntries(tree.entries);
     if(!seg || seg==='meta') onRemoteMeta(tree.meta);
     if(!seg || seg==='timers') onRemoteTimers(tree.timers);
+    if(!seg || seg==='presence') onPresence(tree.presence);
   });
 }
 /* таймеры коллег — в формате прежнего state.teamTimers */
@@ -1466,7 +1525,7 @@ function arr(v){
 function normalize(t){
   t.assignees=arr(t.assignees);
   t.auditors=arr(t.auditors); t.tags=arr(t.tags); t.checklist=arr(t.checklist);
-  t.comments=arr(t.comments); t.activity=arr(t.activity); t.files=arr(t.files); t.links=arr(t.links);
+  t.comments=arr(t.comments); t.activity=arr(t.activity); t.files=arr(t.files); t.links=arr(t.links); ensureOrder(t);
   t.comments.forEach(function(c){ c.files=arr(c.files); });
   if(t.recur && t.recur.days) t.recur.days=arr(t.recur.days);
   t.status=t.status||(t.done?'done':'new'); t.done = t.status==='done';
@@ -1944,6 +2003,8 @@ function toast(msg, actionLabel, fn, ms){
   var el=root.firstChild;
   if(actionLabel) el.querySelector('[data-a]').onclick=function(){ root.innerHTML=''; fn(); };
   el.querySelector('[data-x]').onclick=function(){ root.innerHTML=''; };
+  /* открыта карточка задачи — поднимаем уведомление над её нижней панелью с кнопками */
+  var dr=$('#drawer-root'); if(dr && dr.children.length) el.style.bottom='92px';
   toastTimer=setTimeout(function(){ root.innerHTML=''; }, ms||5000);
 }
 
@@ -2224,6 +2285,15 @@ function renderMain(){
   document.body.classList.toggle('pulse', !!state.settings.pulse);
   renderTabs(); renderToolbar(); if(typeof renderNotifBadge==='function') renderNotifBadge();
   var v=state.settings.view;
+  /* подсказка новичку: пока у человека нет ни одной своей задачи */
+  var tip=$('#board-tip'), showTip=!state.settings.tipHidden && !state.tasks.some(myTask);
+  tip.classList.toggle('hidden', !showTip);
+  if(showTip && !tip.innerHTML) tip.innerHTML='<div><b>Как работать с задачами</b><ul>'+
+    '<li><b>+ Задача</b> или клавиша <kbd>N</kbd> — новая задача. Название, срок и исполнитель — этого достаточно.</li>'+
+    '<li>Поставить задачу коллеге — поле <b>Исполнители</b>. Он сразу увидит её у себя и получит уведомление.</li>'+
+    '<li>Позвать человека в обсуждение — напишите <b>@имя</b> в комментарии.</li>'+
+    '<li>Здесь видны задачи, где вы исполнитель, постановщик или аудитор. Вкладки сверху: «Мои», «Переданные», «Отслеживаемые».</li></ul></div>'+
+    '<button class="btn" id="tip-ok">Понятно</button>';
   $('#board-wrap').classList.toggle('hidden', v!=='board');
   $('#list-wrap').classList.toggle('hidden', v!=='list');
   $('#time-wrap').classList.toggle('hidden', v!=='time');
@@ -2236,6 +2306,7 @@ function renderMain(){
   if(v==='board') renderBoard(); else if(v==='list') renderList(); else if(v==='cal') renderCal(); else if(v==='team') renderTeam(); else renderTime();
   renderTimerPill();
 }
+document.addEventListener('click', function(e){ if(e.target && e.target.id==='tip-ok'){ state.settings.tipHidden=true; save(); renderMain(); } });
 
 /* =====================================================================
    Быстрое добавление с разбором: @исполнитель #тег ! сегодня/завтра
@@ -2357,13 +2428,40 @@ function openNew(preset){
   renderDrawer(true);
   setTimeout(function(){ var el=$('#dr-title'); if(el) el.focus(); }, 30);
 }
+/* =====================================================================
+   «Кто сейчас здесь»: кто открыл ту же задачу и кто печатает комментарий.
+   Отметки — в tasks/presence; приходят по уже открытому потоку доски.
+   ===================================================================== */
+var PRES={}, presMine={ task:null, typing:false, at:0 }, presTypeT=null;
+function onPresence(t){ PRES=t||{}; renderPresence(); }
+function myPresence(taskId, typing){
+  taskId=taskId||null; typing=!!(taskId && typing);
+  var now=Date.now();
+  if(presMine.task===taskId && presMine.typing===typing && now-presMine.at<40000) return;
+  presMine={ task:taskId, typing:typing, at:now };
+  (taskId ? PE.fb('PUT','tasks/presence/'+ME, presMine) : PE.fb('DELETE','tasks/presence/'+ME)).catch(function(){});
+}
+function renderPresence(){
+  var el=document.getElementById('dr-pres'); if(!el || !openId) return;
+  var now=Date.now(), others=Object.keys(PRES).filter(function(id){ var p=PRES[id]; return id!==ME && p && p.task===openId && now-(p.at||0)<90000; });
+  var typing=others.filter(function(id){ return PRES[id].typing && now-PRES[id].at<12000; });
+  el.innerHTML=(typing.length?'<span class="pres-typing">'+esc(typing.map(function(id){ return member(id).short||member(id).full; }).join(', '))+(typing.length>1?' печатают':(PE.userById(typing[0])&&PE.userById(typing[0]).gender==='f'?' печатает':' печатает'))+'…</span>':'')+
+    others.map(function(id){ return avatar(id,'xs'); }).join('');
+  el.title=others.length?'Сейчас смотрят: '+others.map(function(id){ return member(id).full; }).join(', '):'';
+}
+setInterval(function(){ if(openId && !document.hidden){ myPresence(openId, presMine.typing && Date.now()-presMine.at<6000); renderPresence(); } }, 15000);
+document.addEventListener('input', function(e){
+  if(!e.target || e.target.id!=='composer' || !openId) return;
+  myPresence(openId, true); clearTimeout(presTypeT); presTypeT=setTimeout(function(){ myPresence(openId,false); }, 6000);
+});
+window.addEventListener('pagehide', function(){ try{ fetch(PE.CFG.FB+'/'+PE.CFG.ROOT+'/tasks/presence/'+ME+'.json', { method:'DELETE', keepalive:true }); }catch(e){} });
 function closeDrawer(){
   closePops();
   var d=draft;
   if(d && d.title.trim()){
     toast('Черновик закрыт', 'Вернуть', function(){ draft=d; renderDrawer(true); });
   }
-  draft=null; openId=null;
+  draft=null; openId=null; myPresence(null,false);
   $('#drawer-root').innerHTML='';
   try{ history.replaceState(null,'', location.pathname+location.search); }catch(e){}
 }
@@ -2389,6 +2487,7 @@ function propRow(key, t){
 function personChip(id){ var m=member(id); return '<span class="person">'+avatar(id)+esc(m.full)+(id===ME?' <span style="color:var(--ink-faint)">(я)</span>':'')+'</span>'; }
 
 function renderDrawer(fresh){
+  if(openId && !draft) setTimeout(function(){ myPresence(openId, false); renderPresence(); }, 0);
   var t=cur(); var root=$('#drawer-root');
   if(!t){ root.innerHTML=''; return; }
   var bodyEl=$('.dr-body'), scroll=bodyEl?bodyEl.scrollTop:0;
@@ -2406,6 +2505,7 @@ function renderDrawer(fresh){
   h+='<button class="pill-btn" data-status><span class="sdot" style="background:'+colDot(c)+'"></span>'+esc(c.name)+I('chev',12,2)+'</button>';
   h+='<button class="pill-btn'+((t.start||t.end)?'':' muted')+(ds==='overdue'?' overdue':'')+'" data-dates>'+I('cal',13)+esc((t.start||t.end)? dateLabel(t) : 'Установить срок')+'</button>';
   h+='<span class="grow"></span>';
+  if(!isNew) h+='<span class="dr-pres" id="dr-pres"></span>';
   if(!isNew) h+='<span class="dr-num">#'+t.num+'</span>';
   if(!isNew) h+='<button class="icon-btn" data-copylink title="Скопировать ссылку на задачу">'+I('link',16)+'</button>';
   h+='<button class="icon-btn'+(t.requireReview?' on':'')+'" data-lock title="'+(t.requireReview?'Нужна проверка постановщиком перед закрытием':'Закрытие без проверки разрешено')+'">'+I(t.requireReview?'lock':'unlock',16)+'</button>';
@@ -2556,7 +2656,7 @@ function feedHtml(t){
 function linkify(s){ return s.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--accent)">$1</a>'); }
 
 /* ---------- упоминания ---------- */
-function mentionId(name){ name=name.toLowerCase(); var m=TEAM.filter(function(x){ return x.tag.toLowerCase()===name || x.full.toLowerCase()===name; })[0]; return m?m.id:null; }
+function mentionId(name){ name=name.toLowerCase(); var m=TEAM.filter(function(x){ return x.tag.toLowerCase()===name || x.full.toLowerCase()===name || (x.uniqShort && x.short.toLowerCase()===name); })[0]; return m?m.id:null; }
 function mentionsIn(text){ var r=[]; String(text).replace(MENTION_RE, function(_,n){ var id=mentionId(n); if(id && r.indexOf(id)<0) r.push(id); }); return r; }
 function mentionify(html){ return html.replace(MENTION_RE, function(all, n){ var id=mentionId(n); return '<span class="mention'+(id===ME?' me':'')+'">@'+esc(member(id).full)+'</span>'; }); }
 var mentionPop=null, mentionSel=0, mentionList=[];
@@ -2888,6 +2988,7 @@ function bindDrawer(){
     var t=cur(); if(!clDrag || !t) return; e.preventDefault();
     var ids=$$('#cl-list .cl-item').map(function(x){ return x.dataset.cl; });
     t.checklist.sort(function(a,b){ return ids.indexOf(a.id)-ids.indexOf(b.id); });
+    t.checklist.forEach(function(i,n){ i.o=n+1; });
     clDrag=null; commitField(); renderDrawer();
   });
 
@@ -4129,6 +4230,49 @@ function openColMenu(anchor, c){
     });
   }, { width:300 });
 }
+/* =====================================================================
+   Архив: задачи, завершённые больше 30 дней назад, переезжают в tasksarch —
+   доска легче, а при открытии никто не скачивает старое. Переносит браузер
+   руководителя раз в сутки; посмотреть и вернуть — «Ещё → Архив задач».
+   ===================================================================== */
+var ARCH_DAYS=30, ARCH_KEY='tasks-arch-at';
+function archiveOld(){
+  if(!IS_ADMIN || !syncReady()) return;
+  try{ if(Date.now()-(+localStorage.getItem(ARCH_KEY)||0)<20*3600000) return; }catch(e){}
+  var edge=Date.now()-ARCH_DAYS*86400000;
+  var list=state.tasks.filter(function(t){ return isDone(t) && t.doneAt && t.doneAt<edge && !children(t.id).some(function(c){ return !isDone(c); }) && !(state.timer && state.timer.taskId===t.id); }).slice(0,150);
+  try{ localStorage.setItem(ARCH_KEY, String(Date.now())); }catch(e){}
+  if(!list.length) return;
+  var ops={};
+  list.forEach(function(t){ var r=taskToRemote(t); r.archivedAt=Date.now(); r.archivedBy=ME; ops['tasksarch/'+t.id]=r; ops['tasks/items/'+t.id]=null; });
+  PE.fb('PATCH','', ops).then(function(){
+    var ids={}; list.forEach(function(t){ ids[t.id]=1; delete Sync.base.items[t.id]; });
+    state.tasks=state.tasks.filter(function(t){ return !ids[t.id]; });
+    saveCache(); renderMain();
+    toast('В архив перенесено задач: '+list.length+' (завершены больше '+ARCH_DAYS+' дней назад). Найти — «Ещё → Архив задач».');
+  }).catch(function(){ /* правила для архива ещё не опубликованы — попробуем завтра */ });
+}
+function openArchive(){
+  var m=PE.modal('<h2>Архив задач</h2><p class="pe2-muted">Задачи, завершённые больше '+ARCH_DAYS+' дней назад. Их можно найти и вернуть на доску.</p><input class="arch-q" placeholder="Поиск по названию, номеру, исполнителю" autofocus><div class="arch-list"><div class="pe2-muted">Загружаю…</div></div><div class="pe2-actions"><button class="pe2-btn" data-pe2-close>Закрыть</button></div>', { wide:true });
+  var box=m.el.querySelector('.arch-list'), q=m.el.querySelector('.arch-q'), all=[];
+  function draw(){
+    var v=q.value.trim().toLowerCase();
+    var l=all.filter(function(t){ return !v || ('#'+t.num+' '+t.title+' '+t.assignees.map(function(a){ return member(a).full; }).join(' ')).toLowerCase().indexOf(v)>=0; }).sort(function(a,b){ return (b.doneAt||0)-(a.doneAt||0); });
+    box.innerHTML=l.length ? l.slice(0,300).map(function(t){
+      return '<div class="arch-row"><div><b>#'+t.num+'</b> '+esc(t.title)+'<small>'+esc(t.assignees.map(function(a){ return member(a).full; }).join(', ')||'без исполнителя')+' · завершена '+esc(t.doneAt?new Date(t.doneAt).toLocaleDateString('ru-RU'):'')+'</small></div>'+
+        (IS_ADMIN||t.reporter===ME?'<button class="pe2-btn sm" data-unarch="'+esc(t.id)+'">Вернуть на доску</button>':'')+'</div>';
+    }).join('') : '<div class="pe2-muted">'+(all.length?'Ничего не нашлось':'Архив пуст')+'</div>';
+  }
+  PE.fb('GET','tasksarch').then(function(d){ all=Object.keys(d||{}).map(function(k){ return taskFromRemote(d[k]); }); draw(); })
+    .catch(function(){ box.innerHTML='<div class="pe2-muted">Архив недоступен: владельцу нужно опубликовать обновлённые правила базы.</div>'; });
+  q.addEventListener('input', draw);
+  box.addEventListener('click', function(e){
+    var b=e.target.closest('[data-unarch]'); if(!b) return; var id=b.dataset.unarch, t=all.filter(function(x){ return x.id===id; })[0]; if(!t) return;
+    var r=taskToRemote(t); delete r.archivedAt; delete r.archivedBy; var ops={}; ops['tasks/items/'+id]=r; ops['tasksarch/'+id]=null;
+    b.disabled=true;
+    PE.fb('PATCH','', ops).then(function(){ all=all.filter(function(x){ return x.id!==id; }); draw(); toast('Задача #'+t.num+' вернулась на доску'); }).catch(function(){ b.disabled=false; toast('Не удалось вернуть задачу'); });
+  });
+}
 function openMore(anchor){
   var items=[
     { label:'Экспорт доски в JSON', icon:'download', action:function(){
@@ -4136,6 +4280,7 @@ function openMore(anchor){
       var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='zadachi-'+todayKey()+'.json'; document.body.appendChild(a); a.click(); a.remove();
     } }
   ];
+  items.push({ label:'Архив задач…', icon:'list', action:openArchive });
   items.push({ label:'Горячие клавиши', icon:'keyboard', action:function(){ showHotkeys(anchor); } });
   if(IS_ADMIN){
     items.push({ sep:true }, { header:'Администратор' });

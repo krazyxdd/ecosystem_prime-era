@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ-панель — Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610030209">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610030209">
-<script src="assets/pe-core.js?v=202610030209" data-module="admin"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
+<script src="assets/pe-core.js?v=202610031051" data-module="admin"></script>
 <style>
   :root{ --ink:var(--pe-ink); --soft:var(--pe-ink-2); --faint:var(--pe-ink-3); --line:var(--pe-line); --bg:var(--pe-bg-2); --card:var(--pe-card); --accent:var(--pe-accent); --accent-t:var(--pe-accent-t); --danger:var(--pe-danger); --ok:var(--pe-ok); --warn:var(--pe-warn); }
   *{ box-sizing:border-box; }
@@ -89,6 +89,8 @@
   /* роли и права */
   .roles-intro{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px; }
   .roles-intro .card{ padding:14px 16px; }
+  .ob-card{ padding:18px 20px; } .ob-row{ display:flex; gap:12px; flex-wrap:wrap; margin:0 0 14px; } .ob-row label,.ob-g{ display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:var(--pe-ink-2); } .ob-g{ margin:0 0 12px; } .ob-g b{ color:var(--pe-ink); font-size:13px; }
+  .ob-card input,.ob-card textarea{ font:13px/1.5 var(--pe-font); color:var(--pe-ink); background:var(--pe-bg); border:1px solid var(--pe-line); border-radius:10px; padding:8px 10px; } .ob-card textarea{ font-family:var(--pe-mono); font-size:12.5px; } .ob-card code{ font:12px var(--pe-mono); background:var(--pe-sunk); padding:1px 5px; border-radius:5px; }
   .roles-intro h3{ margin:0 0 4px; font-size:14px; }
   .roles-intro p{ margin:0; color:var(--soft); font-size:12.5px; line-height:1.5; }
   @media(max-width:900px){ .roles-intro{ grid-template-columns:1fr 1fr; } }
@@ -220,15 +222,18 @@ function roleSort(a,b){ var o=PE.ROLE_ORDER; return ((o[a.role]!=null?o[a.role]:
 function tabsList(){
   var pu=pendingUsers(), rq=openRequests(), all=usersList().filter(function(u){ return u.status!=='deleted'; });
   return [['requests','Заявки',pu.length+rq.length,false,P('requests')],['users','Пользователи',all.length,true,true],
-    ['modules','Модули',0,false,P('modules')],['tools','Инструменты',0,false,true],['roles','Роли и права',0,false,true],['log','Журнал',0,false,P('audit')]].filter(function(t){ return t[4]; });
+    ['modules','Модули',0,false,P('modules')],['onboard','Новичкам',0,false,P('modules')],['tools','Инструменты',0,false,true],['roles','Роли и права',0,false,true],['log','Журнал',0,false,P('audit')]].filter(function(t){ return t[4]; });
 }
 function plural(n,a,b,c){ var x=n%10,h=n%100; if(x===1&&h!==11) return a; if(x>=2&&x<=4&&(h<10||h>=20)) return b; return c; }
 function openRequests(){
   var R=PE.requests||{};
   return Object.keys(R).map(function(k){ var r=R[k]; r.id=k; return r; }).filter(function(r){ return r && r.status==='new'; }).sort(function(a,b){ return a.at-b.at; });
 }
+/* гостевой запрос с тем же контактом, что у зарегистрированного человека, — вероятный дубль */
+function normContact(c){ c=String(c||'').toLowerCase().replace(/[\s()\-]/g,'').replace(/^https?:\/\/t\.me\//,'@'); var d=c.replace(/\D/g,''); if(d.length>=10 && /^[+\d]/.test(c)) return 'tel'+d.slice(-10); return c.replace(/^@/,''); }
+function dupOf(r){ var k=normContact(r.contact); if(!k) return null; return usersList().filter(function(u){ return (u.status==='pending'||u.status==='active') && normContact(u.contact)===k; })[0]||null; }
 function pendingUsers(){ return usersList().filter(function(u){ return u.status==='pending'; }).sort(function(a,b){ return a.createdAt-b.createdAt; }); }
-function modPills(ids){ return '<div class="mods">'+(ids||[]).map(function(id){ var m=modById(id); return m?'<span class="mod-pill"><i>'+modIcon(m,12)+'</i>'+esc(m.name)+'</span>':''; }).join('')+'</div>'; }
+function modPills(ids){ return '<div class="mods">'+(ids||[]).map(function(id){ var m=modById(id); return m?'<span class="mod-pill"><i>'+modIcon(m,12)+'</i>'+esc(PE.plainName?PE.plainName(m):m.name)+'</span>':''; }).join('')+'</div>'; }
 function statusHtml(u){ return '<span class="st '+esc(u.status)+'"><i></i>'+esc(u.status==='deleted'?'Удалён':(PE.STATUS_NAMES[u.status]||u.status))+'</span>'; }
 function audit(action, target, details){ PE.audit(action, target, details); auditCache=null; }
 
@@ -255,10 +260,30 @@ function renderPane(){
   else if(tab==='access') el.innerHTML=matrixHtml();
   else if(tab==='modules') el.innerHTML=modulesHtml();
   else if(tab==='roles') el.innerHTML=rolesHtml();
+  else if(tab==='onboard') el.innerHTML=onboardHtml();
   else if(tab==='tools'){ el.innerHTML=toolsHtml(null); if(P('audit')) loadAudit().then(function(list){ if(tab==='tools') el.innerHTML=toolsHtml(list); }); }
   else if(tab==='log'){ el.innerHTML='<div class="card"><div class="empty">Загружаю журнал…</div></div>'; loadAudit().then(function(list){ if(tab==='log') el.innerHTML=logHtml(list); }); }
   var s=document.getElementById('u-search'); if(s && document.activeElement!==s && q){ /* сохраняем фокус при перерисовке */ }
 }
+
+/* ---------------- новичкам: «Первая неделя» ---------------- */
+var OB_GROUPS=[['all','Всем новичкам'],['sales','Продажи'],['design','Дизайн'],['pm','Проекты'],['copy','Тексты'],['dev','Вёрстка'],['acc','Бухгалтерия']];
+function onboardHtml(){
+  var c=PE.onboarding();
+  var h='<div class="card ob-card"><h2 style="margin:0 0 6px">Первая неделя</h2><p class="muted" style="margin:0 0 14px">Список дел на главной у новых сотрудников. Каждый пункт — с новой строки: <code>Текст | ссылка</code>. Ссылка — страница экосистемы, например <code>sales-kb.html#start</code>, или <code>#profile</code> — открыть профиль. Пункты к модулям, которых у человека нет, скрываются сами. Группу выбираем по должности: «продаж» → Продажи, «дизайн» → Дизайн и т. д.</p>'+
+    '<div class="ob-row"><label>Показывать первые, дней<input class="pe2-input" id="ob-days" type="number" min="1" max="90" value="'+esc(c.days)+'"></label><label style="flex:1">Наставник или к кому идти с вопросами<input class="pe2-input" id="ob-mentor" maxlength="120" value="'+esc(c.mentor)+'" placeholder="Например: Ольга — руководитель продаж, @olga"></label></div>';
+  OB_GROUPS.forEach(function(g){ h+='<label class="ob-g"><b>'+esc(g[1])+'</b><textarea class="pe2-input" rows="5" data-obg="'+g[0]+'">'+esc(c.groups[g[0]]||'')+'</textarea></label>'; });
+  h+='<div class="pe2-actions" style="justify-content:flex-start"><button class="pe2-btn primary" data-ob-save>Сохранить</button><button class="pe2-btn" data-ob-reset>Вернуть список по умолчанию</button></div></div>';
+  return h;
+}
+document.addEventListener('click', function(e){
+  var b=e.target.closest && e.target.closest('[data-ob-save],[data-ob-reset]'); if(!b) return;
+  var cfg;
+  if(b.hasAttribute('data-ob-reset')) cfg=null;
+  else { cfg={ days:Math.max(1,Math.min(90,+document.getElementById('ob-days').value||14)), mentor:document.getElementById('ob-mentor').value.trim(), groups:{} };
+    document.querySelectorAll('[data-obg]').forEach(function(t){ cfg.groups[t.dataset.obg]=t.value.trim(); }); }
+  PE.fb('PUT','modules/_onboarding', cfg).then(function(){ PE.modules._onboarding=cfg||undefined; if(!cfg) delete PE.modules._onboarding; audit('module','_onboarding','Первая неделя'); PE.toast(cfg?'Список «Первой недели» сохранён':'Вернули список по умолчанию'); renderPane(); }).catch(fail);
+});
 
 /* ---------------- заявки ---------------- */
 function requestsHtml(){
@@ -279,25 +304,42 @@ function requestsHtml(){
     h+='<div class="card req">'+(u?PE.avatar(u,52):'<span class="pe2-av" style="width:52px;height:52px;background:#8B7AD8;font-size:20px">'+esc((r.name||'Г').charAt(0).toUpperCase())+'</span>')+
       '<div><h3>'+esc(u?PE.fullName(u):(r.name||'Гость'))+'<span class="kind '+(isGuest?'gst':'acc')+'">'+(isGuest?'гость':'доступ')+'</span></h3>'+
       '<div class="meta">'+(isGuest?'Контакт: <b>'+esc(r.contact||'—')+'</b>':esc(u&&u.position||''))+' · '+esc(PE.relTime(r.at))+'</div>'+
+      (isGuest&&dupOf(r)?'<div class="comment" style="border-left:3px solid var(--pe-warn)">Похоже, это '+esc(PE.fullName(dupOf(r)))+' — '+(dupOf(r).status==='pending'?'уже подал(а) заявку на регистрацию выше':'уже есть в команде')+'. Возможно, этот запрос не нужен.</div>':'')+
       (r.comment?'<div class="comment">'+esc(r.comment)+'</div>':'')+modPills(r.modules)+'</div>'+
       '<div class="acts">'+(isGuest?(P('users_accounts')?'<button class="btn ok" data-guest-create="'+r.id+'">Создать аккаунт…</button>':'<span class="muted" style="max-width:170px">Аккаунт гостю создаёт администратор</span>'):'<button class="btn ok" data-approve-req="'+r.id+'">Выдать доступ</button>')+
       '<button class="btn danger-t" data-reject-req="'+r.id+'">Отклонить</button></div></div>';
   });
   return h+'</div>';
 }
+/* наборы модулей по должности — одной кнопкой */
+function presetButtons(position){
+  if(!PE.ROLE_PRESETS) return '';
+  var pr=PE.presetFor(position);
+  return '<div class="pe2-presets">'+PE.ROLE_PRESETS.map(function(p){ return '<button type="button" data-preset="'+p.id+'"'+(pr&&pr.id===p.id?' style="border-color:var(--pe-accent);color:var(--pe-accent)" title="Подходит по должности"':'')+'>'+esc(p.name)+'</button>'; }).join('')+'</div>';
+}
+document.addEventListener('click', function(e){
+  var b=e.target.closest && e.target.closest('[data-preset]'); if(!b) return;
+  var pr=PE.ROLE_PRESETS.filter(function(p){ return p.id===b.dataset.preset; })[0], f=b.closest('form'); if(!pr || !f) return;
+  f.querySelectorAll('input[name="mods"]').forEach(function(c){ c.checked=pr.mods.indexOf(c.value)>=0; });
+});
 function approveUserModal(u){
   var sel=Object.assign({}, u.requested||{});
   var m=PE.modal('<div class="u-head">'+PE.avatar(u,56)+'<div><h2>'+esc(PE.fullName(u))+'</h2><span>'+esc(u.position||'')+(u.contact?' · '+esc(u.contact):'')+'</span></div></div>'+
-    '<form><div class="pe2-label">Открыть модули</div>'+PE.modulesChecklist('mods', sel)+
+    '<form><div class="pe2-label">Открыть модули</div>'+presetButtons(u.position)+PE.modulesChecklist('mods', sel)+
     roleField('member')+
     '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Одобрить</button></div></form>', { wide:true });
   m.el.querySelector('form').onsubmit=function(e){
     e.preventDefault();
     var acc={}; m.el.querySelectorAll('input[name="mods"]:checked').forEach(function(c){ acc[c.value]=true; });
     var role=m.el.querySelector('[name="role"]'); role=role?role.value:'member';
-    PE.fb('PATCH','users/'+u.id,{ status:'active', access:acc, role:role, requested:null, rejectReason:null, approvedAt:Date.now(), approvedBy:me().id }).then(function(){
-      audit('approve', u.id, PE.fullName(u)+': '+(Object.keys(acc).map(function(k){ return modById(k).name; }).join(', ')||'без модулей'));
-      m.close(); PE.toast(PE.fullName(u)+' одобрен(а)');
+    /* второй админ мог успеть раньше — проверяем свежий статус */
+    PE.fb('GET','users/'+u.id+'/status').then(function(st){
+      if(st && st!=='pending'){ m.close(); PE.toast('Эту заявку уже обработали: '+(PE.STATUS_NAMES[st]||st).toLowerCase()); localApply(function(){ PE.users[u.id].status=st; }); return; }
+      return PE.fb('PATCH','users/'+u.id,{ status:'active', access:acc, role:role, requested:null, rejectReason:null, approvedAt:Date.now(), approvedBy:me().id }).then(function(){
+        audit('approve', u.id, PE.fullName(u)+': '+(Object.keys(acc).map(function(k){ return modById(k).name; }).join(', ')||'без модулей'));
+        m.close(); PE.toast(PE.fullName(u)+' одобрен(а)');
+        localApply(function(){ Object.assign(PE.users[u.id],{ status:'active', access:acc, role:role, requested:null }); });
+      });
     }).catch(fail);
   };
 }
@@ -307,6 +349,8 @@ function rejectModal(title, onOk){
   m.el.querySelector('form').onsubmit=function(e){ e.preventDefault(); onOk(m.el.querySelector('[name="r"]').value.trim()); m.close(); };
 }
 function fail(){ PE.toast('Не удалось сохранить — нет связи с сервером','err'); }
+/* после действия сразу обновляем список и счётчик, не дожидаясь опроса */
+function localApply(fn){ try{ fn(); }catch(e){} render(); if(PE.renderNav) PE.renderNav(); }
 
 function resolveRequest(r, status, extra){
   var patch=Object.assign({ status:status, resolvedAt:Date.now(), resolvedBy:me().id }, extra||{});
@@ -441,7 +485,7 @@ function addUserModal(prefill, fromRequest){
     PE.profileFields({ first:prefill.first, last:prefill.last, contact:prefill.contact }, { focusFirst:true })+
     '<div class="pe2-grid2">'+PE.field('Логин *','<input name="login" required maxlength="32" autocapitalize="off" spellcheck="false">','Буквы, цифры, _ и -')+
       PE.field('Временный пароль','<input name="pass" value="'+tmp+'" required minlength="6">','Можно заменить на свой')+'</div>'+
-    '<div class="pe2-label">Доступ к модулям</div>'+PE.modulesChecklist('mods', def)+
+    '<div class="pe2-label">Доступ к модулям</div>'+presetButtons((prefill&&prefill.position)||'')+PE.modulesChecklist('mods', def)+
     roleField('member')+
     '<div class="pe2-err" data-err></div><div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Создать</button></div></form>', { wide:true });
   PE.bindAvatarPicker(m.el);
@@ -471,7 +515,7 @@ function addUserModal(prefill, fromRequest){
     }).then(function(u){
       audit('create', id, PE.fullName(u)+(fromRequest?' (по заявке гостя)':''));
       var j = fromRequest ? resolveRequest(fromRequest, 'approved', { createdUid:id }) : Promise.resolve();
-      return j.then(function(){ m.close(); showCreds(u, login, pass, 'Пользователь создан'); });
+      return j.then(function(){ m.close(); if(fromRequest) localApply(function(){ PE.requests[fromRequest.id].status='approved'; }); showCreds(u, login, pass, 'Пользователь создан'); });
     }).catch(function(er){ btn.disabled=false; btn.classList.remove('busy'); E(er && er.message && !/^Firebase/.test(er.message) ? er.message : 'Нет связи с сервером'); });
   };
 }
@@ -600,9 +644,17 @@ function rolesHtml(){
 }
 /* права по умолчанию записываются в базу при первом заходе владельца — чтобы правила базы и интерфейс видели одно и то же */
 function seedPerms(){
-  if(!PE.isOwner() || PE.perms) return;
+  if(!PE.isOwner()) return;
   PE.fb('GET','perms').then(function(cur){
-    if(cur){ PE.setPerms(cur); return; }
+    if(cur){
+      /* новые права, появившиеся в ядре позже, дописываем ролям по умолчанию.
+         Выключенное руками хранится как false — его не трогаем. */
+      var add={};
+      Object.keys(PE.DEFAULT_PERMS).forEach(function(role){ var d=PE.DEFAULT_PERMS[role]||{}, c=cur[role]||{};
+        Object.keys(d).forEach(function(k){ if(d[k]===true && c[k]===undefined){ add[role+'/'+k]=true; } }); });
+      if(Object.keys(add).length) return PE.fb('PATCH','perms', add).then(function(){ return PE.fb('GET','perms'); }).then(function(p){ PE.setPerms(p||cur); if(tab==='roles') renderPane();
+        PE.toast('Добавлены новые права по умолчанию: '+Object.keys(add).map(function(k){ var pr=PE.PERMS.filter(function(x){ return x.id===k.split('/')[1]; })[0]; return (pr?pr.name:k)+' ('+(PE.ROLE_NAMES[k.split('/')[0]]||k.split('/')[0])+')'; }).join(', ')); });
+      PE.setPerms(cur); return; }
     var d={ moderator:PE.DEFAULT_PERMS.moderator };
     return PE.fb('PUT','perms', d).then(function(){ PE.setPerms(d); if(tab==='roles') renderPane(); });
   }).catch(function(){});
@@ -699,13 +751,13 @@ app.addEventListener('click', function(e){
   if((b=e.target.closest('tr[data-user]'))){ userModal(PE.userById(b.dataset.user)); return; }
   if((b=e.target.closest('[data-approve-user]'))){ approveUserModal(PE.userById(b.dataset.approveUser)); return; }
   if((b=e.target.closest('[data-reject-user]'))){ t=PE.userById(b.dataset.rejectUser);
-    rejectModal('Отклонить заявку '+PE.fullName(t)+'?', function(reason){ PE.fb('PATCH','users/'+t.id,{ status:'rejected', rejectReason:reason||null, requested:null }).then(function(){ audit('reject', t.id, PE.fullName(t)+(reason?': '+reason:'')); PE.toast('Заявка отклонена'); }).catch(fail); }); return; }
+    rejectModal('Отклонить заявку '+PE.fullName(t)+'?', function(reason){ PE.fb('PATCH','users/'+t.id,{ status:'rejected', rejectReason:reason||null, requested:null }).then(function(){ audit('reject', t.id, PE.fullName(t)+(reason?': '+reason:'')); PE.toast('Заявка отклонена'); localApply(function(){ PE.users[t.id].status='rejected'; }); }).catch(fail); }); return; }
   if((b=e.target.closest('[data-approve-req]'))){ var r=PE.requests[b.dataset.approveReq]; r.id=b.dataset.approveReq; var u=PE.userById(r.uid);
     if(!u){ PE.toast('Пользователь уже удалён','err'); return; }
     var acc={}; (r.modules||[]).forEach(function(k){ acc[k]=true; });
-    PE.fb('PATCH','users/'+u.id+'/access', acc).then(function(){ return resolveRequest(r,'approved'); }).then(function(){ audit('req-approve', u.id, PE.fullName(u)+': '+r.modules.map(function(k){ return modById(k)?modById(k).name:k; }).join(', ')); PE.toast('Доступ выдан — у '+PE.shortName(u)+' модули уже открыты'); }).catch(fail); return; }
+    PE.fb('PATCH','users/'+u.id+'/access', acc).then(function(){ return resolveRequest(r,'approved'); }).then(function(){ localApply(function(){ PE.requests[r.id].status='approved'; Object.assign(u.access=u.access||{}, acc); }); audit('req-approve', u.id, PE.fullName(u)+': '+r.modules.map(function(k){ return modById(k)?modById(k).name:k; }).join(', ')); PE.toast('Доступ выдан — у '+PE.shortName(u)+' модули уже открыты'); }).catch(fail); return; }
   if((b=e.target.closest('[data-reject-req]'))){ var r2=PE.requests[b.dataset.rejectReq]; r2.id=b.dataset.rejectReq;
-    rejectModal('Отклонить запрос?', function(reason){ resolveRequest(r2,'rejected',{ reason:reason||null }).then(function(){ audit('req-reject', r2.uid||'', (r2.name||'')+(reason?': '+reason:'')); PE.toast('Запрос отклонён'); }).catch(fail); }); return; }
+    rejectModal('Отклонить запрос?', function(reason){ resolveRequest(r2,'rejected',{ reason:reason||null }).then(function(){ localApply(function(){ PE.requests[r2.id].status='rejected'; }); audit('req-reject', r2.uid||'', (r2.name||'')+(reason?': '+reason:'')); PE.toast('Запрос отклонён'); }).catch(fail); }); return; }
   if((b=e.target.closest('[data-guest-create]'))){ var r3=PE.requests[b.dataset.guestCreate]; r3.id=b.dataset.guestCreate; var parts=(r3.name||'').trim().split(/\s+/);
     addUserModal({ first:parts[0]||'', last:parts.slice(1).join(' '), contact:r3.contact, modules:r3.modules }, r3); return; }
   if((b=e.target.closest('[data-col-all]'))||(t=e.target.closest('[data-col-none]'))){

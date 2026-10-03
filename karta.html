@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Карта подпродуктов</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610030209">
-<script src="assets/pe-core.js?v=202610030209" data-module="karta"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610030209">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
+<script src="assets/pe-core.js?v=202610031051" data-module="karta"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
 <style>
 /* Конвейер: станции — колонки слева направо, подпродукты — подстанции сверху вниз; справа паспорт подстанции */
 :root{
@@ -184,6 +184,7 @@ body.editing .sec-wrap{border:1px dashed var(--line);border-radius:10px;padding:
 .blk-form{display:flex;flex-direction:column;gap:8px}
 .blk-form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
 .blk-form textarea{min-height:110px}
+.clash-back{position:fixed;inset:0;z-index:1000;background:rgba(10,12,16,.45);display:grid;place-items:center;padding:16px}.clash{background:var(--panel);color:var(--ink);border-radius:14px;max-width:520px;padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}.clash h3{margin:0 0 8px}.clash p{margin:0 0 14px;font-size:14px}.clash .btns{flex-direction:column;align-items:stretch}
 .confirm{background:var(--bad-soft);border:1px solid var(--bad);border-radius:10px;padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:8px}
 @media (max-width:1150px){.sum{grid-template-columns:repeat(4,minmax(0,1fr))}.sum .stop{grid-column:1/-1}.body{grid-template-columns:minmax(0,1fr)}.pass{position:static;max-height:none}}
 @media (max-width:560px){.sum{grid-template-columns:repeat(2,minmax(0,1fr))}.col{width:240px}.form .two{grid-template-columns:1fr}}
@@ -405,7 +406,51 @@ function areaForm(id){
 /* ---------- запись ---------- */
 function fail(){ toast('Не удалось сохранить. Проверьте права на редактирование'); }
 function cardDoc(c){ var o=clone(c); delete o.def; o.updatedAt=Date.now(); o.by=myId||''; return o; }
-function saveCard(c){ dbCards[c.id]=cardDoc(c); build(); render(); if(!db) return Promise.resolve(); return db.collection('cards').doc(c.id).set(dbCards[c.id]).catch(fail); }
+/* сохранение подстанции без затирания чужих правок: берём свежую версию из хранилища и
+   накладываем только поля, которые поменяли здесь. Файлы и блоки сливаются по id.
+   Если коллега успел поменять то же поле — спрашиваем, чью версию оставить. */
+var LISTF={ files:1, blocks:1 };
+var FLD={ name:'Название', what:'Что это', who:'Кто делает', howto:'Как сделать', sample:'Шаблон', ideal:'Идеальный продукт', defect:'Брак', check:'Как проверить', metric:'Чем мерить', links:'Материалы', notes:'Заметки', num:'Номер', gate:'Оплата', area:'Станция', order:'Порядок', src:'Источники' };
+function sigv(v){ return JSON.stringify(v==null?null:v); }
+function lkey(x){ return x && (x.id||x.url||x.name); }
+function mergeList(bl,nl,rl){
+  bl=bl||[]; nl=nl||[]; rl=rl||[]; var B={}, N={};
+  bl.forEach(function(x){ B[lkey(x)]=x; }); nl.forEach(function(x){ N[lkey(x)]=x; });
+  var out=rl.filter(function(x){ var k=lkey(x); return !(B[k] && !N[k]); }).map(function(x){ var k=lkey(x); return N[k] && sigv(N[k])!==sigv(B[k]) ? N[k] : x; });
+  nl.forEach(function(x){ var k=lkey(x); if(!B[k] && !out.some(function(y){ return lkey(y)===k; })) out.push(x); });
+  return out;
+}
+function fetchDoc(col,id){
+  var d=db && db.collection(col).doc(id); if(!d || !d.get) return Promise.resolve(null);
+  return d.get().then(function(r){ return r && typeof r.data==='function' ? (r.exists===false?null:r.data()) : (r||null); });
+}
+function askClash(who, at, fields){
+  return new Promise(function(res){
+    var back=document.createElement('div'); back.className='clash-back';
+    back.innerHTML='<div class="clash" role="dialog" aria-modal="true"><h3>Подстанцию изменили, пока вы работали</h3><p>'+esc(who||'Коллега')+(at?' в '+esc(new Date(at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})):'')+' поменял(а): <b>'+esc(fields.map(function(k){ return FLD[k]||k; }).join(', '))+'</b>. Остальные ваши правки сохранятся в любом случае.</p>'+
+      '<div class="btns"><button type="button" class="btn ed" data-c="mine">Оставить мою версию этих полей</button><button type="button" class="btn" data-c="theirs">Оставить их версию</button><button type="button" class="btn" data-c="cancel">Отмена — ничего не сохранять</button></div></div>';
+    document.body.appendChild(back);
+    back.addEventListener('click',function(e){ var b=e.target.closest('[data-c]'); if(!b) return; back.remove(); res(b.getAttribute('data-c')); });
+  });
+}
+function saveCard(c){
+  var base=cards[c.id]?clone(cards[c.id]):{}, keys={};
+  [base,c].forEach(function(o){ Object.keys(o).forEach(function(k){ keys[k]=1; }); });
+  var changed=Object.keys(keys).filter(function(k){ return k!=='updatedAt' && k!=='by' && k!=='def' && sigv(base[k])!==sigv(c[k]); });
+  function apply(remote){ var doc=Object.assign({},remote); changed.forEach(function(k){ doc[k] = LISTF[k] && sigv(remote[k])!==sigv(base[k]) ? mergeList(base[k],c[k],remote[k]) : c[k]; }); return doc; }
+  function write(doc){ dbCards[c.id]=cardDoc(doc); build(); render(); return (db ? db.collection('cards').doc(c.id).set(dbCards[c.id]) : Promise.resolve()).then(function(){ return 'ok'; }, function(e){ fail(e); return 'fail'; }); }
+  if(!db || !changed.length) return write(apply(base));
+  return fetchDoc('cards',c.id).then(function(fresh){
+    if(fresh && fresh.deleted && !c.deleted){ dbCards[c.id]=fresh; build(); render(); toast('Эту подстанцию только что удалили — правка не сохранена'); return 'deleted'; }
+    var remote=fresh?Object.assign({},base,fresh):base;
+    var clash=changed.filter(function(k){ return !LISTF[k] && fresh && sigv(remote[k])!==sigv(base[k]) && sigv(remote[k])!==sigv(c[k]); });
+    return (clash.length ? askClash(fresh.by && (names[fresh.by]||fresh.by), fresh.updatedAt, clash) : Promise.resolve('mine')).then(function(ans){
+      if(ans==='cancel'){ if(fresh){ dbCards[c.id]=fresh; build(); render(); } toast('Не сохранено'); return 'cancel'; }
+      var doc=apply(remote); if(ans==='theirs') clash.forEach(function(k){ doc[k]=remote[k]; });
+      return write(doc).then(function(r){ if(r==='ok' && ans==='theirs'){ toast('Оставлена версия коллеги'); return 'theirs'; } return r; });
+    });
+  }, function(){ return write(apply(base)); });
+}
 function saveArea(a){ var o={name:a.name,fab:a.fab||'',about:a.about||'',side:!!a.side,order:a.order,num:a.num||''}; dbAreas[a.id]=o; build(); render(); if(!db) return; db.collection('areas').doc(a.id).set(o).catch(fail); }
 function newId(prefix){ return prefix+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4); }
 function saveMark(id,patch){
@@ -439,7 +484,7 @@ document.addEventListener('click',function(e){
   var v=t.closest('.status button'); if(v && sel && canWrite){ saveMark(sel,{status:v.getAttribute('data-v')}); return; }
   var cp=t.closest('[data-copy]'); if(cp){ var el2=document.getElementById(cp.getAttribute('data-copy')); var txt=el2?el2.textContent:''; try{ navigator.clipboard.writeText(txt).then(function(){ toast('Скопировано'); },function(){ selectText(el2); }); }catch(err){ selectText(el2); } return; }
   if(t.id==='saveMark'&&sel){ saveMark(sel,{note:document.getElementById('mnote').value.trim()}); toast('Сохранено'); return; }
-  if(t.id==='saveNotes'&&sel){ var c=Object.assign({},cards[sel],{notes:document.getElementById('cnotes').value}); saveCard(c); toast('Заметки сохранены'); return; }
+  if(t.id==='saveNotes'&&sel){ var c=Object.assign({},cards[sel],{notes:document.getElementById('cnotes').value}); saveCard(c).then(function(r){ if(r==='ok') toast('Заметки сохранены'); }); return; }
   var df=t.closest('[data-delfile]'); if(df&&sel){ delFile(+df.getAttribute('data-delfile')); return; }
   var ad=t.closest('[data-add]'); if(ad){ addCard(ad.getAttribute('data-add')); return; }
   if(t.closest('[data-addarea]')){ var id=newId('a'); var o=areas.length?areas[areas.length-1].order+10:10; selArea=id; sel=null; saveArea({id:id,name:'Новая станция',fab:'',about:'',side:false,order:o}); return; }
@@ -450,7 +495,7 @@ document.addEventListener('click',function(e){
   if(t.id==='addAfter'&&sel){ addCard(cards[sel].area,sel); return; }
   if(t.id==='delCard'){ confirmDel=true; renderPass(); return; }
   if(t.id==='delNo'){ confirmDel=false; renderPass(); return; }
-  if(t.id==='delYes'&&sel){ var dc=Object.assign({},cards[sel],{deleted:true}); var id2=sel; sel=null; confirmDel=false; saveCard(dc); toast('Карточка удалена'); return; }
+  if(t.id==='delYes'&&sel){ var dc=Object.assign({},cards[sel],{deleted:true}); var id2=sel; sel=null; confirmDel=false; saveCard(dc).then(function(r){ if(r==='ok') toast('Карточка удалена'); }); return; }
   if(t.id==='resetCard'&&sel){ var rid=sel; var keep=dbCards[rid]||{}; var base=clone(DEFCARDS[rid]); var a0=DEF.areas.filter(function(x){ return x.cards.some(function(y){ return y.id===rid; }); })[0]; base.area=a0.id; base.order=a0.cards.map(function(y){return y.id;}).indexOf(rid)*10; base.notes=keep.notes||''; base.files=keep.files||[]; saveCard(base); toast('Исходный текст возвращён'); return; }
   if(t.id==='saveArea'&&selArea){ var a=areas.filter(function(x){ return x.id===selArea; })[0]; saveArea(Object.assign({},a,{name:document.getElementById('a_name').value.trim()||'Станция',fab:document.getElementById('a_fab').value.trim(),num:document.getElementById('a_num').value.trim(),about:document.getElementById('a_about').value.trim()})); toast('Станция сохранён'); return; }
   if(t.id==='closeArea'){ selArea=null; renderPass(); return; }
@@ -470,7 +515,7 @@ function submitForm(){
   c.howto=splitLines('f_howto'); c.ideal=splitLines('f_ideal'); c.defect=splitLines('f_defect'); c.check=splitLines('f_check');
   c.metric=document.getElementById('f_metric').value.trim(); c.sample=document.getElementById('f_sample').value.trim(); c.links=splitLines('f_links');
   c.src=[].map.call(document.querySelectorAll('#cform input[name=src]:checked'),function(x){ return x.value; });
-  formOpen=false; saveCard(c); toast('Карточка сохранена');
+  formOpen=false; saveCard(c).then(function(r){ if(r==='ok') toast('Карточка сохранена'); });
 }
 function moveArea(id,dir){
   var flow=areas.filter(function(x){ return !x.side; }), a=flow.filter(function(x){ return x.id===id; })[0]; if(!a) return;
@@ -553,7 +598,7 @@ function sec(field,html){
   if(!editing) return html;
   return '<div class="sec-wrap"><div class="blk-tools"><button type="button" class="del" data-sdel="'+field+'">× Удалить раздел «'+esc(SECNAME[field])+'»</button></div>'+html+(pendDel==='s:'+field?delConfirm('раздел «'+esc(SECNAME[field])+'»'):'')+'</div>';
 }
-function saveBlocks(fn){ var c=clone(cards[sel]); c.blocks=c.blocks||[]; fn(c); saveCard(c); }
+function saveBlocks(fn,msg){ var c=clone(cards[sel]); c.blocks=c.blocks||[]; fn(c); return saveCard(c).then(function(r){ if(r==='ok' && msg) toast(msg); return r; }); }
 document.addEventListener('click',function(e){
   var t=e.target;
   if(t.closest('.st') || t.closest('[data-go]') || t.id==='edToggle'){ blkReset(); return; }
@@ -565,16 +610,16 @@ document.addEventListener('click',function(e){
   var sd=t.closest('[data-sdel]'); if(sd){ pendDel='s:'+sd.getAttribute('data-sdel'); renderPass(); return; }
   if(t.id==='pd_no'){ pendDel=null; renderPass(); return; }
   if(t.id==='pd_yes' && pendDel){ var pd=pendDel; pendDel=null;
-    if(pd.slice(0,2)==='b:') saveBlocks(function(c){ c.blocks=c.blocks.filter(function(x){ return x.id!==pd.slice(2); }); });
-    else saveBlocks(function(c){ var f=pd.slice(2); c[f]=Array.isArray(c[f])?[]:''; });
-    toast('Удалено'); return; }
+    if(pd.slice(0,2)==='b:') saveBlocks(function(c){ c.blocks=c.blocks.filter(function(x){ return x.id!==pd.slice(2); }); }, 'Удалено');
+    else saveBlocks(function(c){ var f=pd.slice(2); c[f]=Array.isArray(c[f])?[]:''; }, 'Удалено');
+    return; }
   if(t.id==='b_cancel'){ blkEdit=null; renderPass(); return; }
   if(t.id==='b_save' && blkEdit){
     var nb={id:blkEdit.id,type:document.getElementById('b_type').value,title:document.getElementById('b_title').value.trim(),text:document.getElementById('b_text').value.replace(/\s+$/,''),pos:blkEdit.pos||'end'};
     if(!nb.text && !nb.title){ toast('Блок пустой — впишите содержимое'); return; }
     var isNew=blkEdit.isNew; blkEdit=null;
-    saveBlocks(function(c){ if(isNew) c.blocks.push(nb); else c.blocks=c.blocks.map(function(x){ return x.id===nb.id?nb:x; }); });
-    toast('Блок сохранён'); return; }
+    saveBlocks(function(c){ if(isNew) c.blocks.push(nb); else c.blocks=c.blocks.map(function(x){ return x.id===nb.id?nb:x; }); }, 'Блок сохранён');
+    return; }
 },true);
 document.addEventListener('change',function(e){ if(e.target.id==='b_type'){ var h=document.getElementById('b_hint'); if(h) h.textContent=BHINT[e.target.value]||''; } });
 document.addEventListener('dragstart',function(e){
@@ -659,7 +704,7 @@ edBtn.addEventListener('click',function(){ editing=!editing; edBtn.setAttribute(
 function storeLabel(t){ document.getElementById('store').textContent=t; }
 function enc(k){ return String(k).replace(/\./g,'_'); }
 function decMap(m){ var r={}; Object.keys(m||{}).forEach(function(k){ r[k.replace(/_/g,'.')]=m[k]; }); return r; }
-db={ collection:function(col){ return { doc:function(id){ return { set:function(o){ return PE.fb('PUT','karta/'+col+'/'+enc(id),o).then(function(){ if(PE.audit && col!=='audit') PE.audit('karta.'+col,id,(o&&o.name)||''); }); } }; } }; } };
+db={ collection:function(col){ return { doc:function(id){ return { get:function(){ return PE.fb('GET','karta/'+col+'/'+enc(id)); }, set:function(o){ return PE.fb('PUT','karta/'+col+'/'+enc(id),o).then(function(){ if(PE.audit && col!=='audit') PE.audit('karta.'+col,id,(o&&o.name)||''); }); } }; } }; } };
 var loading=false;
 function loadAll(){
   if(loading) return Promise.resolve(); loading=true;

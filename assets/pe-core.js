@@ -147,6 +147,27 @@ var DEFAULT_PERMS = {
   moderator:{ panel:true, requests:true, users_edit:true, audit:true, saleskb_edit:true, karta_edit:true, calc_edit:true, org_edit:true, glossary_edit:true, tasks_all:true },
   member:{}
 };
+/* наборы модулей по должности: подсказка в регистрации и одобрении, группа для «Первой недели» */
+var ROLE_PRESETS = [
+  { id:'sales',  name:'Продажи',      match:/продаж|sales|аккаунт/i, mods:['tasks','sales-kb','calc','karta','objections-raw'] },
+  { id:'design', name:'Дизайн',       match:/дизайн|арт-дир|design/i, mods:['tasks','karta','sayt','sayt-editor'] },
+  { id:'pm',     name:'Проекты',      match:/проект|pm\b|продюсер|руководитель производства/i, mods:['tasks','karta','org-board','calc','sayt'] },
+  { id:'copy',   name:'Тексты',       match:/копирайт|текст|редактор/i, mods:['tasks','karta','sayt','glossary'] },
+  { id:'dev',    name:'Вёрстка',      match:/верст|разработ|tilda|frontend|программ/i, mods:['tasks','karta','sayt-editor'] },
+  { id:'acc',    name:'Бухгалтерия',  match:/бухгалт|финанс|расчёт|расчет/i, mods:['tasks'] }
+];
+function presetFor(position){ position=String(position||''); for(var i=0;i<ROLE_PRESETS.length;i++) if(ROLE_PRESETS[i].match.test(position)) return ROLE_PRESETS[i]; return null; }
+/* «Первая неделя»: список по умолчанию; админ меняет его во вкладке «Новичкам» (modules/_onboarding) */
+var ONBOARD_DEFAULT = { days:14, mentor:'', groups:{
+  all:'Заполните профиль и поставьте фото | #profile\nНайдите себя на оргсхеме — кнопка «Мой пост» | org-board.html\nПосмотрите на карте подпродуктов станции, где вы работаете | karta.html\nСоздайте первую задачу себе и переведите её «В работу» | tasks.html',
+  sales:'Прочитайте «С чего начать» в базе продаж | sales-kb.html#start\nРазберитесь, что мы продаём и почём | sales-kb.html#product\nПройдите плейбук продажи в переписке | sales-kb.html#pbtext\nИзучите «Бриф до КП» — без него КП не отправляем | sales-kb.html#brief\nСоберите пробную смету в калькуляторе | calculator.html',
+  design:'Прочитайте методичку «Продающий сайт» | sayt.html\nСоберите пробный прототип в редакторе сайта | sayt-editor.html',
+  pm:'Пройдите станции производства на карте подпродуктов | karta.html\nПосмотрите путь клиента на оргсхеме | org-board.html',
+  copy:'Прочитайте в методичке раздел про тексты | sayt-6-teksty.html',
+  dev:'Пройдите станции вёрстки на карте подпродуктов | karta.html',
+  acc:'Узнайте у руководителя, где книга учёта и форма данных от продаж | '
+} };
+function onboarding(){ var c=R.modules && R.modules._onboarding; if(!c) return ONBOARD_DEFAULT; var g=Object.assign({}, ONBOARD_DEFAULT.groups, c.groups||{}); return { days:c.days||ONBOARD_DEFAULT.days, mentor:c.mentor||'', groups:g }; }
 var STATUS_NAMES = { pending:'Ждёт одобрения', active:'Активен', blocked:'Заблокирован', rejected:'Отклонён' };
 
 function moduleById(id){ for(var i=0;i<MODULES.length;i++) if(MODULES[i].id===id) return MODULES[i]; return null; }
@@ -318,9 +339,10 @@ function stream(path, onChange, onCancel, opts){
     return { close:function(){ closed=true; mockListeners=mockListeners.filter(function(x){ return x!==l; }); }, get:function(){ return tree; }, reopen:function(){} };
   }
   function cancel(){ if(es){ es.close(); es=null; } closed=true; clearTimeout(pollT); if(onCancel) onCancel(); }
+  var lastPoll=0;
   function poll(){
     if(closed || suspended) return;
-    clearTimeout(pollT);
+    clearTimeout(pollT); lastPoll=Date.now();
     fb('GET', path).then(function(d){
       var j=JSON.stringify(d===undefined?null:d);
       var first=!gotFirst; gotFirst=true;
@@ -357,7 +379,7 @@ function stream(path, onChange, onCancel, opts){
             reopen:function(){ if(closed) return; if(es){ es.close(); es=null; } clearTimeout(pollT); open(); },
             suspend:function(){ if(closed || suspended) return; suspended=true; if(es){ es.close(); es=null; } clearTimeout(pollT); },
             resume:function(){ if(closed || !suspended) return; suspended=false; open(); },
-            refresh:function(){ if(opts.poll && !closed && !suspended) poll(); } };
+            refresh:function(){ if(opts.poll && !closed && !suspended && Date.now()-lastPoll>5000) poll(); } };
   STREAMS.push(api);
   open();
   return api;
@@ -490,7 +512,9 @@ SP.getItem=function(key){
 };
 SP.setItem=function(key, val){
   if(this!==window.localStorage || unscoped(String(key))) return NATIVE.set.call(this, key, val);
-  NATIVE.set.call(this, SCOPE+key, String(val)); if(!noSync(String(key))) queuePush(String(key));
+  var prev=NATIVE.get.call(this, SCOPE+key), nv=String(val);
+  if(prev===nv) return;   /* то же значение — в облако не отправляем */
+  NATIVE.set.call(this, SCOPE+key, nv); if(!noSync(String(key))) queuePush(String(key));
 };
 SP.removeItem=function(key){
   if(this!==window.localStorage || unscoped(String(key))) return NATIVE.remove.call(this, key);
@@ -652,6 +676,8 @@ function perm(id, u){
 function isStaff(u){ u=u||rightsUser(); return isAdmin(u) || !!(u && u.role==='moderator' && perm('panel', u)); }
 function modConf(id){ var c=R.modules[id]||{}; return { enabled:c.enabled!==false, guest:!!c.guest, byDefault:c.byDefault!=null ? !!c.byDefault : (id==='tasks' || id==='glossary' || id==='org-board'), nav:c.nav!==false, home:c.home!==false }; }
 /* применяет к MODULES названия, описания и порядок из настроек модулей */
+/* название модуля без оформления (\™, капс) — для форм, заявок и окон */
+function plainName(m){ var t=String((m&&m.name)||'').replace(/[\\™®©*]+/g,'').replace(/\s+/g,' ').trim(); if(t && t===t.toUpperCase() && /[A-ZА-ЯЁ]/.test(t)) t=t.charAt(0)+t.slice(1).toLowerCase(); return t; }
 function applyModuleCfg(){
   MODULES.forEach(function(m){ var c=R.modules[m.id]||{}, d=MOD_DEF[m.id]; m.name=c.title||d.name; m.desc=c.desc||d.desc; });
   function ord(m){ var c=R.modules[m.id]||{}; return typeof c.order==='number' ? c.order : MOD_DEF[m.id].i; }
@@ -934,7 +960,7 @@ function modulesChecklist(name, selected, onlyIds){
   var list=MODULES.filter(function(m){ return modConf(m.id).enabled && (!onlyIds || onlyIds.indexOf(m.id)>=0); });
   if(!list.length) return '<div class="pe2-muted">Все модули уже доступны.</div>';
   return '<div class="pe2-mod-checks">'+list.map(function(m){
-    return '<label class="pe2-check"><input type="checkbox" name="'+name+'" value="'+m.id+'"'+(selected&&selected[m.id]?' checked':'')+'><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg></span><span><b>'+esc(m.name)+'</b><small>'+esc(m.desc)+'</small></span></label>';
+    return '<label class="pe2-check"><input type="checkbox" name="'+name+'" value="'+m.id+'"'+(selected&&selected[m.id]?' checked':'')+'><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+m.icon+'</svg></span><span><b>'+esc(plainName(m))+'</b><small>'+esc(m.desc)+'</small></span></label>';
   }).join('')+'</div>';
 }
 function registerHtml(){
@@ -948,7 +974,7 @@ function registerHtml(){
       field('Пароль *','<input name="pass" type="password" required minlength="6" autocomplete="new-password">','Не меньше 6 символов')+
     '</div>'+
     field('Повторите пароль *','<input name="pass2" type="password" required autocomplete="new-password">', null, 'pe2-half')+
-    '<div class="pe2-sep"></div><div class="pe2-label">К чему нужен доступ</div>'+modulesChecklist('mods', def)+
+    '<div class="pe2-sep"></div><div class="pe2-label">К чему нужен доступ</div><div class="pe2-preset-hint" data-preset-hint hidden></div>'+modulesChecklist('mods', def)+
     field('Комментарий для владельца','<textarea name="comment" rows="2" maxlength="400" placeholder="Например: новый дизайнер, выхожу с понедельника"></textarea>')+
     '<div class="pe2-err" data-err></div>'+
     '<button class="pe2-btn primary block" type="submit">Отправить заявку</button></form>', true);
@@ -977,10 +1003,10 @@ function statusHtml(kind){
   var u=R.me();
   var h='';
   if(kind==='pending'){
-    var req=u&&u.requested ? Object.keys(u.requested).filter(function(k){ return u.requested[k]; }).map(function(k){ var m=moduleById(k); return m?m.name:k; }) : [];
+    var req=u&&u.requested ? Object.keys(u.requested).filter(function(k){ return u.requested[k]; }).map(function(k){ var m=moduleById(k); return m?plainName(m):k; }) : [];
     h='<div class="pe2-status-av">'+avatar(u,72)+'<span class="pe2-status-dot wait">'+I('clock',14)+'</span></div>'+
       '<h1 class="pe2-gate-h">Заявка на рассмотрении</h1>'+
-      '<p class="pe2-gate-p">'+esc(u?fullName(u):'')+', владелец получил вашу заявку'+(req.length?' на доступ к: <b>'+esc(req.join(', '))+'</b>':'')+'. Эта страница обновится сама, как только её одобрят.</p>'+
+      '<p class="pe2-gate-p">'+esc(u?(u.first||fullName(u)):'')+', ваша заявка'+(req.length?' на доступ к: <b>'+esc(req.join(', '))+'</b>':'')+' ушла владельцу и администраторам. Эта страница обновится сама, как только её одобрят.</p>'+
       '<div class="pe2-actions col"><button class="pe2-btn primary block" data-as-guest>Пока посмотреть как гость</button><button class="pe2-btn ghost block" data-logout>Выйти</button></div>';
   } else if(kind==='rejected'){
     h='<h1 class="pe2-gate-h">Заявка отклонена</h1><p class="pe2-gate-p">'+(u&&u.rejectReason?'Причина: '+esc(u.rejectReason)+'. ':'')+'Если это ошибка — свяжитесь с владельцем студии.</p>'+
@@ -1045,7 +1071,11 @@ function bindGate(kind){
     var b;
     if((b=e.target.closest('[data-view]'))){ e.preventDefault(); gateMsg=''; showGate('gate', b.dataset.view); return; }
     if(e.target.closest('[data-logout]')){ e.preventDefault(); logout(); return; }
-    if(e.target.closest('[data-as-guest]')){ enterGuest(''); return; }
+    if(e.target.closest('[data-as-guest]')){
+      /* из ожидания одобрения: запоминаем аккаунт с заявкой, чтобы вернуться к нему из гостевого режима */
+      var me0=session && session.uid && R.users[session.uid];
+      if(me0) nset(STASH_KEY, JSON.stringify({ s:session, status:me0.status, name:fullName(me0) }));
+      enterGuest(''); return; }
     if(e.target.closest('[data-retry]')){ location.reload(); return; }
     if((b=e.target.closest('[data-request]'))){ requestAccess([b.dataset.request]); return; }
   };
@@ -1063,6 +1093,7 @@ function bindGate(kind){
 }
 
 function finishLogin(uidv, user, tok){
+  ndel(STASH_KEY);
   saveSession({ uid:uidv, tok:tok||null, at:Date.now(), cache:{ first:user.first, last:user.last, gender:user.gender, compat:compatName(user), role:user.role } });
   var jobs=[fb('PATCH', 'users/'+uidv, { lastLogin:Date.now(), lastSeen:Date.now() })];
   if(user.status==='active') jobs.push(fb('POST','audit',{ at:Date.now(), by:uidv, byName:fullName(user), action:'login', target:uidv, details:'' }));
@@ -1185,6 +1216,19 @@ function doChangePass(form){
     .catch(function(){ busy(form,false); formErr(form, 'Нет связи с сервером'); });
 }
 
+var STASH_KEY='pe2_stash_'+NS;
+function pendingStash(){ var x=njson(STASH_KEY, null); return x && x.s && session && session.guest ? x : null; }
+function returnToAccount(){ var x=njson(STASH_KEY, null); ndel(STASH_KEY); if(x && x.s){ saveSession(x.s); location.reload(); } }
+document.addEventListener('change', function(e){ var f=e.target.form; if(f && e.target.name==='mods') f._modsTouched=true; }, true);
+document.addEventListener('input', function(e){
+  var f=e.target.form; if(!f || e.target.name!=='position' || !(f.getAttribute('data-form')==='register')) return;
+  var pr=presetFor(e.target.value), hint=f.querySelector('[data-preset-hint]'); if(!hint) return;
+  if(!pr){ hint.hidden=true; return; }
+  var names=pr.mods.map(function(id){ var m=moduleById(id); return m && modConf(id).enabled ? plainName(m) : null; }).filter(Boolean);
+  hint.hidden=false; hint.innerHTML='Для должности «'+esc(e.target.value.trim())+'» обычно нужны: <b>'+esc(names.join(', '))+'</b>.'+(f._modsTouched?' <a href="#" data-preset-apply>Отметить их</a>':' Отметили — можно поправить.');
+  if(!f._modsTouched) $$('input[name="mods"]', f).forEach(function(c){ c.checked=pr.mods.indexOf(c.value)>=0; });
+});
+document.addEventListener('click', function(e){ var a=e.target.closest && e.target.closest('[data-preset-apply]'); if(!a) return; e.preventDefault(); var f=a.closest('form'), pr=presetFor(f.position.value); if(pr) $$('input[name="mods"]', f).forEach(function(c){ c.checked=pr.mods.indexOf(c.value)>=0; }); });
 function enterGuest(name){
   saveSession({ guest:true, guestName:name||'', at:Date.now() });
   if(MODULE!=='home' && MODULE!=='admin' && !can(MODULE)) location.href='index.html';
@@ -1201,7 +1245,7 @@ function requestAccess(preselect){
   var u=R.me(), isGuest=!!(session && session.guest);
   var locked=MODULES.filter(function(m){ return modConf(m.id).enabled && !can(m.id); }).map(function(m){ return m.id; });
   var sel={}; (preselect||[]).forEach(function(id){ sel[id]=true; });
-  var mm=modal('<h2>Запрос доступа</h2><p class="pe2-muted">Заявка уйдёт владельцу в админ-панель. '+(isGuest?'Оставьте контакт, чтобы вам прислали логин и пароль.':'Когда её одобрят, модули откроются автоматически.')+'</p>'+
+  var mm=modal('<h2>Запрос доступа</h2><p class="pe2-muted">Заявка уйдёт владельцу в админ-панель. '+(isGuest?'Этот запрос — для внешних людей: клиента, подрядчика, партнёра. Оставьте контакт — вам пришлют логин и пароль.</p><div class="pe2-note-staff">Вы сотрудник студии? Вам нужна <a href="#" data-to-register>регистрация</a> — придумаете логин сами, и владелец одобрит аккаунт.</div><p class="pe2-muted" style="display:none">':'Когда её одобрят, модули откроются автоматически.')+'</p>'+
     '<form data-form="req">'+
     (isGuest?'<div class="pe2-grid2">'+field('Имя *','<input name="name" required maxlength="60" value="'+esc(session.guestName||'')+'" autofocus>')+field('Телефон или Telegram *','<input name="contact" required maxlength="80">')+'</div>':'')+
     '<div class="pe2-label">Модули</div>'+modulesChecklist('mods', sel, locked)+
@@ -1209,6 +1253,7 @@ function requestAccess(preselect){
     '<div class="pe2-err" data-err></div>'+
     '<div class="pe2-actions"><button type="button" class="pe2-btn" data-pe2-close>Отмена</button><button type="submit" class="pe2-btn primary">Отправить запрос</button></div></form>', { wide:true });
   var form=mm.el.querySelector('form');
+  var toReg=mm.el.querySelector('[data-to-register]'); if(toReg) toReg.addEventListener('click', function(e){ e.preventDefault(); mm.close(); saveSession(null); writeCompat(); gateView='register'; lastDecision=null; showGate('gate','register'); });
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var mods=$$('input[name="mods"]:checked', form).map(function(c){ return c.value; });
@@ -1313,6 +1358,9 @@ function renderNav(){
         : guest?'<button class="pe2-nav-user" data-pe2-user><span class="pe2-av" style="width:28px;height:28px;background:#3A3A3E">'+I('user',14)+'</span><span>Гость</span></button>':'')+
       '</div>';
     navEl.innerHTML=h;
+    /* на узком экране меню листается — показываем текущий раздел, а не обрезанное начало */
+    var onA=navEl.querySelector('.pe2-nav-links a.on'), links=navEl.querySelector('.pe2-nav-links');
+    if(onA && links && links.scrollWidth>links.clientWidth) links.scrollLeft=Math.max(0, onA.offsetLeft-links.clientWidth/2+onA.offsetWidth/2);
     var slot=navEl.querySelector('[data-pe2-logo]'); if(slot) slot.parentNode.replaceChild(navLogo(), slot);
     navEl.onclick=function(e){
       if(e.target.closest('[data-pe2-preview-off]')){ setPreview(''); location.href='admin.html#roles'; return; }
@@ -1433,8 +1481,10 @@ function userMenu(anchor){
       '<button data-a="request">'+I('lock',15)+'Запросить доступ…</button>'+
       '<button data-a="logout" class="danger">'+I('out',15)+'Выйти</button>'
     : '<div class="pe2-menu-head"><span class="pe2-av" style="width:40px;height:40px;background:#3A3A3E">'+I('user',18)+'</span><div><b>Гость'+(guest&&session.guestName?' · '+esc(session.guestName):'')+'</b><span>Ограниченный просмотр</span></div></div>'+
-      '<button data-a="request">'+I('lock',15)+'Запросить доступ…</button>'+
-      '<button data-a="register">'+I('user',15)+'Зарегистрироваться</button>'+
+      (pendingStash()
+        ? '<button data-a="back">'+I('user',15)+'Вернуться к моей заявке</button>'
+        : '<button data-a="request">'+I('lock',15)+'Запросить доступ…</button>'+
+          '<button data-a="register">'+I('user',15)+'Зарегистрироваться</button>')+
       '<button data-a="login">'+I('out',15)+'Войти в аккаунт</button>';
   document.body.appendChild(menuEl);
   var r=anchor.getBoundingClientRect();
@@ -1445,6 +1495,7 @@ function userMenu(anchor){
     if(a==='profile') openProfile();
     else if(a==='logout') logout();
     else if(a==='request') requestAccess([]);
+    else if(a==='back') returnToAccount();
     else if(a==='register' || a==='login'){ saveSession(null); writeCompat(); gateView=a; lastDecision=null; showGate('gate', a); }
   };
   setTimeout(function(){
@@ -1475,7 +1526,14 @@ function onUsersTree(tree){ R.users=tree||{}; attachAvatars(R.users); gotUsers=t
 if(session && session.uid){
   /* список команды читают только активные; ожидающий или заблокированный видит свою запись */
   stream('users', onUsersTree, function(){
-    stream('users/'+session.uid, function(tree){ var o={}; if(tree) o[session.uid]=tree; onUsersTree(o); }, function(){ onUsersTree({}); }, { poll:30000 });
+    /* одобрили, пока страница открыта: перезагружаемся — тогда откроется список команды, права и модули */
+    var wasStatus=null;
+    stream('users/'+session.uid, function(tree){
+      var st=tree && tree.status;
+      if(wasStatus && wasStatus!=='active' && st==='active'){ location.reload(); return; }
+      wasStatus=st||wasStatus;
+      var o={}; if(tree) o[session.uid]=tree; onUsersTree(o);
+    }, function(){ onUsersTree({}); }, { poll:15000 });
   }, { poll:30000 });
 } else {
   gotUsers=true;
@@ -1546,7 +1604,7 @@ var PE = window.PE = {
   onUsers:function(fn){ usersFns.push(fn); },
   MODULE_DEFAULTS:MOD_DEF, sortable:sortable, saveModuleOrder:saveModuleOrder, setPreview:setPreview, previewUser:previewUser, onEdit:function(fn){ editFn=fn; }, theme:function(){ return curTheme(); }, setTheme:setTheme, reloadModules:function(){ return loadModulesMeta(); },
   toast:toast, modal:modal, confirm:confirmBox, esc:esc, uid:uid, fmtDate:fmtDate, relTime:relTime, icon:I,
-  requestAccess:requestAccess, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
+  requestAccess:requestAccess, ROLE_PRESETS:ROLE_PRESETS, presetFor:presetFor, onboarding:onboarding, ONBOARD_DEFAULT:ONBOARD_DEFAULT, plainName:plainName, pendingStash:pendingStash, returnToAccount:returnToAccount, refreshGuestRequests:refreshGuestRequests, openProfile:openProfile, logout:logout,
   hashPass:hashPass, makeSalt:makeSalt, genPassword:genPassword, normLogin:normLogin, validLogin:validLogin,
   loginTaken:loginTaken, setCredentials:setCredentials, removeCredentials:removeCredentials, authEmail:authEmail,
   processAvatar:processAvatar, saveUser:saveUser, bindAvatarPicker:bindAvatarPicker, profileFields:profileFields, readProfile:readProfile,

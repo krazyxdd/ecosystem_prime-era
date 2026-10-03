@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Оргсхема · Prime Era</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610030209">
-<script src="assets/pe-core.js?v=202610030209" data-module="org-board"></script>
-<link rel="stylesheet" href="assets/fonts.css?v=202610030209">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
+<script src="assets/pe-core.js?v=202610031051" data-module="org-board"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
 <style>
 :root{
   color-scheme:light;
@@ -374,6 +374,10 @@ html.pe2-has-nav .drawer{top:calc(var(--tb,48px) + var(--pe-nav-h,0px))}
 .ver-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
 .ver-row .grow{flex:1}
 @media print{.pe2-nav{display:none!important}html.pe2-has-nav body{padding-top:0}}
+  .obfind{display:inline-flex;align-items:center;gap:6px}
+  .obfind input{font:inherit;font-size:13px;padding:5px 10px;border:1px solid var(--line,#ddd);border-radius:999px;width:210px;background:var(--card,#fff);color:inherit}
+  #obCount{font-size:12px;opacity:.65;white-space:nowrap}
+  .ob-hl{outline:3px solid #008CFF !important;outline-offset:4px;border-radius:10px;transition:outline-color .3s}
 </style>
 </head>
 <body>
@@ -740,6 +744,36 @@ function alignDrops(){
 function scheduleChart(){clearTimeout(chartT);chartT=setTimeout(renderChart,250);}
 function drawWires(){}
 
+/* ---------- поиск по схеме и «Мой пост» ---------- */
+var findState={ q:'', list:[], i:0 };
+function focusEl(el){
+  var vp=document.getElementById("vp"); if(!vp||!el) return;
+  var vr=vp.getBoundingClientRect(), r=el.getBoundingClientRect();
+  var px=(r.left+r.width/2-vr.left-Z.x)/Z.z, py=(r.top+r.height/2-vr.top-Z.y)/Z.z;
+  var nz=Math.max(Z.z,0.9); autoFit=false; Z.z=nz; Z.x=vr.width/2-px*nz; Z.y=Math.min(vr.height/3, vr.height/2)-py*nz; applyZ(); requestAnimationFrame(drawWires);
+  [].forEach.call(document.querySelectorAll(".ob-hl"),function(x){ x.classList.remove("ob-hl"); });
+  el.classList.add("ob-hl"); setTimeout(function(){ el.classList.remove("ob-hl"); },4000);
+}
+function findPosts(q,mine){
+  var cnt=document.getElementById("obCount"), nodes=[].slice.call(document.querySelectorAll("#chart .post, #chart .dcol"));
+  var list;
+  if(mine){
+    var me=PE.fullName(PE.user).toLowerCase();
+    list=nodes.filter(function(n){ var h=n.querySelector(":scope > .hold"); return h && h.textContent.toLowerCase().indexOf(me)>=0; });
+    if(!list.length){ toastMsg("Вас пока нет ни на одном посту этой схемы — спросите руководителя"); return; }
+  } else {
+    q=String(q||"").trim().toLowerCase(); if(q.length<2){ if(cnt) cnt.textContent=""; return; }
+    list=nodes.filter(function(n){ var own=n.cloneNode(true); [].forEach.call(own.querySelectorAll(".post, .sub"),function(x){ x.remove(); }); return own.textContent.toLowerCase().indexOf(q)>=0; });
+  }
+  var key=(mine?"\u0001":"")+(q||"");
+  if(findState.q===key && findState.list.length===list.length) findState.i=(findState.i+1)%list.length; else { findState={ q:key, list:list, i:0 }; }
+  if(cnt) cnt.textContent=list.length?(findState.i+1)+" из "+list.length:"не найдено";
+  if(list.length) focusEl(list[findState.i]);
+}
+function toastMsg(t){ if(window.PE&&PE.toast) PE.toast(t); else alert(t); }
+document.addEventListener("keydown",function(e){ if(e.target&&e.target.id==="obSearch"&&e.key==="Enter"){ e.preventDefault(); findPosts(e.target.value,false); } });
+document.addEventListener("input",function(e){ if(e.target&&e.target.id==="obSearch"){ findState={ q:'', list:[], i:0 }; clearTimeout(findPosts._t); var v=e.target.value; findPosts._t=setTimeout(function(){ findPosts(v,false); },350); } });
+
 /* ---------- pan / zoom ---------- */
 function applyZ(){var st=document.getElementById("stage");if(st)st.style.transform="translate("+Z.x+"px,"+Z.y+"px) scale("+Z.z+")";var zv=document.getElementById("zv");if(zv)zv.textContent=Math.round(Z.z*100)+"%";}
 function fit(){
@@ -836,6 +870,7 @@ function render(){
     h+='<header class="topbar"><span class="brand">'+esc(S.meta.title)+'</span>'+schemePicker()+''+zoomCtl+
       '<button class="btn sm" data-act="expand-all">Раскрыть все</button><button class="btn sm" data-act="collapse-all">Собрать все</button>'+
       '<span class="tgs">'+toggles()+'</span>'+
+      '<span class="obfind"><input id="obSearch" type="search" placeholder="Найти пост, шляпу, человека" autocomplete="off"><span id="obCount"></span></span>'+(HAS_PE&&PE.user?'<button class="btn sm" data-act="mypost" title="Найти на схеме мои посты">Мой пост</button>':'')+
       '<span class="sp"></span>'+(FL().length?'<button class="btn sm tg'+(flowOn()?" on":"")+'" data-act="to-flow">Путь клиента</button>':'')+(CAN_EDIT?'<button class="btn" data-act="dl">Скачать</button>':'')+(HAS_PE?'<button class="btn sm" data-act="reset-view" id="resetView" hidden title="Вернуть раскладку, которую настроил руководитель">↺ Как настроено</button>':'')+(CAN_EDIT?'<button class="btn primary" data-act="edit">Редактировать</button>':'')+'</header>';
     h+='<div class="viewport" id="vp"><div class="stage" id="stage"><svg id="wires"></svg><div class="chart" id="chart"></div></div></div>';
     h+='<aside class="drawer" id="drawer" hidden></aside>';
@@ -1374,6 +1409,7 @@ function openDownload(){
 function act(a,el){
   var d=el.dataset;
   switch(a){
+  case "mypost": findPosts(null,true); break;
   case "edit": if(!CAN_EDIT)break;if(HAS_PE&&!remoteReady){if(loadingRemote)PE.toast("Секунду — проверяю свежую версию схемы");else PE.toast("Нет доступа к базе оргсхемы — правки не сохранятся. Нужно опубликовать правила базы.","err");break;}mode="edit";drawerId=null;render();setTimeout(fitWidth,30);break;
   case "save-now": if(HAS_PE){if(!dirtyRemote()){setStatus("Изменений нет — всё сохранено");break;}saveRemote(false);}break;
   case "view": if(HAS_PE&&CAN_EDIT&&remoteReady&&dirtyRemote())saveRemote(false);mode="view";sel=null;selHat=null;selPerson=null;render();setTimeout(fitWidth,30);break;

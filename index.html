@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Era — экосистема</title>
 <link rel="icon" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=202610030209">
-<link rel="stylesheet" href="assets/pe-core.css?v=202610030209">
-<script src="assets/pe-core.js?v=202610030209" data-module="home"></script>
+<link rel="stylesheet" href="assets/fonts.css?v=202610031051">
+<link rel="stylesheet" href="assets/pe-core.css?v=202610031051">
+<script src="assets/pe-core.js?v=202610031051" data-module="home"></script>
 <style>
   /* Главная — «рабочий стол». Только токены дизайн-системы (var(--pe-…)), тема работает сама. */
   *{ box-sizing:border-box; }
@@ -35,11 +35,20 @@
   .w{ background:var(--pe-card); border:1px solid var(--pe-line); border-radius:var(--pe-r); padding:18px 18px 16px; display:flex; flex-direction:column; min-height:180px; }
   .w.full{ grid-column:1 / -1; min-height:0; }
   .desk > .w{ align-self:stretch; }
+  .w.ob{ min-height:0; margin:0 0 16px; }
+  .ob-bar{ height:6px; border-radius:3px; background:var(--pe-sunk); overflow:hidden; margin:4px 0 12px; } .ob-bar i{ display:block; height:100%; background:var(--pe-accent); border-radius:3px; }
+  .ob-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; }
+  .ob-list label{ display:flex; gap:10px; align-items:flex-start; cursor:pointer; font-size:14px; line-height:1.45; }
+  .ob-list input{ margin-top:3px; accent-color:var(--pe-accent); }
+  .ob-list li.on span{ color:var(--pe-ink-3); text-decoration:line-through; }
+  .ob-list a{ color:var(--pe-ink); text-decoration:underline; text-decoration-color:var(--pe-line-2); text-underline-offset:3px; } .ob-list a:hover{ color:var(--pe-accent); }
+  .ob-foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; font-size:13px; color:var(--pe-ink-2); flex-wrap:wrap; }
   .w-h{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
   .w-h h2{ margin:0; font:600 11px var(--pe-mono); letter-spacing:.12em; text-transform:uppercase; color:var(--pe-ink-2); flex:1; }
   .w-h a{ font:600 11px var(--pe-mono); letter-spacing:.04em; text-transform:uppercase; color:var(--pe-accent); text-decoration:none; }
   .w-h a:hover{ text-decoration:underline; }
   .w-empty{ margin:auto 0; color:var(--pe-ink-3); font-size:13.5px; line-height:1.5; }
+  .w-more{ margin-top:10px; color:var(--pe-ink-3); font-size:12.5px; }
 
   .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
   .kpi{ border-radius:var(--pe-r-md); background:var(--pe-sunk); padding:12px 14px; text-decoration:none; color:inherit; transition:background .15s; }
@@ -143,6 +152,47 @@ PE.onReady(function(){
   }
 
   /* ---------- виджеты ---------- */
+  /* «Первая неделя» — для новых сотрудников; список задаёт админ во вкладке «Новичкам» */
+  var OB_KEY='pe-onboard-done', OB_HIDE='pe-onboard-hidden';
+  function obDone(){ try{ return JSON.parse(localStorage.getItem(OB_KEY)||'{}')||{}; }catch(e){ return {}; } }
+  function obModule(href){
+    var page=String(href||'').split('#')[0]; if(!page) return null;
+    if(/^sayt-(?!editor)/.test(page)) return 'sayt';
+    var m=PE.MODULES.filter(function(x){ return x.href===page; })[0]; return m?m.id:null;
+  }
+  function obSteps(u){
+    var c=PE.onboarding(), pr=PE.presetFor(u.position), out=[];
+    ['all'].concat(pr?[pr.id]:[]).forEach(function(g){
+      String(c.groups[g]||'').split('\n').forEach(function(line){
+        line=line.trim(); if(!line) return; var p=line.split('|'), text=p[0].trim(), href=(p[1]||'').trim();
+        var mid=obModule(href); if(mid && !PE.can(mid)) return;
+        out.push({ key:g+':'+text.slice(0,40), text:text, href:href });
+      });
+    });
+    return { steps:out, mentor:c.mentor, days:c.days };
+  }
+  function wFirstWeek(u){
+    var since=u.approvedAt||u.createdAt||0, c=PE.onboarding();
+    if(!since || Date.now()-since>c.days*86400000) return '';
+    try{ if(localStorage.getItem(OB_HIDE)==='1') return ''; }catch(e){}
+    var o=obSteps(u), done=obDone(), n=o.steps.filter(function(s){ return done[s.key]; }).length;
+    if(!o.steps.length) return '';
+    var owner=PE.meta && PE.meta.ownerUid && PE.userById(PE.meta.ownerUid);
+    var h='<section class="w ob"><div class="w-h"><h2>Ваша первая неделя</h2><span class="pe-chip">'+n+' из '+o.steps.length+'</span></div>'+
+      '<div class="ob-bar"><i style="width:'+Math.round(n/o.steps.length*100)+'%"></i></div><ul class="ob-list">';
+    o.steps.forEach(function(s){
+      var link=s.href ? (s.href==='#profile' ? '<a href="#" data-ob-profile>'+esc(s.text)+'</a>' : '<a href="'+esc(s.href)+'">'+esc(s.text)+'</a>') : esc(s.text);
+      h+='<li class="'+(done[s.key]?'on':'')+'"><label><input type="checkbox" data-ob="'+esc(s.key)+'"'+(done[s.key]?' checked':'')+'><span>'+link+'</span></label></li>';
+    });
+    h+='</ul><div class="ob-foot"><span>'+(o.mentor?'С вопросами — к: <b>'+esc(o.mentor)+'</b>':owner?'С вопросами — к руководителю: <b>'+esc(PE.fullName(owner))+'</b>':'')+'</span>'+
+      '<button class="pe-btn sm" data-ob-hide>'+(n===o.steps.length?'Готово, скрыть':'Скрыть')+'</button></div></section>';
+    return h;
+  }
+  document.addEventListener('change', function(e){ var k=e.target.dataset && e.target.dataset.ob; if(!k) return; var d=obDone(); if(e.target.checked) d[k]=Date.now(); else delete d[k]; try{ localStorage.setItem(OB_KEY, JSON.stringify(d)); }catch(x){} render(); });
+  document.addEventListener('click', function(e){
+    if(e.target.closest('[data-ob-profile]')){ e.preventDefault(); PE.openProfile(); return; }
+    if(e.target.closest('[data-ob-hide]')){ try{ localStorage.setItem(OB_HIDE,'1'); }catch(x){} render(); }
+  });
   function wTasks(u){
     var h='<section class="w tasks"><div class="w-h"><h2>Мои задачи</h2><a href="tasks.html">Доска →</a></div>';
     if(!TASKS) return h+'<div class="w-empty">Загружаю задачи…</div></section>';
@@ -173,13 +223,13 @@ PE.onReady(function(){
   function wTeam(u, alone){
     var mates=PE.team().filter(function(x){ return x.id!==u.id; });
     var online=mates.filter(function(x){ return x.lastSeen && Date.now()-x.lastSeen<10*60000; });
-    var h='<section class="w'+(alone?' full':'')+'"><div class="w-h"><h2>Команда</h2><span class="pe-chip">'+online.length+' в сети</span></div>';
+    var h='<section class="w'+(alone?' full':'')+'"><div class="w-h"><h2>Команда</h2><span class="pe-chip" title="Коллеги, которые заходили в последние 10 минут (вы не в счёт)">'+(online.length?'коллег в сети: '+online.length:'коллеги не в сети')+'</span></div>';
     if(!mates.length) return h+'<div class="w-empty">Пока вы здесь один.</div></section>';
     mates.sort(function(a,b){ return (b.lastSeen||0)-(a.lastSeen||0); });
     return h+'<div class="team">'+mates.slice(0,6).map(function(x){
       var on=x.lastSeen && Date.now()-x.lastSeen<10*60000;
-      return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':x.lastSeen?('был(а) '+PE.relTime(x.lastSeen)):'ещё не заходил(а)')+'</small></div></div>';
-    }).join('')+'</div></section>';
+      return '<div class="mate"><span class="av">'+PE.avatar(x,32)+(on?'<i class="dot"></i>':'')+'</span><div><b>'+esc(PE.fullName(x))+'</b><small>'+esc(on?'в сети':x.lastSeen?((x.gender==='f'?'была ':x.gender==='m'?'был ':'был(а) ')+PE.relTime(x.lastSeen)):(x.gender==='f'?'ещё не заходила':x.gender==='m'?'ещё не заходил':'ещё не заходил(а)'))+'</small></div></div>';
+    }).join('')+(mates.length>6?'<div class="w-more">и ещё '+(mates.length-6)+' в команде</div>':'')+'</div></section>';
   }
   var ACT={ login:'вошёл(ла)', 'saleskb.edit':'правка раздела продаж', 'saleskb.delete':'удалён раздел продаж', 'saleskb.tree':'правка схемы продаж', 'saleskb.file':'файлы продаж',
     'calc.config':'правка прайса', 'org.save':'правка оргсхемы', approve:'одобрил(а) регистрацию', create:'создан аккаунт', edit:'правка профиля/доступа', module:'настройки модулей', perms:'права ролей', grant:'выдан доступ', revoke:'закрыт доступ' };
@@ -202,7 +252,7 @@ PE.onReady(function(){
     var st = g && g.status==='approved' ? '<span class="sent" style="color:var(--pe-ok)">Одобрено — пришлют логин</span>'
       : g && g.status==='rejected' ? '<span class="sent" style="color:var(--pe-danger)">Заявку отклонили</span>' : '';
     return '<div class="tool locked" data-id="'+m.id+'"><span class="badge">'+PE.icon('lock',11)+'</span><div class="ic">'+icon(m)+'</div><h3><span class="sl">/</span> '+esc(m.name)+'</h3><p>'+esc(m.desc)+'</p>'+
-      (sent ? '<span class="sent">Запрос отправлен</span>' : st && g.status==='approved' ? st : (st||'')+'<button class="pe-btn sm req" data-req="'+m.id+'">Запросить доступ</button>')+'</div>';
+      (PE.pendingStash && PE.pendingStash() ? '' : sent ? '<span class="sent">Запрос отправлен</span>' : st && g.status==='approved' ? st : (st||'')+'<button class="pe-btn sm req" data-req="'+m.id+'">Запросить доступ</button>')+'</div>';
   }
   function toolsHtml(){
     var admin=PE.isAdmin(), open=[], locked=[];
@@ -226,6 +276,7 @@ PE.onReady(function(){
       if(PE.isStaff() && PE.perm('requests')) h+=reqNotice();
       h+='<div class="hero"><div class="hero-me">'+PE.avatar(u,76)+'<div><div class="date">'+esc(date)+'</div><h1>'+greet()+', <b>'+esc(u.first)+'</b></h1><div class="sub">'+esc(u.position||PE.ROLE_NAMES[u.role])+' · P\\E ecosystem</div></div></div>'+
         '</div>';
+      h+=wFirstWeek(u);
       h+='<div class="desk">';
       if(PE.can('tasks')) h+=wTasks(u);
       h+=wTeam(u, !PE.can('tasks'));
@@ -233,7 +284,9 @@ PE.onReady(function(){
       h+='</div>';
     } else {
       h+='<div class="hero"><div><div class="date">'+esc(date)+'</div><h1>Экосистема <b>Prime Era</b></h1><div class="sub">Гостевой просмотр'+(PE.session.guestName?' · '+esc(PE.session.guestName):'')+'</div></div></div>';
-      h+='<div class="banner"><span>Вы в гостевом режиме. Инструменты с замком открываются по запросу. Работаете в студии? Зарегистрируйтесь — владелец одобрит аккаунт.</span><button class="pe-btn" data-register>Регистрация</button></div>';
+      var stash=PE.pendingStash && PE.pendingStash();
+      if(stash) h+='<div class="banner"><span><b>'+esc(stash.name||'Ваша')+(stash.status==='pending'?'</b>, ваша заявка ждёт одобрения.':'</b>, вы смотрите как гость.')+' Пока можно посмотреть, какие инструменты есть в студии.</span><button class="pe-btn sm" data-back>Вернуться к заявке</button></div>';
+      else h+='<div class="banner"><span>Вы в гостевом режиме. Инструменты с замком открываются по запросу. Работаете в студии? Зарегистрируйтесь — владелец одобрит аккаунт.</span><button class="pe-btn" data-register>Регистрация</button></div>';
     }
     h+=toolsHtml();
     h+='<div class="foot">PRIME ERA · студия веб-дизайна · P\\E ecosystem</div>';
@@ -241,6 +294,7 @@ PE.onReady(function(){
   }
 
   page.addEventListener('click', function(e){
+    if(e.target.closest('[data-back]')){ PE.returnToAccount(); return; }
     var b=e.target.closest('[data-req]'); if(b){ PE.requestAccess([b.dataset.req]); return; }
     if(e.target.closest('[data-register]')){ localStorage.removeItem('pe2_session_'+(PE.CFG.MOCK?'mock':PE.CFG.ROOT)); location.hash='register'; location.reload(); }
   });
